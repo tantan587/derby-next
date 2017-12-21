@@ -1,1 +1,1 @@
-web: babel-node --inspect=5858 ./src/server/index.js
+web: npm run build && npm run start
