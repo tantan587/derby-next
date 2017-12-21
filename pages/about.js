@@ -1,6 +1,8 @@
 import React from 'react'
 import Layout from '../common/components/Layout'
 import withRoot from '../common/components/withRoot'
+import withRedux from 'next-redux-wrapper'
+import storeFactory from '../common/store'
 
 class About extends React.Component {
 
@@ -15,4 +17,4 @@ class About extends React.Component {
   }
 }
 
-export default withRoot(About)
+export default withRedux(storeFactory)(withRoot(About))

@@ -2,7 +2,10 @@ import React from 'react'
 import { withStyles, MuiThemeProvider } from 'material-ui/styles'
 import wrapDisplayName from 'recompose/wrapDisplayName'
 import getContext from '../../styles/getContext'
+import storeFactory from '../store'
+import { Provider } from 'react-redux'
 
+const store = storeFactory(false)
 // Apply some reset
 const styles = theme => ({
   '@global': {
@@ -49,19 +52,21 @@ function withRoot(Component) {
           theme={this.styleContext.theme}
           sheetsManager={this.styleContext.sheetsManager}
         >
-          <AppWrapper>
-            <Component {...this.props} />
-          </AppWrapper>
+          <Provider store={store}>
+            <AppWrapper>
+              <Component {...this.props} />
+            </AppWrapper>
+          </Provider>
         </MuiThemeProvider>
       )
     }
   }
 
   if (process.env.NODE_ENV !== 'production') {
-    WithRoot.displayName = wrapDisplayName(Component, 'withRoot');
+    WithRoot.displayName = wrapDisplayName(Component, 'withRoot')
   }
 
   return WithRoot
 }
 
-export default withRoot;
+export default withRoot

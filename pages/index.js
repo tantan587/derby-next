@@ -11,12 +11,20 @@ import Typography from 'material-ui/Typography'
 import { withStyles } from 'material-ui/styles'
 import withRoot from '../common/components/withRoot'
 import Layout from '../common/components/Layout'
+import withRedux from 'next-redux-wrapper'
+import storeFactory from '../common/store'
 
 const styles = {
   root: {
     textAlign: 'center',
     paddingTop: 200,
-  },
+    backgroundImage: 'url("/static/derbyhome.png")',
+    backgroundRepeat: 'no-repeat',
+    backgroundAttachment: 'fixed',
+    minHeight: '600px',
+    backgroundPosition: 'center',
+    backgroundSize: 'cover'
+  }
 }
 
 class Index extends React.Component {
@@ -51,11 +59,16 @@ class Index extends React.Component {
               </Button>
             </DialogActions>
           </Dialog>
-          <Typography type="display1" gutterBottom>
-            Material-UI
+          <Typography type="display1" style={{color:'white'}} gutterBottom>
+            Derby
           </Typography>
-          <Typography type="subheading" gutterBottom>
-            example project
+          <Typography type="subheading" style={{color:'white'}} gutterBottom>
+            Draft Teams.
+            Watch Games.
+          </Typography>
+          <Typography type="subheading" style={{color:'white'}} gutterBottom>
+            Earn Points.
+            Win The Race.
           </Typography>
           <Button raised color="accent" onClick={this.handleClick}>
             Super Secret Password
@@ -70,4 +83,4 @@ Index.propTypes = {
   classes: PropTypes.object.isRequired,
 }
 
-export default withRoot(withStyles(styles)(Index))
+export default withRedux(storeFactory)(withRoot(withStyles(styles)(Index)))

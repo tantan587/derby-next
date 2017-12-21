@@ -8,6 +8,7 @@ import Typography from 'material-ui/Typography'
 import Button from 'material-ui/Button'
 import IconButton from 'material-ui/IconButton'
 import MenuIcon from 'material-ui-icons/Menu'
+import { connect } from 'react-redux'
 
 const styles = {
   root: {
@@ -35,7 +36,7 @@ function NavAppBar(props) {
             Title
           </Typography>
           <Link href="/about">
-            <Button style={{float: 'left'}} color="contrast">Login</Button>
+            <Button style={{float: 'right'}} color="contrast">Login</Button>
           </Link>
         </Toolbar>
       </AppBar>
@@ -47,7 +48,7 @@ NavAppBar.propTypes = {
   classes: PropTypes.object.isRequired,
 }
 
-export default withStyles(styles)(NavAppBar)
+export default connect(({ user }) => ({ user }), { })(withStyles(styles)(NavAppBar))
 
 // const linkStyle = {
 //   marginRight: 15
