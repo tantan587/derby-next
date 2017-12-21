@@ -35,7 +35,7 @@ function NavAppBar(props) {
           <Typography type="title" color="inherit" className={classes.flex}>
             Title
           </Typography>
-          <Link href="/about">
+          <Link href="/login">
             <Button style={{float: 'right'}} color="contrast">Login</Button>
           </Link>
         </Toolbar>

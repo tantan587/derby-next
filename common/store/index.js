@@ -22,24 +22,24 @@ const clientLogger = store => next => action => {
 }
 
 const serverLogger = store => next => action => {
-    console.log('\n  dispatching server action\n')
-    console.log(action)
-    console.log('\n')
-    //console.log('next state', store.getState())
-    return next(action)
+  console.log('\n  dispatching server action\n')
+  console.log(action)
+  console.log('\n')
+  //console.log('next state', store.getState())
+  return next(action)
 }
 
 const middleware = server => [
-    (server) ? serverLogger : clientLogger,
-    thunk
+  (server) ? serverLogger : clientLogger,
+  thunk
 ]
 
 const storeFactory = (server = false, injectedState = initialState) =>
-    {
-        return applyMiddleware(...middleware(server))(createStore)(
-        combineReducers({user}),
-        injectedState
-        )
-    }
+{
+  return applyMiddleware(...middleware(server))(createStore)(
+    combineReducers({user}),
+    injectedState
+  )
+}
 
 export default storeFactory
