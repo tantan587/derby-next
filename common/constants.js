@@ -18,4 +18,4 @@ const constants = {
   GET_TEAMS: 'GET_TEAMS'
 }
 
-export default constants
+module.exports = constants
