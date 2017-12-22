@@ -1,7 +1,8 @@
 import React from 'react';
 import Document, { Head, Main, NextScript } from 'next/document';
 import JssProvider from 'react-jss/lib/JssProvider';
-import getContext from '../styles/getContext';
+import getContext from '../styles/getContext'
+
 
 export default class MyDocument extends Document {
   render() {
@@ -35,7 +36,7 @@ export default class MyDocument extends Document {
           <NextScript />
         </body>
       </html>
-    );
+    )
   }
 }
 

@@ -13,6 +13,8 @@ import withRoot from '../common/components/withRoot'
 import Layout from '../common/components/Layout'
 import withRedux from 'next-redux-wrapper'
 import storeFactory from '../common/store'
+const store = storeFactory(false)
+
 
 const styles = {
   root: {
@@ -26,6 +28,7 @@ const styles = {
     backgroundSize: 'cover'
   }
 }
+
 
 class Index extends React.Component {
   state = {

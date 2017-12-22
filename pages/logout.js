@@ -1,21 +1,21 @@
 import React from 'react'
 import Layout from '../common/components/Layout'
-import LoginForm from '../common/components/LoginForm'
+import LogoutForm from '../common/components/LogoutForm'
 import withRoot from '../common/components/withRoot'
 import withRedux from 'next-redux-wrapper'
 import storeFactory from '../common/store'
 
-
-class Login extends React.Component {
+class Logout extends React.Component {
 
   render() {
     return (
       <div>
         <Layout >
-          <LoginForm />
+          <LogoutForm />
         </Layout>
       </div>
     )
   }
 }
-export default withRedux(storeFactory)(withRoot(Login))
+
+export default withRedux(storeFactory)(withRoot(Logout))

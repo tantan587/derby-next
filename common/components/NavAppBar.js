@@ -27,17 +27,30 @@ function NavAppBar(props) {
   const { classes } = props
   return (
     <div className={classes.root}>
-      <AppBar position="static">
+      <AppBar position="static" style={{height:'60px'}}>
         <Toolbar>
           <IconButton className={classes.menuButton} color="contrast" aria-label="Menu">
             <MenuIcon />
           </IconButton>
           <Typography type="title" color="inherit" className={classes.flex}>
-            Title
+            Derby. Fantasy Wins League
           </Typography>
-          <Link href="/login">
-            <Button style={{float: 'right'}} color="contrast">Login</Button>
-          </Link>
+          {props.user.loggedIn ? 
+            <div>
+              <Link href="/logout">
+                <Button style={{float: 'right'}} color="contrast">Logout</Button>
+              </Link>
+            </div>
+            : 
+            <div>
+              <Link href="/signup">
+                <Button style={{float: 'right'}} color="contrast">Signup</Button>
+              </Link>
+              <Link href="/login">
+                <Button style={{float: 'right'}} color="contrast">Login</Button>
+              </Link>
+            </div>}
+          
         </Toolbar>
       </AppBar>
     </div>

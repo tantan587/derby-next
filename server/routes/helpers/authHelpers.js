@@ -10,24 +10,24 @@ function comparePass(userPassword, databasePassword) {
 
 function createUser(req, res) {
   return handleErrors(req)
-  .then(() => {
-    const salt = bcrypt.genSaltSync()
-    const hash = bcrypt.hashSync(req.body.password, salt)
-    return knex.withSchema('users').table('users')
-    .insert({
-      user_id : v4(),
-      username: req.body.username,
-      password: hash,
-      first_name: req.body.first_name,
-      last_name: req.body.last_name,
-      email: req.body.email,
-      admin: false
+    .then(() => {
+      const salt = bcrypt.genSaltSync()
+      const hash = bcrypt.hashSync(req.body.password, salt)
+      return knex.withSchema('users').table('users')
+        .insert({
+          user_id : v4(),
+          username: req.body.username,
+          password: hash,
+          first_name: req.body.first_name,
+          last_name: req.body.last_name,
+          email: req.body.email,
+          admin: false
+        })
+        .returning('*')
     })
-    .returning('*')
-  })
-  .catch((err) => {
-    res.status(400).json(err);
-  });
+    .catch((err) => {
+      res.status(400).json(err);
+    });
 }
 
 function loginRequired(req, res, next) {
@@ -73,7 +73,7 @@ function handleErrors(req) {
     if (validateEmail(req.body.email)=== false) {
       errorText.addError('signup_email','Not proper email format')
     }
-     if (errorText.foundError) {
+     if (errorText.foundError()) {
       reject({
         type: C.SIGNUP_FAIL,
         error: errorText
@@ -97,14 +97,14 @@ function handleErrors(req) {
           {
             errorText.addError('signup_email','Email has already be registered. Please choose a different one')
           }
-          if (errorText.foundError) {
+          if (errorText.foundError()) {
             reject({
               type: C.SIGNUP_FAIL,
               error: errorText});
           }
           else
           {
-            resolve();
+            resolve()
           }
         })
     }
@@ -113,19 +113,19 @@ function handleErrors(req) {
 
 const getUserLeagues = (user, cb) =>{
   
-      return  knex.withSchema('fantasy').table('leagues').where('user_id',user.user_id).innerJoin('owners', 'leagues.league_id', 'owners.league_id')
-      .then(result =>
+  return  knex.withSchema('fantasy').table('leagues').where('user_id',user.user_id).innerJoin('owners', 'leagues.league_id', 'owners.league_id')
+    .then(result =>
+    {
+      let leagues = []
+      result.map(league => leagues.push(
         {
-            let leagues = []
-            result.map(league => leagues.push(
-              {
-                league_id:league.league_id, 
-                league_name:league.league_name
-              }))
-            cb(user, leagues)
-          }
-        )
+          league_id:league.league_id, 
+          league_name:league.league_name
+        }))
+      cb(user, leagues)
     }
+    )
+}
 
 module.exports = {
   comparePass,
@@ -134,4 +134,4 @@ module.exports = {
   //adminRequired,
   loginRedirect,
   getUserLeagues
-};
+}

@@ -1,9 +1,10 @@
 import { createStore, combineReducers, applyMiddleware } from 'redux'
 import {  user} from './reducers'
 import thunk from 'redux-thunk'
+import ErrorText from '../models/ErrorText'
 
 const initialState = {
-  user: { loggedIn : false}
+  user: { loggedIn : false, error : new ErrorText()}
 }
 
 const clientLogger = store => next => action => {

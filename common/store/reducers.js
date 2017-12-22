@@ -6,9 +6,6 @@ export const user = (state = {}, action={ type: null }) => {
   switch(action.type)
   {
   case C.LOGIN_SUCCESS:
-    return { 
-      loggedIn : true
-    }
   case C.SIGNUP_SUCCESS:
     return {
       id: action.id,
@@ -20,14 +17,14 @@ export const user = (state = {}, action={ type: null }) => {
     }
   case C.SIGNUP_FAIL:
   case C.LOGIN_FAIL:
-        return {
-            id: "",
-            first_name: "",
-            last_name: "",
-            username: "",
-            loggedIn: false,
-            error: action.error
-        }
+    return {
+      id: '',
+      first_name: '',
+      last_name: '',
+      username: '',
+      loggedIn: false,
+      error: action.error
+    }
     case C.LOGOUT:
     return {
             id: "",
