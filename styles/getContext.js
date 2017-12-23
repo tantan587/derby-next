@@ -3,9 +3,14 @@
 import { create, SheetsRegistry } from 'jss'
 import preset from 'jss-preset-default'
 import { createMuiTheme } from 'material-ui/styles'
-import brown from 'material-ui/colors/brown'
+import { brown } from 'material-ui/colors'
 import green from 'material-ui/colors/green'
 import createGenerateClassName from 'material-ui/styles/createGenerateClassName'
+
+//https://github.com/mui-org/material-ui/issues/6770
+//https://github.com/mui-org/material-ui/issues/7812
+//https://www.materialpalette.com/green/brown
+//https://www.npmjs.com/package/material-palette
 
 const theme = createMuiTheme({
   palette: {

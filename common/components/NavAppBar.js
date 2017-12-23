@@ -6,11 +6,18 @@ import AppBar from 'material-ui/AppBar'
 import Toolbar from 'material-ui/Toolbar'
 import Typography from 'material-ui/Typography'
 import Button from 'material-ui/Button'
+import Drawer from 'material-ui/Drawer'
 import IconButton from 'material-ui/IconButton'
 import MenuIcon from 'material-ui-icons/Menu'
+import List, { ListItem, ListItemText } from 'material-ui/List'
+import Divider from 'material-ui/Divider'
+import ChevronLeftIcon from 'material-ui-icons/ChevronLeft'
+import Collapse from 'material-ui/transitions/Collapse';
+import ExpandLess from 'material-ui-icons/ExpandLess'
+import ExpandMore from 'material-ui-icons/ExpandMore'
 import { connect } from 'react-redux'
 
-const styles = {
+const styles = theme => ({
   root: {
     width: '100%',
   },
@@ -21,61 +28,127 @@ const styles = {
     marginLeft: -12,
     marginRight: 20,
   },
-}
+  drawerPaper: {
+    height: '100%',
+    width: '200px',
+  },
+  drawerHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    padding: '0 8px',
+    ...theme.mixins.toolbar,
+  },
+  nested: {
+    paddingLeft: theme.spacing.unit * 4,
+  },
+})
 
-function NavAppBar(props) {
-  const { classes } = props
-  return (
-    <div className={classes.root}>
-      <AppBar position="static" style={{height:'60px'}}>
-        <Toolbar>
-          <IconButton className={classes.menuButton} color="contrast" aria-label="Menu">
-            <MenuIcon />
-          </IconButton>
-          <Typography type="title" color="inherit" className={classes.flex}>
-            Derby. Fantasy Wins League
-          </Typography>
-          {props.user.loggedIn ? 
-            <div>
-              <Link href="/logout">
-                <Button style={{float: 'right'}} color="contrast">Logout</Button>
-              </Link>
+class NavAppBar extends React.Component {
+  state = {
+    open: false,
+    leaguesOpen: false
+  };
+
+  toggleDrawer = () => {
+    this.setState({
+      open: !this.state.open,
+    })
+  }
+
+  toggleLeagueList = () => {
+    this.setState({ leaguesOpen: !this.state.leaguesOpen })
+  };
+
+  render() {
+    const { classes } = this.props
+    return (
+      <div className={classes.root}>
+        <AppBar position="static" style={{height:'60px'}}>
+          <Toolbar>
+            <IconButton 
+              className={classes.menuButton} 
+              color="contrast" 
+              aria-label="Menu"
+              onClick={this.toggleDrawer}>
+              <MenuIcon />
+            </IconButton>
+            <Typography type="title" color="inherit" className={classes.flex}>
+              Derby. Fantasy Wins League
+            </Typography>
+            {this.props.user.loggedIn ? 
+              <div>
+                <Link href="/logout">
+                  <Button style={{float: 'right'}} color="contrast">Logout</Button>
+                </Link>
+              </div>
+              : 
+              <div>
+                <Link href="/signup">
+                  <Button style={{float: 'right'}} color="contrast">Signup</Button>
+                </Link>
+                <Link href="/login">
+                  <Button style={{float: 'right'}} color="contrast">Login</Button>
+                </Link>
+              </div>}
+            
+          </Toolbar>
+        </AppBar>
+        <Drawer 
+          open={this.state.open} 
+          onClose={this.toggleDrawer}
+          classes={{
+            paper: classes.drawerPaper,
+          }}>
+          <div
+            tabIndex={0}
+            role="button"
+          >
+            <div className={classes.drawerHeader}>
+              <IconButton onClick={this.toggleDrawer}>
+                <ChevronLeftIcon />
+              </IconButton>
             </div>
-            : 
-            <div>
-              <Link href="/signup">
-                <Button style={{float: 'right'}} color="contrast">Signup</Button>
+            <Divider />
+            <List>
+              <Link href="/">
+                <ListItem button>
+                  <ListItemText primary="Derby Home" />
+                </ListItem>
               </Link>
-              <Link href="/login">
-                <Button style={{float: 'right'}} color="contrast">Login</Button>
-              </Link>
-            </div>}
-          
-        </Toolbar>
-      </AppBar>
-    </div>
-  )
+              {this.props.leagues.length !== 0 ?
+                <div>
+                  <ListItem button onClick={this.toggleLeagueList}>
+                    <ListItemText primary="My Leagues" />
+                    {this.state.leaguesOpen ? <ExpandLess /> : <ExpandMore />}
+                  </ListItem>
+                  <Collapse component="li" in={this.state.leaguesOpen} timeout="auto" unmountOnExit>
+                    <List disablePadding>
+                      {this.props.leagues.map((league, i) =>
+                        (
+                          <ListItem id={i} button className={classes.nested}>
+                            <ListItemText primary={league.league_name} />
+                          </ListItem>
+                        ))}
+                    </List>
+                  </Collapse>
+                </div>
+                :
+                <div></div>
+              }
+              <ListItem button>
+                <ListItemText primary="FAQ" />
+              </ListItem>
+            </List>
+          </div>
+        </Drawer>
+      </div>
+    )
+  }
 }
 
 NavAppBar.propTypes = {
   classes: PropTypes.object.isRequired,
 }
 
-export default connect(({ user }) => ({ user }), { })(withStyles(styles)(NavAppBar))
-
-// const linkStyle = {
-//   marginRight: 15
-// }
-
-// const AppBar = () => (
-//   <div>
-//     <Link href="/">
-//       <a style={linkStyle}>Home</a>
-//     </Link>
-//     <Link href="/about">
-//       <a style={linkStyle}>About</a>
-//     </Link>
-//   </div>
-// )
-
-//export default AppBar
+export default connect(({ user, leagues }) => ({ user, leagues }), { })(withStyles(styles)(NavAppBar))

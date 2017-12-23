@@ -34,7 +34,7 @@ class LoginForm extends React.Component {
     })
   }
 
-  localLogin(e)
+  myLogin(e)
   {
     const { onLogin } = this.props
     this.setState({fireRedirect: true})
@@ -43,12 +43,12 @@ class LoginForm extends React.Component {
   }
 
   submit(e) {
-    this.localLogin(e)
+    this.myLogin(e)
   }
 
   keypress(e) {
     if (e.key === 'Enter') { 
-      this.localLogin(e)
+      this.myLogin(e)
     }
   }
   render() {
