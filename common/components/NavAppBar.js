@@ -136,6 +136,17 @@ class NavAppBar extends React.Component {
                 :
                 <div></div>
               }
+              {this.props.user.loggedIn === true ?
+                <div>
+                  <Link href="/participate">
+                    <ListItem button>
+                      <ListItemText primary="Create/Join League" />
+                    </ListItem>
+                  </Link>
+                </div>
+                :
+                <div></div>
+              }
               <ListItem button>
                 <ListItemText primary="FAQ" />
               </ListItem>

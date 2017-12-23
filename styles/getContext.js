@@ -7,6 +7,7 @@ import { brown } from 'material-ui/colors'
 import green from 'material-ui/colors/green'
 import createGenerateClassName from 'material-ui/styles/createGenerateClassName'
 
+//https://github.com/mui-org/material-ui/issues/8075
 //https://github.com/mui-org/material-ui/issues/6770
 //https://github.com/mui-org/material-ui/issues/7812
 //https://www.materialpalette.com/green/brown
