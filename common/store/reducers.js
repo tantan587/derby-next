@@ -78,3 +78,23 @@ export const simpleLeague = (action) => {
     league_name : action.league_name
   }
 }
+
+export const activeLeague = (state = {}, action={ type: null }) => {
+  switch (action.type){
+  case C.CLICKED_LEAGUE:
+    return {
+      success : true,
+      league_id : action.league_id,
+      league_name : action.league_name,
+      total_players : action.owners.length,
+      max_owners : action.max_owners,
+      owners : action.owners
+    }
+  case C.LOGOUT:
+    return {
+      success : false,
+    }
+  default:
+    return state
+  }  
+}

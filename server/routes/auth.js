@@ -5,6 +5,10 @@ const passport = require('./helpers/local')
 const C = require('../../common/constants')
 const ErrorText = require('../../common/models/ErrorText')
 
+//https://blog.jscrambler.com/implementing-jwt-using-passport/
+//https://github.com/trandainhan/next.js-example-authentication-with-jwt/blob/master/utils/CookieUtils.js
+//https://github.com/zeit/next.js/issues/153
+
 router.post('/signup', authHelpers.loginRedirect, (req, res, next)  => {
   return authHelpers.createUser(req, res)
     .then((response) => {

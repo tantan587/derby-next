@@ -16,6 +16,7 @@ import Collapse from 'material-ui/transitions/Collapse';
 import ExpandLess from 'material-ui-icons/ExpandLess'
 import ExpandMore from 'material-ui-icons/ExpandMore'
 import { connect } from 'react-redux'
+import {clickedLeague} from '../actions/fantasy-actions'
 
 const styles = theme => ({
   root: {
@@ -54,6 +55,11 @@ class NavAppBar extends React.Component {
     this.setState({
       open: !this.state.open,
     })
+  }
+
+  handleLeagueClick = (league_id) => {
+    const { onClickedLeague } = this.props
+    onClickedLeague(league_id)
   }
 
   toggleLeagueList = () => {
@@ -126,9 +132,12 @@ class NavAppBar extends React.Component {
                     <List disablePadding>
                       {this.props.leagues.map((league, i) =>
                         (
-                          <ListItem id={i} button className={classes.nested}>
-                            <ListItemText primary={league.league_name} />
+                          <ListItem id={i} button onClick={() => {this.handleLeagueClick(league.league_id)}}>
+                            <Link href='/mainleague'>
+                              <ListItemText style={{paddingLeft:'18px'}} primary={league.league_name} />
+                            </Link>
                           </ListItem>
+
                         ))}
                     </List>
                   </Collapse>
@@ -162,4 +171,11 @@ NavAppBar.propTypes = {
   classes: PropTypes.object.isRequired,
 }
 
-export default connect(({ user, leagues }) => ({ user, leagues }), { })(withStyles(styles)(NavAppBar))
+export default connect(({ user, leagues }) => ({ user, leagues }),
+  dispatch =>
+    ({
+      onClickedLeague(league_id) {
+        dispatch(
+          clickedLeague(league_id))
+      }
+    }))(withStyles(styles)(NavAppBar))

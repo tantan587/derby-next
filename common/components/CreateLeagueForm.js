@@ -11,6 +11,16 @@ import MenuItem from 'material-ui/Menu/MenuItem'
 
 import { connect } from 'react-redux'
 
+const privateIndBool = ['Private. I\'m very selective', 'Public. I need some friends']
+const EPLBool = ['Yes Please.','Ew... Soccer']
+
+const InputProps = {
+  inputProps: {
+    'text-align': 'center',
+    step: 300,
+  },
+}
+
 const styles = {
   container: {
     left: '50%',
@@ -55,6 +65,12 @@ class CreateLeagueForm extends React.Component {
     })
   }
 
+  handleBoolChange = (name, str) => event => {
+    this.setState({
+      [name]: event.target.value === str,
+    })
+  }
+
   handleSubmit(e)
   {
     const { onCreateLeague } = this.props
@@ -79,7 +95,9 @@ class CreateLeagueForm extends React.Component {
       return(<div></div>)
     }
     else if(this.props.user.loggedIn === false){
-      Router.push('/login')
+      if (typeof document !== 'undefined'){
+        Router.push('/login')
+      }
       return(<div></div>)
     }
     else{
@@ -106,6 +124,7 @@ class CreateLeagueForm extends React.Component {
             label="Enter A League Name"
             value={this.state.league_name}
             margin="normal"
+            InputProps={InputProps}
             onChange = {this.handleChange('league_name')}/>
           <br/>
           <TextField
@@ -138,11 +157,11 @@ class CreateLeagueForm extends React.Component {
             select
             label="Private or Public League?"
             className={classes.field}
-            value={this.state.privateInd}
+            value={this.state.privateInd ? privateIndBool[0] : privateIndBool[1]}
             margin="normal"
-            onChange = {this.handleChange('privateInd')}>
-            {['Private', 'Public'].map(option => (
-              <MenuItem key={option} value={option==='Private'}>
+            onChange = {this.handleBoolChange('privateInd', privateIndBool[0])}>
+            {privateIndBool.map(option => (
+              <MenuItem key={option} value={option}>
                 {option}
               </MenuItem>
             ))}
@@ -153,11 +172,11 @@ class CreateLeagueForm extends React.Component {
             select
             label="Use English Premier League?"
             className={classes.field}
-            value={this.state.EPL}
+            value={this.state.EPL? EPLBool[0]: EPLBool[1]}
             margin="normal"
-            onChange = {this.handleChange('EPL')}>
-            {['Ew... Soccer', 'Yes Please.'].map(option => (
-              <MenuItem key={option} value={option==='Yes Please.'}>
+            onChange = {this.handleBoolChange('EPL', EPLBool[0])}>
+            {EPLBool.map(option => (
+              <MenuItem key={option} value={option}>
                 {option}
               </MenuItem>
             ))}

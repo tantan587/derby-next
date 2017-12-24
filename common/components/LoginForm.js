@@ -10,7 +10,7 @@ import {clickedLogin} from '../actions/auth-actions'
 
 import { connect } from 'react-redux'
 
-const styles = {
+const styles = theme => ({
   container: {
     left: '50%',
     textAlign: 'center',
@@ -18,8 +18,12 @@ const styles = {
   },
   field: {
     textAlign: 'center',
+  },
+  button : {
+    backgroundColor: theme.palette.secondary.A700,
+    color: theme.palette.secondary.A100,
   }
-}
+})
 
 class LoginForm extends React.Component {
   state = {
@@ -91,7 +95,7 @@ class LoginForm extends React.Component {
           Don't have an account? <Link href="/signup"><a>Signup.</a></Link>
           </Typography>
           <br/>
-          <Button raised color="accent" onClick={(event) => this.submit(event)}>
+          <Button raised className={classes.button} onClick={(event) => this.submit(event)}>
             Submit
           </Button>
         </form>

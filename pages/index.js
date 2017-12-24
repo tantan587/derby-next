@@ -52,7 +52,7 @@ class Index extends React.Component {
       <Layout>
         <div className={this.props.classes.root}>
           <Dialog open={this.state.open} onClose={this.handleClose}>
-            <DialogTitle>Out Super Secret Password</DialogTitle>
+            <DialogTitle>Our Super Secret Password</DialogTitle>
             <DialogContent>
               <DialogContentText>Why would we give this to you?</DialogContentText>
             </DialogContent>
@@ -74,7 +74,7 @@ class Index extends React.Component {
             Win The Race.
           </Typography>
           <Button raised color="accent" onClick={this.handleClick}>
-            Super Secret Password
+            Our Super Secret Password
           </Button>
         </div>
       </Layout>
