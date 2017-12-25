@@ -51,7 +51,7 @@ class ParticipateForm extends React.Component {
       return (
         <form className={classes.container} noValidate autoComplete="off">
           <Typography type="display2" className={classes.text} gutterBottom>
-            Derby. Fantasy Wins League
+            Derby: Fantasy Wins League
           </Typography>
           <br/>
           <br/>

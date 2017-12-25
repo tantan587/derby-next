@@ -10,13 +10,6 @@ fetch(url, {method, body, headers: { 'Content-Type': 'application/json' }, crede
         .then(dispatch)
         .catch(logError)
 
-export const clickedStandings = () => dispatch =>
-    fetchThenDispatch(
-        dispatch,
-        '/api/nba',
-        'GET'
-    )
-
 export const clickedCreateLeague = (leagueInfo) => dispatch =>
     fetchThenDispatch(
         dispatch,

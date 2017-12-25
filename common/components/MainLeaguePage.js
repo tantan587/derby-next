@@ -6,7 +6,7 @@ import { withStyles } from 'material-ui/styles'
 import Typography from 'material-ui/Typography'
 import AppBar from 'material-ui/AppBar'
 import Tabs, { Tab } from 'material-ui/Tabs'
-import {clickedLogin} from '../actions/auth-actions'
+import {clickedStandings} from '../actions/sport-actions'
 import EnhancedTable from './EnhancedTable'
 
 import { connect } from 'react-redux'
@@ -39,6 +39,10 @@ class MainLeaguePage extends React.Component {
     this.setState({ value })
   }
 
+  handleSportClick = () => {
+    this.props.onStandings()
+  }
+
   render() {
     // if(this.props.user.loggedIn === false){
     //   if (typeof document !== 'undefined'){
@@ -67,7 +71,7 @@ class MainLeaguePage extends React.Component {
               <Tab label="Standings" />
               <Tab label="My Roster" />
               <Tab label="Schedules" />
-              <Tab label="All Teams" />
+              <Tab label="All Teams" onClick={this.handleSportClick}/>
               <Tab label="Message Board" />
               <Tab label="Other Rosters"  />
               <Tab label="League Settings" />
@@ -110,9 +114,9 @@ export default connect(
     }),
   dispatch =>
     ({
-      onLogin(username, password) {
+      onStandings() {
         dispatch(
-          clickedLogin(username,password))
+          clickedStandings())
       }
     }))(withStyles(styles)(MainLeaguePage))
 

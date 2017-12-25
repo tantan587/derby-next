@@ -26,6 +26,11 @@ const styles = theme => ({
   flex: {
     flex: 1,
   },
+  appBar: {
+    backgroundColor: theme.palette.primary[800],
+    color: theme.palette.secondary[100]
+
+  },
   menuButton: {
     marginLeft: -12,
     marginRight: 20,
@@ -73,7 +78,7 @@ class NavAppBar extends React.Component {
     return (
       <div className={classes.root}>
         <AppBar position="static" style={{height:'60px'}}>
-          <Toolbar>
+          <Toolbar className={classes.appBar}>
             <IconButton 
               className={classes.menuButton} 
               color="contrast" 
