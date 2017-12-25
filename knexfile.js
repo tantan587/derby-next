@@ -5,10 +5,10 @@ module.exports = {
     client: 'postgresql',
     connection: 'postgres://koperman:derbyapp123@localhost:5432/derby',
     migrations: {
-      directory: __dirname + '/src/server/db/migrations/dev'
+      directory: __dirname + '/server/db/migrations/dev'
     },
     seeds: {
-      directory: __dirname + '/src/server/db/seeds/dev'
+      directory: __dirname + '/server/db/seeds/dev'
     }
   },
   production: {
@@ -19,10 +19,10 @@ module.exports = {
       max: 10
     },
     migrations: {
-      directory: __dirname + '/src/server/db/migrations/prod'
+      directory: __dirname + '/server/db/migrations/prod'
     },
     seeds: {
-      directory: __dirname + '/src/server/db/seeds/dev'
+      directory: __dirname + '/server/db/seeds/dev'
     }
   }
 }
