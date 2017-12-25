@@ -8,18 +8,12 @@ import Button from 'material-ui/Button'
 import TextField from 'material-ui/TextField'
 import {clickedCreateLeague} from '../actions/fantasy-actions'
 import MenuItem from 'material-ui/Menu/MenuItem'
+import DerbyTextField from './DerbyTextField'
 
 import { connect } from 'react-redux'
 
 const privateIndBool = ['Private. I\'m very selective', 'Public. I need some friends']
-const EPLBool = ['Yes Please.','Ew... Soccer']
-
-const InputProps = {
-  inputProps: {
-    'text-align': 'center',
-    step: 300,
-  },
-}
+const EPLBool = ['GOOOOOOOOALLLLLL','Ew... Soccer']
 
 const styles = {
   container: {
@@ -39,9 +33,9 @@ const styles = {
     width: 200,
   }
   ,
-  textField: {
+  centeredText: {
     textAlign: 'center',
-  }
+  },
 }
 
 class CreateLeagueForm extends React.Component {
@@ -102,6 +96,11 @@ class CreateLeagueForm extends React.Component {
     }
     else{
       const { classes } = this.props
+      const InputProps = {
+        inputProps: {
+          className: classes.centeredText,
+        }
+      }
       return (
         <form className={classes.container} noValidate autoComplete="off"
           onKeyPress={(event) => this.keypress(event)}>
@@ -116,25 +115,17 @@ class CreateLeagueForm extends React.Component {
           and 3 teams from 3 different conferences in each college sport.
           Have questions? Learn more about it here.
           </Typography>
-          <TextField
-            id="name"
-            error={typeof this.props.user.error.create_league_name !== 'undefined'}
-            className={classes.field}
-            helperText = {this.props.user.error.create_league_name}
+          <DerbyTextField
+            errorText={this.props.user.error.create_league_name}
             label="Enter A League Name"
             value={this.state.league_name}
-            margin="normal"
-            InputProps={InputProps}
-            onChange = {this.handleChange('league_name')}/>
+            onChange = {this.handleChange('league_name')}
+          />
           <br/>
-          <TextField
-            error={typeof this.props.user.error.create_password !== 'undefined'}
-            id="password"
+          <DerbyTextField
+            errorText={this.props.user.error.create_password}
             label="Enter A League Password"
-            helperText = {this.props.user.error.create_password}
-            className={classes.field}
             value={this.state.league_password}
-            margin="normal"
             onChange = {this.handleChange('league_password')}/>
           <br/>
           <TextField
@@ -182,14 +173,10 @@ class CreateLeagueForm extends React.Component {
             ))}
           </TextField>
           <br/>
-          <TextField
-            id="owner_name"
-            error={typeof this.props.user.error.create_owner_name !== 'undefined'}
-            className={classes.field}
-            helperText = {this.props.user.error.create_owner_name}
+          <DerbyTextField
+            errorText={this.props.user.error.create_owner_name}
             label="Enter Your Owner Name"
             value={this.state.owner_name}
-            margin="normal"
             onChange = {this.handleChange('owner_name')}/>
           <br/>
           <br/>

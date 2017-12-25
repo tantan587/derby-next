@@ -59,6 +59,7 @@ class NavAppBar extends React.Component {
 
   handleLeagueClick = (league_id) => {
     const { onClickedLeague } = this.props
+    this.toggleDrawer()
     onClickedLeague(league_id)
   }
 

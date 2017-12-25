@@ -64,22 +64,32 @@ class MainLeaguePage extends React.Component {
               textColor="primary"
               centered
             >
-              <Tab label="Item One" />
-              <Tab label="Item Two" />
-              <Tab label="Item Three" />
-              <Tab label="Item Four" />
-              <Tab label="Item Five" />
-              <Tab label="Item Six"  />
-              <Tab label="Item Seven" />
+              <Tab label="Standings" />
+              <Tab label="My Roster" />
+              <Tab label="Schedules" />
+              <Tab label="All Teams" />
+              <Tab label="Message Board" />
+              <Tab label="Other Rosters"  />
+              <Tab label="League Settings" />
+              <Tab label="Draft Reacap" />
             </Tabs>
           </AppBar>
-          {value === 0 && <EnhancedTable activeLeague={this.props.activeLeague}/>}
+          {value === 0 && <EnhancedTable
+            title='Standings'
+            myRows={this.props.activeLeague.owners}
+            myHeaders = {[
+              {label: 'Rank', key: 'rank'},
+              {label: 'Owner', key: 'owner_name'},
+              {label: 'User', key: 'username'},
+              {label: 'Points', key: 'total_points'}
+            ]}/>}
           {value === 1 && <TabContainer>Item Two</TabContainer>}
           {value === 2 && <TabContainer>Item Three</TabContainer>}
           {value === 3 && <TabContainer>Item Four</TabContainer>}
           {value === 4 && <TabContainer>Item Five</TabContainer>}
           {value === 5 && <TabContainer>Item Six</TabContainer>}
           {value === 6 && <TabContainer>Item Seven</TabContainer>}
+          {value === 7 && <TabContainer>Item Eight</TabContainer>}
         </div>
       )
     }

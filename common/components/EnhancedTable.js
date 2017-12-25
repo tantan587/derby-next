@@ -12,20 +12,6 @@ import Typography from 'material-ui/Typography'
 import Paper from 'material-ui/Paper'
 import Tooltip from 'material-ui/Tooltip'
 
-let counter = 0
-function createData(name, calories, fat, carbs, protein) {
-  counter += 1
-  return { id: counter, name, calories, fat, carbs, protein }
-}
-
-const columnData = [
-  { id: 'name', numeric: false, disablePadding: false, label: 'Dessert' },
-  { id: 'calories', numeric: true, disablePadding: false, label: 'Calories' },
-  { id: 'fat', numeric: true, disablePadding: false, label: 'Fat (g)' },
-  { id: 'carbs', numeric: true, disablePadding: false, label: 'Carbs (g)' },
-  { id: 'protein', numeric: true, disablePadding: false, label: 'Protein (g)' },
-]
-
 class EnhancedTableHead extends React.Component {
   static propTypes = {
     onRequestSort: PropTypes.func.isRequired,
@@ -38,7 +24,7 @@ class EnhancedTableHead extends React.Component {
   };
 
   render() {
-    const { order, orderBy } = this.props
+    const { order, orderBy, columnData } = this.props
 
     return (
       <TableHead>
@@ -80,6 +66,7 @@ const styles = theme => ({
   },
   table: {
     minWidth: 800,
+    maxWidth: 800
   },
   tableWrapper: {
     overflowX: 'auto',
@@ -95,23 +82,26 @@ class EnhancedTable extends React.Component {
 
     this.state = {
       order: 'asc',
-      orderBy: 'calories',
-      selected: [],
-      data: [
-        createData('Cupcake', 305, 3.7, 67, 4.3),
-        createData('Donut', 452, 25.0, 51, 4.9),
-        createData('Eclair', 262, 16.0, 24, 6.0),
-        createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-        createData('Gingerbread', 356, 16.0, 49, 3.9),
-        createData('Honeycomb', 408, 3.2, 87, 6.5),
-        createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-        createData('Jelly Bean', 375, 0.0, 94, 0.0),
-        createData('KitKat', 518, 26.0, 65, 7.0),
-        createData('Lollipop', 392, 0.2, 98, 0.0),
-        createData('Marshmallow', 318, 0, 81, 2.0),
-        createData('Nougat', 360, 19.0, 9, 37.0),
-        createData('Oreo', 437, 18.0, 63, 4.0),
-      ].sort((a, b) => (a.calories < b.calories ? -1 : 1)),
+      orderBy: '',
+      myRows: [],
+      myHeaders:[],
+    }
+  }
+  componentWillMount() {
+    if (this.state.myRows.length === 0)
+    {
+      this.setState({ myRows:this.props.myRows })
+      this.setState({ myHeaders:this.props.myHeaders })
+    }
+  }
+  
+  componentWillReceiveProps(nextProps) {
+    if(this.props != nextProps) {
+      this.setState({
+        myRows: nextProps.myRows,
+        myHeaders: nextProps.myHeaders,
+        orderBy: nextProps.myHeaders.length > 0 ? nextProps.myHeaders[0].key : ''
+      })
     }
   }
 
@@ -123,46 +113,66 @@ class EnhancedTable extends React.Component {
       order = 'asc'
     }
 
-    const data =
-      order === 'desc'
-        ? this.state.data.sort((a, b) => (b[orderBy] < a[orderBy] ? -1 : 1))
-        : this.state.data.sort((a, b) => (a[orderBy] < b[orderBy] ? -1 : 1))
+    const myRows =
+      this.state.myRows.sort((a, b) =>  
+        (order === 'desc') 
+          ? isNaN(b[orderBy]) 
+            ? (b[orderBy].toLowerCase() < a[orderBy].toLowerCase() ? -1 : 1)
+            : (b[orderBy] < a[orderBy] ? -1 : 1)
+          : isNaN(b[orderBy]) 
+            ? (a[orderBy].toLowerCase() < b[orderBy].toLowerCase() ? -1 : 1)
+            : (a[orderBy] < b[orderBy] ? -1 : 1))
 
-    this.setState({ data, order, orderBy })
+
+    // const myRows =
+    //   order === 'desc'
+    //     ? this.state.myRows.sort((a, b) => (b[orderBy].toLowerCase() < a[orderBy].toLowerCase() ? -1 : 1) )
+    //     : this.state.myRows.sort((a, b) => (a[orderBy].toLowerCase() < b[orderBy].toLowerCase() ? -1 : 1) )
+
+    this.setState({ myRows, order, orderBy })
   };
 
   render() {
-    const { classes } = this.props
-    const { data, order, orderBy, selected} = this.state
+    const { classes} = this.props
 
-
+    const {order, orderBy, myRows, myHeaders} = this.state
+    let localRows = myRows
+    if (typeof myRows === 'undefined')
+    {
+      localRows = []
+    }
+  
+    const columnData1 = []
+    myHeaders.map(header => columnData1.push({
+      id: header.key, 
+      numeric: localRows.length > 0 ? !isNaN(localRows[0][header.key]) : false, 
+      disablePadding: false,
+      label: header.label
+    }))
     return (
       <Paper className={classes.root}>
         <div className={classes.tableWrapper}>
           <br/>
-          <Typography className={classes.title} type="display1">Standings</Typography>
+          <Typography className={classes.title} type="display1">{this.props.title}</Typography>
           <br/>
           <Table className={classes.table}>
             <EnhancedTableHead
-              numSelected={selected.length}
               order={order}
               orderBy={orderBy}
               onRequestSort={this.handleRequestSort}
-              rowCount={data.length}
+              columnData={columnData1}
             />
             <TableBody>
-              {data.map(n => {
+              {localRows.map((n,i) => {
                 return (
                   <TableRow
                     hover
                     tabIndex={-1}
-                    key={n.id}
+                    key={i}
                   >
-                    <TableCell>{n.name}</TableCell>
-                    <TableCell numeric>{n.calories}</TableCell>
-                    <TableCell numeric>{n.fat}</TableCell>
-                    <TableCell numeric>{n.carbs}</TableCell>
-                    <TableCell numeric>{n.protein}</TableCell>
+                    {columnData1.map(header => (
+                      <TableCell numeric={header.numeric}>{n[header.id]}</TableCell>
+                    ))}
                   </TableRow>
                 )
               })}
