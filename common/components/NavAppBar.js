@@ -17,6 +17,7 @@ import ExpandLess from 'material-ui-icons/ExpandLess'
 import ExpandMore from 'material-ui-icons/ExpandMore'
 import { connect } from 'react-redux'
 import {clickedLeague} from '../actions/fantasy-actions'
+import {isMobile} from '../lib/mobile'
 
 const styles = theme => ({
   root: {
@@ -81,7 +82,7 @@ class NavAppBar extends React.Component {
               <MenuIcon />
             </IconButton>
             <Typography type="title" color="inherit" className={classes.flex}>
-              Derby. Fantasy Wins League
+              {isMobile() ? 'Derby' :'Derby. Fantasy Wins League'}
             </Typography>
             {this.props.user.loggedIn ? 
               <div>
@@ -118,11 +119,11 @@ class NavAppBar extends React.Component {
             </div>
             <Divider />
             <List>
-              <Link href="/">
-                <ListItem button>
+              <ListItem button onClick={this.toggleDrawer}>
+                <Link href="/">
                   <ListItemText primary="Derby Home" />
-                </ListItem>
-              </Link>
+                </Link>
+              </ListItem>
               {this.props.leagues.length !== 0 ?
                 <div>
                   <ListItem button onClick={this.toggleLeagueList}>

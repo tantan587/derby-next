@@ -179,6 +179,8 @@ class CreateLeagueForm extends React.Component {
           <Button raised color="accent" onClick={(event) => this.submit(event)}>
             Create New League!
           </Button>
+          <br/>
+          <br/>
         </form>
       )
     }

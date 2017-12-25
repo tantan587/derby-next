@@ -90,7 +90,9 @@ class MainLeaguePage extends React.Component {
           {value === 5 && <TabContainer>Item Six</TabContainer>}
           {value === 6 && <TabContainer>Item Seven</TabContainer>}
           {value === 7 && <TabContainer>Item Eight</TabContainer>}
+
         </div>
+        
       )
     }
   }

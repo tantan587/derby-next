@@ -51,7 +51,6 @@ class DerbyTextField extends React.Component {
 
 
 DerbyTextField.propTypes = {
-  errorText: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
   value: PropTypes.any.isRequired,
   onChange: PropTypes.func.isRequired,

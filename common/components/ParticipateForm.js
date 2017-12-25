@@ -5,7 +5,7 @@ import Typography from 'material-ui/Typography'
 import Button from 'material-ui/Button'
 import Link from 'next/link'
 import Router from 'next/router'
-
+import {isMobile} from '../lib/mobile'
 import { connect } from 'react-redux'
 
 const styles = {
@@ -64,16 +64,37 @@ class ParticipateForm extends React.Component {
           </Typography>
           <br/>
           <br/>
-          <Link href ='/createleague'>
-            <Button raised color="accent">
-              Create New League
-            </Button>
-          </Link>
-          <Link href ='/joinleague'>
-            <Button style={{marginLeft:'20px'}} raised color="accent">
-              Join Existing League
-            </Button>
-          </Link>
+          {
+            isMobile() ?
+              <div>
+                <Link href ='/createleague'>
+                  <Button raised color="accent">
+                    Create New League
+                  </Button>
+                </Link>
+                <br/>
+                <br/>
+                <Link href ='/joinleague'>
+                  <Button  raised color="accent">
+                    Join Existing League
+                  </Button>
+                </Link>
+              </div> 
+              : 
+              <div>
+                <Link href ='/createleague'>
+                  <Button raised color="accent">
+                    Create New League
+                  </Button>
+                </Link>
+                <Link href ='/joinleague'>
+                  <Button style={{marginLeft:'20px'}} raised color="accent">
+                    Join Existing League
+                  </Button>
+                </Link>
+              </div> 
+          }
+          
         </form>
       )
     }

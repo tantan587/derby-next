@@ -65,7 +65,7 @@ const styles = theme => ({
     marginTop: theme.spacing.unit * 3,
   },
   table: {
-    minWidth: 800,
+    minWidth: 600,
     maxWidth: 800
   },
   tableWrapper: {
@@ -171,7 +171,7 @@ class EnhancedTable extends React.Component {
                     key={i}
                   >
                     {columnData1.map(header => (
-                      <TableCell 
+                      <TableCell key={header.id}
                         numeric={header.numeric}>
                         {n[header.id]}
                       </TableCell>
@@ -181,6 +181,8 @@ class EnhancedTable extends React.Component {
               })}
             </TableBody>
           </Table>
+          <br/>
+          <br/>
         </div>
       </Paper>
     )
