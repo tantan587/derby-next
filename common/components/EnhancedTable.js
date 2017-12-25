@@ -171,7 +171,10 @@ class EnhancedTable extends React.Component {
                     key={i}
                   >
                     {columnData1.map(header => (
-                      <TableCell numeric={header.numeric}>{n[header.id]}</TableCell>
+                      <TableCell 
+                        numeric={header.numeric}>
+                        {n[header.id]}
+                      </TableCell>
                     ))}
                   </TableRow>
                 )

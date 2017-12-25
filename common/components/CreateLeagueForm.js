@@ -96,11 +96,7 @@ class CreateLeagueForm extends React.Component {
     }
     else{
       const { classes } = this.props
-      const InputProps = {
-        inputProps: {
-          className: classes.centeredText,
-        }
-      }
+      
       return (
         <form className={classes.container} noValidate autoComplete="off"
           onKeyPress={(event) => this.keypress(event)}>

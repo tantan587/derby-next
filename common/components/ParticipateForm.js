@@ -69,9 +69,11 @@ class ParticipateForm extends React.Component {
               Create New League
             </Button>
           </Link>
-          <Button style={{marginLeft:'20px'}} raised color="accent">
-            Join Existing League
-          </Button>
+          <Link href ='/joinleague'>
+            <Button style={{marginLeft:'20px'}} raised color="accent">
+              Join Existing League
+            </Button>
+          </Link>
         </form>
       )
     }
