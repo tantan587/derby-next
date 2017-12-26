@@ -12,11 +12,11 @@ fetch(url, {method, body, headers: { 'Content-Type': 'application/json' }, crede
 
 export const clickedCreateLeague = (leagueInfo) => dispatch =>
     fetchThenDispatch(
-        dispatch,
-        '/api/createleague',
-        'POST',
-        JSON.stringify({leagueInfo})
-    )
+    dispatch,
+    '/api/createleague',
+    'POST',
+    JSON.stringify({leagueInfo})
+)
 
 export const clickedJoinLeague = (league_name, league_password, owner_name) => dispatch =>
     fetchThenDispatch(
