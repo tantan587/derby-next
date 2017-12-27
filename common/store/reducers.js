@@ -67,6 +67,8 @@ export const leagues = (state = [], action={ type: null }) => {
     ]
   case C.LOGIN_SUCCESS:
     return action.leagues
+  case C.LOGOUT:
+    return []
   default :
     return state
   }
@@ -94,6 +96,17 @@ export const activeLeague = (state = {}, action={ type: null }) => {
     return {
       success : false,
     }
+  default:
+    return state
+  }  
+}
+
+export const teams = (state = [], action={ type: null }) => {
+  switch (action.type){
+  case C.GET_TEAMS:
+    return action.teams
+  case C.LOGOUT:
+    return []
   default:
     return state
   }  

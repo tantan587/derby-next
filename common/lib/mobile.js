@@ -1,7 +1,3 @@
 export function isMobile() {
-  if(typeof window !== 'undefined' && window.innerWidth <= 800) {
-    return true
-  } else {
-    return false
-  }
+  return typeof window !== 'undefined' && window.innerWidth <= 800 ?  true : false
 }

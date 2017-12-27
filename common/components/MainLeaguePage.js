@@ -40,7 +40,10 @@ class MainLeaguePage extends React.Component {
   }
 
   handleSportClick = () => {
-    this.props.onStandings()
+    if(this.props.teams.length === 0)
+    {
+      this.props.onStandings(this.props.activeLeague.league_id)
+    }
   }
 
   render() {
@@ -79,7 +82,7 @@ class MainLeaguePage extends React.Component {
             </Tabs>
           </AppBar>
           {value === 0 && <EnhancedTable
-            title='Standings'
+            title='League Standings'
             myRows={this.props.activeLeague.owners}
             myHeaders = {[
               {label: 'Rank', key: 'rank'},
@@ -89,7 +92,16 @@ class MainLeaguePage extends React.Component {
             ]}/>}
           {value === 1 && <TabContainer>Item Two</TabContainer>}
           {value === 2 && <TabContainer>Item Three</TabContainer>}
-          {value === 3 && <TabContainer>Item Four</TabContainer>}
+          {value === 3 && <EnhancedTable
+            title='Sports Standings'
+            myRows={this.props.teams}
+            myHeaders = {[
+              {label: 'Key', key: 'key'},
+              {label: 'Team Name', key: 'team_name'},
+              {label: 'Conference', key: 'conference'},
+              {label: 'Wins', key: 'wins'},
+              {label: 'Losses', key: 'losses'}
+            ]}/>}
           {value === 4 && <TabContainer>Item Five</TabContainer>}
           {value === 5 && <TabContainer>Item Six</TabContainer>}
           {value === 6 && <TabContainer>Item Seven</TabContainer>}
@@ -110,7 +122,8 @@ export default connect(
   state =>
     ({
       activeLeague : state.activeLeague,
-      user: state.user
+      user: state.user,
+      teams: state.teams
     }),
   dispatch =>
     ({

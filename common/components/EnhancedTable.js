@@ -91,7 +91,7 @@ class EnhancedTable extends React.Component {
     if (this.state.myRows.length === 0)
     {
       this.setState({ myRows:this.props.myRows })
-      this.setState({ myHeaders:this.props.myHeaders })
+      this.setState({ myHeaders:[{label: '', key: 'order'}].concat(this.props.myHeaders) })
     }
   }
   
@@ -99,7 +99,7 @@ class EnhancedTable extends React.Component {
     if(this.props != nextProps) {
       this.setState({
         myRows: nextProps.myRows,
-        myHeaders: nextProps.myHeaders,
+        myHeaders: [{label: '', key: 'order'}].concat(nextProps.myHeaders),
         orderBy: nextProps.myHeaders.length > 0 ? nextProps.myHeaders[0].key : ''
       })
     }
@@ -142,8 +142,8 @@ class EnhancedTable extends React.Component {
       localRows = []
     }
   
-    const columnData1 = []
-    myHeaders.map(header => columnData1.push({
+    const columnData1 = 
+    myHeaders.map(header => ({
       id: header.key, 
       numeric: localRows.length > 0 ? !isNaN(localRows[0][header.key]) : false, 
       disablePadding: false,
@@ -170,12 +170,16 @@ class EnhancedTable extends React.Component {
                     tabIndex={-1}
                     key={i}
                   >
-                    {columnData1.map(header => (
+                    <TableCell key={'order'}
+                      numeric>
+                      {i+1}
+                    </TableCell>
+                    {columnData1.map(header => header.id !=='order' ? (
                       <TableCell key={header.id}
                         numeric={header.numeric}>
                         {n[header.id]}
                       </TableCell>
-                    ))}
+                    ) : '' )}
                   </TableRow>
                 )
               })}

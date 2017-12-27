@@ -4,6 +4,7 @@ const bodyParser = require('body-parser')
 const passport = require('passport')
 const authRoutes = require('./routes/auth')
 const fantasyRoutes = require('./routes/fantasy')
+const sportRoutes = require('./routes/sports')
 
 const dev = process.env.NODE_ENV !== 'production'
 const app = next({ dev })
@@ -20,6 +21,7 @@ app.prepare()
     server.use(passport.session())
     server.use('/api', authRoutes)
     server.use('/api', fantasyRoutes)
+    server.use('/api', sportRoutes)
 
     server.get('*', (req, res) => {
       return handle(req, res)

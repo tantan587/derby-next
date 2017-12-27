@@ -1,0 +1,25 @@
+const db_helpers = require('../helpers').data
+const knex = require('../../server/db/connection')
+
+
+let teamInfo = []
+let standings = []
+db_helpers.getFantasyData(knex, 'CFB', 'https://api.fantasydata.net/v3/cfb/scores/JSON/LeagueHierarchy?', 'Key', 'ConferenceID')
+  .then(result =>{ 
+    result.map(team => 
+    {
+      teamInfo.push({sport_id: team.sport_id, team_id: team.team_id, key: team.Key, city: team.School, 
+        name: team.Name, conference_id: team.conference_id})
+
+      standings.push({team_id: team.team_id, wins : team.Wins, losses: team.Losses, ties: 0})    
+    })
+    db_helpers.insertIntoTable(knex, 'sports', 'team_info', teamInfo)
+      .then(() =>
+      {
+        db_helpers.insertIntoTable(knex, 'sports', 'standings', standings)
+          .then(() =>
+          {
+            process.exit()
+          })
+      })
+  })

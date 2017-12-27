@@ -10,10 +10,10 @@ const fetchThenDispatch = (dispatch, url, method, body) =>
     .then(dispatch)
     .catch(logError)
 
-export const clickedStandings = () => dispatch =>
+export const clickedStandings = (league_id) => dispatch =>
   fetchThenDispatch(
     dispatch,
     '/api/standings',
     'POST',
-    JSON.stringify()
+    JSON.stringify({league_id})
   ) 
