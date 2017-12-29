@@ -17,7 +17,7 @@ db_helpers.getFantasyData(knex, 'NFL', 'https://api.fantasydata.net/v3/nfl/score
       teamInfo.push({sport_id: team.sport_id, team_id: team.team_id, key: team.Team, city: city, 
         name: name, conference_id: team.conference_id, division: team.Division})
 
-      standings.push({team_id: team.team_id, wins : team.Wins, losses: team.Losses, ties: team.OvertimeLosses})    
+      standings.push({team_id: team.team_id, wins : team.Wins, losses: team.Losses, ties: team.Ties})    
     })
     db_helpers.insertIntoTable(knex, 'sports', 'team_info', teamInfo)
       .then(() =>
