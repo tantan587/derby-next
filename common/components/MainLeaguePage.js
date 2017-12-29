@@ -58,6 +58,12 @@ class MainLeaguePage extends React.Component {
     else{
       const { classes } = this.props
       const { value } = this.state
+      let myTeams = []
+      this.props.teams.map(team => myTeams.push({
+        ...team, 
+        record:team.wins + '-' + team.losses + '-' + team.ties, 
+        percentage: (team.wins + team.ties + team.losses) === 0 ? 0.0.toFixed(3) :  ((team.wins + 1/2*team.ties) / (team.wins + team.ties + team.losses)).toFixed(3)
+      }))
 
       return (
         <div className={classes.root}>
@@ -83,6 +89,7 @@ class MainLeaguePage extends React.Component {
           </AppBar>
           {value === 0 && <EnhancedTable
             title='League Standings'
+            usePagination={false}
             myRows={this.props.activeLeague.owners}
             myHeaders = {[
               {label: 'Rank', key: 'rank'},
@@ -94,13 +101,17 @@ class MainLeaguePage extends React.Component {
           {value === 2 && <TabContainer>Item Three</TabContainer>}
           {value === 3 && <EnhancedTable
             title='Sports Standings'
-            myRows={this.props.teams}
+            usePagination={true}
+            checkboxColumn='sport'
+            sportLeagues={this.props.sportLeagues}
+            myRows={myTeams}
             myHeaders = {[
               {label: 'Key', key: 'key'},
               {label: 'Team Name', key: 'team_name'},
+              {label: 'Sport League', key: 'sport'},
               {label: 'Conference', key: 'conference'},
-              {label: 'Wins', key: 'wins'},
-              {label: 'Losses', key: 'losses'}
+              {label: 'Record', key: 'record', sortId:'percentage'},
+              {label: 'Percentage', key: 'percentage'}
             ]}/>}
           {value === 4 && <TabContainer>Item Five</TabContainer>}
           {value === 5 && <TabContainer>Item Six</TabContainer>}
@@ -123,7 +134,8 @@ export default connect(
     ({
       activeLeague : state.activeLeague,
       user: state.user,
-      teams: state.teams
+      teams: state.teams,
+      sportLeagues : state.sportLeagues
     }),
   dispatch =>
     ({

@@ -111,3 +111,24 @@ export const teams = (state = [], action={ type: null }) => {
     return state
   }  
 }
+
+export const sportLeagues = (state = [], action={ type: null }) => {
+  switch (action.type){
+  case C.GET_TEAMS:
+    return calculateCheckboxes(action.teams, 'sport')
+  case C.LOGOUT:
+    return []
+  default:
+    return state
+  }  
+}
+
+const calculateCheckboxes = (rows, checkboxColumn) =>
+{
+  const uniqueRows = []
+  rows.map(row => {
+    if(!uniqueRows.includes(row[checkboxColumn]))
+      uniqueRows.push(row[checkboxColumn])
+  })
+  return uniqueRows
+}

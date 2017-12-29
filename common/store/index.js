@@ -1,5 +1,5 @@
 import { createStore, combineReducers, applyMiddleware } from 'redux'
-import {  user, leagues, activeLeague, teams } from './reducers'
+import {  user, leagues, activeLeague, teams, sportLeagues } from './reducers'
 import thunk from 'redux-thunk'
 import ErrorText from '../models/ErrorText'
 
@@ -39,7 +39,7 @@ const middleware = server => [
 const storeFactory = (server = false, injectedState = initialState) =>
 {
   return applyMiddleware(...middleware(server))(createStore)(
-    combineReducers({user,leagues, activeLeague, teams}),
+    combineReducers({user,leagues, activeLeague, teams, sportLeagues}),
     injectedState
   )
 }

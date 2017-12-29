@@ -6,25 +6,29 @@ import Table, {
   TableCell,
   TableHead,
   TableRow,
+  TablePagination,
+  TableFooter,
   TableSortLabel,
 } from 'material-ui/Table'
 import Typography from 'material-ui/Typography'
 import Paper from 'material-ui/Paper'
 import Tooltip from 'material-ui/Tooltip'
+import { FormGroup, FormControlLabel } from 'material-ui/Form';
+import Checkbox from 'material-ui/Checkbox';
 
 class EnhancedTableHead extends React.Component {
   static propTypes = {
     onRequestSort: PropTypes.func.isRequired,
     order: PropTypes.string.isRequired,
-    orderBy: PropTypes.string.isRequired,
+    orderBy: PropTypes.string.isRequired
   };
 
-  createSortHandler = property => event => {
-    this.props.onRequestSort(event, property)
+  createSortHandler = (property, propertyDisplay) => event => {
+    this.props.onRequestSort(event, property, propertyDisplay)
   };
 
   render() {
-    const { order, orderBy, columnData } = this.props
+    const { order, orderBy, orderByDisplay, columnData } = this.props
 
     return (
       <TableHead>
@@ -43,9 +47,9 @@ class EnhancedTableHead extends React.Component {
                   enterDelay={300}
                 >
                   <TableSortLabel
-                    active={orderBy === column.id}
+                    active={orderByDisplay === column.id}
                     direction={order}
-                    onClick={this.createSortHandler(column.id)}
+                    onClick={this.createSortHandler(column.sortId, column.id)}
                   >
                     {column.label}
                   </TableSortLabel>
@@ -66,7 +70,7 @@ const styles = theme => ({
   },
   table: {
     minWidth: 600,
-    maxWidth: 800
+    maxWidth: 1000
   },
   tableWrapper: {
     overflowX: 'auto',
@@ -83,8 +87,12 @@ class EnhancedTable extends React.Component {
     this.state = {
       order: 'asc',
       orderBy: '',
+      orderByDisplay:'',
       myRows: [],
       myHeaders:[],
+      page: 0,
+      rowsPerPage: 20,
+      checkboxes: []
     }
   }
   componentWillMount() {
@@ -92,21 +100,30 @@ class EnhancedTable extends React.Component {
     {
       this.setState({ myRows:this.props.myRows })
       this.setState({ myHeaders:[{label: '', key: 'order'}].concat(this.props.myHeaders) })
+      let checkboxes = []
+      if (this.props.sportLeagues)
+        this.props.sportLeagues.map(col => checkboxes.push({val:true, label:col}))
+      this.setState({ checkboxes:checkboxes})
     }
   }
   
   componentWillReceiveProps(nextProps) {
     if(this.props != nextProps) {
+      let checkboxes = []
+      if (this.props.sportLeagues)
+        nextProps.sportLeagues.map(col => checkboxes.push({val:true, label:col}))
       this.setState({
         myRows: nextProps.myRows,
         myHeaders: [{label: '', key: 'order'}].concat(nextProps.myHeaders),
-        orderBy: nextProps.myHeaders.length > 0 ? nextProps.myHeaders[0].key : ''
+        orderBy: nextProps.myHeaders.length > 0 ? nextProps.myHeaders[0].key : '',
+        checkboxes:checkboxes
       })
     }
   }
 
-  handleRequestSort = (event, property) => {
+  handleRequestSort = (event, property, propertyDisplay) => {
     const orderBy = property
+    const orderByDisplay = propertyDisplay
     let order = 'desc'
 
     if (this.state.orderBy === property && this.state.order === 'desc') {
@@ -129,41 +146,94 @@ class EnhancedTable extends React.Component {
     //     ? this.state.myRows.sort((a, b) => (b[orderBy].toLowerCase() < a[orderBy].toLowerCase() ? -1 : 1) )
     //     : this.state.myRows.sort((a, b) => (a[orderBy].toLowerCase() < b[orderBy].toLowerCase() ? -1 : 1) )
 
-    this.setState({ myRows, order, orderBy })
+    this.setState({ myRows, order, orderBy, orderByDisplay })
   };
 
-  render() {
-    const { classes} = this.props
+  handleChangePage = (event, page) => {
+    this.setState({ page })
+  };
 
-    const {order, orderBy, myRows, myHeaders} = this.state
+  handleChangeRowsPerPage = event => {
+    this.setState({ rowsPerPage: event.target.value })
+  };
+
+  handleChangeRowsPerPage = event => {
+    this.setState({ rowsPerPage: event.target.value })
+  };
+
+  handleCheckboxClick = i => event =>
+  {
+    let localCheck = this.state.checkboxes
+    localCheck[i].val = event.target.checked
+    this.setState({ checkboxes: localCheck })
+  }
+
+
+  render() {
+    const { classes, usePagination, checkboxColumn } = this.props
+    const {order, orderBy, orderByDisplay, myRows, myHeaders, rowsPerPage, page, checkboxes} = this.state
+
     let localRows = myRows
     if (typeof myRows === 'undefined')
     {
       localRows = []
     }
-  
-    const columnData1 = 
+    
+    if(typeof checkboxes !== 'undefined' )
+    {
+      let localCheckboxes =[]
+      checkboxes.filter(check => check.val !== true).map(check => localCheckboxes.push(check.label))
+      localRows = localRows.filter(row => !localCheckboxes.includes(row[checkboxColumn]))
+    }
+
+    const localColumns = 
     myHeaders.map(header => ({
       id: header.key, 
+      sortId: header.sortId ? header.sortId : header.key,
       numeric: localRows.length > 0 ? !isNaN(localRows[0][header.key]) : false, 
       disablePadding: false,
       label: header.label
     }))
+
+    const sliceStart = usePagination ?  page * rowsPerPage : 0
+    const sliceEnd = usePagination ? sliceStart + rowsPerPage : localRows.length
     return (
       <Paper className={classes.root}>
         <div className={classes.tableWrapper}>
           <br/>
           <Typography className={classes.title} type="display1">{this.props.title}</Typography>
           <br/>
+          
           <Table className={classes.table}>
+            <TableHead>
+              <TableRow>
+                <TableCell  colSpan={localColumns.length}>
+                  <FormGroup style={{textAlign: 'center'}} row>
+                    {checkboxes.map( (check, i) => 
+                      <FormControlLabel
+                        key={i}
+                        control={
+                          <Checkbox
+                            checked={check.val}
+                            onChange={this.handleCheckboxClick(i)}
+                            value={check.label}
+                          />
+                        }
+                        label={check.label}
+                      />)}
+                  </FormGroup>
+                </TableCell>
+              </TableRow>
+            </TableHead>
             <EnhancedTableHead
               order={order}
               orderBy={orderBy}
+              orderByDisplay={orderByDisplay}
               onRequestSort={this.handleRequestSort}
-              columnData={columnData1}
+              columnData={localColumns}
             />
             <TableBody>
-              {localRows.map((n,i) => {
+              {localRows.slice(sliceStart, sliceEnd).map((n,i) => {
                 return (
                   <TableRow
                     hover
@@ -174,16 +244,30 @@ class EnhancedTable extends React.Component {
                       numeric>
                       {i+1}
                     </TableCell>
-                    {columnData1.map(header => header.id !=='order' ? (
+                    {localColumns.map(header => header.id !=='order' ? (
                       <TableCell key={header.id}
                         numeric={header.numeric}>
                         {n[header.id]}
                       </TableCell>
-                    ) : '' )}
+                    ) :'')}
                   </TableRow>
                 )
               })}
             </TableBody>
+            <TableFooter>
+              {usePagination 
+                ? <TableRow>
+                  <TablePagination
+                    count={localRows.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onChangePage={this.handleChangePage}
+                    onChangeRowsPerPage={this.handleChangeRowsPerPage}
+                    rowsPerPageOptions={[5,20,40,80]}
+                  />
+                </TableRow> 
+                : <TableRow/>}
+            </TableFooter>
           </Table>
           <br/>
           <br/>

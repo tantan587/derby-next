@@ -21,8 +21,9 @@ function handleResponse(res, code, statusMsg) {
 const getStandings = (league_id, res, type) =>{
 
 
-  var str = 'select a.key, a.city, a.name, a.conference, b.wins, b.losses from ' +
-  'sports.nba_info a, sports.nba_standings b where a.team_id = b.team_id;'
+  var str = 'select a.key, a.city, a.name, c.display_name, d.sport_name, b.wins, b.losses, b.ties from ' +
+  'sports.team_info a, sports.standings b, sports.conferences c, sports.leagues d ' +
+  'where a.team_id = b.team_id and c.conference_id = a.conference_id and a.sport_id = d.sport_id'
   return knex.raw(str)
     .then(result =>
     {
@@ -32,10 +33,12 @@ const getStandings = (league_id, res, type) =>{
         result.rows.map(team => teams.push(
           {
             key:team.key, 
-            team_name:team.city + ' ' + team.name,
-            conference:team.conference,
+            team_name:team.name !== null ? team.city + ' ' + team.name : team.city,
+            sport:team.sport_name,
+            conference:team.display_name,
             wins: team.wins,
-            losses:team.losses
+            losses:team.losses,
+            ties:team.ties
           }))
         return handleReduxResponse(res,200, {
           type: type,

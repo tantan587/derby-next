@@ -22,7 +22,7 @@ var data =
   {sport_id:106, conference_id:10605, name: 'Big 12', display_name: 'Big 12'},
   {sport_id:106, conference_id:10606, name: 'Pac-12', display_name: 'Pac-12'},
   {sport_id:106, conference_id:10607, name: 'SEC', display_name: 'SEC'},
-  {sport_id:107, conference_id:10701, name: 'EPL', display_name: ''},
+  {sport_id:107, conference_id:10701, name: 'EPL', display_name: 'N/A'},
 ]
 
 exports.seed = function(knex, Promise) {
