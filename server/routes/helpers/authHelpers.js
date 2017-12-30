@@ -137,6 +137,7 @@ const createNewPassword = (req, res) =>
       if(result.length === 1)
       {
         const newPassword = generatePassword(12,false)
+        console.log(newPassword)
         const salt = bcrypt.genSaltSync()
         const hash = bcrypt.hashSync(newPassword, salt)
         return knex.withSchema('users').table('users').update('password', hash).where('email', req.body.email)
