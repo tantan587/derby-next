@@ -17,6 +17,8 @@ export const user = (state = {}, action={ type: null }) => {
     }
   case C.SIGNUP_FAIL:
   case C.LOGIN_FAIL:
+  case C.FORGOT_PASSWORD_FAIL:
+  case C.CREATE_PASSWORD_FAIL:
     return {
       id: '',
       first_name: '',
@@ -44,6 +46,7 @@ export const user = (state = {}, action={ type: null }) => {
 
   case C.CREATE_LEAGUE_SUCCESS:
   case C.JOIN_LEAGUE_SUCCESS:
+  case C.FORGOT_PASSWORD_SUCCESS:
   {
     let errorText = new ErrorText()
     errorText.addError('success',true)
@@ -52,9 +55,21 @@ export const user = (state = {}, action={ type: null }) => {
       error : errorText
     }
   }
+
+  case C.CREATE_PASSWORD_SUCCESS:
+  {
+    let errorText = new ErrorText()
+    errorText.addError('success1',true)
+    return {
+      ...state,
+      error : errorText
+    }
+  }
   default :
     return state    
   }
+
+  
 }
 
 export const leagues = (state = [], action={ type: null }) => {

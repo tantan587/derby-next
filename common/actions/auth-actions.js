@@ -34,3 +34,21 @@ export const clickedSignup = (username,first_name,last_name,email,password) => d
     JSON.stringify({username,first_name,last_name,email,password})
   )
 
+export const clickedForgotPassword = (email) => dispatch =>
+  fetchThenDispatch(
+    dispatch,
+    '/api/forgotpassword',
+    'POST',
+    JSON.stringify({email})
+  )
+
+export const clickedCreatePassword = (username,password,newPassword) => dispatch =>
+  fetchThenDispatch(
+    dispatch,
+    '/api/createpassword',
+    'POST',
+    JSON.stringify({username,password,newPassword})
+  )
+
+ 
+

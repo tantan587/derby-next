@@ -3,6 +3,7 @@ const knex = require('../../db/connection')
 const ErrorText = require('../../../common/models/ErrorText')
 const C = require('../../../common/constants')
 const v4 = require('uuid/v4')
+const generatePassword = require('password-generator')
 
 function comparePass(userPassword, databasePassword) {
   return bcrypt.compareSync(userPassword, databasePassword)
@@ -26,13 +27,13 @@ function createUser(req, res) {
         .returning('*')
     })
     .catch((err) => {
-      res.status(400).json(err);
-    });
+      res.status(400).json(err)
+    })
 }
 
 function loginRequired(req, res, next) {
   if (!req.user) return res.status(401).json({status: 'Please log in'});
-  return next();
+  return next()
 }
 
 // function adminRequired(req, res, next) {
@@ -49,15 +50,15 @@ function loginRequired(req, res, next) {
 
 function loginRedirect(req, res, next) {
   if (req.user) 
-    {
-      req.logout();
+  {
+    req.logout()
   }
-  return next();
+  return next()
 }
 
 function validateEmail(email) {
   var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  return re.test(email);
+  return re.test(email)
 }
 
 function handleErrors(req) {
@@ -108,7 +109,7 @@ function handleErrors(req) {
           }
         })
     }
-  });
+  })
 }
 
 const getUserLeagues = (user, cb) =>{
@@ -127,11 +128,120 @@ const getUserLeagues = (user, cb) =>{
     )
 }
 
+const createNewPassword = (req, res) => 
+{
+  
+  return knex.withSchema('users').table('users').where('email', req.body.email)
+    .then(result => 
+    {
+      if(result.length === 1)
+      {
+        const newPassword = generatePassword(12,false)
+        const salt = bcrypt.genSaltSync()
+        const hash = bcrypt.hashSync(newPassword, salt)
+        return knex.withSchema('users').table('users').update('password', hash).where('email', req.body.email)
+          .then(() => 
+          {
+            return {email:result[0].email, username:result[0].username, first_name:result[0].first_name, password:newPassword}
+          })
+      }
+      else{
+        var errorText = new ErrorText()
+        errorText.addError('forgot_password_email','Unable to find this email')
+        handleReduxResponse(res, 404, {
+          type: C.FORGOT_PASSWORD_FAIL,
+          error: errorText
+        }) 
+      }
+    })
+}
+
+const updatePassword = (req) => {
+
+  return new Promise((resolve, reject) => {
+    let errorText = new ErrorText()
+    if (req.body.password.length < 6) {
+      errorText.addError('signup_password','Password must be longer than six characters')
+    }
+    if (errorText.foundError()) {
+      reject({
+        type: C.CREATE_PASSWORD_FAIL,
+        error: errorText
+      })
+    }
+    else {
+      const salt = bcrypt.genSaltSync()
+      const hash = bcrypt.hashSync(req.body.newPassword, salt)
+      return knex.withSchema('users').table('users').update('password', hash).where('username', req.body.username)
+        .then(() => 
+        {
+          resolve()
+        })       
+    }
+  })
+}
+
+const sendForgotPasswordEmail = (user, res) =>
+{
+  return knex.withSchema('users').table('email_auth').where('application', 'forgotpassword')
+    .then(result => 
+    {
+      const mailgun = require('mailgun-js')({apiKey: result[0].api_key, domain: result[0].domain})
+      const style = 'background-color:rgb(255, 255, 255); color:rgb(34, 34, 34); font-family:arial,sans-serif; font-size:12.8px'
+      console.log(user.email)
+      const data = {
+        from: result[0].email,
+        to: user.email,
+        subject: 'Reset Password',
+        html: `<html>
+        <head>
+          <title></title>
+        </head>
+        <body><span style={`+style+'}>Dear '+ user.first_name +`,</span><br />
+          <br />
+          <span style={`+style+'}>You have requested to reset your Derby password and your temporary password is: <strong>'+user.password+`</strong></span><br />
+          <br />
+          <span style={`+style+`}>To change your password, please follow these steps:</span>
+          <ol>
+            <li><span style={`+style+`}>Go to this <a href="http://www.derby-fwl.com/createpassword">link</a></span></li>
+            <li><span style={`+style+`}>Enter your username.</span></li>
+            <li><span style={`+style+`}>Enter your temporary password. Hint: Copy and paste the password in order to enter it.</span></li>
+            <li><span style={`+style+`}>Create your new password.&nbsp;</span></li>
+            <li><span style={`+style+`}>Hit the SUMBIT&nbsp;button.&nbsp;</span></li>
+          </ol>
+          <span style={`+style+`}>Enjoy The Derby!</span><br />
+          &nbsp;
+          <div>&nbsp;</div>
+          
+          <div>&nbsp;</div>
+        </body>
+      </html>`
+      
+      }
+      //https://www.aceware.com/htmlemail.html
+      
+      mailgun.messages().send(data, function (error, body) {
+        console.log(body)
+        handleReduxResponse(res, 200, {
+          type: C.FORGOT_PASSWORD_SUCCESS})
+      })
+    })
+}
+  
+
+function handleReduxResponse(res, code, action)
+{
+  res.status(code).json(action)
+}
+
 module.exports = {
   comparePass,
   createUser,
   loginRequired,
   //adminRequired,
   loginRedirect,
-  getUserLeagues
+  getUserLeagues,
+  updatePassword,
+  createNewPassword,
+  sendForgotPasswordEmail
 }

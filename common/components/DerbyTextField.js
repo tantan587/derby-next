@@ -36,13 +36,14 @@ class DerbyTextField extends React.Component {
     const parsedErrorText = this.props.errorText || ''
     return (
       <TextField
-        id="name"
+        id= {this.props.id || this.props.label }
         error={parsedErrorText !== ''}
         className={classes.field}
         helperText = {parsedErrorText}
         label={this.props.label}
         value={this.props.value}
         margin="normal"
+        type={this.props.type}
         InputProps={InputProps}
         onChange = {this.props.onChange}/>
     )

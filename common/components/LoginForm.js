@@ -95,9 +95,14 @@ class LoginForm extends React.Component {
           Don't have an account? <Link href="/signup"><a>Signup.</a></Link>
           </Typography>
           <br/>
+          <Typography type="subheading" style={{color:'black'}} gutterBottom>
+          Forgot your Username / <Link href="/forgotpassword"><a>Password</a></Link>?
+          </Typography>
+          <br/>
           <Button raised className={classes.button} onClick={(event) => this.submit(event)}>
             Submit
           </Button>
+         
         </form>
       )
     }

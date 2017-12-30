@@ -106,7 +106,6 @@ class MainLeaguePage extends React.Component {
             sportLeagues={this.props.sportLeagues}
             myRows={myTeams}
             myHeaders = {[
-              {label: 'Key', key: 'key'},
               {label: 'Team Name', key: 'team_name'},
               {label: 'Sport League', key: 'sport'},
               {label: 'Conference', key: 'conference'},
