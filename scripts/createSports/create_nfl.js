@@ -19,12 +19,15 @@ db_helpers.getFantasyData(knex, 'NFL', 'https://api.fantasydata.net/v3/nfl/score
 
       standings.push({team_id: team.team_id, wins : team.Wins, losses: team.Losses, ties: team.Ties})    
     })
+    db_helpers.insertIntoTable(knex, 'sports', 'team_info', teamInfo)
+      .then(() =>
+      {
         db_helpers.insertIntoTable(knex, 'sports', 'standings', standings)
           .then(() =>
           {
             process.exit()
           })
       })
-
+  })
 
   

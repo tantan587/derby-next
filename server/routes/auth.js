@@ -74,16 +74,41 @@ router.post('/logout', authHelpers.loginRequired, (req, res, next) => {
     type: C.LOGOUT  })
 })
 
-// *** helpers *** //
-
-function handleLogin(req, user) {
-  return new Promise((resolve, reject) => {
-    req.login(user, (err) => {
-      if (err) reject(err);
-      resolve()
+router.post('/forgotpassword', (req, res, next) => {
+  return authHelpers.createNewPassword(req, res)
+    .then((user) => {
+      if (user)
+      {
+        authHelpers.sendForgotPasswordEmail(user, res)  
+      }
     })
-  })
-}
+})
+
+router.post('/createpassword', authHelpers.loginRedirect, (req, res, next) => {
+  passport.authenticate('local', (err, user, info) => {
+    if (err) { handleResponse(res, 500, 'error') }
+    if (!user) { 
+      var errorText = new ErrorText()
+      errorText.addError('create_password_password','Username / Password does not match')
+      handleReduxResponse(res, 404, {
+        type: C.CREATE_PASSWORD_FAIL,
+        error: errorText
+      })  
+    }
+    if (user) {
+      authHelpers.updatePassword(req)
+        .then(() =>
+          handleReduxResponse(res, 200, {
+            type: C.CREATE_PASSWORD_SUCCESS}
+          ))
+        .catch((err) => {
+          res.status(400).json(err)
+        })
+    }
+  })(req, res, next)
+})
+
+// *** helpers *** //
 
 function handleResponse(res, code, statusMsg) {
   res.status(code).json({status: statusMsg});

@@ -33,7 +33,8 @@ class EnhancedTableHead extends React.Component {
     return (
       <TableHead>
         <TableRow>
-          {columnData.map(column => {
+          <TableCell></TableCell>
+          {columnData.filter(col => col.id !== 'order').map(column => {
             return (
               <TableCell
                 key={column.id}
@@ -102,7 +103,10 @@ class EnhancedTable extends React.Component {
       this.setState({ myHeaders:[{label: '', key: 'order'}].concat(this.props.myHeaders) })
       let checkboxes = []
       if (this.props.sportLeagues)
+      {
+        checkboxes = [{val: true, label: 'All'}]
         this.props.sportLeagues.map(col => checkboxes.push({val:true, label:col}))
+      }
       this.setState({ checkboxes:checkboxes})
     }
   }
@@ -110,8 +114,11 @@ class EnhancedTable extends React.Component {
   componentWillReceiveProps(nextProps) {
     if(this.props != nextProps) {
       let checkboxes = []
-      if (this.props.sportLeagues)
+      if (nextProps.sportLeagues)
+      {
+        checkboxes = [{val: true, label: 'All'}]
         nextProps.sportLeagues.map(col => checkboxes.push({val:true, label:col}))
+      }
       this.setState({
         myRows: nextProps.myRows,
         myHeaders: [{label: '', key: 'order'}].concat(nextProps.myHeaders),
@@ -164,7 +171,12 @@ class EnhancedTable extends React.Component {
   handleCheckboxClick = i => event =>
   {
     let localCheck = this.state.checkboxes
-    localCheck[i].val = event.target.checked
+    if(localCheck[i].label ==='All')  {
+      localCheck.map(check => check.val = event.target.checked)
+    }
+    else{
+      localCheck[i].val = event.target.checked
+    }
     this.setState({ checkboxes: localCheck })
   }
 
