@@ -271,13 +271,14 @@ const getLeague = (league_id, res, type) =>{
         var max_owners = result.rows[0].max_owners
         var league_id = result.rows[0].league_id
         var owners = []
-        result.rows.map(owner => owners.push(
+        result.rows.map((owner,i) => owners.push(
           {
             owner_name:owner.owner_name, 
             total_points:owner.total_points,
             rank:owner.rank,
             username:owner.username,
-            user_id: owner.user_id
+            user_id: owner.user_id,
+            draft_positon: i
           }))
         return handleReduxResponse(res,200, {
           type: type,

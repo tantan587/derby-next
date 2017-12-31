@@ -1,4 +1,5 @@
 import fetch from 'isomorphic-fetch'
+import C from '../constants'
 
 const parseResponse = response => response.json()
 
@@ -16,4 +17,10 @@ export const clickedStandings = (league_id) => dispatch =>
     '/api/standings',
     'POST',
     JSON.stringify({league_id})
-  ) 
+  )
+  
+export const handleUpdateDraftOrder = draftOrder =>
+  ({
+    type: C.UPDATE_DRAFT_ORDER,
+    draftOrder
+  })

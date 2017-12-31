@@ -8,10 +8,10 @@ const style = {
 	width: 400,
 }
 
- class Container extends Component {
+class Container extends Component {
 	constructor(props) {
 		super(props)
-		this.moveCard = this.moveCard.bind(this)
+		this.moveOwner = this.moveOwner.bind(this)
 		this.state = {
 			cards: [
 				{
@@ -44,39 +44,40 @@ const style = {
 					text: 'PROFIT',
 				},
 			],
+			owners : []
 		}
 	}
 
-	moveCard(dragIndex, hoverIndex) {
-		const { cards } = this.state
-		const dragCard = cards[dragIndex]
+  moveOwner(dragIndex, hoverIndex) {
+    const { owners } = this.props
+    const dragOwner = owners[dragIndex]
 
-		this.setState(
-			update(this.state, {
-				cards: {
-					$splice: [[dragIndex, 1], [hoverIndex, 0, dragCard]],
-				},
-			}),
-		)
-	}
+    this.props.updateDraftOrder(
+      update(this.props, {
+        owners: {
+          $splice: [[dragIndex, 1], [hoverIndex, 0, dragOwner]],
+        },
+      }).owners,
+    )
+  }
 
-	render() {
-		const { cards } = this.state
+  render() {
+	  const { owners } = this.props
 
-		return (
-			<div style={style}>
-				{cards.map((card, i) => (
-					<Card
-						key={card.id}
-						index={i}
-						id={card.id}
-						text={card.text}
-						moveCard={this.moveCard}
-					/>
-				))}
-			</div>
-		)
-	}
+    return (
+      <div style={style}>
+        {owners.map((owner, i) => (
+          <Card
+            key={owner.id}
+            index={i}
+            id={owner.id}
+            text={owner.text}
+            moveCard={this.moveOwner}
+          />
+        ))}
+      </div>
+    )
+  }
 }
 
 export default (DragDropContext(HTML5Backend)(Container))

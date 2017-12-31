@@ -107,10 +107,26 @@ export const activeLeague = (state = {}, action={ type: null }) => {
       max_owners : action.max_owners,
       owners : action.owners
     }
+  case C.UPDATE_DRAFT_ORDER:
+    return {...state, owners : owners(state.owners, action) }
   case C.LOGOUT:
     return {
       success : false,
     }
+  default:
+    return state
+  }  
+}
+
+export const owners = (state = [], action={ type: null }) => {
+  switch (action.type){
+  case C.UPDATE_DRAFT_ORDER:
+  {
+    //let owners = []
+    action.draftOrder.map((order,i) => state.filter(owner => owner.user_id === order.id)[0].draft_positon = i)
+    //action.draftOrder.map(order => owners.push(state.filter(owner => owner.user_id === order.id)[0]))
+    return state
+  }
   default:
     return state
   }  

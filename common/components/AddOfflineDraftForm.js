@@ -7,7 +7,8 @@ import Typography from 'material-ui/Typography'
 import Button from 'material-ui/Button'
 import TextField from 'material-ui/TextField'
 import Container from './Container'
-import {clickedSaveDraft} from '../actions/sport-actions'
+import {clickedSaveDraft, handleUpdateDraftOrder} from '../actions/sport-actions'
+
 
 import { connect } from 'react-redux'
 
@@ -46,6 +47,15 @@ class AddOfflineDraftForm extends React.Component {
     this.myLogin(e)
   }
 
+  // updateDraftOrder(draftOrder)
+  // {
+  //   console.log(this.props)
+  //   console.log(draftOrder)
+  //   const { onUpdateDraftOrder } = this.props
+  //   console.log(draftOrder)
+  //   onUpdateDraftOrder(draftOrder)
+  // }
+
   keypress(e) {
     if (e.key === 'Enter') { 
       this.myLogin(e)
@@ -58,6 +68,13 @@ class AddOfflineDraftForm extends React.Component {
     }
     else{
       const { classes, activeLeague } = this.props
+      const owners = []
+      if (this.props.activeLeague)
+      {
+        this.props.activeLeague.owners.map(
+          owner => owners.push({id:owner.user_id, text:owner.owner_name, order:owner.draft_positon }))
+        owners.sort(function(a,b) { return a.order-b.order})
+      }
       return (
         <form className={classes.container} noValidate autoComplete="off"
           onKeyPress={(event) => this.keypress(event)}>
@@ -75,7 +92,7 @@ class AddOfflineDraftForm extends React.Component {
               <Typography type="subheading" className={classes.text} gutterBottom>
               You're in!
               </Typography>
-              <Container />
+              <Container owners={owners} updateDraftOrder={this.props.onUpdateDraftOrder}/>
             </div>
           }
           
@@ -98,10 +115,13 @@ export default connect(
     }),
   dispatch =>
     ({
-      onSaveDraft(username, password) {
-        dispatch(
-          clickedSaveDraft(username,password))
-      }
-    }))(withStyles(styles)(AddOfflineDraftForm))
+      onSaveDraft(mainTabDisplay) {
+        dispatch(clickedSaveDraft(mainTabDisplay))
+      },
+      onUpdateDraftOrder(draftOrder) {
+        dispatch(handleUpdateDraftOrder(draftOrder))
+      },
+    })  
+)(withStyles(styles)(AddOfflineDraftForm))
 
 
