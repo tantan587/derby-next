@@ -95,7 +95,7 @@ class MainLeaguePage extends React.Component {
               <Tab label="Message Board" />
               <Tab label="Other Rosters"  />
               <Tab label="League Settings" />
-              <Tab label="Draft Reacap" />
+              <Tab label="Draft Recap" />
               {1 === 1 ? <Tab label="Commish Tools" 
                 aria-owns={this.state.commishOpen ? 'simple-menu' : null}
                 aria-haspopup="true"

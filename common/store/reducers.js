@@ -146,7 +146,7 @@ export const teams = (state = [], action={ type: null }) => {
 export const sportLeagues = (state = [], action={ type: null }) => {
   switch (action.type){
   case C.GET_TEAMS:
-    return calculateCheckboxes(action.teams, 'sport')
+    return calculateSportLeagues(action.teams, 'sport')
   case C.LOGOUT:
     return []
   default:
@@ -154,7 +154,7 @@ export const sportLeagues = (state = [], action={ type: null }) => {
   }  
 }
 
-const calculateCheckboxes = (rows, checkboxColumn) =>
+const calculateSportLeagues = (rows, checkboxColumn) =>
 {
   const uniqueRows = []
   rows.map(row => {

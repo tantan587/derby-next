@@ -7,6 +7,7 @@ import Typography from 'material-ui/Typography'
 import Button from 'material-ui/Button'
 import TextField from 'material-ui/TextField'
 import SortableList from './SortableList'
+import DraftRoundInput from './DraftRoundInput'
 import {clickedSaveDraft, handleUpdateDraftOrder} from '../actions/sport-actions'
 
 
@@ -44,6 +45,11 @@ class AddOfflineDraftForm extends React.Component {
     onLogin(this.state.username, this.state.password)
   }
 
+  onPageTurn()
+  {
+    this.setState({page:this.state.page+1})
+  }
+
   submit(e) {
     this.myLogin(e)
   }
@@ -68,9 +74,10 @@ class AddOfflineDraftForm extends React.Component {
       return(<div></div>)
     }
     else{
-      const { classes, activeLeague } = this.props
+      const { classes, activeLeague, teams, sportLeagues } = this.props
+      const { page } = this.state
       const owners = []
-      if (this.props.activeLeague)
+      if (this.props.activeLeague.owners)
       {
         this.props.activeLeague.owners.map(
           owner => owners.push({id:owner.user_id, text:owner.owner_name, order:owner.draft_positon }))
@@ -89,13 +96,30 @@ class AddOfflineDraftForm extends React.Component {
               {activeLeague.max_owners-activeLeague.total_players === 1 ? ' more owner.' : ' more owners.'}
             </Typography>
             :
-            <div>
-              <Typography type="subheading" className={classes.text} gutterBottom>
-              Some text explaining how to sort. 
-              </Typography>
-              <SortableList  items={owners} updateOrder={this.props.onUpdateDraftOrder}/>
-
-            </div>
+            page === 0 
+              ?
+              <div>
+                <Typography type="subheading" className={classes.text} gutterBottom>
+                  {'Some text explaining how to sort.' + page }
+                </Typography>
+                <SortableList  items={owners} updateOrder={this.props.onUpdateDraftOrder}/>
+                <Button raised className={classes.button} onClick={() => this.onPageTurn()}>
+                Submit
+                </Button>
+              </div>
+              :
+              <div>
+                <Typography type="subheading" className={classes.text} gutterBottom>
+                  {'Explain how to draft' }
+                </Typography>
+                <Typography type="subheading" className={classes.text} gutterBottom>
+                  {'Round: ' + page}
+                </Typography>
+                <DraftRoundInput owners={page % 2 === 1 ? owners: owners.reverse()} teams={teams} sportLeagues={sportLeagues}/>
+                <Button raised className={classes.button} onClick={() => this.onPageTurn()}>
+                Submit
+                </Button>
+              </div>
           }
           
          
@@ -113,7 +137,8 @@ export default connect(
   state =>
     ({
       activeLeague : state.activeLeague,
-      teams : state.teams
+      teams : state.teams,
+      sportLeagues : state.sportLeagues
     }),
   dispatch =>
     ({

@@ -40,6 +40,8 @@ const getStandings = (league_id, res, type) =>{
             losses:team.losses,
             ties:team.ties
           }))
+        teams.sort(function(a,b)
+        { return a.team_name.toLowerCase() < b.team_name.toLowerCase() ? -1 : 1})
         return handleReduxResponse(res,200, {
           type: type,
           teams : teams
