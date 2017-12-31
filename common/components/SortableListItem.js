@@ -3,10 +3,12 @@ import PropTypes from 'prop-types'
 import { findDOMNode } from 'react-dom'
 import { DragSource, DropTarget } from 'react-dnd'
 import ItemTypes from './ItemTypes'
+import { ListItem, ListItemText } from 'material-ui/List';
 
 const style = {
-  border: '1px dashed gray',
-  padding: '0.5rem 1rem',
+	
+  //border: '1px dashed gray',
+  //padding: '0.5rem 1rem',
   marginBottom: '.5rem',
   backgroundColor: 'white',
   cursor: 'move',
@@ -68,7 +70,7 @@ const cardTarget = {
 	},
 }
 
- class Card extends Component {
+class SortableListItem extends Component {
 	static propTypes = {
 		connectDragSource: PropTypes.func.isRequired,
 		connectDropTarget: PropTypes.func.isRequired,
@@ -88,8 +90,15 @@ const cardTarget = {
 		} = this.props
 		const opacity = isDragging ? 0 : 1
 
-		return connectDragSource(
-			connectDropTarget(<div style={{ ...style, opacity }}>{text}</div>),
+    return connectDragSource(
+			connectDropTarget(
+				<div>
+			<ListItem button 
+			key={this.props.id} 
+			style={{ ...style, opacity }}>
+         <ListItemText primary={text}/>
+			</ListItem>
+			</div>),
 		)
 	}
 }
@@ -102,7 +111,7 @@ export default (
 			connectDragSource: connect.dragSource(),
 			isDragging: monitor.isDragging(),
 		}))(
-      Card
+      SortableListItem
     )
   )
 )

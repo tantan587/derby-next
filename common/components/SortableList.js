@@ -2,50 +2,24 @@ import React, { Component } from 'react'
 import update from 'immutability-helper'
 import { DragDropContext } from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
-import Card from './Card'
+import SortableListItem from './SortableListItem'
+import List from 'material-ui/List'
 
 const style = {
-	width: 400,
+  width: 400,
+  root: {
+    width: '100%',
+    maxWidth: 360,
+    position: 'absolute',
+    overflow: 'auto',
+    //maxHeight: 300,
+  },
 }
 
-class Container extends Component {
+class SortableList extends Component {
 	constructor(props) {
 		super(props)
 		this.moveOwner = this.moveOwner.bind(this)
-		this.state = {
-			cards: [
-				{
-					id: 1,
-					text: 'Write a cool JS library',
-				},
-				{
-					id: 2,
-					text: 'Make it generic enough',
-				},
-				{
-					id: 3,
-					text: 'Write README',
-				},
-				{
-					id: 4,
-					text: 'Create some examples',
-				},
-				{
-					id: 5,
-					text:
-						'Spam in Twitter and IRC to promote it (note that this element is taller than the others)',
-				},
-				{
-					id: 6,
-					text: '???',
-				},
-				{
-					id: 7,
-					text: 'PROFIT',
-				},
-			],
-			owners : []
-		}
 	}
 
   moveOwner(dragIndex, hoverIndex) {
@@ -65,9 +39,9 @@ class Container extends Component {
 	  const { owners } = this.props
 
     return (
-      <div style={style}>
+      <List style={style.root}>
         {owners.map((owner, i) => (
-          <Card
+          <SortableListItem
             key={owner.id}
             index={i}
             id={owner.id}
@@ -75,9 +49,9 @@ class Container extends Component {
             moveCard={this.moveOwner}
           />
         ))}
-      </div>
+      </List>
     )
   }
 }
 
-export default (DragDropContext(HTML5Backend)(Container))
+export default (DragDropContext(HTML5Backend)(SortableList))

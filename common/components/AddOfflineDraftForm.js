@@ -6,7 +6,7 @@ import { withStyles } from 'material-ui/styles'
 import Typography from 'material-ui/Typography'
 import Button from 'material-ui/Button'
 import TextField from 'material-ui/TextField'
-import Container from './Container'
+import SortableList from './SortableList'
 import {clickedSaveDraft, handleUpdateDraftOrder} from '../actions/sport-actions'
 
 
@@ -92,7 +92,7 @@ class AddOfflineDraftForm extends React.Component {
               <Typography type="subheading" className={classes.text} gutterBottom>
               You're in!
               </Typography>
-              <Container owners={owners} updateDraftOrder={this.props.onUpdateDraftOrder}/>
+              <SortableList owners={owners} updateDraftOrder={this.props.onUpdateDraftOrder}/>
             </div>
           }
           
