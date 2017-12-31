@@ -92,7 +92,7 @@ class AddOfflineDraftForm extends React.Component {
               <Typography type="subheading" className={classes.text} gutterBottom>
               You're in!
               </Typography>
-              <SortableList owners={owners} updateDraftOrder={this.props.onUpdateDraftOrder}/>
+              <SortableList  items={owners} updateOrder={this.props.onUpdateDraftOrder}/>
             </div>
           }
           
