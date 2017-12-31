@@ -17,6 +17,7 @@ import ExpandLess from 'material-ui-icons/ExpandLess'
 import ExpandMore from 'material-ui-icons/ExpandMore'
 import { connect } from 'react-redux'
 import {clickedLeague} from '../actions/fantasy-actions'
+import {clickedStandings} from '../actions/sport-actions'
 import {isMobile} from '../lib/mobile'
 
 const styles = theme => ({
@@ -64,9 +65,10 @@ class NavAppBar extends React.Component {
   }
 
   handleLeagueClick = (league_id) => {
-    const { onClickedLeague } = this.props
+    const { onClickedLeague, onStandings } = this.props
     this.toggleDrawer()
     onClickedLeague(league_id)
+    onStandings(league_id)
   }
 
   toggleLeagueList = () => {
@@ -184,5 +186,9 @@ export default connect(({ user, leagues }) => ({ user, leagues }),
       onClickedLeague(league_id) {
         dispatch(
           clickedLeague(league_id))
+      },
+      onStandings(league_id) {
+        dispatch(
+          clickedStandings(league_id))
       }
     }))(withStyles(styles)(NavAppBar))

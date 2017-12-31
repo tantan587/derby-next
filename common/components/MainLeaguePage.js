@@ -6,8 +6,9 @@ import { withStyles } from 'material-ui/styles'
 import Typography from 'material-ui/Typography'
 import AppBar from 'material-ui/AppBar'
 import Tabs, { Tab } from 'material-ui/Tabs'
-import {clickedStandings} from '../actions/sport-actions'
 import EnhancedTable from './EnhancedTable'
+import AddOfflineDraftForm from './AddOfflineDraftForm'
+import Menu, { MenuItem } from 'material-ui/Menu';
 
 import { connect } from 'react-redux'
 
@@ -22,6 +23,8 @@ const styles = {
   }
 }
 
+const commishOptions = ['Edit Draft Day', 'Add Offline Draft', 'Edit Rosters']
+
 function TabContainer(props) {
   return (
     <Typography component="div" style={{ padding: 8 * 3 }}>
@@ -33,18 +36,26 @@ function TabContainer(props) {
 class MainLeaguePage extends React.Component {
   state = {
     value: 0,
+    commishOpen:false,
+    commishAnchorEl:null,
+    commishIndex:0
   };
 
   handleChange = (event, value) => {
     this.setState({ value })
   }
 
-  handleSportClick = () => {
-    if(this.props.teams.length === 0)
-    {
-      this.props.onStandings(this.props.activeLeague.league_id)
-    }
-  }
+  handleCommishClick = event => {
+    this.setState({ commishOpen: true, commishAnchorEl: event.currentTarget })
+  };
+
+  handleCommishMenuItemClick = (event, index) => {
+    this.setState({ commishIndex: index, commishOpen: false })
+  };
+
+  handleCommishClose = () => {
+    this.setState({ commishOpen: false })
+  };
 
   render() {
     // if(this.props.user.loggedIn === false){
@@ -57,7 +68,7 @@ class MainLeaguePage extends React.Component {
     {return(<div></div>)}
     else{
       const { classes } = this.props
-      const { value } = this.state
+      const { value, commishIndex } = this.state
       let myTeams = []
       this.props.teams.map(team => myTeams.push({
         ...team, 
@@ -80,13 +91,33 @@ class MainLeaguePage extends React.Component {
               <Tab label="Standings" />
               <Tab label="My Roster" />
               <Tab label="Schedules" />
-              <Tab label="All Teams" onClick={this.handleSportClick}/>
+              <Tab label="All Teams"/>
               <Tab label="Message Board" />
               <Tab label="Other Rosters"  />
               <Tab label="League Settings" />
               <Tab label="Draft Reacap" />
+              {1 === 1 ? <Tab label="Commish Tools" 
+                aria-owns={this.state.commishOpen ? 'simple-menu' : null}
+                aria-haspopup="true"
+                onClick={this.handleCommishClick}/>: <div></div>}
             </Tabs>
           </AppBar>
+          <Menu
+            id="simple-menu"
+            anchorEl={this.state.commishAnchorEl}
+            open={this.state.commishOpen}
+            onClose={this.handleCommishClose}
+          >
+            {commishOptions.map((option, index) => (
+              <MenuItem
+                key={option}
+                //disabled={index === 0}
+                selected={index === this.state.commishIndex}
+                onClick={event => this.handleCommishMenuItemClick(event, index)}
+              >
+                {option}
+              </MenuItem>))}
+          </Menu>
           {value === 0 && <EnhancedTable
             title='League Standings'
             usePagination={false}
@@ -99,7 +130,7 @@ class MainLeaguePage extends React.Component {
             ]}/>}
           {value === 1 && <TabContainer>Item Two</TabContainer>}
           {value === 2 && <TabContainer>Item Three</TabContainer>}
-          {value === 3 && <EnhancedTable
+          {value === 3 && <TabContainer><EnhancedTable
             title='Sports Standings'
             usePagination={true}
             checkboxColumn='sport'
@@ -111,11 +142,14 @@ class MainLeaguePage extends React.Component {
               {label: 'Conference', key: 'conference'},
               {label: 'Record', key: 'record', sortId:'percentage'},
               {label: 'Percentage', key: 'percentage'}
-            ]}/>}
+            ]}/></TabContainer>}
           {value === 4 && <TabContainer>Item Five</TabContainer>}
           {value === 5 && <TabContainer>Item Six</TabContainer>}
           {value === 6 && <TabContainer>Item Seven</TabContainer>}
           {value === 7 && <TabContainer>Item Eight</TabContainer>}
+          {value === 8 && commishIndex === 0 && <TabContainer>Item Nine Point 1</TabContainer>}
+          {value === 8 && commishIndex === 1 && <TabContainer><AddOfflineDraftForm/></TabContainer>}
+          {value === 8 && commishIndex === 2 && <TabContainer>Item Nine Point 3</TabContainer>}
 
         </div>
         
@@ -136,12 +170,7 @@ export default connect(
       teams: state.teams,
       sportLeagues : state.sportLeagues
     }),
-  dispatch =>
-    ({
-      onStandings() {
-        dispatch(
-          clickedStandings())
-      }
-    }))(withStyles(styles)(MainLeaguePage))
+  null
+)(withStyles(styles)(MainLeaguePage))
 
 
