@@ -33,6 +33,7 @@ const styles = theme => ({
 
 class AddOfflineDraftForm extends React.Component {
   state = {
+    page:0
   }
 
   myLogin(e)
@@ -90,9 +91,10 @@ class AddOfflineDraftForm extends React.Component {
             :
             <div>
               <Typography type="subheading" className={classes.text} gutterBottom>
-              You're in!
+              Some text explaining how to sort. 
               </Typography>
               <SortableList  items={owners} updateOrder={this.props.onUpdateDraftOrder}/>
+
             </div>
           }
           
