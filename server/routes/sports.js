@@ -21,7 +21,7 @@ function handleResponse(res, code, statusMsg) {
 const getStandings = (league_id, res, type) =>{
 
 
-  var str = 'select a.key, a.city, a.name, c.display_name, d.sport_name, b.wins, b.losses, b.ties from ' +
+  var str = 'select a.team_id, a.key, a.city, a.name, c.display_name, d.sport_name, b.wins, b.losses, b.ties from ' +
   'sports.team_info a, sports.standings b, sports.conferences c, sports.leagues d ' +
   'where a.team_id = b.team_id and c.conference_id = a.conference_id and a.sport_id = d.sport_id'
   return knex.raw(str)
@@ -33,6 +33,7 @@ const getStandings = (league_id, res, type) =>{
         result.rows.map(team => teams.push(
           {
             key:team.key, 
+            team_id:team.team_id,
             team_name:team.name !== null ? team.city + ' ' + team.name : team.city,
             sport:team.sport_name,
             conference:team.display_name,

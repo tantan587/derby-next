@@ -100,12 +100,12 @@ class EnhancedTable extends React.Component {
     if (this.state.myRows.length === 0)
     {
       this.setState({ myRows:this.props.myRows })
-      this.setState({ myHeaders:[{label: '', key: 'order'}].concat(this.props.myHeaders) })
+      this.setState({ myHeaders:[{label: 'Order', key: 'order'}].concat(this.props.myHeaders) })
       let checkboxes = []
       if (this.props.sportLeagues)
       {
         checkboxes = [{val: true, label: 'All'}]
-        this.props.sportLeagues.map(col => checkboxes.push({val:true, label:col}))
+        this.props.sportLeagues.map(col => checkboxes.push({val:true, label:col.league}))
       }
       this.setState({ checkboxes:checkboxes})
     }
@@ -117,11 +117,11 @@ class EnhancedTable extends React.Component {
       if (nextProps.sportLeagues)
       {
         checkboxes = [{val: true, label: 'All'}]
-        nextProps.sportLeagues.map(col => checkboxes.push({val:true, label:col}))
+        nextProps.sportLeagues.map(col => checkboxes.push({val:true, label:col.league}))
       }
       this.setState({
         myRows: nextProps.myRows,
-        myHeaders: [{label: '', key: 'order'}].concat(nextProps.myHeaders),
+        myHeaders: [{label: 'Order', key: 'order'}].concat(nextProps.myHeaders),
         orderBy: nextProps.myHeaders.length > 0 ? nextProps.myHeaders[0].key : '',
         checkboxes:checkboxes
       })
@@ -256,12 +256,14 @@ class EnhancedTable extends React.Component {
                       numeric>
                       {i+1}
                     </TableCell>
-                    {localColumns.map(header => header.id !=='order' ? (
-                      <TableCell key={header.id}
-                        numeric={header.numeric}>
-                        {n[header.id]}
-                      </TableCell>
-                    ) :'')}
+                    {localColumns.filter(
+                      header => header.id !=='order').map(
+                      header =>
+                        <TableCell key={header.id}
+                          numeric={header.numeric}>
+                          {n[header.id]}
+                        </TableCell>
+                    )}
                   </TableRow>
                 )
               })}

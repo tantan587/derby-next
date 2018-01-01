@@ -3,7 +3,7 @@ var data =
   {conference_id:10501,fantasy_data_key:3, name: 'Atlantic'},
   {conference_id:10502,fantasy_data_key:5, name: 'Big 12 Conference'},
   {conference_id:10503,fantasy_data_key:6, name: 'Big Ten - East'},
-  {conference_id:10503,fantasy_data_key:5, name: 'Big Ten - West'},
+  {conference_id:10503,fantasy_data_key:7, name: 'Big Ten - West'},
   {conference_id:10504,fantasy_data_key:15, name: 'Pac-12 North'},
   {conference_id:10504,fantasy_data_key:16, name: 'Pac-12 South'},
   {conference_id:10505,fantasy_data_key:17, name: 'SEC - East'},
