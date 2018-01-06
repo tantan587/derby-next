@@ -6,5 +6,9 @@
   }
 
   horseText {
-    font-family: 'HorsebackSlab', Fallback, sans-serif;
+    font-family: 'HorsebackSlab', Fallback, serif;
+  }
+
+  tryThis {
+    color: 'red'
   }

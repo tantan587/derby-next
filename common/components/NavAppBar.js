@@ -27,6 +27,7 @@ const styles = theme => ({
   flex: {
     flex: 1,
     fontFamily: 'Tinos',
+    //fontFamily: 'HorsebackSlab',
   },
   appBar: {
     backgroundColor: theme.palette.primary[500],
