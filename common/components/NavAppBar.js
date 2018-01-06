@@ -26,9 +26,10 @@ const styles = theme => ({
   },
   flex: {
     flex: 1,
+    fontFamily: 'Tinos',
   },
   appBar: {
-    backgroundColor: theme.palette.primary[800],
+    backgroundColor: theme.palette.primary[500],
     color: theme.palette.secondary[100]
 
   },

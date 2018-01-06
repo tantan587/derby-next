@@ -6,6 +6,8 @@ import { createMuiTheme } from 'material-ui/styles'
 import { brown } from 'material-ui/colors'
 import green from 'material-ui/colors/green'
 import createGenerateClassName from 'material-ui/styles/createGenerateClassName'
+import materialpalette from 'material-palette'
+import hsl from 'hsl-to-hex'
 
 //https://github.com/mui-org/material-ui/issues/8075
 //https://github.com/mui-org/material-ui/issues/6770
@@ -13,9 +15,16 @@ import createGenerateClassName from 'material-ui/styles/createGenerateClassName'
 //https://www.materialpalette.com/green/brown
 //https://www.npmjs.com/package/material-palette
 
+const hslDerbyGreen = materialpalette({ h: 139, s: 100, l: 29 })
+let derbyGreen = {}
+for (const key of Object.keys(hslDerbyGreen)) {
+  derbyGreen[key] = hsl(hslDerbyGreen[key].h, hslDerbyGreen[key].s, hslDerbyGreen[key].l)
+}
+derbyGreen['contrastDefaultColor']= 'dark'
+
 const theme = createMuiTheme({
   palette: {
-    primary: green,
+    primary: derbyGreen,
     secondary: brown,
   },
 })

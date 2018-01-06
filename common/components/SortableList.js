@@ -2,6 +2,10 @@ import  { Component } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 import List, { ListItem, ListItemText } from 'material-ui/List'
 
+//TODO:
+//https://github.com/atlassian/react-beautiful-dnd/issues/219
+
+
 // a little function to help us with reordering the result
 const reorder = (list, startIndex, endIndex) => {
   const result = Array.from(list)

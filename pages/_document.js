@@ -31,6 +31,11 @@ export default class MyDocument extends Document {
             rel="stylesheet"
             href="https://fonts.googleapis.com/css?family=Roboto:300,400,500"
           />
+          <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css?family=Titillium+Web:300,400,700"
+          />
+          <link href="https://fonts.googleapis.com/css?family=Tinos:700" rel="stylesheet"/>
         </Head>
         <body>
           <Main />

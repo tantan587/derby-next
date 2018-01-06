@@ -157,21 +157,26 @@ export const sportLeagues = (state = [], action={ type: null }) => {
 const calculateSportLeagues = (rows) =>
 {
   const leaguesToConferenceMap = {}
+  const confIdToConfMap = {}
   rows.map(row => {
     const sport = row['sport']
     const conference = row['conference']
+    const conference_id = row['conference_id']
     if(!leaguesToConferenceMap[sport])
     {
       leaguesToConferenceMap[sport] = []
     }
-    if(!leaguesToConferenceMap[sport].includes(conference))
+    if(!leaguesToConferenceMap[sport].includes(conference_id))
     {
-      leaguesToConferenceMap[sport].push(conference)
+      leaguesToConferenceMap[sport].push(conference_id)
+      confIdToConfMap[conference_id] = conference
     }
   })
   const sportLeagues = []
   for (const key of Object.keys(leaguesToConferenceMap)) {
-    sportLeagues.push({league:key,conferences:leaguesToConferenceMap[key]})
+    let conferences = []
+    leaguesToConferenceMap[key].map(confId => conferences.push({conference_id:confId, conference:confIdToConfMap[confId]}))
+    sportLeagues.push({league:key,conferences:conferences})
   }
   return sportLeagues
 }

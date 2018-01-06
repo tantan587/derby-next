@@ -20,6 +20,7 @@ const styles = theme => ({
     textAlign: 'center',
   },
   button : {
+    //fontFamily: 'Titillium Web',
     backgroundColor: theme.palette.secondary.A700,
     color: theme.palette.secondary.A100,
   }

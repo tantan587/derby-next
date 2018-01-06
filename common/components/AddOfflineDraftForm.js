@@ -5,13 +5,13 @@ import PropTypes from 'prop-types'
 import { withStyles } from 'material-ui/styles'
 import Typography from 'material-ui/Typography'
 import Button from 'material-ui/Button'
-import TextField from 'material-ui/TextField'
 import SortableList from './SortableList'
 import DraftRoundInput from './DraftRoundInput'
 import {clickedSaveDraft, handleUpdateDraftOrder} from '../actions/sport-actions'
 
 
 import { connect } from 'react-redux'
+import { owners } from '../store/reducers';
 
 const styles = theme => ({
   container: {
@@ -33,21 +33,46 @@ const styles = theme => ({
 })
 
 class AddOfflineDraftForm extends React.Component {
-  state = {
-    page:0
-  }
+  constructor(props) {
+    super(props)
+    this.state = {
+      round:0,
+      allTeamsDrafted:[],
+      ownerConferences:[]
+    }
 
-  myLogin(e)
-  {
-    const { onLogin } = this.props
-    this.setState({fireRedirect: true})
-    e.preventDefault()
-    onLogin(this.state.username, this.state.password)
+    this.onRoundForward = this.onRoundForward.bind(this)
+    this.onRoundBackward = this.onRoundBackward.bind(this)
   }
+  
 
-  onPageTurn()
+  onRoundForward(round, confs, teams)
   {
-    this.setState({page:this.state.page+1})
+    // if(teams.filter(team => team === '').length === 0 )
+    // {
+      let allTeamsDrafted = this.state.allTeamsDrafted
+      let ownerConferences = this.state.ownerConferences
+
+      teams.map(team => allTeamsDrafted.push({team_id:team,round:round}))
+      confs.map((conf, i) => ownerConferences[i].push({ conference_id: conf, round: round }))
+      this.setState({round:round+1,allTeamsDrafted,ownerConferences })
+    //}
+  }
+  onRoundBackward(round)
+  {
+    const allTeamsDrafted = this.state.allTeamsDrafted.filter(team => team.round !==  round-1)
+    let ownerConferences = []
+    this.state.ownerConferences.map((confs,i) => {
+      ownerConferences[i] = confs.filter(conf => conf.round !== round-1)
+    })
+    this.setState({round:this.state.round-1, allTeamsDrafted, ownerConferences})
+  }
+  onRoundFirst(len)
+  {
+    let ownerConferences = []
+    Array.apply(null, {length: len}).map(Function.call, Number).map(i => ownerConferences[i] = [])
+    this.setState({round:this.state.round+1})
+    this.setState({ownerConferences:ownerConferences})
   }
 
   submit(e) {
@@ -75,7 +100,7 @@ class AddOfflineDraftForm extends React.Component {
     }
     else{
       const { classes, activeLeague, teams, sportLeagues } = this.props
-      const { page } = this.state
+      const { round } = this.state
       const owners = []
       if (this.props.activeLeague.owners)
       {
@@ -96,14 +121,14 @@ class AddOfflineDraftForm extends React.Component {
               {activeLeague.max_owners-activeLeague.total_players === 1 ? ' more owner.' : ' more owners.'}
             </Typography>
             :
-            page === 0 
+            round === 0 
               ?
               <div>
                 <Typography type="subheading" className={classes.text} gutterBottom>
-                  {'Some text explaining how to sort.' + page }
+                  {'Some text explaining how to sort.' + round }
                 </Typography>
                 <SortableList  items={owners} updateOrder={this.props.onUpdateDraftOrder}/>
-                <Button raised className={classes.button} onClick={() => this.onPageTurn()}>
+                <Button raised className={classes.button} onClick={() => this.onRoundFirst(this.props.activeLeague.owners.length)}>
                 Submit
                 </Button>
               </div>
@@ -113,12 +138,17 @@ class AddOfflineDraftForm extends React.Component {
                   {'Explain how to draft' }
                 </Typography>
                 <Typography type="subheading" className={classes.text} gutterBottom>
-                  {'Round: ' + page}
+                  {'Round: ' + round}
                 </Typography>
-                <DraftRoundInput owners={page % 2 === 1 ? owners: owners.reverse()} teams={teams} sportLeagues={sportLeagues}/>
-                <Button raised className={classes.button} onClick={() => this.onPageTurn()}>
-                Submit
-                </Button>
+                <DraftRoundInput 
+                  round={round} 
+                  owners={round % 2 === 1 ? owners: owners.reverse()} 
+                  teams={teams} 
+                  sportLeagues={sportLeagues} 
+                  allTeamsDrafted={this.state.allTeamsDrafted}
+                  ownerConferences={this.state.ownerConferences}
+                  onRoundForward={this.onRoundForward}
+                  onRoundBackward={this.onRoundBackward}/>
               </div>
           }
           

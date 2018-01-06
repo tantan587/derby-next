@@ -13,6 +13,8 @@ import withRoot from '../common/components/withRoot'
 import Layout from '../common/components/Layout'
 import withRedux from 'next-redux-wrapper'
 import storeFactory from '../common/store'
+//import '../styles/style.css'
+//https://github.com/zeit/next.js/tree/master/examples/with-global-stylesheet
 const store = storeFactory(false)
 
 
@@ -25,7 +27,8 @@ const styles = {
     backgroundAttachment: 'fixed',
     minHeight: '600px',
     backgroundPosition: 'center',
-    backgroundSize: 'cover'
+    backgroundSize: 'cover',
+    fontFamily:'Tinos'
   }
 }
 
@@ -62,7 +65,8 @@ class Index extends React.Component {
               </Button>
             </DialogActions>
           </Dialog>
-          <Typography type="display1" style={{color:'white'}} gutterBottom>
+          <Typography //className="horseText" 
+            type="display1" style={{color:'white'}} gutterBottom>
             Derby
           </Typography>
           <Typography type="subheading" style={{color:'white'}} gutterBottom>
