@@ -145,38 +145,11 @@ export const teams = (state = [], action={ type: null }) => {
 
 export const sportLeagues = (state = [], action={ type: null }) => {
   switch (action.type){
-  case C.GET_TEAMS:
-    return calculateSportLeagues(action.teams)
+  case C.GET_SPORT_LEAGUES:
+    return action.sportLeagues
   case C.LOGOUT:
     return []
   default:
     return state
   }  
-}
-
-const calculateSportLeagues = (rows) =>
-{
-  const leaguesToConferenceMap = {}
-  const confIdToConfMap = {}
-  rows.map(row => {
-    const sport = row['sport']
-    const conference = row['conference']
-    const conference_id = row['conference_id']
-    if(!leaguesToConferenceMap[sport])
-    {
-      leaguesToConferenceMap[sport] = []
-    }
-    if(!leaguesToConferenceMap[sport].includes(conference_id))
-    {
-      leaguesToConferenceMap[sport].push(conference_id)
-      confIdToConfMap[conference_id] = conference
-    }
-  })
-  const sportLeagues = []
-  for (const key of Object.keys(leaguesToConferenceMap)) {
-    let conferences = []
-    leaguesToConferenceMap[key].map(confId => conferences.push({conference_id:confId, conference:confIdToConfMap[confId]}))
-    sportLeagues.push({league:key,conferences:conferences})
-  }
-  return sportLeagues
 }

@@ -18,6 +18,14 @@ export const clickedStandings = (league_id) => dispatch =>
     'POST',
     JSON.stringify({league_id})
   )
+
+export const clickedSportLeagues = (league_id) => dispatch =>
+  fetchThenDispatch(
+    dispatch,
+    '/api/sportleagues',
+    'POST',
+    JSON.stringify({league_id})
+  )
   
 export const handleUpdateDraftOrder = draftOrder =>
   ({

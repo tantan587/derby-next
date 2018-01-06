@@ -25,9 +25,9 @@ exports.up = function(knex, Promise) {
       table.increments();
       table.string('league_id').notNullable();
       table.string('owner_id').notNullable();
-      table.decimal('sports_team_id',6,0).notNullable();
+      table.decimal('sports_team_id',6,0).notNullable()
       table.integer('total_points').notNullable()
-      table.timestamps();
+      table.timestamps()
     }),
     knex.schema.withSchema('fantasy').createTable('sports', (table) => {
       table.increments();
@@ -35,14 +35,14 @@ exports.up = function(knex, Promise) {
       table.decimal('sport_id',3,0).notNullable()
       table.integer('number_teams').notNullable()
       table.boolean('conf_strict').notNullable()
-      table.timestamps();
+      table.timestamps()
     }),
     knex.schema.withSchema('fantasy').createTable('points', (table) => {
-      table.increments();
-      table.string('owner_id').unique().notNullable();
+      table.increments()
+      table.string('owner_id').unique().notNullable()
       table.integer('total_points').notNullable()
       table.integer('rank').notNullable()
-      table.timestamps();
+      table.timestamps()
     })
   ]);
 };

@@ -100,8 +100,8 @@ class DraftRoundInput extends Component {
                     margin="normal"
                   >
                     {sportLeagues.map(option => (
-                      <MenuItem key={option.league} value={option.league}>
-                        {option.league}
+                      <MenuItem key={option.sport} value={option.sport}>
+                        {option.sport}
                       </MenuItem>
                     ))}
                   </TextField>
@@ -124,7 +124,7 @@ class DraftRoundInput extends Component {
                   >
                     {sports[owner.order] 
                       ? sportLeagues.filter(league => 
-                        league.league === sports[owner.order])[0].conferences
+                        league.sport === sports[owner.order])[0].conferences
                         .filter(conf => !ownerConferences[owner.order].map(x => x.conference_id).includes(conf.conference_id)
                         )
                         .map(option => (

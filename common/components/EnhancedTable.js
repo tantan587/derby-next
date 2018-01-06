@@ -105,7 +105,7 @@ class EnhancedTable extends React.Component {
       if (this.props.sportLeagues)
       {
         checkboxes = [{val: true, label: 'All'}]
-        this.props.sportLeagues.map(col => checkboxes.push({val:true, label:col.league}))
+        this.props.sportLeagues.map(col => checkboxes.push({val:true, label:col.sport}))
       }
       this.setState({ checkboxes:checkboxes})
     }
@@ -117,7 +117,7 @@ class EnhancedTable extends React.Component {
       if (nextProps.sportLeagues)
       {
         checkboxes = [{val: true, label: 'All'}]
-        nextProps.sportLeagues.map(col => checkboxes.push({val:true, label:col.league}))
+        nextProps.sportLeagues.map(col => checkboxes.push({val:true, label:col.sport}))
       }
       this.setState({
         myRows: nextProps.myRows,

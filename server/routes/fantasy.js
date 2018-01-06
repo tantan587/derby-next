@@ -72,10 +72,21 @@ function createLeague(req, res) {
                     total_points: 0,
                     rank: 1
                   })
-                  .then(()=>{
-                    return response[0]})
-                  .then((response)=>{
-                    return response})
+                  .then(() => {
+                    return knex.withSchema('fantasy').table('sports')
+                      .transacting(t)
+                      .insert(getInUseFantasySports(response[0].league_id, req.body.leagueInfo.EPL))
+                      .then(() => {
+                        return knex.withSchema('fantasy').table('conferences')
+                          .transacting(t)
+                          .insert(getInUseFantasyConf(response[0].league_id, req.body.leagueInfo.EPL))
+                          .then(()=>{
+                            return response[0]
+                          })
+                          .then((response)=>{
+                            return response})
+                      })
+                  })
               })
           })
           .then((response)=>{
@@ -293,6 +304,88 @@ const getLeague = (league_id, res, type) =>{
         return handleReduxResponse(res,400, {})
       }
     })
+
+
 }
+//this should not all be hard coded
+const getInUseFantasySports = (league_id, useEPL) =>
+{
+  const sports =  [{
+    league_id:league_id,
+    sport_id: 101,
+    number_teams: 2,
+    conf_strict : true
+  },
+  {
+    league_id: league_id,
+    sport_id: 102,
+    number_teams: 2,
+    conf_strict : true
+  },
+  {
+    league_id: league_id,
+    sport_id: 103,
+    number_teams: 2,
+    conf_strict : true
+  },
+  {
+    league_id: league_id,
+    sport_id: 104,
+    number_teams: 2,
+    conf_strict : true
+  },
+  {
+    league_id: league_id,
+    sport_id: 105,
+    number_teams: 3,
+    conf_strict : true
+  },
+  {
+    league_id: league_id,
+    sport_id: 106,
+    number_teams: 3,
+    conf_strict : true
+  },
+  {
+    league_id: league_id,
+    sport_id: 107,
+    number_teams: 1,
+    conf_strict : true
+  }
+  ]
+
+  return useEPL ? sports : sports.filter(x => x.sport_id !== 107)
+}
+
+const getInUseFantasyConf = (league_id, useEPL) =>
+{
+  const confs = [
+    {league_id:league_id, sport_id: 101, conference_id:10101,number_teams: 1},
+    {league_id:league_id, sport_id: 101, conference_id:10102,number_teams: 1},
+    {league_id:league_id, sport_id: 102, conference_id:10201,number_teams: 1},
+    {league_id:league_id, sport_id: 102, conference_id:10202,number_teams: 1},
+    {league_id:league_id, sport_id: 103, conference_id:10301,number_teams: 1},
+    {league_id:league_id, sport_id: 103, conference_id:10302,number_teams: 1},
+    {league_id:league_id, sport_id: 104, conference_id:10401,number_teams: 1},
+    {league_id:league_id, sport_id: 104, conference_id:10402,number_teams: 1},
+    {league_id:league_id, sport_id: 105, conference_id:10501,number_teams: 1},
+    {league_id:league_id, sport_id: 105, conference_id:10502,number_teams: 1},
+    {league_id:league_id, sport_id: 105, conference_id:10503,number_teams: 1},
+    {league_id:league_id, sport_id: 105, conference_id:10504,number_teams: 1},
+    {league_id:league_id, sport_id: 105, conference_id:10505,number_teams: 1},
+    {league_id:league_id, sport_id: 105, conference_id:10506,number_teams: 1},
+    {league_id:league_id, sport_id: 106, conference_id:10601,number_teams: 1},
+    {league_id:league_id, sport_id: 106, conference_id:10602,number_teams: 1},
+    {league_id:league_id, sport_id: 106, conference_id:10603,number_teams: 1},
+    {league_id:league_id, sport_id: 106, conference_id:10604,number_teams: 1},
+    {league_id:league_id, sport_id: 106, conference_id:10605,number_teams: 1},
+    {league_id:league_id, sport_id: 106, conference_id:10606,number_teams: 1},
+    {league_id:league_id, sport_id: 106, conference_id:10607,number_teams: 1},
+    {league_id:league_id, sport_id: 107, conference_id:10701,number_teams: 1},
+  ]
+
+  return useEPL ? confs : confs.filter(x => x.sport_id !== 107)
+}
+
 
 module.exports = router
