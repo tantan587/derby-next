@@ -26,6 +26,14 @@ export const clickedSportLeagues = (league_id) => dispatch =>
     'POST',
     JSON.stringify({league_id})
   )
+
+export const clickedSaveDraft = (league_id, allTeams) => dispatch =>
+  fetchThenDispatch(
+    dispatch,
+    '/api/savedraft',
+    'POST',
+    JSON.stringify({league_id, allTeams})
+  )
   
 export const handleUpdateDraftOrder = draftOrder =>
   ({

@@ -53,6 +53,13 @@ class DraftRoundInput extends Component {
     })
   }
 
+  groupBy = (xs, key) => {
+    return xs.reduce(function(rv, x) {
+      (rv[x[key]] = rv[x[key]] || []).push(x)
+      return rv
+    }, {})
+  }
+
   componentWillMount() {
     this.setState({
       sports:Array(this.props.owners.length).fill(''),
@@ -69,102 +76,106 @@ class DraftRoundInput extends Component {
   }
 
   render() {
-    const {round, owners, sportLeagues, classes, teams, allTeamsDrafted, ownerConferences} = this.props
+    const {round, owners, sportLeagues, classes, teams, allTeamsDrafted, confsSelected, sportsSelected} = this.props
     const {sports, sportConf, sportTeams} = this.state
-
     return (
       <div>
         <Table>
           <TableBody>
             {owners.map((owner) =>
-              <TableRow style={{height:100}} key={owner.order}>
-                <TableCell padding='none'>
-                  <Typography type="subheading" className={classes.text} gutterBottom>
-                    {owner.text +':'} &nbsp; &nbsp; &nbsp;
-                  </Typography>
-                </TableCell>
-                <TableCell padding='none'>
-                  <TextField
-                    id={'select-sport' +owner.order}
-                    select
-                    label="Select Sport"
-                    className={classes.textField}
-                    value={sports[owner.order] || ''}
-                    onChange={this.handleChange('sports',owner.order)}
-                    SelectProps={{
-                      MenuProps: {
-                        className: classes.menu,
-                      },
-                    }}
-                    //helperText="Please select your currency"
-                    margin="normal"
-                  >
-                    {sportLeagues.map(option => (
-                      <MenuItem key={option.sport} value={option.sport}>
-                        {option.sport}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                </TableCell>
-                <TableCell padding='none'>
-                  <TextField
-                    id={'select-conference' +owner.order}
-                    select
-                    label="Select Conference"
-                    className={classes.textFieldSmall}
-                    value={sportConf[owner.order] || ''}
-                    onChange={this.handleChange('sportConf',owner.order)}
-                    SelectProps={{
-                      MenuProps: {
-                        className: classes.menu,
-                      },
-                    }}
-                    //helperText="Please select your currency"
-                    margin="normal"
-                  >
-                    {sports[owner.order] 
-                      ? sportLeagues.filter(league => 
-                        league.sport === sports[owner.order])[0].conferences
-                        .filter(conf => !ownerConferences[owner.order].map(x => x.conference_id).includes(conf.conference_id)
-                        )
+            {
+              const selectableSports = this.groupBy(sportsSelected[owner.order],'sport')
+              return(
+                <TableRow style={{height:100}} key={owner.order}>
+                  <TableCell padding='none'>
+                    <Typography type="subheading" className={classes.text} gutterBottom>
+                      {owner.text +':'} &nbsp; &nbsp; &nbsp;
+                    </Typography>
+                  </TableCell>
+                  <TableCell padding='none'>
+                    <TextField
+                      id={'select-sport' +owner.order}
+                      select
+                      label="Select Sport"
+                      className={classes.textField}
+                      value={sports[owner.order] || ''}
+                      onChange={this.handleChange('sports',owner.order)}
+                      SelectProps={{
+                        MenuProps: {
+                          className: classes.menu,
+                        },
+                      }}
+                      //helperText="Please select your currency"
+                      margin="normal"
+                    >
+                      {sportLeagues.filter(sport => typeof selectableSports[sport.sport] === 'undefined' 
+                      || sport.num >  selectableSports[sport.sport].length)
                         .map(option => (
-                          <MenuItem key={option.conference_id} value={option.conference_id}>
-                            {option.conference}
+                          <MenuItem key={option.sport} value={option.sport}>
+                            {option.sport}
                           </MenuItem>
-                        ))
-                      : <div/>
-                    }}
-                  </TextField>
-                </TableCell>
-                <TableCell padding='none'>
-                  <TextField
-                    id={'select-team' +owner.order}
-                    select
-                    label="Select Team"
-                    className={classes.textField}
-                    value={sportTeams[owner.order] || ''}
-                    onChange={this.handleChange('sportTeams',owner.order)}
-                    SelectProps={{
-                      MenuProps: {
-                        className: classes.menu,
-                      },
-                    }}
-                    //helperText="Please select your currency"
-                    margin="normal"
-                  >
-                    {teams.filter(team => team.sport === sports[owner.order] 
-                    && team.conference_id === sportConf[owner.order]
-                    && allTeamsDrafted.filter(otherTeams => otherTeams.team_id === team.team_id).length === 0
-                    && (!sportTeams.includes(team.team_id) 
-                      || sportTeams[owner.order] === team.team_id)).map(option => (
-                      <MenuItem key={option.team_id} value={option.team_id}>
-                        {option.team_name}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                </TableCell>
-              </TableRow>
-            )}
+                        ))}
+                    </TextField>
+                  </TableCell>
+                  <TableCell padding='none'>
+                    <TextField
+                      id={'select-conference' +owner.order}
+                      select
+                      label="Select Conference"
+                      className={classes.textFieldSmall}
+                      value={sportConf[owner.order] || ''}
+                      onChange={this.handleChange('sportConf',owner.order)}
+                      SelectProps={{
+                        MenuProps: {
+                          className: classes.menu,
+                        },
+                      }}
+                      //helperText="Please select your currency"
+                      margin="normal"
+                    >
+                      {sports[owner.order] 
+                        ? sportLeagues.filter(league => 
+                          league.sport === sports[owner.order])[0].conferences
+                          .filter(conf => !confsSelected[owner.order].map(x => x.conference_id).includes(conf.conference_id)
+                          )
+                          .map(option => (
+                            <MenuItem key={option.conference_id} value={option.conference_id}>
+                              {option.conference}
+                            </MenuItem>
+                          ))
+                        : <div/>
+                      }}
+                    </TextField>
+                  </TableCell>
+                  <TableCell padding='none'>
+                    <TextField
+                      id={'select-team' +owner.order}
+                      select
+                      label="Select Team"
+                      className={classes.textField}
+                      value={sportTeams[owner.order] || ''}
+                      onChange={this.handleChange('sportTeams',owner.order)}
+                      SelectProps={{
+                        MenuProps: {
+                          className: classes.menu,
+                        },
+                      }}
+                      //helperText="Please select your currency"
+                      margin="normal"
+                    >
+                      {teams.filter(team => team.sport === sports[owner.order] 
+                      && team.conference_id === sportConf[owner.order]
+                      && allTeamsDrafted.filter(otherTeams => otherTeams.team_id === team.team_id).length === 0
+                      && (!sportTeams.includes(team.team_id) 
+                        || sportTeams[owner.order] === team.team_id)).map(option => (
+                        <MenuItem key={option.team_id} value={option.team_id}>
+                          {option.team_name}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                  </TableCell>
+                </TableRow>
+              )})}
           </TableBody>
         </Table>
         {
@@ -173,11 +184,11 @@ class DraftRoundInput extends Component {
               <Button raised className={classes.button}  onClick={() => this.props.onRoundBackward(round)}>
                 Previous Round
               </Button> 
-              <Button raised className={classes.button} style={{marginLeft:'20px'}} onClick={() => this.props.onRoundForward(round, sportConf, sportTeams)}>
+              <Button raised className={classes.button} style={{marginLeft:'20px'}} onClick={() => this.props.onRoundForward(round, sports, sportConf, sportTeams)}>
                 Next Round
               </Button>    
             </div>
-            : <Button raised className={classes.button} onClick={() => this.props.onRoundForward(round, sportConf, sportTeams)}>
+            : <Button raised className={classes.button} onClick={() => this.props.onRoundForward(round,sports, sportConf, sportTeams)}>
               Next Round
             </Button>  
         }

@@ -5,6 +5,8 @@ const knex = require('../db/connection')
 const C = require('../../common/constants')
 const ErrorText = require('../../common/models/ErrorText')
 const v4 = require('uuid/v4')
+const fantasyHelpers = require('./helpers/fantasyHelpers')
+
 
 router.post('/createleague', authHelpers.loginRequired, (req, res, next)  => {
   return createLeague(req, res)
@@ -25,7 +27,7 @@ router.post('/joinleague', authHelpers.loginRequired, (req, res, next)  => {
 })
 
 router.post('/clickleague', authHelpers.loginRequired, (req, res, next)  => {
-  return getLeague(req.body.league_id,res, C.CLICKED_LEAGUE)
+  return fantasyHelpers.getLeague(req.body.league_id,res, C.CLICKED_LEAGUE)
 })
 
 function handleReduxResponse(res, code, action){
@@ -267,46 +269,7 @@ const getSimpleLeague = (league_id, res, type) =>{
     })
 }
 
-const getLeague = (league_id, res, type) =>{
 
-
-  var str = 'select a.*, b.username, c.league_name, c.max_owners, c.league_id, d.total_points, d.rank from ' +
-  'fantasy.owners a, users.users b, fantasy.leagues c, fantasy.points d where a.league_id = \'' + league_id +
-  '\' and a.user_id = b.user_id and a.league_id = c.league_id and a.owner_id = d.owner_id'
-  return knex.raw(str)
-    .then(result =>
-    {
-      if (result.rows.length > 0) 
-      {
-        var league_name = result.rows[0].league_name
-        var max_owners = result.rows[0].max_owners
-        var league_id = result.rows[0].league_id
-        var owners = []
-        result.rows.map((owner,i) => owners.push(
-          {
-            owner_name:owner.owner_name, 
-            total_points:owner.total_points,
-            rank:owner.rank,
-            username:owner.username,
-            user_id: owner.user_id,
-            draft_positon: i
-          }))
-        return handleReduxResponse(res,200, {
-          type: type,
-          league_name : league_name,
-          max_owners : max_owners,
-          league_id : league_id,
-          owners : owners
-        })
-      }
-      else
-      {
-        return handleReduxResponse(res,400, {})
-      }
-    })
-
-
-}
 //this should not all be hard coded
 const getInUseFantasySports = (league_id, useEPL) =>
 {

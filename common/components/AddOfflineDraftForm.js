@@ -8,10 +8,7 @@ import Button from 'material-ui/Button'
 import SortableList from './SortableList'
 import DraftRoundInput from './DraftRoundInput'
 import {clickedSaveDraft, handleUpdateDraftOrder} from '../actions/sport-actions'
-
-
 import { connect } from 'react-redux'
-import { owners } from '../store/reducers';
 
 const styles = theme => ({
   container: {
@@ -38,7 +35,8 @@ class AddOfflineDraftForm extends React.Component {
     this.state = {
       round:0,
       allTeamsDrafted:[],
-      ownerConferences:[]
+      confsSelected:[],
+      sportsSelected:[]
     }
 
     this.onRoundForward = this.onRoundForward.bind(this)
@@ -46,37 +44,53 @@ class AddOfflineDraftForm extends React.Component {
   }
   
 
-  onRoundForward(round, confs, teams)
+  onRoundForward(round, sports, confs, teams)
   {
-    // if(teams.filter(team => team === '').length === 0 )
-    // {
+    if(teams.filter(team => team === '').length === 0 )
+    {
       let allTeamsDrafted = this.state.allTeamsDrafted
-      let ownerConferences = this.state.ownerConferences
-
-      teams.map(team => allTeamsDrafted.push({team_id:team,round:round}))
-      confs.map((conf, i) => ownerConferences[i].push({ conference_id: conf, round: round }))
-      this.setState({round:round+1,allTeamsDrafted,ownerConferences })
-    //}
+      let confsSelected = this.state.confsSelected
+      let sportsSelected = this.state.sportsSelected
+      teams.map((team, i) => allTeamsDrafted.push({team_id:team,round:round, draft_position:i}))
+      confs.map((conf, i) => confsSelected[i].push({ conference_id: conf, round: round }))
+      sports.map((sport, i) => sportsSelected[i].push({ sport: sport, round: round }))
+      this.setState({round:round+1,allTeamsDrafted,confsSelected, sportsSelected})
+    }
   }
   onRoundBackward(round)
   {
     const allTeamsDrafted = this.state.allTeamsDrafted.filter(team => team.round !==  round-1)
-    let ownerConferences = []
-    this.state.ownerConferences.map((confs,i) => {
-      ownerConferences[i] = confs.filter(conf => conf.round !== round-1)
+    let confsSelected = []
+    this.state.confsSelected.map((confs,i) => {
+      confsSelected[i] = confs.filter(conf => conf.round !== round-1)
     })
-    this.setState({round:this.state.round-1, allTeamsDrafted, ownerConferences})
+
+    let sportsSelected = []
+    this.state.sportsSelected.map((sports,i) => {
+      sportsSelected[i] = sports.filter(sport => sport.round !== round-1)
+    })
+    this.setState({round:this.state.round-1, allTeamsDrafted, confsSelected,sportsSelected })
   }
   onRoundFirst(len)
   {
-    let ownerConferences = []
-    Array.apply(null, {length: len}).map(Function.call, Number).map(i => ownerConferences[i] = [])
-    this.setState({round:this.state.round+1})
-    this.setState({ownerConferences:ownerConferences})
+    let confsSelected = []
+    let sportsSelected = []
+    Array.apply(null, {length: len}).map(Function.call, Number).map(i => confsSelected[i] = [])
+    Array.apply(null, {length: len}).map(Function.call, Number).map(i => sportsSelected[i] = [])
+    this.setState({round:this.state.round+1, confsSelected, sportsSelected})
+
   }
 
-  submit(e) {
-    this.myLogin(e)
+  submit() {
+    const draftPositionsToOwnerMap = {}
+    this.props.activeLeague.owners.map(
+      owner => draftPositionsToOwnerMap[owner.draft_position] = owner.owner_id)
+    const allTeams =  this.state.allTeamsDrafted.map(team => {
+      const teamRow = {owner_id:draftPositionsToOwnerMap[team.draft_position], sports_team_id:team.team_id}
+      return teamRow})  
+        
+    this.props.onSaveDraft(this.props.activeLeague.league_id, allTeams)
+    Router.push('/')
   }
 
   // updateDraftOrder(draftOrder)
@@ -105,7 +119,7 @@ class AddOfflineDraftForm extends React.Component {
       if (this.props.activeLeague.owners)
       {
         this.props.activeLeague.owners.map(
-          owner => owners.push({id:owner.user_id, text:owner.owner_name, order:owner.draft_positon }))
+          owner => owners.push({id:owner.user_id, text:owner.owner_name, order:owner.draft_position }))
         owners.sort(function(a,b) { return a.order-b.order})
       }
       return (
@@ -133,23 +147,30 @@ class AddOfflineDraftForm extends React.Component {
                 </Button>
               </div>
               :
-              <div>
-                <Typography type="subheading" className={classes.text} gutterBottom>
-                  {'Explain how to draft' }
-                </Typography>
-                <Typography type="subheading" className={classes.text} gutterBottom>
-                  {'Round: ' + round}
-                </Typography>
-                <DraftRoundInput 
-                  round={round} 
-                  owners={round % 2 === 1 ? owners: owners.reverse()} 
-                  teams={teams} 
-                  sportLeagues={sportLeagues} 
-                  allTeamsDrafted={this.state.allTeamsDrafted}
-                  ownerConferences={this.state.ownerConferences}
-                  onRoundForward={this.onRoundForward}
-                  onRoundBackward={this.onRoundBackward}/>
-              </div>
+              round <= 2 ?
+                <div>
+                  <Typography type="subheading" className={classes.text} gutterBottom>
+                    {'Explain how to draft' }
+                  </Typography>
+                  <Typography type="subheading" className={classes.text} gutterBottom>
+                    {'Round: ' + round}
+                  </Typography>
+                  <DraftRoundInput 
+                    round={round} 
+                    owners={round % 2 === 1 ? owners: owners.reverse()} 
+                    teams={teams} 
+                    sportLeagues={sportLeagues} 
+                    allTeamsDrafted={this.state.allTeamsDrafted}
+                    confsSelected={this.state.confsSelected}
+                    sportsSelected={this.state.sportsSelected}
+                    onRoundForward={this.onRoundForward}
+                    onRoundBackward={this.onRoundBackward}/>
+                </div>
+                :
+                <Button raised className={classes.button} onClick={() => this.submit()}>
+                Submit
+                </Button>
+              
           }
           
          
@@ -172,8 +193,8 @@ export default connect(
     }),
   dispatch =>
     ({
-      onSaveDraft(mainTabDisplay) {
-        dispatch(clickedSaveDraft(mainTabDisplay))
+      onSaveDraft(league_id, allTeams) {
+        dispatch(clickedSaveDraft(league_id, allTeams))
       },
       onUpdateDraftOrder(draftOrder) {
         dispatch(handleUpdateDraftOrder(draftOrder))

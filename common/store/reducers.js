@@ -104,6 +104,7 @@ export const activeLeague = (state = {}, action={ type: null }) => {
       league_id : action.league_id,
       league_name : action.league_name,
       total_players : action.owners.length,
+      total_teams : action.total_teams,
       max_owners : action.max_owners,
       owners : action.owners
     }
@@ -123,7 +124,7 @@ export const owners = (state = [], action={ type: null }) => {
   case C.UPDATE_DRAFT_ORDER:
   {
     //let owners = []
-    action.draftOrder.map((order,i) => state.filter(owner => owner.user_id === order.id)[0].draft_positon = i)
+    action.draftOrder.map((order,i) => state.filter(owner => owner.user_id === order.id)[0].draft_position = i)
     //action.draftOrder.map(order => owners.push(state.filter(owner => owner.user_id === order.id)[0]))
     return state
   }

@@ -26,7 +26,8 @@ exports.up = function(knex, Promise) {
       table.string('league_id').notNullable();
       table.string('owner_id').notNullable();
       table.decimal('sports_team_id',6,0).notNullable()
-      table.integer('total_points').notNullable()
+      table.decimal('reg_points',8,2)
+      table.decimal('bonus_points',8,2)
       table.timestamps()
     }),
     knex.schema.withSchema('fantasy').createTable('sports', (table) => {
@@ -40,7 +41,7 @@ exports.up = function(knex, Promise) {
     knex.schema.withSchema('fantasy').createTable('points', (table) => {
       table.increments()
       table.string('owner_id').unique().notNullable()
-      table.integer('total_points').notNullable()
+      table.decimal('total_points',8,2).notNullable()
       table.integer('rank').notNullable()
       table.timestamps()
     })

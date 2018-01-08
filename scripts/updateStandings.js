@@ -1,4 +1,5 @@
 const db_helpers = require('./helpers').data
+const fantasyHelpers = require('../server/routes/helpers/fantasyHelpers')
 const knex = require('../server/db/connection')
 
 // db_helpers.getFantasyData(knex, 'NHL', 'https://api.fantasydata.net/v3/nhl/scores/JSON/Standings/2018?', 'Key', 'Conference')
@@ -29,6 +30,7 @@ async function updateStandings()
   db_helpers.updateStandings(knex, data)
     .then(result => {
       console.log('Number of Standings Updated: ' + result)
+      fantasyHelpers.updateAllFantasy
       process.exit()
     })
 }

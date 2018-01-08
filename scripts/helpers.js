@@ -95,10 +95,9 @@ methods.updateStandings = (knex,newStandings) =>
       })
       if (updateList.length > 0)
       {
-        console.log("im in")
         return Promise.all(updateList)
           .then(() => { 
-            console.log("im done updating!")
+            //console.log("im done updating!")
             return updateList.length
           })
       }
@@ -116,7 +115,7 @@ methods.updateOneStandingRow = (knex, team_id, column, value) =>
     .update(column, value)
     .then(() =>
     {
-      console.log(team_id + " updated!")
+      //console.log(team_id + " updated!")
     })
 }
   
