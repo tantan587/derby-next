@@ -142,7 +142,7 @@ class AddOfflineDraftForm extends React.Component {
                 </Button>
               </div>
               :
-              round <= 2 ?  
+              round <= this.props.activeLeague.total_teams ?  
                 <div>
                   <Typography type="subheading" className={classes.text} gutterBottom>
                     {'Explain how to draft' }
