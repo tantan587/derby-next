@@ -13,8 +13,10 @@ import Table, {
 import Typography from 'material-ui/Typography'
 import Paper from 'material-ui/Paper'
 import Tooltip from 'material-ui/Tooltip'
-import { FormGroup, FormControlLabel } from 'material-ui/Form';
-import Checkbox from 'material-ui/Checkbox';
+import { FormGroup, FormControlLabel } from 'material-ui/Form'
+import Checkbox from 'material-ui/Checkbox'
+import TextField from 'material-ui/TextField'
+import {MenuItem} from 'material-ui/Menu'
 
 class EnhancedTableHead extends React.Component {
   static propTypes = {
@@ -78,7 +80,16 @@ const styles = theme => ({
   },
   title : {
     textAlign : 'center'
-  }
+  },
+  textField: {
+    marginLeft: 40,//theme.spacing.unit,
+    marginRight: theme.spacing.unit,
+    width: 200,
+    float: 'left'
+  },
+  menu: {
+    width: 200,
+  },
 })
 
 class EnhancedTable extends React.Component {
@@ -93,7 +104,9 @@ class EnhancedTable extends React.Component {
       myHeaders:[],
       page: 0,
       rowsPerPage: 20,
-      checkboxes: []
+      checkboxes: [],
+      dropdown: '',
+      myOwnerName:''
     }
   }
   componentWillMount() {
@@ -107,7 +120,14 @@ class EnhancedTable extends React.Component {
         checkboxes = [{val: true, label: 'All'}]
         this.props.sportLeagues.map(col => checkboxes.push({val:true, label:col.sport}))
       }
-      this.setState({ checkboxes:checkboxes})
+      if (this.props.owners)
+      {
+        console.log(this.props.owners, this.props.myOwnerId)
+        const myOwnerName = this.props.owners.filter(x => x.owner_id === this.props.myOwnerId)[0].owner_name
+        const dropdown = myOwnerName
+        this.setState({myOwnerName, dropdown})
+      }
+      
     }
   }
   
@@ -125,6 +145,12 @@ class EnhancedTable extends React.Component {
         orderBy: nextProps.myHeaders.length > 0 ? nextProps.myHeaders[0].key : '',
         checkboxes:checkboxes
       })
+      if (nextProps.owners)
+      {
+        const myOwnerName = nextProps.owners.filter(x => x.owner_id === nextProps.myOwnerId)[0].owner_name
+        const dropdown = myOwnerName
+        this.setState({myOwnerName, dropdown})
+      }
     }
   }
 
@@ -180,6 +206,12 @@ class EnhancedTable extends React.Component {
     this.setState({ checkboxes: localCheck })
   }
 
+  handleUpdateDropdown = () => event => {
+    this.setState({
+      dropdown: event.target.value
+    })
+  }
+
 
   render() {
     const { classes, usePagination, checkboxColumn } = this.props
@@ -198,6 +230,11 @@ class EnhancedTable extends React.Component {
       localRows = localRows.filter(row => !localCheckboxes.includes(row[checkboxColumn]))
     }
 
+    if(this.state.dropdown !== '')
+    {
+      localRows = localRows.filter(row => row.owner_name === this.state.dropdown)
+    }
+
     const localColumns = 
     myHeaders.map(header => ({
       id: header.key, 
@@ -213,7 +250,35 @@ class EnhancedTable extends React.Component {
       <Paper className={classes.root}>
         <div className={classes.tableWrapper}>
           <br/>
-          <Typography className={classes.title} type="display1">{this.props.title}</Typography>
+          {this.props.rosterTitle ?
+            <div>
+              <TextField
+                id={'select-owner'}
+                select
+                label="Select Owner"
+                className={classes.textField}
+                value={this.state.dropdown}
+                onChange={this.handleUpdateDropdown()}
+                SelectProps={{
+                  MenuProps: {
+                    className: classes.menu,
+                  },
+                }}
+                //helperText="Please select your currency"
+                margin="normal"
+              >
+                {this.props.owners.map(option => (
+                  <MenuItem key={option.owner_name} value={option.owner_name}>
+                    {option.owner_name === this.state.myOwnerName ? 'Me' : option.owner_name}
+                  </MenuItem>
+                ))}
+              </TextField>
+              <Typography className={classes.title} type="display1" style={{paddingTop:'20px'}}>
+                {this.state.myOwnerName === this.state.dropdown ? 'My Roster' : this.state.dropdown + '\'s Roster'}
+              </Typography>
+            </div>
+            : <Typography className={classes.title} type="display1">{this.props.title}</Typography>
+          }
           <br/>
           
           <Table className={classes.table}>

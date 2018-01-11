@@ -89,11 +89,10 @@ class MainLeaguePage extends React.Component {
               centered
             >
               <Tab label="Standings" />
-              <Tab label="My Roster" />
               <Tab label="Schedules" />
+              <Tab label="Rosters" />
               <Tab label="All Teams"/>
               <Tab label="Message Board" />
-              <Tab label="Other Rosters"  />
               <Tab label="League Settings" />
               <Tab label="Draft Recap" />
               {1 === 1 ? <Tab label="Commish Tools" 
@@ -129,7 +128,23 @@ class MainLeaguePage extends React.Component {
               {label: 'Points', key: 'total_points'}
             ]}/>}
           {value === 1 && <TabContainer>Item Two</TabContainer>}
-          {value === 2 && <TabContainer>Item Three</TabContainer>}
+          {value === 2 && <TabContainer>
+            <EnhancedTable
+              title='Roster'
+              usePagination={false}
+              myRows={myTeams}
+              rosterTitle={true}
+              owners={this.props.activeLeague.owners}
+              myOwnerId={this.props.activeLeague.owners[0].owner_id}
+              myHeaders = {[
+                {label: 'Team Name', key: 'team_name'},
+                {label: 'Sport League', key: 'sport'},
+                {label: 'Conference', key: 'conference'},
+                {label: 'Record', key: 'record', sortId:'percentage'},
+                {label: 'Percentage', key: 'percentage'},
+                {label: 'Points', key: 'points'}
+              ]}/>
+          </TabContainer>}
           {value === 3 && <TabContainer><EnhancedTable
             title='Sports Standings'
             usePagination={true}
@@ -148,10 +163,9 @@ class MainLeaguePage extends React.Component {
           {value === 4 && <TabContainer>Item Five</TabContainer>}
           {value === 5 && <TabContainer>Item Six</TabContainer>}
           {value === 6 && <TabContainer>Item Seven</TabContainer>}
-          {value === 7 && <TabContainer>Item Eight</TabContainer>}
-          {value === 8 && commishIndex === 0 && <TabContainer>Item Nine Point 1</TabContainer>}
-          {value === 8 && commishIndex === 1 && <TabContainer><AddOfflineDraftForm/></TabContainer>}
-          {value === 8 && commishIndex === 2 && <TabContainer>Item Nine Point 3</TabContainer>}
+          {value === 7 && commishIndex === 0 && <TabContainer>Item Nine Point 1</TabContainer>}
+          {value === 7 && commishIndex === 1 && <TabContainer><AddOfflineDraftForm/></TabContainer>}
+          {value === 7 && commishIndex === 2 && <TabContainer>Item Nine Point 3</TabContainer>}
 
         </div>
         
