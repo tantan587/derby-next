@@ -86,21 +86,16 @@ class AddOfflineDraftForm extends React.Component {
     this.props.activeLeague.owners.map(
       owner => draftPositionsToOwnerMap[owner.draft_position] = owner.owner_id)
     const allTeams =  this.state.allTeamsDrafted.map(team => {
-      const teamRow = {owner_id:draftPositionsToOwnerMap[team.draft_position], team_id:team.team_id}
+      const teamRow = {owner_id:draftPositionsToOwnerMap[team.draft_position], 
+        team_id:team.team_id, 
+        overall_pick:(team.draft_position+1 + (team.round-1)*this.props.activeLeague.owners.length)}
       return teamRow})  
         
     this.props.onSaveDraft(this.props.activeLeague.league_id, allTeams)
     Router.push('/')
   }
 
-  // updateDraftOrder(draftOrder)
-  // {
-  //   console.log(this.props)
-  //   console.log(draftOrder)
-  //   const { onUpdateDraftOrder } = this.props
-  //   console.log(draftOrder)
-  //   onUpdateDraftOrder(draftOrder)
-  // }
+  // this.props.activeLeague.total_teams
 
   keypress(e) {
     if (e.key === 'Enter') { 
@@ -147,7 +142,7 @@ class AddOfflineDraftForm extends React.Component {
                 </Button>
               </div>
               :
-              round <= 2 ?
+              round <= 2 ?  
                 <div>
                   <Typography type="subheading" className={classes.text} gutterBottom>
                     {'Explain how to draft' }
