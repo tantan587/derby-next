@@ -20,7 +20,7 @@ router.post('/sportleagues', authHelpers.loginRequired, (req, res, next)  => {
 router.post('/savedraft', authHelpers.loginRequired, (req, res, next)  => {
   return enterDraftToDb(req, res)
     .then(() => { 
-      fantasyHelpers.updateFantasy(req.body.league_id, res)
+      return fantasyHelpers.updateFantasy(req.body.league_id, res)
     })
     .catch((err) => { 
       handleResponse(res, 500, err) })
@@ -38,15 +38,30 @@ const enterDraftToDb = (req, res) =>
 {
   const dataToInput = req.body.allTeams.map(team => {team.league_id = req.body.league_id; return team})
   return knex.withSchema('fantasy').table('rosters')
-    .insert(dataToInput)
+    .where('league_id', req.body.league_id).del()
+    .then(() => 
+    {
+      return knex.withSchema('fantasy').table('rosters').insert(dataToInput)
+    })
 }
 
 const getStandings = (league_id, res, type) =>{
 
 
-  var str = 'select a.team_id, a.key, a.city, a.name, c.conference_id, c.display_name, d.sport_name, b.wins, b.losses, b.ties from ' +
-  'sports.team_info a, sports.standings b, sports.conferences c, sports.leagues d ' +
-  'where a.team_id = b.team_id and c.conference_id = a.conference_id and a.sport_id = d.sport_id'
+  var str = `select x.*, y.owner_id, y.owner_name from 
+  (select a.team_id, a.key, a.city, a.name, c.conference_id, c.display_name, d.sport_name, b.wins, b.losses, b.ties, e.reg_points from 
+  sports.team_info a, sports.standings b, sports.conferences c, sports.leagues d, fantasy.team_points e
+  where a.team_id = b.team_id and c.conference_id = a.conference_id and a.sport_id = d.sport_id and a.team_id = e.team_id and e.league_id = '` + league_id + '\'' +
+  `) x
+  left outer join
+  (select f.team_id, g.owner_id, g.owner_name from 
+  fantasy.rosters f, fantasy.owners g 
+  where f.owner_id = g.owner_id and f.league_id ='` + league_id + '\') y on x.team_id = y.team_id'
+
+
+  // var str = 'select a.team_id, a.key, a.city, a.name, c.conference_id, c.display_name, d.sport_name, b.wins, b.losses, b.ties from ' +
+  // 'sports.team_info a, sports.standings b, sports.conferences c, sports.leagues d, fantasy.sports e, fantasy.owners f' +
+  // 'where a.team_id = b.team_id and c.conference_id = a.conference_id and a.sport_id = d.sport_id and b.team_id = e.team_id and e.owner_id = '
   return knex.raw(str)
     .then(result =>
     {
@@ -63,7 +78,10 @@ const getStandings = (league_id, res, type) =>{
             conference_id:team.conference_id,
             wins: team.wins,
             losses:team.losses,
-            ties:team.ties
+            ties:team.ties,
+            owner_id:team.owner_id ? team.owner_id : 'N/A',
+            owner_name:team.owner_name ? team.owner_name : 'N/A',
+            points: Number.parseFloat(team.reg_points)  
           }))
         teams.sort(function(a,b)
         { return a.team_name.toLowerCase() < b.team_name.toLowerCase() ? -1 : 1})

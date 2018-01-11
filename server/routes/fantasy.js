@@ -11,7 +11,10 @@ const fantasyHelpers = require('./helpers/fantasyHelpers')
 router.post('/createleague', authHelpers.loginRequired, (req, res, next)  => {
   return createLeague(req, res)
     .then((response) => { 
-      return getSimpleLeague(response.league_id, res, C.CREATE_LEAGUE_SUCCESS)
+      return fantasyHelpers.updateTeamPoints(response.league_id)
+        .then(() => {
+          return getSimpleLeague(response.league_id, res, C.CREATE_LEAGUE_SUCCESS)})
+      
     })
     .catch((err) => { 
       handleResponse(res, 500, err)})
@@ -41,70 +44,79 @@ function handleResponse(res, code, statusMsg) {
 function createLeague(req, res) {
   return handleCreateErrors(req)
     .then(() => {
-      return knex.transaction(function (t) {
-        return knex.withSchema('fantasy').table('leagues')
-          .transacting(t)
-          .insert({
-            league_id : v4(),
-            league_name: req.body.leagueInfo.league_name,
-            year_starting : 2017,
-            year_ending : 2018,
-            max_owners : req.body.leagueInfo.max_owners, 
-            league_password: req.body.leagueInfo.league_password,
-            total_enrolled: 1,
-            private_ind: req.body.leagueInfo.privateInd,
-          })
-          .returning('*')
-          .then((response) => {
-            let owner_id = v4()
-            return knex.withSchema('fantasy').table('owners')
+      const league_id = v4()
+      return getSportsData(req, league_id)
+        .then((sportsData) =>
+        {
+          return knex.transaction(function (t) {
+            return knex.withSchema('fantasy').table('leagues')
               .transacting(t)
               .insert({
-                league_id: response[0].league_id,
-                user_id: req.user.user_id,
-                owner_id: owner_id,
-                owner_name:  req.body.leagueInfo.owner_name,
-                commissioner: true
+                league_id : league_id,
+                league_name: req.body.leagueInfo.league_name,
+                year_starting : 2017,
+                year_ending : 2018,
+                max_owners : req.body.leagueInfo.max_owners, 
+                league_password: req.body.leagueInfo.league_password,
+                total_enrolled: 1,
+                private_ind: req.body.leagueInfo.privateInd,
               })
-              .then(() => {
-                return knex.withSchema('fantasy').table('points')
+              .returning('*')
+              .then((response) => {
+                let owner_id = v4()
+                return knex.withSchema('fantasy').table('owners')
                   .transacting(t)
                   .insert({
+                    league_id: response[0].league_id,
+                    user_id: req.user.user_id,
                     owner_id: owner_id,
-                    total_points: 0,
-                    rank: 1
+                    owner_name:  req.body.leagueInfo.owner_name,
+                    commissioner: true
                   })
                   .then(() => {
-                    return knex.withSchema('fantasy').table('sports')
+                    return knex.withSchema('fantasy').table('points')
                       .transacting(t)
-                      .insert(getInUseFantasySports(response[0].league_id, req.body.leagueInfo.EPL))
+                      .insert({
+                        owner_id: owner_id,
+                        total_points: 0,
+                        rank: 1
+                      })
                       .then(() => {
-                        return knex.withSchema('fantasy').table('conferences')
+                        return knex.withSchema('fantasy').table('sports')
                           .transacting(t)
-                          .insert(getInUseFantasyConf(response[0].league_id, req.body.leagueInfo.EPL))
-                          .then(()=>{
-                            return response[0]
+                          .insert(sportsData.sports)
+                          .then(() => {
+                            return knex.withSchema('fantasy').table('conferences')
+                              .transacting(t)
+                              .insert(sportsData.conferences)
+                              .returning('conference_id')
+                              .then(()=>{
+                                return knex.withSchema('fantasy').table('team_points')
+                                  .transacting(t)
+                                  .insert(sportsData.teams)
+                                  .then(()=>{
+                                    return response[0]
+                                  })
+                              })
                           })
-                          .then((response)=>{
-                            return response})
                       })
                   })
+                  .then((response)=>{
+                    t.commit
+                    return response})
+                  .catch(t.rollback)
+              })
+              .then((response)=>{
+                return response
+              })
+              .catch(function (err) {
+                res.status(400).json(err)
               })
           })
-          .then((response)=>{
-            t.commit
-            return response})
-          .catch(t.rollback)
-      })
-        .then((response)=>{
-          return response
         })
-        .catch(function (err) {
+        .catch((err) => {
           res.status(400).json(err)
         })
-    })
-    .catch((err) => {
-      res.status(400).json(err)
     })
 }
 
@@ -149,6 +161,24 @@ function joinLeague(req, res) {
     .catch((action) => {
       handleReduxResponse(res,400,action)
     })
+}
+
+function getSportsData(req, league_id)
+{
+  return new Promise((resolve) => {
+    const sports = getInUseFantasySports(league_id, req.body.leagueInfo.EPL)
+    const conferences = getInUseFantasyConf(league_id, req.body.leagueInfo.EPL)
+    const selectConfs = []
+    conferences.map(conf => selectConfs.push(conf.conference_id))
+    return knex.withSchema('sports').table('team_info')
+      .select('team_id')
+      .whereIn('conference_id',selectConfs)
+      .then((teamIds)=>{
+        var teams = []
+        teamIds.map(teamId => {teams.push({league_id:league_id, team_id:teamId.team_id,reg_points:0,bonus_points:0})})
+        resolve({sports:sports, conferences:conferences, teams:teams})
+      })
+  })
 }
 
 function handleCreateErrors(req) {
@@ -349,6 +379,7 @@ const getInUseFantasyConf = (league_id, useEPL) =>
 
   return useEPL ? confs : confs.filter(x => x.sport_id !== 107)
 }
+
 
 
 module.exports = router

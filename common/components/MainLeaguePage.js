@@ -138,10 +138,12 @@ class MainLeaguePage extends React.Component {
             myRows={myTeams}
             myHeaders = {[
               {label: 'Team Name', key: 'team_name'},
+              {label: 'Owner Name', key: 'owner_name'},
               {label: 'Sport League', key: 'sport'},
               {label: 'Conference', key: 'conference'},
               {label: 'Record', key: 'record', sortId:'percentage'},
-              {label: 'Percentage', key: 'percentage'}
+              {label: 'Percentage', key: 'percentage'},
+              {label: 'Points', key: 'points'}
             ]}/></TabContainer>}
           {value === 4 && <TabContainer>Item Five</TabContainer>}
           {value === 5 && <TabContainer>Item Six</TabContainer>}

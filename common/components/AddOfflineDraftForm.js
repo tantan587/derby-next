@@ -86,7 +86,7 @@ class AddOfflineDraftForm extends React.Component {
     this.props.activeLeague.owners.map(
       owner => draftPositionsToOwnerMap[owner.draft_position] = owner.owner_id)
     const allTeams =  this.state.allTeamsDrafted.map(team => {
-      const teamRow = {owner_id:draftPositionsToOwnerMap[team.draft_position], sports_team_id:team.team_id}
+      const teamRow = {owner_id:draftPositionsToOwnerMap[team.draft_position], team_id:team.team_id}
       return teamRow})  
         
     this.props.onSaveDraft(this.props.activeLeague.league_id, allTeams)

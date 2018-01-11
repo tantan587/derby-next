@@ -30,8 +30,9 @@ async function updateStandings()
   db_helpers.updateStandings(knex, data)
     .then(result => {
       console.log('Number of Standings Updated: ' + result)
-      fantasyHelpers.updateAllFantasy
-      process.exit()
+      fantasyHelpers.updatePoints()
+        .then(() =>{process.exit()})
+      
     })
 }
 

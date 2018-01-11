@@ -25,7 +25,7 @@ exports.up = function(knex, Promise) {
 
       table.string('league_id').notNullable();
       table.string('owner_id').notNullable();
-      table.decimal('sports_team_id',6,0).notNullable();
+      table.decimal('team_id',6,0).notNullable();
       table.integer('total_points').notNullable()
       table.timestamps();
     }),

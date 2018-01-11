@@ -49,10 +49,10 @@ router.post('/login', authHelpers.loginRedirect, (req, res, next) => {
       }) 
     }
     if (user) {
-      req.login(user, function (err) {
+      return req.login(user, function (err) {
         if (err) { handleResponse(res, 500, 'error') }
         else{
-          authHelpers.getUserLeagues(user, (user1,leagues) =>
+          return authHelpers.getUserLeagues(user, (user1,leagues) =>
             handleReduxResponse(res, 200, {
               type: C.LOGIN_SUCCESS,
               id: user1.user_id,

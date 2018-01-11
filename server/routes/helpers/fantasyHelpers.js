@@ -50,100 +50,29 @@ const getLeague = (league_id, res, type) =>{
 
 }
 
-const updateAllFantasy = updateFantasyPoints()
-
-async function updateFantasyPoints(league_id) {
-  let data = await getStandingData()
-  let points = [
-    {sport_id: 101, win:3, tie:0},
-    {sport_id: 102, win:15, tie:0},
-    {sport_id: 103, win:2, tie:0},
-    {sport_id: 104, win:3.5, tie:1.75},
-    {sport_id: 105, win:16.75, tie:0},
-    {sport_id: 106, win:7, tie:0},
-    {sport_id: 107, win:6.75, tie:2.25}]
-
-  
-  let str = league_id 
-    ? 'select a.*, b.sport_id from fantasy.rosters a, sports.team_info b where a.sports_team_id = b.team_id and a.league_id = \'' + league_id + '\''
-    : 'select a.*, b.sport_id from fantasy.rosters a, sports.team_info b where a.sports_team_id = b.team_id'
-  
-  return knex.raw(str)
-    .then(result =>
-    {
-      if (result.rows.length > 0) 
-      {
-        const rosters = result.rows.map(fteam => {
-          const team = data[fteam.sports_team_id]
-          const league = points.filter(league => league.sport_id == fteam.sport_id)[0]
-          fteam.reg_points = league.win * team.wins + league.tie * team.ties
-          fteam.bonus_points = 0
-          return fteam}) 
-
-        let byOwner = {}
-        rosters.map(roster => {
-          if (!(roster.owner_id in byOwner))
-          {
-            byOwner[roster.owner_id] = {total_points:0, league_id:roster.league_id, owner_id:roster.owner_id}
-          }
-          byOwner[roster.owner_id].total_points += roster.reg_points + roster.bonus_points
-        })
-        let byLeague = {}
-        Object.values(byOwner).map(owner => {
-          if (!(owner.league_id in byLeague))
-          {
-            byLeague[owner.league_id] = []
-          }
-          byLeague[owner.league_id].push(owner)
-        })
-        let addingRank = Object.values(byLeague).map(league => {
-          league.sort(function(a,b) {return b.total_points - a.total_points})
-          return league.map( (owner, i) => {owner.rank = i+1; return owner})
-        })
-        let fantasyPoints = [].concat.apply([], addingRank)
-        let newRosters = rosters.map(roster => {return {...roster}})
-
-        updateRosters(newRosters)
-          .then(result => {
-            console.log('Number of Rosters Updated: ' + result)
-            updatePoints(fantasyPoints)
-              .then(result2 => {
-                console.log('Number of Fantasy Points Updated: ' + result2)
-                return 0
-                //process.exit()
-              })
-          })
-        
-
-        //console.log(fantasyPoints)
-      }
-    })
-}
-
-const updateRosters = (newRosters) =>
+const updateTeamPointsTable = (newTeamPoints) =>
 {
-  //console.log(newRosters)
   return knex
     .withSchema('fantasy')
-    .table('rosters')
+    .table('team_points')
     .then(results => {
-      let oldRosters = {}
+      let oldTeamPoints = {}
       var updateList =[]
       results.map(result => {
-        if (!oldRosters[result.owner_id]){
-          oldRosters[result.owner_id] = {}
+        if (!oldTeamPoints[result.league_id]){
+          oldTeamPoints[result.league_id] = {}
         }
-        oldRosters[result.owner_id][result.sports_team_id] =result})
-      newRosters.map(roster =>
+        oldTeamPoints[result.league_id][result.team_id] =result})
+      newTeamPoints.map(teamPoints =>
       {
         //needs to be != because of 100.00 vs 100
-        if(oldRosters[roster.owner_id][roster.sports_team_id].reg_points != roster.reg_points)
+        if(oldTeamPoints[teamPoints.league_id][teamPoints.team_id].reg_points != teamPoints.reg_points)
         {
-          updateList.push(Promise.resolve(updateOneRowRosters(roster.owner_id,roster.sports_team_id,'reg_points',roster.reg_points )))
+          updateList.push(Promise.resolve(updateOneRowTeamPoints(teamPoints.league_id,teamPoints.team_id,'reg_points',teamPoints.reg_points )))
         }  
          
-        if(oldRosters[roster.owner_id][roster.sports_team_id].bonus_points != roster.bonus_points)  
-          updateList.push(Promise.resolve(updateOneRowRosters(roster.owner_id,roster.sports_team_id,'bonus_points',roster.bonus_points )))
+        if(oldTeamPoints[teamPoints.league_id][teamPoints.team_id].bonus_points != teamPoints.bonus_points)  
+          updateList.push(Promise.resolve(updateOneRowTeamPoints(teamPoints.owner_id,teamPoints.team_id,'bonus_points',teamPoints.bonus_points )))
       })
       if (updateList.length > 0)
       {
@@ -158,7 +87,7 @@ const updateRosters = (newRosters) =>
     })
 }
 
-const updatePoints = (newPoints) =>
+const updatePointsTable = (newPoints) =>
 {
   return knex
     .withSchema('fantasy')
@@ -201,13 +130,13 @@ const updateOneRow = (schema, table, column_link, column_link_val, column, value
     })
 }
 
-const updateOneRowRosters = (owner_id,sports_team_id, column, value ) =>
+const updateOneRowTeamPoints = (league_id,team_id, column, value ) =>
 {
   return knex
     .withSchema('fantasy')
-    .table('rosters')
-    .where('owner_id',owner_id)
-    .andWhere('sports_team_id',sports_team_id)
+    .table('team_points')
+    .where('league_id',league_id)
+    .andWhere('team_id',team_id)
     .update(column, value)
     .then(() =>
     {
@@ -215,20 +144,116 @@ const updateOneRowRosters = (owner_id,sports_team_id, column, value ) =>
     })
 }
 
-async function getStandingData()
+const updateTeamPoints = (league_id) =>
 {
-  return knex.withSchema('sports').table('standings').select('*')
-    .then(result => {
-      let teamMap = {}
-      result.map(team => {teamMap[team.team_id] = {...team}})
-      return teamMap
+  return getStandingData()
+    .then((data) =>
+    {
+      let points = [
+        {sport_id: 101, win:3, tie:0},
+        {sport_id: 102, win:15, tie:0},
+        {sport_id: 103, win:2, tie:0},
+        {sport_id: 104, win:3.5, tie:1.75},
+        {sport_id: 105, win:16.75, tie:0},
+        {sport_id: 106, win:7, tie:0},
+        {sport_id: 107, win:6.75, tie:2.25}]
+    
+      
+      let str = league_id 
+        ? 'select a.*, b.sport_id from fantasy.team_points a, sports.team_info b where a.team_id = b.team_id and a.league_id = \'' + league_id + '\''
+        : 'select a.*, b.sport_id from fantasy.team_points a, sports.team_info b where a.team_id = b.team_id'
+      
+      return knex.raw(str)
+        .then(result =>
+        {
+          if (result.rows.length > 0) 
+          {
+            const teamPoints = result.rows.map(fteam => {
+              const team = data[fteam.team_id]
+              const league = points.filter(league => league.sport_id == fteam.sport_id)[0]
+              fteam.reg_points = league.win * team.wins + league.tie * team.ties
+              fteam.bonus_points = 0
+              return fteam}) 
+            updateTeamPointsTable(teamPoints)
+              .then((result) =>
+              {
+                console.log('Number of Teams Updated: ' + result)
+                return 0
+              })
+             
+
+          }
+
+        })
     })
+}
+
+const updateLeaguePoints = (league_id) =>
+{
+  let str = league_id 
+    ? 'select a.reg_points, a.bonus_points, b.owner_id, b.league_id from fantasy.team_points a, fantasy.rosters b where a.team_id = b.team_id and a.league_id = b.league_id and a.league_id = \'' + league_id + '\''
+    : 'select a.reg_points, a.bonus_points, b.owner_id, b.league_id from fantasy.team_points a, fantasy.rosters b where a.team_id = b.team_id and a.league_id = b.league_id'
+  
+  return knex.raw(str)
+    .then(result =>
+    {
+      if (result.rows.length > 0) 
+      {
+        let byOwner = {}
+        result.rows.map(roster => {
+          if (!(roster.owner_id in byOwner))
+          {
+            byOwner[roster.owner_id] = {total_points:0, league_id:roster.league_id, owner_id:roster.owner_id}
+          }
+          byOwner[roster.owner_id].total_points += Number.parseFloat(roster.reg_points) + Number.parseFloat(roster.bonus_points)
+        })
+        let byLeague = {}
+        Object.values(byOwner).map(owner => {
+          if (!(owner.league_id in byLeague))
+          {
+            byLeague[owner.league_id] = []
+          }
+          byLeague[owner.league_id].push(owner)
+        })
+        let addingRank = Object.values(byLeague).map(league => {
+          league.sort(function(a,b) {return b.total_points - a.total_points})
+          return league.map( (owner, i) => {owner.rank = i+1; return owner})
+        })
+        let fantasyPoints = [].concat.apply([], addingRank)
+        return updatePointsTable(fantasyPoints)
+          .then(result => {
+            console.log('Number of Fantasy Points Updated: ' + result)
+            return 0
+          })
+      }
+    })
+
+}
+
+const getStandingData = () =>
+{
+  return new Promise((resolve) => {
+    return knex.withSchema('sports').table('standings').select('*')
+      .then(result => {
+        let teamMap = {}
+        result.map(team => {teamMap[team.team_id] = {...team}})
+        resolve(teamMap)
+      })
+  })
 }
 
 const updateFantasy = (league_id, res) =>
 {
-  updateFantasyPoints(league_id)
+  updateLeaguePoints(league_id)
     .then(() => handleReduxResponse(res, 200, {type: C.SAVED_DRAFT}))
+}
+
+const updatePoints = () =>
+{
+  return updateTeamPoints()
+    .then(() => {
+      return updateLeaguePoints()
+    })
 }
 
 
@@ -237,6 +262,8 @@ const updateFantasy = (league_id, res) =>
 
 module.exports = {
   getLeague,
-  updateAllFantasy,
-  updateFantasy
+  updateTeamPoints,
+  updateLeaguePoints,
+  updateFantasy,
+  updatePoints
 }
