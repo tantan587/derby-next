@@ -22,7 +22,7 @@ const styles = {
   root: {
     textAlign: 'center',
     paddingTop: 200,
-    backgroundImage: 'url("/static/derbyhome.png")',
+    backgroundImage: 'url("/static/images/derbyhome.png")',
     backgroundRepeat: 'no-repeat',
     backgroundAttachment: 'fixed',
     minHeight: '600px',
@@ -65,8 +65,8 @@ class Index extends React.Component {
               </Button>
             </DialogActions>
           </Dialog>
-          <Typography style={{fontFamily:'HorsebackSlab'}}
-            type="display1" style={{color:'white'}} gutterBottom>
+          <Typography 
+            type="display1" style={{color:'white', fontFamily:'HorsebackSlab'}} gutterBottom>
             Derby
           </Typography>
           <Typography type="subheading" style={{color:'white'}} gutterBottom>

@@ -1,8 +1,7 @@
 @font-face {
   font-family: "HorsebackSlab";
-  src: url("./HorsebackSlab-Bold.ttf");
-  src: 
-  url('./HorsebackSlab-Bold.ttf')  format('truetype')
+  src: url('/static/fonts/HorsebackSlab-Bold.ttf');
+  src: url('/static/fonts/HorsebackSlab-Bold.ttf')  format('truetype');
   }
 
   horseText {
