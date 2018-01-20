@@ -13,7 +13,7 @@ import withRoot from '../common/components/withRoot'
 import Layout from '../common/components/Layout'
 import withRedux from 'next-redux-wrapper'
 import storeFactory from '../common/store'
-//import '../styles/style.css'
+import '../styles/style.css'
 //https://github.com/zeit/next.js/tree/master/examples/with-global-stylesheet
 const store = storeFactory(false)
 
@@ -22,13 +22,13 @@ const styles = {
   root: {
     textAlign: 'center',
     paddingTop: 200,
-    backgroundImage: 'url("/static/derbyhome.png")',
+    backgroundImage: 'url("/static/images/derbyhome.png")',
     backgroundRepeat: 'no-repeat',
     backgroundAttachment: 'fixed',
     minHeight: '600px',
     backgroundPosition: 'center',
     backgroundSize: 'cover',
-    fontFamily:'Tinos'
+    //fontFamily:'Tinos'
   }
 }
 
@@ -65,8 +65,8 @@ class Index extends React.Component {
               </Button>
             </DialogActions>
           </Dialog>
-          <Typography //className="horseText" 
-            type="display1" style={{color:'white'}} gutterBottom>
+          <Typography 
+            type="display1" style={{color:'white', fontFamily:'HorsebackSlab'}} gutterBottom>
             Derby
           </Typography>
           <Typography type="subheading" style={{color:'white'}} gutterBottom>

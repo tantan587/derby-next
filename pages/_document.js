@@ -1,7 +1,8 @@
 import React from 'react';
-import Document, { Head, Main, NextScript } from 'next/document';
-import JssProvider from 'react-jss/lib/JssProvider';
+import Document, { Head, Main, NextScript } from 'next/document'
+import JssProvider from 'react-jss/lib/JssProvider'
 import getContext from '../styles/getContext'
+import stylesheet from '../styles/style.css'
 
 
 export default class MyDocument extends Document {
@@ -36,6 +37,7 @@ export default class MyDocument extends Document {
             href="https://fonts.googleapis.com/css?family=Titillium+Web:300,400,700"
           />
           <link href="https://fonts.googleapis.com/css?family=Tinos:700" rel="stylesheet"/>
+          <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
         </Head>
         <body>
           <Main />
