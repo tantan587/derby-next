@@ -120,9 +120,9 @@ class EnhancedTable extends React.Component {
         checkboxes = [{val: true, label: 'All'}]
         this.props.sportLeagues.map(col => checkboxes.push({val:true, label:col.sport}))
       }
+      this.setState({ checkboxes:checkboxes})
       if (this.props.owners)
       {
-        console.log(this.props.owners, this.props.myOwnerId)
         const myOwnerName = this.props.owners.filter(x => x.owner_id === this.props.myOwnerId)[0].owner_name
         const dropdown = myOwnerName
         this.setState({myOwnerName, dropdown})
