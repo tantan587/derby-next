@@ -49,7 +49,7 @@ const getStandings = (league_id, res, type) =>{
 
 
   var str = `select x.*, y.owner_id, y.owner_name from 
-  (select a.team_id, a.key, a.city, a.name, c.conference_id, c.display_name, d.sport_name, b.wins, b.losses, b.ties, e.reg_points from 
+  (select a.team_id, a.key, a.city, a.name, a.logo_url, c.conference_id, c.display_name, d.sport_name, b.wins, b.losses, b.ties, e.reg_points from 
   sports.team_info a, sports.standings b, sports.conferences c, sports.leagues d, fantasy.team_points e
   where a.team_id = b.team_id and c.conference_id = a.conference_id and a.sport_id = d.sport_id and a.team_id = e.team_id and e.league_id = '` + league_id + '\'' +
   `) x
@@ -79,6 +79,7 @@ const getStandings = (league_id, res, type) =>{
             wins: team.wins,
             losses:team.losses,
             ties:team.ties,
+            logo_url:team.logo_url,
             owner_id:team.owner_id ? team.owner_id : 'N/A',
             owner_name:team.owner_name ? team.owner_name : 'N/A',
             points: Number.parseFloat(team.reg_points)  

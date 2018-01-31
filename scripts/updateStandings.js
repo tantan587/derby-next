@@ -116,7 +116,7 @@ async function getCfbData()
 
 async function getEplData()
 {
-  return db_helpers.getFantasyData(knex, 'EPL', 'https://api.fantasydata.net/v3/soccer/scores/json/Standings/144?', 'ShortName')
+  return db_helpers.getFantasyData(knex, 'EPL', 'https://api.fantasydata.net/v3/soccer/scores/json/Standings/144?', 'Name')
     .then(result => { 
       let newStandings = []
       result.filter(team => team.Scope === 'Total').map(team => 

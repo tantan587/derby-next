@@ -4,14 +4,15 @@ const knex = require('../../server/db/connection')
 
 let teamInfo = []
 let standings = []
-db_helpers.getFantasyData(knex, 'EPL', 'https://api.fantasydata.net/v3/soccer/scores/json/Standings/144?', 'ShortName')
+db_helpers.getFantasyData(knex, 'EPL', 'https://api.fantasydata.net/v3/soccer/scores/json/Teams', 'Name', '', true)
   .then(result =>{ 
-    result.filter(team => team.Scope === 'Total').map(team => 
+    result.map(team => 
     {
-      teamInfo.push({sport_id: team.sport_id, team_id: team.team_id, key: team.ShortName, city: '', 
-        name: team.Name, conference_id: team.conference_id})
+      teamInfo.push({sport_id: team.sport_id, team_id: team.team_id, key: team.Key, city: team.City, 
+        name: team.Name, conference_id: team.conference_id,
+        logo_url:team.WikipediaLogoUrl ? team.WikipediaLogoUrl : 'none', global_team_id:team.GlobalTeamId})
 
-      standings.push({team_id: team.team_id, wins : team.Wins, losses: team.Losses, ties: team.Draws})    
+      standings.push({team_id: team.team_id, wins : 0, losses: 0, ties: 0})    
     })
     db_helpers.insertIntoTable(knex, 'sports', 'team_info', teamInfo)
       .then(() =>

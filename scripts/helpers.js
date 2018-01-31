@@ -17,7 +17,7 @@ methods.getTeamId =  function(knex, sportId)
     .where('sport_id', sportId)
 }
 
-methods.getFantasyData = (knex, sportName, url, teamKeyField, confField) => 
+methods.getFantasyData = (knex, sportName, url, teamKeyField, confField, eplAreaIdInd = false) => 
 {
   return knex
     .withSchema('sports')
@@ -60,12 +60,24 @@ methods.getFantasyData = (knex, sportName, url, teamKeyField, confField) =>
                             sport_id:sportId,
                             conference_id:confMap[conf[confField]], 
                             team_id:teamIdMap[team[teamKeyField]]})))
-                    : fdata
-                      .map(team =>
-                        teams.push({...team, 
-                          sport_id:sportId,
-                          conference_id: sportName === 'EPL' ? confMap[sportName] : confMap[team[confField]], 
-                          team_id:teamIdMap[team[teamKeyField]]}))
+                    : eplAreaIdInd 
+                      ? fdata.filter(fd => fd.AreaId === 68 || fd.TeamId === 523)
+                        .map(team =>
+                        {
+                          if(teamIdMap[team[teamKeyField]])
+                          {
+                            teams.push({...team, 
+                              sport_id:sportId,
+                              conference_id: confMap[sportName], 
+                              team_id:teamIdMap[team[teamKeyField]]})
+                          }
+                        })
+                      : fdata
+                        .map(team =>
+                          teams.push({...team, 
+                            sport_id:sportId,
+                            conference_id: sportName === 'EPL' ? confMap[sportName] : confMap[team[confField]], 
+                            team_id:teamIdMap[team[teamKeyField]]}))
 
                   return teams
                 })

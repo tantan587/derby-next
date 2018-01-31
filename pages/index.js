@@ -80,6 +80,9 @@ class Index extends React.Component {
           <Button raised color="accent" onClick={this.handleClick}>
             Our Super Secret Password
           </Button>
+          <div>
+            <img src='https://upload.wikimedia.org/wikipedia/en/0/02/Washington_Wizards_logo.svg' alt="Basketball" width="16" height="16"/>
+          </div>
         </div>
       </Layout>
     )
