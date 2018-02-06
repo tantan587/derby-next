@@ -256,6 +256,19 @@ const updatePoints = () =>
     })
 }
 
+const getDayCount = (date) => {
+
+  // The number of milliseconds in one day
+  var ONE_DAY = 1000 * 60 * 60 * 24
+
+  //my starting point 08/25/2013 12AM
+  var startingDate = 1375938000000
+  var date_ms = date.getTime()
+
+  // Convert back to days and return
+  return Math.floor((date_ms - startingDate)/ONE_DAY)
+}
+
 
 
 //const getSports
@@ -265,5 +278,6 @@ module.exports = {
   updateTeamPoints,
   updateLeaguePoints,
   updateFantasy,
-  updatePoints
+  updatePoints,
+  getDayCount
 }

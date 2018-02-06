@@ -137,6 +137,7 @@ class MainLeaguePage extends React.Component {
               owners={this.props.activeLeague.owners}
               myOwnerId={this.props.activeLeague.owners[0].owner_id}
               myHeaders = {[
+                {label: 'Logo', key: 'logo_url', sortId:'team_name'},
                 {label: 'Team Name', key: 'team_name'},
                 {label: 'Sport League', key: 'sport'},
                 {label: 'Conference', key: 'conference'},
@@ -152,6 +153,7 @@ class MainLeaguePage extends React.Component {
             sportLeagues={this.props.sportLeagues}
             myRows={myTeams}
             myHeaders = {[
+              {label: 'Logo', key: 'logo_url', sortId:'team_name'},
               {label: 'Team Name', key: 'team_name'},
               {label: 'Owner Name', key: 'owner_name'},
               {label: 'Sport League', key: 'sport'},

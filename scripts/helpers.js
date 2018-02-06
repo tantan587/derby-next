@@ -17,6 +17,49 @@ methods.getTeamId =  function(knex, sportId)
     .where('sport_id', sportId)
 }
 
+methods.getTeamAndGlobalId =  function(knex, sportId)
+{
+  return knex
+    .withSchema('sports')
+    .table('team_info')
+    .where('sport_id', sportId)
+    .select('team_id', 'global_team_id')
+}
+
+methods.getScheduleData = (knex, sportName, url) => 
+{
+  return knex
+    .withSchema('sports')
+    .table('leagues')
+    .where('sport_name', sportName)
+    .then((league)=> {
+      const sportId = league[0].sport_id
+      return methods.getTeamAndGlobalId(knex, sportId)
+        .then(teamIds => {
+          let teamIdMap = {}
+          teamIds.map(r => teamIdMap[r.global_team_id]= r.team_id)
+          const options = {
+            url: url,
+            headers: {
+              'User-Agent': 'request',
+              'Ocp-Apim-Subscription-Key':league[0].fantasy_data_key
+            },
+            json: true
+          }
+          return rp(options)
+            .then((fdata) => {
+              let games = []
+              fdata.map(game => games.push({...game, 
+                home_team_id:teamIdMap[game.GlobalHomeTeamID],
+                away_team_id:teamIdMap[game.GlobalAwayTeamID],
+              })
+              )
+              return games
+            })
+        })
+    })
+}
+
 methods.getFantasyData = (knex, sportName, url, teamKeyField, confField, eplAreaIdInd = false) => 
 {
   return knex
