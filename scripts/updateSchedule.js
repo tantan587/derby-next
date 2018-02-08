@@ -18,11 +18,11 @@ async function createSchedule()
   // let eplData = await getEplData()
   let data = nhlData.concat(nbaData).concat(cbbData).concat(cfbData).concat(mlbData).concat(nflData).concat(eplData)
 
-  db_helpers.insertIntoTable(knex, 'sports', 'schedule', data)
-    .then(result => {
-      console.log('Number of Schedules Updated: ' + result)
-      process.exit()
-    })
+  // db_helpers.updateSchedule(knex, data)
+  //   .then(result => {
+  //     console.log('Number of Schedules Updated: ' + result)
+  //     process.exit()
+  //   })
 }
 
 async function getData(league, url)

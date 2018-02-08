@@ -34,6 +34,7 @@ methods.getScheduleData = (knex, sportName, url) =>
     .where('sport_name', sportName)
     .then((league)=> {
       const sportId = league[0].sport_id
+      const idSpelling = sportName === 'EPL' ? 'Id' : 'ID'
       return methods.getTeamAndGlobalId(knex, sportId)
         .then(teamIds => {
           let teamIdMap = {}
@@ -49,9 +50,11 @@ methods.getScheduleData = (knex, sportName, url) =>
           return rp(options)
             .then((fdata) => {
               let games = []
-              fdata.map(game => games.push({...game, 
-                home_team_id:teamIdMap[game.GlobalHomeTeamID],
-                away_team_id:teamIdMap[game.GlobalAwayTeamID],
+              fdata.filter(game => game['GlobalGame' + idSpelling] ).map(game => games.push({...game, //&& !game.Canceled
+                global_game_id:game['GlobalGame' + idSpelling], 
+                home_team_id:teamIdMap[game['GlobalHomeTeam' + idSpelling]],
+                away_team_id:teamIdMap[game['GlobalAwayTeam' + idSpelling]],
+                date_time:game.DateTime ? game.DateTime : game.Day
               })
               )
               return games
