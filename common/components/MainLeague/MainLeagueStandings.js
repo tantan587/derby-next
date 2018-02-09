@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from 'material-ui/styles'
-import EnhancedTable from './EnhancedTable'
+import EnhancedTable from '../EnhancedTable'
 
 import { connect } from 'react-redux'
 
@@ -16,7 +16,7 @@ const styles = {
   }
 }
 
-class MainLeagueStandingsTable extends React.Component {
+class MainLeagueStandings extends React.Component {
   
 
   render() {
@@ -33,7 +33,7 @@ class MainLeagueStandingsTable extends React.Component {
   }
 }
 
-MainLeagueStandingsTable.propTypes = {
+MainLeagueStandings.propTypes = {
   classes: PropTypes.object.isRequired,
 }
 
@@ -43,6 +43,6 @@ export default connect(
       activeLeague : state.activeLeague,
     }),
   null
-)(withStyles(styles)(MainLeagueStandingsTable))
+)(withStyles(styles)(MainLeagueStandings))
 
 

@@ -1,24 +1,24 @@
 import React from 'react'
 import Layout from '../common/components/Layout'
-import MainLeagueLayout from '../common/components/MainLeagueLayout'
+import MainLeagueLayout from '../common/components/MainLeague/MainLeagueLayout'
 import withRoot from '../common/components/withRoot'
 import withRedux from 'next-redux-wrapper'
 import storeFactory from '../common/store'
+import MainLeagueRoster from '../common/components/MainLeague/MainLeagueRoster'
 
-class MainLeagueWelcome2 extends React.Component {
+
+class Roster extends React.Component {
 
   render() {
     return (
       <div>
         <Layout >
           <MainLeagueLayout>
-            <div>
-              Welcome21
-            </div>
+            <MainLeagueRoster/>
           </MainLeagueLayout>
         </Layout>
       </div>
     )
   }
 }
-export default withRedux(storeFactory)(withRoot(MainLeagueWelcome2))
+export default withRedux(storeFactory)(withRoot(Roster))

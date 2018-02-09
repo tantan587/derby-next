@@ -6,9 +6,9 @@ import { withStyles } from 'material-ui/styles'
 import Typography from 'material-ui/Typography'
 import AppBar from 'material-ui/AppBar'
 import Tabs, { Tab } from 'material-ui/Tabs'
-import EnhancedTable from './EnhancedTable'
-import AddOfflineDraftForm from './AddOfflineDraftForm'
-import Menu, { MenuItem } from 'material-ui/Menu';
+import EnhancedTable from '../EnhancedTable'
+import AddOfflineDraftForm from '../AddOfflineDraftForm'
+import Menu, { MenuItem } from 'material-ui/Menu'
 
 import { connect } from 'react-redux'
 
@@ -46,8 +46,11 @@ class MainLeaguePage extends React.Component {
     case 0:
       Router.push('/mainleaguestandings')
       break
-    case 1:
-      Router.push('/mainleaguewelcome2')
+    case 2:
+      Router.push('/mainleagueroster')
+      break
+    case 3:
+      Router.push('/mainleagueteams')
     }
     this.setState({ value })
   }
@@ -95,15 +98,7 @@ class MainLeaguePage extends React.Component {
               textColor="primary"
               centered
             >
-              
-              <Tab label="Welcome"/> 
-              <Tab label="Welcome2" />
-                {/* component={Link} 
-                 to='/mainleaguewelcome'
-               <Link href='/mainleaguewelcome2'>
-                <Tab label="Welcome2" />
-              </Link> */}
-              <Tab label="Standingss" />
+              <Tab label="Standings" />
               <Tab label="Schedules" />
               <Tab label="Rosters" />
               <Tab label="All Teams"/>
@@ -132,35 +127,8 @@ class MainLeaguePage extends React.Component {
                 {option}
               </MenuItem>))}
           </Menu>
-          {value === 2 && <EnhancedTable
-            title='League Standings'
-            usePagination={false}
-            myRows={this.props.activeLeague.owners}
-            myHeaders = {[
-              {label: 'Rank', key: 'rank'},
-              {label: 'Owner', key: 'owner_name'},
-              {label: 'User', key: 'username'},
-              {label: 'Points', key: 'total_points'}
-            ]}/>}
+          {value === 1 && <TabContainer>Schedule</TabContainer>}
           {value === 3 && <TabContainer>Item Two</TabContainer>}
-          {value === 4 && <TabContainer>
-            <EnhancedTable
-              title='Roster'
-              usePagination={false}
-              myRows={myTeams}
-              rosterTitle={true}
-              owners={this.props.activeLeague.owners}
-              myOwnerId={this.props.activeLeague.owners[0].owner_id}
-              myHeaders = {[
-                {label: 'Logo', key: 'logo_url', sortId:'team_name'},
-                {label: 'Team Name', key: 'team_name'},
-                {label: 'Sport League', key: 'sport'},
-                {label: 'Conference', key: 'conference'},
-                {label: 'Record', key: 'record', sortId:'percentage'},
-                {label: 'Percentage', key: 'percentage'},
-                {label: 'Points', key: 'points'}
-              ]}/>
-          </TabContainer>}
           {value === 5 && <TabContainer><EnhancedTable
             title='Sports Standings'
             usePagination={true}
