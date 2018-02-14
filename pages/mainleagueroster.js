@@ -13,7 +13,7 @@ class Roster extends React.Component {
     return (
       <div>
         <Layout >
-          <MainLeagueLayout>
+          <MainLeagueLayout value={2}>
             <MainLeagueRoster/>
           </MainLeagueLayout>
         </Layout>

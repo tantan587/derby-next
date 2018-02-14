@@ -4,21 +4,21 @@ import MainLeagueLayout from '../common/components/MainLeague/MainLeagueLayout'
 import withRoot from '../common/components/withRoot'
 import withRedux from 'next-redux-wrapper'
 import storeFactory from '../common/store'
-import MainLeagueStandings from '../common/components/MainLeague/MainLeagueStandings'
+import MainLeagueSchedule from '../common/components/MainLeague/MainLeagueSchedule'
 
 
-class Standings extends React.Component {
+class Schedule extends React.Component {
 
   render() {
     return (
       <div>
         <Layout >
-          <MainLeagueLayout value={0}>
-            <MainLeagueStandings />
+          <MainLeagueLayout value={1}>
+            <MainLeagueSchedule/>
           </MainLeagueLayout>
         </Layout>
       </div>
     )
   }
 }
-export default withRedux(storeFactory)(withRoot(Standings))
+export default withRedux(storeFactory)(withRoot(Schedule))

@@ -9,7 +9,7 @@ const layoutStyle = {
 
 const Layout = (props) => (
   <div style={layoutStyle}>
-    <MainLeagueBar />
+    <MainLeagueBar value={props.value}/>
     {props.children}
   </div>
 )

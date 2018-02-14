@@ -13,8 +13,8 @@ class Teams extends React.Component {
     return (
       <div>
         <Layout >
-          <MainLeagueLayout>
-            <MainLeagueTeams/>
+          <MainLeagueLayout value={3}>
+            <MainLeagueTeams />
           </MainLeagueLayout>
         </Layout>
       </div>

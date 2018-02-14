@@ -35,7 +35,6 @@ function TabContainer(props) {
 
 class MainLeaguePage extends React.Component {
   state = {
-    value: 0,
     commishOpen:false,
     commishAnchorEl:null,
     commishIndex:0
@@ -46,13 +45,15 @@ class MainLeaguePage extends React.Component {
     case 0:
       Router.push('/mainleaguestandings')
       break
+    case 1:
+      Router.push('/mainleagueschedule')
+      break
     case 2:
       Router.push('/mainleagueroster')
       break
     case 3:
       Router.push('/mainleagueteams')
     }
-    this.setState({ value })
   }
 
   handleCommishClick = event => {
@@ -77,8 +78,8 @@ class MainLeaguePage extends React.Component {
     if(1 === 0)
     {return(<div></div>)}
     else{
-      const { classes } = this.props
-      const { value, commishIndex } = this.state
+      const { classes, value } = this.props
+      const {  commishIndex } = this.state
       let myTeams = []
       this.props.teams.map(team => myTeams.push({
         ...team, 
@@ -127,7 +128,6 @@ class MainLeaguePage extends React.Component {
                 {option}
               </MenuItem>))}
           </Menu>
-          {value === 1 && <TabContainer>Schedule</TabContainer>}
           {value === 6 && <TabContainer>Item Five</TabContainer>}
           {value === 7 && <TabContainer>Item Six</TabContainer>}
           {value === 8 && <TabContainer>Item Seven</TabContainer>}
