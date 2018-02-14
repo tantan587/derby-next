@@ -128,23 +128,6 @@ class MainLeaguePage extends React.Component {
               </MenuItem>))}
           </Menu>
           {value === 1 && <TabContainer>Schedule</TabContainer>}
-          {value === 3 && <TabContainer>Item Two</TabContainer>}
-          {value === 5 && <TabContainer><EnhancedTable
-            title='Sports Standings'
-            usePagination={true}
-            checkboxColumn='sport'
-            sportLeagues={this.props.sportLeagues}
-            myRows={myTeams}
-            myHeaders = {[
-              {label: 'Logo', key: 'logo_url', sortId:'team_name'},
-              {label: 'Team Name', key: 'team_name'},
-              {label: 'Owner Name', key: 'owner_name'},
-              {label: 'Sport League', key: 'sport'},
-              {label: 'Conference', key: 'conference'},
-              {label: 'Record', key: 'record', sortId:'percentage'},
-              {label: 'Percentage', key: 'percentage'},
-              {label: 'Points', key: 'points'}
-            ]}/></TabContainer>}
           {value === 6 && <TabContainer>Item Five</TabContainer>}
           {value === 7 && <TabContainer>Item Six</TabContainer>}
           {value === 8 && <TabContainer>Item Seven</TabContainer>}

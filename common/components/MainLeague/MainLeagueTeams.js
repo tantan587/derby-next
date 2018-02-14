@@ -52,7 +52,7 @@ MainLeagueTeams.propTypes = {
 export default connect(
   state =>
     ({
-      activeLeague : state.activeLeague,
+      sportLeagues : state.sportLeagues,
       teams: state.teams,
     }),
   null
