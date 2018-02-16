@@ -250,8 +250,8 @@ class EnhancedTable extends React.Component {
       <Paper className={classes.root}>
         <div className={classes.tableWrapper}>
           <br/>
-          {this.props.rosterTitle ?
-            <div>
+          {this.props.rosterTitle 
+            ? <div>
               <TextField
                 id={'select-owner'}
                 select
