@@ -17,6 +17,12 @@ router.post('/sportleagues', authHelpers.loginRequired, (req, res, next)  => {
       handleResponse(res, 500, err)})
 })
 
+router.post('/schedule', authHelpers.loginRequired, (req, res, next)  => {
+  return getSchedule(req.body.league_id, req.body.date, res)
+    .catch((err) => { 
+      handleResponse(res, 500, err)})
+})
+
 router.post('/savedraft', authHelpers.loginRequired, (req, res, next)  => {
   return enterDraftToDb(req, res)
     .then(() => { 
@@ -89,6 +95,33 @@ const getStandings = (league_id, res, type) =>{
         return handleReduxResponse(res,200, {
           type: type,
           teams : teams
+        })
+      }
+      else
+      {
+        return handleReduxResponse(res,400, {})
+      }
+    })
+}
+
+const getSchedule = (league_id, date, res) => {
+  var split = date.split('-')
+  const day = fantasyHelpers.getDayCount(new Date(split[0],split[1]-1,split[2]))
+  var str = 'select * from sports.schedule where day_count = ' + day
+  return knex.raw(str)
+    .then(result =>
+    {
+      if (result.rows.length > 0) 
+      {
+        const scheduleRows = []
+        result.rows.map(row => 
+        {
+          scheduleRows.push({global_game_id:row.global_game_id, home_team_id:row.home_team_id, away_team_id:row.away_team_id, date_time:row.date_time})
+
+        })
+        return handleReduxResponse(res,200, {
+          type: C.GET_SCHEDULE_BY_DAY,
+          schedule : scheduleRows
         })
       }
       else

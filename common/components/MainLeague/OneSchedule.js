@@ -63,7 +63,7 @@ const styles = theme => ({
 class OneSchedule extends React.Component {
  
   render() {
-    const {name, classes} = this.props
+    const {homeTeam, awayTeam, sport, classes} = this.props
     const columnData = [
       {name:'Teams', width:'20px'}, 
       {name:'Score', width:'30px'},
@@ -99,7 +99,7 @@ class OneSchedule extends React.Component {
         <br style={{clear: 'left'}}/>
 
         <div className={classes.con1} style={{width:200}} >
-          <Typography type="body2">Chicago Bulls</Typography>
+          <Typography type="body2">{awayTeam}</Typography>
         </div>
         <div className={classes.con2} style={{width:50}}>
           <Typography type="body2">45</Typography>
@@ -118,7 +118,7 @@ class OneSchedule extends React.Component {
         <br style={{clear: 'left'}}/>
 
         <div className={classes.con3} style={{width:200}} >
-          <Typography type="body2">Boston Celtics</Typography>
+          <Typography type="body2">{homeTeam}</Typography>
         </div>
         <div className={classes.con4} style={{width:50}}>
           <Typography type="body2">90</Typography>
@@ -130,7 +130,7 @@ class OneSchedule extends React.Component {
           <Typography type="body2">You</Typography>
         </div>
         <div className={classes.con5} style={{width:50}}>
-          <Typography type="body2">{name}</Typography>
+          <Typography type="body2">{sport}</Typography>
         </div>
         <div className={classes.con5} style={{width:50}}>
           <Typography type="body2">3</Typography>

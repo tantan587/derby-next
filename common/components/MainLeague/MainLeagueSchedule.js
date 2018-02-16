@@ -7,6 +7,7 @@ import TextField from 'material-ui/TextField'
 import {MenuItem} from 'material-ui/Menu'
 import { connect } from 'react-redux'
 import Typography from 'material-ui/Typography'
+import {clickedDateChange} from '../../actions/sport-actions'
 
 
 const styles = theme => ({
@@ -65,19 +66,22 @@ class MainLeagueSchedule extends React.Component {
   }
 
   handleUpdateDay = () => event => {
-    if (event.target.value !== '')
+    const newValue = event.target.value
+    if (newValue !== '')
     {
+      const { onDateChange, activeLeague } = this.props
       this.setState({
-        goodDay: event.target.value
+        goodDay: newValue
       })
+      onDateChange(activeLeague.league_id, newValue)
     }
     this.setState({
-      day: event.target.value
+      day: newValue
     })
   }
 
   render() {
-    const { classes, sportLeagues, activeLeague} = this.props
+    const { classes, sportLeagues, activeLeague, teams, schedule} = this.props
     const {day, goodDay} = this.state
     const myOwnerName = activeLeague.owners.filter(x => x.owner_id === this.props.activeLeague.owners[0].owner_id)[0].owner_name
     const sportLeaguesArr = Array.from(sportLeagues)
@@ -92,6 +96,13 @@ class MainLeagueSchedule extends React.Component {
     var d = new Date(split[0],split[1]-1,split[2])
 
     var dateStr = weekdays[d.getDay()] + ', ' + monthNames[d.getMonth()] + ' ' + (d.getDate()) + ', ' + d.getFullYear()
+
+    var schedules = []
+    schedule.map(x => {
+      const homeTeam = teams.filter(team => team.team_id === x.home_team_id)[0]
+      const awayTeam = teams.filter(team => team.team_id === x.away_team_id)[0]
+      schedules.push({homeTeam:homeTeam.team_name, awayTeam:awayTeam.team_name, sport:homeTeam.sport})
+    })
 
     return(<Paper className={classes.root}>
       <div className={classes.tableWrapper}>
@@ -162,9 +173,9 @@ class MainLeagueSchedule extends React.Component {
       <br style={{clear: 'both'}}/>
       <br/>
       <Typography className={classes.title} type="headline">{dateStr}</Typography>
-      <br/>
-      {sportLeagues.map(x =>
-        <OneSchedule name={x.sport} />
+      <br/>(
+      {schedules.map((x,i) =>
+        <OneSchedule sport={x.sport} homeTeam={x.homeTeam} awayTeam={x.awayTeam} key={i} />
       )}
     </Paper>
     )
@@ -181,8 +192,15 @@ export default connect(
       activeLeague : state.activeLeague,
       teams: state.teams,
       sportLeagues : state.sportLeagues,
+      schedule : state.schedule,
     }),
-  null
+  dispatch =>
+    ({
+      onDateChange(league_id, date) {
+        dispatch(
+          clickedDateChange(league_id, date))
+      }
+    })
 )(withStyles(styles)(MainLeagueSchedule))
 
 
