@@ -117,6 +117,10 @@ function createLeague(req, res) {
         .catch((err) => {
           res.status(400).json(err)
         })
+        
+    })
+    .catch((action) => {
+      handleReduxResponse(res,400,action)
     })
 }
 

@@ -78,7 +78,7 @@ const getStandings = (league_id, res, type) =>{
           {
             key:team.key, 
             team_id:team.team_id,
-            team_name:team.name !== null ? team.city + ' ' + team.name : team.city,
+            team_name:team.sport_name !== 'EPL' ? team.city + ' ' + team.name : team.name,
             sport:team.sport_name,
             conference:team.display_name,
             conference_id:team.conference_id,
@@ -105,9 +105,13 @@ const getStandings = (league_id, res, type) =>{
 }
 
 const getSchedule = (league_id, date, res) => {
-  var split = date.split('-')
-  const day = fantasyHelpers.getDayCount(new Date(split[0],split[1]-1,split[2]))
-  var str = 'select * from sports.schedule where day_count = ' + day
+  const dayCount = fantasyHelpers.getDayCountStr(date)
+  console.log(date)
+  console.log(dayCount)
+  var str =  `select a.* from sports.schedule a, fantasy.sports b where 
+          b.league_id = '` + league_id + `' and a.sport_id = b.sport_id 
+          and day_count = ` + dayCount
+  console.log(str)
   return knex.raw(str)
     .then(result =>
     {
@@ -116,7 +120,14 @@ const getSchedule = (league_id, date, res) => {
         const scheduleRows = []
         result.rows.map(row => 
         {
-          scheduleRows.push({global_game_id:row.global_game_id, home_team_id:row.home_team_id, away_team_id:row.away_team_id, date_time:row.date_time})
+          scheduleRows.push({
+            global_game_id:row.global_game_id,
+            home_team_id:row.home_team_id,
+            away_team_id:row.away_team_id,
+            date_time:row.date_time,
+            sport_id:row.sport_id,
+            time:fantasyHelpers.formatAMPM(new Date(row.date_time))
+          })
 
         })
         return handleReduxResponse(res,200, {

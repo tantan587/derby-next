@@ -30,13 +30,15 @@ async function getData(league, url)
   return db_helpers.getScheduleData(knex, league, url)
     .then(result => { 
       let newSchedule = []
+
       result.map(game => 
       {
         newSchedule.push({global_game_id: game.global_game_id, 
           home_team_id : game.home_team_id, 
           away_team_id : game.away_team_id,
           date_time: game.date_time,
-          day_count: fantasyHelpers.getDayCount(new Date(game.date_time))})    
+          day_count: fantasyHelpers.getDayCountStr(game.date_time),
+          sport_id:game.sport_id})    
       })
       newSchedule = newSchedule.filter(x => x.away_team_id && x.home_team_id)
       console.log(newSchedule.length)

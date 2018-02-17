@@ -54,7 +54,8 @@ methods.getScheduleData = (knex, sportName, url) =>
                 global_game_id:game['GlobalGame' + idSpelling], 
                 home_team_id:teamIdMap[game['GlobalHomeTeam' + idSpelling]],
                 away_team_id:teamIdMap[game['GlobalAwayTeam' + idSpelling]],
-                date_time:game.DateTime ? game.DateTime : game.Day
+                date_time:game.DateTime ? game.DateTime : game.Day,
+                sport_id:sportId
               })
               )
               return games

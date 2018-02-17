@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from 'material-ui/styles'
 import Typography from 'material-ui/Typography'
-import grey from 'material-ui/colors/grey';
+import grey from 'material-ui/colors/grey'
 
 const styles = theme => ({
   center:{
@@ -63,25 +63,18 @@ const styles = theme => ({
 class OneSchedule extends React.Component {
  
   render() {
-    const {homeTeam, awayTeam, sport, classes} = this.props
-    const columnData = [
-      {name:'Teams', width:'20px'}, 
-      {name:'Score', width:'30px'},
-      // {name: 'Status', width:20}, 
-      // {name: 'Owner', width:50}, 
-      // {name: 'League', width:20}, 
-      // {name: 'Points', width:20}, 
-      // {name: 'Impact', width:20}
-    ]
+    const {homeTeam, awayTeam, sport, dateTime, time, classes} = this.props
+    //const date = fantasyHelpers.getDayCountStr(dateTime)
+    //const time = fantasyHelpers.formatAMPM(new Date(dateTime))
     return(
-      <div style={{left:'50%', position:'relative', marginLeft:-275}}>
+      <div style={{left:'50%', position:'relative', marginLeft:-300}}>
         <div className={classes.con1} style={{width:200}} >
           <Typography type="body2">Team</Typography>
         </div>
         <div className={classes.con2} style={{width:50}}>
           <Typography type="body2">Score</Typography>
         </div>
-        <div className={classes.con2} style={{width:50}}>
+        <div className={classes.con2} style={{width:100}}>
           <Typography type="body2">Status</Typography>
         </div>
         <div className={classes.con2} style={{width:120}}>
@@ -102,9 +95,9 @@ class OneSchedule extends React.Component {
           <Typography type="body2">{awayTeam}</Typography>
         </div>
         <div className={classes.con2} style={{width:50}}>
-          <Typography type="body2">45</Typography>
+          <Typography type="body2">0</Typography>
         </div>
-        <div className={classes.con2} style={{width:50}}>
+        <div className={classes.con2} style={{width:100}}>
         </div>
         <div className={classes.con2} style={{width:120}}>
           <Typography type="body2">Me</Typography>
@@ -121,10 +114,10 @@ class OneSchedule extends React.Component {
           <Typography type="body2">{homeTeam}</Typography>
         </div>
         <div className={classes.con4} style={{width:50}}>
-          <Typography type="body2">90</Typography>
+          <Typography type="body2">0</Typography>
         </div>
-        <div className={classes.con5} style={{width:50}}>
-          <Typography type="body2">Final</Typography>
+        <div className={classes.con5} style={{width:100}}>
+          <Typography type="body2">{time}</Typography>
         </div>
         <div className={classes.con4} style={{width:120}}>
           <Typography type="body2">You</Typography>
