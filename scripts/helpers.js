@@ -84,6 +84,7 @@ methods.getFantasyData = (knex, sportName, url, teamKeyField, confField, eplArea
             },
             json: true
           }
+          console.log(league[0].fantasy_data_key)
           return knex
             .withSchema('sports')
             .table('conferences')
@@ -98,6 +99,7 @@ methods.getFantasyData = (knex, sportName, url, teamKeyField, confField, eplArea
                 : confs.map(conf => confMap[conf.name] = conf.conference_id)
               return rp(options)
                 .then((fdata) => {
+                  console.log(fdata.length)
                   let teams = []
                   filterConferencesInd 
                     ?  fdata.filter(fd => fd.ConferenceID in confMap)
