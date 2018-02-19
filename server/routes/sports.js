@@ -106,12 +106,9 @@ const getStandings = (league_id, res, type) =>{
 
 const getSchedule = (league_id, date, res) => {
   const dayCount = fantasyHelpers.getDayCountStr(date)
-  console.log(date)
-  console.log(dayCount)
-  var str =  `select a.* from sports.schedule a, fantasy.sports b where 
-          b.league_id = '` + league_id + `' and a.sport_id = b.sport_id 
+  var str =  `select a.*, c.* from sports.schedule a, fantasy.sports b, sports.results c where 
+          b.league_id = '` + league_id + `' and a.sport_id = b.sport_id and a.global_game_id = c.global_game_id
           and day_count = ` + dayCount
-  console.log(str)
   return knex.raw(str)
     .then(result =>
     {
@@ -126,7 +123,13 @@ const getSchedule = (league_id, date, res) => {
             away_team_id:row.away_team_id,
             date_time:row.date_time,
             sport_id:row.sport_id,
-            time:fantasyHelpers.formatAMPM(new Date(row.date_time))
+            time:fantasyHelpers.formatAMPM(new Date(row.date_time)),
+            home_team_score:row.home_team_score,
+            away_team_score:row.away_team_score,
+            status:row.status,
+            winner:row.winner,
+            game_time:row.time,
+            period:row.period
           })
 
         })

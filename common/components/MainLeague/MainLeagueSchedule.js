@@ -50,8 +50,8 @@ class MainLeagueSchedule extends React.Component {
     this.state = {
       owner: '',
       sport: '',
-      day: new Date().toJSON().slice(0,10),
-      goodDay: new Date().toJSON().slice(0,10),
+      day: new Date(new Date().toString().slice(4,15)).toJSON().slice(0,10),
+      goodDay: new Date(new Date().toString().slice(4,15)).toJSON().slice(0,10),
     }
   }
 
@@ -104,16 +104,17 @@ class MainLeagueSchedule extends React.Component {
 
   render() {
     const { classes, sportLeagues, activeLeague, teams, schedule} = this.props
-    const {sport, day, goodDay} = this.state
+    const {sport, day, owner, goodDay} = this.state
     const myOwnerName = activeLeague.owners.filter(x => x.owner_id === this.props.activeLeague.owners[0].owner_id)[0].owner_name
-    const sportLeaguesArr = Array.from(sportLeagues)
     const ownersArr = Array.from(activeLeague.owners)
-    sportLeaguesArr.unshift({sport:'All'})
+    ownersArr.unshift({owner_name:'League Only'})
     ownersArr.unshift({owner_name:'All'})
 
     const idToSport = {}
     sportLeagues.map(x => idToSport[x.sport_id] = x.sport)
-
+    const sportLeaguesArr  = [...new Set(schedule.map(item => idToSport[item.sport_id]))]
+    
+    sportLeaguesArr.unshift('All')
 
     const weekdays = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
     var monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
@@ -124,18 +125,26 @@ class MainLeagueSchedule extends React.Component {
     var dateStr = weekdays[d.getDay()] + ', ' + monthNames[d.getMonth()] + ' ' + (d.getDate()) + ', ' + d.getFullYear()
 
     var schedules = []
-    schedule.filter(x => sport === 'All' || sport === '' ? true : idToSport[x.sport_id] === sport).map(x => {
-      const homeTeam = teams.filter(team => team.team_id === x.home_team_id)[0]
-      const awayTeam = teams.filter(team => team.team_id === x.away_team_id)[0]
-      schedules.push({
-        homeTeam:homeTeam.team_name, 
-        awayTeam:awayTeam.team_name, 
-        sport:homeTeam.sport,
-        dateTime:x.date_time,
-        time:x.time
+    schedule
+      .filter(x => sport === 'All' || sport === '' ? true : idToSport[x.sport_id] === sport)
+      .map(x => {
+        const homeTeam = teams.filter(team => team.team_id === x.home_team_id)[0]
+        const awayTeam = teams.filter(team => team.team_id === x.away_team_id)[0]
+        if(owner === 'All' || owner === '' || 
+        (owner === 'League Only' && (homeTeam.owner_name !== 'N/A' || awayTeam.owner_name !== 'N/A' )) ||
+        homeTeam.owner_name === owner || awayTeam.owner_name === owner)
+        {
+          schedules.push({
+            ...x,
+            home_team:homeTeam.team_name, 
+            away_team:awayTeam.team_name, 
+            sport:homeTeam.sport,
+            home_team_owner:homeTeam.owner_name,
+            away_team_owner:awayTeam.owner_name,
+          })
+        }
       })
-    })
-    schedules = schedules.sort((a,b) => { return (new Date(a.dateTime)).getTime() > (new Date(b.dateTime)).getTime() ? 1 : -1})
+    schedules = schedules.sort((a,b) => { return (new Date(a.date_time)).getTime() > (new Date(b.date_time)).getTime() ? 1 : -1})
 
     return(<Paper className={classes.root}>
       <div className={classes.tableWrapper}>
@@ -181,8 +190,8 @@ class MainLeagueSchedule extends React.Component {
             margin="normal"
           >
             {sportLeaguesArr.map(option => (
-              <MenuItem key={option.sport} value={option.sport}>
-                {option.sport}
+              <MenuItem key={option} value={option}>
+                {option}
               </MenuItem>
             ))}
           </TextField>
@@ -204,27 +213,27 @@ class MainLeagueSchedule extends React.Component {
 
 
       
-      <br style={{clear: 'both'}}/>
-      <br/>
-      <div style ={{marginLeft:(-55+4*(27-dateStr.length))}}>
-        <IconButton style={{float:'left', marginTop:-9}} onClick={this.handleNextDay(false)}>
-            <ChevronLeftIcon style={{marginTop:2}}/>
-        </IconButton>
-        <Typography style={{float:'left'}} className={classes.title} type="headline">
-          
-          {dateStr}
-          
-        </Typography>
-        <IconButton style={{float:'left', marginTop:-9}} onClick={this.handleNextDay(true)}>
-            <ChevronRightIcon />
-          </IconButton>
           <br style={{clear: 'both'}}/>
+          <br/>
+          <div style ={{marginLeft:(-55+4*(27-dateStr.length))}}>
+            <IconButton style={{float:'left', marginTop:-9}} onClick={this.handleNextDay(false)}>
+              <ChevronLeftIcon style={{marginTop:2}}/>
+            </IconButton>
+            <Typography style={{float:'left'}} className={classes.title} type="headline">
+              
+              {dateStr}
+              
+            </Typography>
+            <IconButton style={{float:'left', marginTop:-9}} onClick={this.handleNextDay(true)}>
+              <ChevronRightIcon />
+            </IconButton>
+            <br style={{clear: 'both'}}/>
           </div>
-      </div>
+        </div>
       </div>
       <br/>(
       {schedules.map((x,i) =>
-        <OneSchedule sport={x.sport} homeTeam={x.homeTeam} awayTeam={x.awayTeam} time={x.time} key={i} />
+        <OneSchedule result={x} key={i} />
       )}
     </Paper>
     )

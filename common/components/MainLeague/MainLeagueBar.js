@@ -9,6 +9,7 @@ import Tabs, { Tab } from 'material-ui/Tabs'
 import EnhancedTable from '../EnhancedTable'
 import AddOfflineDraftForm from '../AddOfflineDraftForm'
 import Menu, { MenuItem } from 'material-ui/Menu'
+import {clickedDateChange} from '../../actions/sport-actions'
 
 import { connect } from 'react-redux'
 
@@ -41,12 +42,14 @@ class MainLeaguePage extends React.Component {
   };
 
   handleChange = (event, value) => {
+    const { onDateChange, activeLeague } = this.props
     switch (value){
     case 0:
       Router.push('/mainleaguestandings')
       break
     case 1:
       Router.push('/mainleagueschedule')
+      onDateChange(activeLeague.league_id, new Date(new Date().toString().slice(4,15)).toJSON().slice(0,10))
       break
     case 2:
       Router.push('/mainleagueroster')
@@ -154,7 +157,13 @@ export default connect(
       teams: state.teams,
       sportLeagues : state.sportLeagues
     }),
-  null
+  dispatch =>
+    ({
+      onDateChange(league_id, date) {
+        dispatch(
+          clickedDateChange(league_id, date))
+      }
+    })
 )(withStyles(styles)(MainLeaguePage))
 
 

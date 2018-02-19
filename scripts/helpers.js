@@ -165,6 +165,40 @@ methods.updateStandings = (knex,newStandings) =>
     })
 }
 
+methods.updateSchedule = (knex,newResults) =>
+{
+  return knex
+    .withSchema('sports')
+    .table('results')
+    .then(results => {
+      let oldResults = {}
+      var updateList =[]
+      results.map(result => oldResults[result.global_game_id] =result.updated_time)
+      newResults.map(x =>
+      {
+        if(!(x.global_game_id in oldResults))
+        {
+          updateList.push(Promise.resolve(methods.insertOneResultRow(knex, x)))
+        }
+        else if(oldResults[x.global_game_id] !== x.updated_time)
+        { 
+          console.log(x.global_game_id) 
+          updateList.push(Promise.resolve(methods.updateOneResultRow(knex, x.global_game_id, x)))
+        }
+      })
+      if (updateList.length > 0)
+      {
+        return Promise.all(updateList)
+          .then(() => { 
+            //console.log("im done updating!")
+            return updateList.length
+          })
+      }
+      else
+        return 0
+    })
+}
+
 methods.updateOneStandingRow = (knex, team_id, column, value) =>
 {
   return knex
@@ -177,6 +211,36 @@ methods.updateOneStandingRow = (knex, team_id, column, value) =>
       //console.log(team_id + " updated!")
     })
 }
+
+methods.insertOneResultRow = (knex, row) =>
+{
+  return knex
+    .withSchema('sports')
+    .table('results')
+    .insert(row)
+}
+
+methods.updateOneResultRow = (knex, global_game_id, row) =>
+{
+
+  return knex.transaction(function (t) {
+    return knex.withSchema('sports').table('results')
+      .transacting(t)
+      .where('global_game_id',global_game_id)
+      .del()
+      .then(() =>
+      {
+        return knex
+          .transacting(t)
+          .withSchema('sports')
+          .table('results')
+          .insert(row)
+      })
+      .then(()=>{t.commit})
+      .catch(t.rollback)
+  })
+}
+
   
 
 exports.data = methods
