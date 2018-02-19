@@ -250,8 +250,8 @@ class EnhancedTable extends React.Component {
       <Paper className={classes.root}>
         <div className={classes.tableWrapper}>
           <br/>
-          {this.props.rosterTitle ?
-            <div>
+          {this.props.rosterTitle 
+            ? <div>
               <TextField
                 id={'select-owner'}
                 select
@@ -324,12 +324,12 @@ class EnhancedTable extends React.Component {
                     {localColumns.filter(
                       header => header.id !=='order').map(
                       header =>
-                      <TableCell key={header.id}
-                      numeric={header.numeric}>
-                      {header.id == 'logo_url' && n['logo_url'] !== 'none' ? 
-                      <img src={n['logo_url']} alt="Basketball" width="20" height="20"/>
-                       : n[header.id]}
-                    </TableCell>
+                        <TableCell key={header.id}
+                          numeric={header.numeric}>
+                          {header.id == 'logo_url' && n['logo_url'] !== 'none' ? 
+                            <img src={n['logo_url']} alt="Basketball" width="20" height="20"/>
+                            : n[header.id]}
+                        </TableCell>
                     )}
                   </TableRow>
                 )

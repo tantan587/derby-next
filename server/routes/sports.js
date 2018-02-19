@@ -17,6 +17,12 @@ router.post('/sportleagues', authHelpers.loginRequired, (req, res, next)  => {
       handleResponse(res, 500, err)})
 })
 
+router.post('/schedule', authHelpers.loginRequired, (req, res, next)  => {
+  return getSchedule(req.body.league_id, req.body.date, res)
+    .catch((err) => { 
+      handleResponse(res, 500, err)})
+})
+
 router.post('/savedraft', authHelpers.loginRequired, (req, res, next)  => {
   return enterDraftToDb(req, res)
     .then(() => { 
@@ -72,7 +78,7 @@ const getStandings = (league_id, res, type) =>{
           {
             key:team.key, 
             team_id:team.team_id,
-            team_name:team.name !== null ? team.city + ' ' + team.name : team.city,
+            team_name:team.sport_name !== 'EPL' ? team.city + ' ' + team.name : team.name,
             sport:team.sport_name,
             conference:team.display_name,
             conference_id:team.conference_id,
@@ -89,6 +95,47 @@ const getStandings = (league_id, res, type) =>{
         return handleReduxResponse(res,200, {
           type: type,
           teams : teams
+        })
+      }
+      else
+      {
+        return handleReduxResponse(res,400, {})
+      }
+    })
+}
+
+const getSchedule = (league_id, date, res) => {
+  const dayCount = fantasyHelpers.getDayCountStr(date)
+  var str =  `select a.*, c.* from sports.schedule a, fantasy.sports b, sports.results c where 
+          b.league_id = '` + league_id + `' and a.sport_id = b.sport_id and a.global_game_id = c.global_game_id
+          and day_count = ` + dayCount
+  return knex.raw(str)
+    .then(result =>
+    {
+      if (result.rows.length > 0) 
+      {
+        const scheduleRows = []
+        result.rows.map(row => 
+        {
+          scheduleRows.push({
+            global_game_id:row.global_game_id,
+            home_team_id:row.home_team_id,
+            away_team_id:row.away_team_id,
+            date_time:row.date_time,
+            sport_id:row.sport_id,
+            time:fantasyHelpers.formatAMPM(new Date(row.date_time)),
+            home_team_score:row.home_team_score,
+            away_team_score:row.away_team_score,
+            status:row.status,
+            winner:row.winner,
+            game_time:row.time,
+            period:row.period
+          })
+
+        })
+        return handleReduxResponse(res,200, {
+          type: C.GET_SCHEDULE_BY_DAY,
+          schedule : scheduleRows
         })
       }
       else

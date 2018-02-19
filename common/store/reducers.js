@@ -152,5 +152,14 @@ export const sportLeagues = (state = [], action={ type: null }) => {
     return []
   default:
     return state
-  }  
+  } 
+}
+  
+export const schedule = (state = [], action={ type: null }) => {
+  switch (action.type){
+  case C.GET_SCHEDULE_BY_DAY:
+    return action.schedule
+  default:
+    return state
+  } 
 }

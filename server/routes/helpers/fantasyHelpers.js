@@ -256,20 +256,35 @@ const updatePoints = () =>
     })
 }
 
-const getDayCount = (date) => {
+const getDayCount = (year, month, day) => {
 
+  const date = new Date(year + ' ' + month + ' ' + day + ' ' + '00:00:00 GMT-04:00')
   // The number of milliseconds in one day
   var ONE_DAY = 1000 * 60 * 60 * 24
 
-  //my starting point 08/25/2013 12AM
-  var startingDate = 1375938000000
+  //my starting point 08/25/2013 12AM EST
+  var startingDate = 1377403200000
   var date_ms = date.getTime()
 
   // Convert back to days and return
   return Math.floor((date_ms - startingDate)/ONE_DAY)
 }
 
+const getDayCountStr = (date) => {
+  var split = date.split('T')[0].split('-')
+  return getDayCount(split[0],split[1],split[2])
+}
 
+const formatAMPM = (date) => {
+  var hours = date.getHours()
+  var minutes = date.getMinutes()
+  var ampm = hours >= 12 ? 'PM' : 'AM'
+  hours = hours % 12
+  hours = hours ? hours : 12
+  minutes = minutes < 10 ? '0'+ minutes : minutes
+  var strTime = hours + ':' + minutes +  ampm + ' EST'
+  return strTime
+}
 
 //const getSports
 
@@ -279,5 +294,6 @@ module.exports = {
   updateLeaguePoints,
   updateFantasy,
   updatePoints,
-  getDayCount
+  getDayCountStr,
+  formatAMPM
 }
