@@ -14,6 +14,7 @@ db_helpers.getFantasyData(knex, 'EPL', 'https://api.fantasydata.net/v3/soccer/sc
 
       standings.push({team_id: team.team_id, wins : 0, losses: 0, ties: 0})    
     })
+    console.log(teamInfo.length)
     db_helpers.insertIntoTable(knex, 'sports', 'team_info', teamInfo)
       .then(() =>
       {
