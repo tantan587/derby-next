@@ -6,8 +6,6 @@ import { withStyles } from 'material-ui/styles'
 import Typography from 'material-ui/Typography'
 import AppBar from 'material-ui/AppBar'
 import Tabs, { Tab } from 'material-ui/Tabs'
-import EnhancedTable from '../EnhancedTable'
-import AddOfflineDraftForm from '../AddOfflineDraftForm'
 import Menu, { MenuItem } from 'material-ui/Menu'
 import {clickedDateChange} from '../../actions/sport-actions'
 
@@ -56,6 +54,12 @@ class MainLeaguePage extends React.Component {
       break
     case 3:
       Router.push('/mainleagueteams')
+      break
+    case 7:
+      switch(this.state.commishIndex){
+      case 1:
+        Router.push('/add-draft')
+      }
     }
   }
 
@@ -72,14 +76,12 @@ class MainLeaguePage extends React.Component {
   };
 
   render() {
-    // if(this.props.user.loggedIn === false){
-    //   if (typeof document !== 'undefined'){
-    //     Router.push('/login')
-    //   }
-    //   return(<div></div>)
-    // }
-    if(1 === 0)
-    {return(<div></div>)}
+    if(this.props.user.loggedIn === false){
+      if (typeof document !== 'undefined'){
+        Router.push('/login')
+      }
+      return(<div></div>)
+    }
     else{
       const { classes, value } = this.props
       const {  commishIndex } = this.state
@@ -131,12 +133,11 @@ class MainLeaguePage extends React.Component {
                 {option}
               </MenuItem>))}
           </Menu>
-          {value === 6 && <TabContainer>Item Five</TabContainer>}
-          {value === 7 && <TabContainer>Item Six</TabContainer>}
-          {value === 8 && <TabContainer>Item Seven</TabContainer>}
-          {value === 9 && commishIndex === 0 && <TabContainer>Item Nine Point 1</TabContainer>}
-          {value === 9 && commishIndex === 1 && <TabContainer><AddOfflineDraftForm/></TabContainer>}
-          {value === 9 && commishIndex === 2 && <TabContainer>Item Nine Point 3</TabContainer>}
+          {value === 4 && <TabContainer>Item Five</TabContainer>}
+          {value === 5 && <TabContainer>Item Six</TabContainer>}
+          {value === 6 && <TabContainer>Item Seven</TabContainer>}
+          {value === 7 && commishIndex === 0 && <TabContainer>Item Nine Point 1</TabContainer>}
+          {value === 7 && commishIndex === 2 && <TabContainer>Item Nine Point 3</TabContainer>}
 
         </div>
         

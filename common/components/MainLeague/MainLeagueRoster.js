@@ -20,6 +20,7 @@ class MainLeagueRoster extends React.Component {
   
 
   render() {
+    
     let myTeams = []
     this.props.teams.map(team => myTeams.push({
       ...team, 
@@ -32,7 +33,7 @@ class MainLeagueRoster extends React.Component {
       myRows={myTeams}
       rosterTitle={true}
       owners={this.props.activeLeague.owners}
-      myOwnerId={this.props.activeLeague.owners[0].owner_id}
+      myOwnerId={this.props.activeLeague.owners.filter(x => x.user_id === this.props.user.id)[0].owner_id}
       myHeaders = {[
         {label: 'Logo', key: 'logo_url', sortId:'team_name'},
         {label: 'Team Name', key: 'team_name'},
@@ -52,6 +53,7 @@ MainLeagueRoster.propTypes = {
 export default connect(
   state =>
     ({
+      user: state.user,
       activeLeague : state.activeLeague,
       teams: state.teams,
     }),

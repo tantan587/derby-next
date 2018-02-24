@@ -6,16 +6,16 @@ import withRedux from 'next-redux-wrapper'
 import storeFactory from '../common/store'
 
 
-class Login extends React.Component {
+class RedirectLogin extends React.Component {
 
   render() {
     return (
       <div>
         <Layout >
-          <LoginForm redirectInd={false}/>
+          <LoginForm redirectInd={true}/>
         </Layout>
       </div>
     )
   }
 }
-export default withRedux(storeFactory)(withRoot(Login))
+export default withRedux(storeFactory)(withRoot(RedirectLogin))

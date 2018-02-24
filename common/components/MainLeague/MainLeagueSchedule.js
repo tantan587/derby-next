@@ -105,7 +105,8 @@ class MainLeagueSchedule extends React.Component {
   render() {
     const { classes, sportLeagues, activeLeague, teams, schedule} = this.props
     const {sport, day, owner, goodDay} = this.state
-    const myOwnerName = activeLeague.owners.filter(x => x.owner_id === this.props.activeLeague.owners[0].owner_id)[0].owner_name
+
+    const myOwnerName = activeLeague.owners.filter(x => x.user_id === this.props.user.id)[0].owner_name
     const ownersArr = Array.from(activeLeague.owners)
     ownersArr.unshift({owner_name:'League Only'})
     ownersArr.unshift({owner_name:'All'})
@@ -247,6 +248,7 @@ MainLeagueSchedule.propTypes = {
 export default connect(
   state =>
     ({
+      user: state.user,
       activeLeague : state.activeLeague,
       teams: state.teams,
       sportLeagues : state.sportLeagues,

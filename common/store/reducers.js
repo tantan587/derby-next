@@ -163,3 +163,12 @@ export const schedule = (state = [], action={ type: null }) => {
     return state
   } 
 }
+
+export const previousPage = (state = '', action={ type: null }) => {
+  switch (action.type){
+  case C.FORCED_LOGIN:
+    return action.previousPage
+  default:
+    return state
+  } 
+}

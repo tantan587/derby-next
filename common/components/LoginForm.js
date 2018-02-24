@@ -58,7 +58,14 @@ class LoginForm extends React.Component {
   }
   render() {
     if(this.state.fireRedirect && this.props.user.loggedIn === true){
-      Router.push('/')
+      if(this.props.redirectInd)
+      {
+        Router.push('/'+this.props.previousPage)
+      }
+      else{
+        Router.push('/')
+      }
+
       return(<div></div>)
     }
     else{
@@ -117,7 +124,8 @@ LoginForm.propTypes = {
 export default connect(
   state =>
     ({
-      user : state.user
+      user : state.user,
+      previousPage : state.previousPage
     }),
   dispatch =>
     ({

@@ -1,4 +1,5 @@
 import fetch from 'isomorphic-fetch'
+import C from '../constants'
 
 const parseResponse = response => response.json()
 
@@ -49,6 +50,12 @@ export const clickedCreatePassword = (username,password,newPassword) => dispatch
     'POST',
     JSON.stringify({username,password,newPassword})
   )
+
+export const handleForceLogin = previousPage =>
+  ({
+    type: C.FORCED_LOGIN,
+    previousPage : previousPage
+  })
 
  
 
