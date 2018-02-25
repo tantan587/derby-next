@@ -12,10 +12,11 @@ import { withStyles } from 'material-ui/styles'
 import withRoot from '../common/components/withRoot'
 import Layout from '../common/components/Layout'
 import withRedux from 'next-redux-wrapper'
-import storeFactory from '../common/store'
 import '../styles/style.css'
+import initStore from '../common/store'
+
 //https://github.com/zeit/next.js/tree/master/examples/with-global-stylesheet
-const store = storeFactory(false)
+
 
 
 const styles = {
@@ -93,4 +94,4 @@ Index.propTypes = {
   classes: PropTypes.object.isRequired,
 }
 
-export default withRedux(storeFactory)(withRoot(withStyles(styles)(Index)))
+export default withRedux(initStore, null, null)(withRoot(withStyles(styles)(Index)))

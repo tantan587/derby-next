@@ -11,6 +11,10 @@ const fetchThenDispatch = (dispatch, url, method, body) =>
     .then(dispatch)
     .catch(logError)
 
+export const loadSuccess = () => {
+  return {type: C.DATA_LOAD_SUCCESS}
+}
+
 export const clickedLogin = (username, password) => dispatch =>
   fetchThenDispatch(
     dispatch,

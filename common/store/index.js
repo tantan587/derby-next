@@ -1,47 +1,16 @@
-import { createStore, combineReducers, applyMiddleware } from 'redux'
-import {  user, leagues, activeLeague, teams, sportLeagues, schedule, previousPage } from './reducers'
-import thunk from 'redux-thunk'
+import createStoreFromServer from './serverStore'
+import createStoreFromClient from './clientStore'
 import ErrorText from '../models/ErrorText'
 
-const initialState = {
+const _initialState = {
   user: { loggedIn : false, error : new ErrorText()},
   leagues : []
 }
 
-const clientLogger = store => next => action => {
-  if (action.type) {
-    let result
-    console.groupCollapsed('dispatching', action.type)
-    console.log('prev state', store.getState())
-    console.log('action', action)
-    result = next(action)
-    console.log('next state', store.getState())
-    console.groupEnd()
-    return result
+export default (initialState = _initialState, props) => {
+  if(typeof document === 'undefined') {
+    return createStoreFromServer(initialState)
   } else {
-    return next(action)
+    return createStoreFromClient(initialState, props)
   }
 }
-
-const serverLogger = store => next => action => {
-  console.log('\n  dispatching server action\n')
-  console.log(action)
-  console.log('\n')
-  //console.log('next state', store.getState())
-  return next(action)
-}
-
-const middleware = server => [
-  (server) ? serverLogger : clientLogger,
-  thunk
-]
-
-const storeFactory = (server = false, injectedState = initialState) =>
-{
-  return applyMiddleware(...middleware(server))(createStore)(
-    combineReducers({user,leagues, activeLeague, teams, sportLeagues, schedule, previousPage}),
-    injectedState
-  )
-}
-
-export default storeFactory

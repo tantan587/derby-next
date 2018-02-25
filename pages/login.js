@@ -3,7 +3,7 @@ import Layout from '../common/components/Layout'
 import LoginForm from '../common/components/LoginForm'
 import withRoot from '../common/components/withRoot'
 import withRedux from 'next-redux-wrapper'
-import storeFactory from '../common/store'
+import initStore from '../common/store'
 
 
 class Login extends React.Component {
@@ -18,4 +18,4 @@ class Login extends React.Component {
     )
   }
 }
-export default withRedux(storeFactory)(withRoot(Login))
+export default withRedux(initStore, null, null)(withRoot(Login))

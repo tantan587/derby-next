@@ -2,7 +2,23 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import Router from 'next/router'
+import { CircularProgress } from 'material-ui/Progress'
 import {handleForceLogin} from '../actions/auth-actions'
+import { withStyles } from 'material-ui/styles'
+
+
+const styles = theme => ({
+  progress: {
+    margin: theme.spacing.unit * 2,
+    color: theme.palette.secondary[700],
+    left:'50%',
+    top:'30%',
+    marginLeft:-25,
+    marginTop:-25,
+    position: 'absolute',
+  },
+})
+
 
 class RouteProtector extends React.Component {
 
@@ -12,19 +28,25 @@ class RouteProtector extends React.Component {
 
   render () {
 
-    const {ProtectedRoute} = this.props
+    const {ProtectedRoute, user, status, classes} = this.props
 
-    if(this.props.user.loggedIn === false){
-      if (typeof document !== 'undefined'){
-        this.props.updateForceLogin(this.props.previousPage)
-        Router.push('/redirectlogin')
-      }
-      return(<div></div>)
+    if(!status.loaded)
+    {
+      return(<CircularProgress className={classes.progress} size={50} />)
     }
-    // Pass the received 'props' and created functions to the ProtectedRoute component
-    return (
-      <ProtectedRoute/>
-    )
+    else{
+      if(user.loggedIn === false){
+        if (typeof document !== 'undefined'){
+          this.props.updateForceLogin(this.props.previousPage)
+          Router.push('/redirectlogin')
+        }
+        return(<div></div>)
+      }
+      // Pass the received 'props' and created functions to the ProtectedRoute component
+      return (
+        <ProtectedRoute/>
+      )
+    }
   }
 }
 
@@ -35,6 +57,7 @@ RouteProtector.contextTypes = {
 export default connect(
   state =>
     ({
+      status : state.status,
       user : state.user
     }),
   dispatch =>
@@ -43,4 +66,4 @@ export default connect(
         dispatch(
           handleForceLogin(previousPage))
       }
-    }))(RouteProtector)
+    }))(withStyles(styles)(RouteProtector))
