@@ -1,4 +1,5 @@
 import MainLeagueBar from './MainLeagueBar'
+import Typography from 'material-ui/Typography'
 
 
 const layoutStyle = {
@@ -10,7 +11,9 @@ const layoutStyle = {
 const Layout = (props) => (
   <div style={layoutStyle}>
     <MainLeagueBar value={props.value}/>
-    {props.children}
+    <Typography component="div" style={{ padding: 8 * 3 }}>
+      {props.children}
+    </Typography>
   </div>
 )
 

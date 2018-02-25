@@ -1,9 +1,7 @@
 import React from 'react'
-import Link from 'next/link'
 import Router from 'next/router'
 import PropTypes from 'prop-types'
 import { withStyles } from 'material-ui/styles'
-import Typography from 'material-ui/Typography'
 import AppBar from 'material-ui/AppBar'
 import Tabs, { Tab } from 'material-ui/Tabs'
 import Menu, { MenuItem } from 'material-ui/Menu'
@@ -24,19 +22,10 @@ const styles = {
 
 const commishOptions = ['Edit Draft Day', 'Add Offline Draft', 'Edit Rosters']
 
-function TabContainer(props) {
-  return (
-    <Typography component="div" style={{ padding: 8 * 3 }}>
-      {props.children}
-    </Typography>
-  )
-}
-
 class MainLeaguePage extends React.Component {
   state = {
     commishOpen:false,
-    commishAnchorEl:null,
-    commishIndex:0
+    commishAnchorEl:null
   };
 
   handleChange = (event, value) => {
@@ -54,12 +43,6 @@ class MainLeaguePage extends React.Component {
       break
     case 3:
       Router.push('/mainleagueteams')
-      break
-    case 7:
-      switch(this.state.commishIndex){
-      case 1:
-        Router.push('/add-draft')
-      }
     }
   }
 
@@ -67,8 +50,11 @@ class MainLeaguePage extends React.Component {
     this.setState({ commishOpen: true, commishAnchorEl: event.currentTarget })
   };
 
-  handleCommishMenuItemClick = (event, index) => {
-    this.setState({ commishIndex: index, commishOpen: false })
+  handleCommishMenuItemClick = (event, subIndex) => {
+    switch (subIndex){
+    case 1:
+      Router.push('/add-draft')
+    }
   };
 
   handleCommishClose = () => {
@@ -76,73 +62,58 @@ class MainLeaguePage extends React.Component {
   };
 
   render() {
-    if(this.props.user.loggedIn === false){
-      if (typeof document !== 'undefined'){
-        Router.push('/login')
-      }
-      return(<div></div>)
-    }
-    else{
-      const { classes, value } = this.props
-      const {  commishIndex } = this.state
-      let myTeams = []
-      this.props.teams.map(team => myTeams.push({
-        ...team, 
-        record:team.wins + '-' + team.losses + '-' + team.ties, 
-        percentage: (team.wins + team.ties + team.losses) === 0 ? 0.0.toFixed(3) :  ((team.wins + 1/2*team.ties) / (team.wins + team.ties + team.losses)).toFixed(3)
-      }))
+    const { classes, value } = this.props
+    let myTeams = []
+    this.props.teams.map(team => myTeams.push({
+      ...team,
+      record:team.wins + '-' + team.losses + '-' + team.ties,
+      percentage: (team.wins + team.ties + team.losses) === 0 ? 0.0.toFixed(3) :  ((team.wins + 1/2*team.ties) / (team.wins + team.ties + team.losses)).toFixed(3)
+    }))
 
-      return (
-        <div className={classes.root}>
-          <AppBar position="static" color="default">
-            <Tabs
-              value={value}
-              onChange={this.handleChange}
-              scrollable
-              scrollButtons="auto"
-              indicatorColor="primary"
-              textColor="primary"
-              centered
-            >
-              <Tab label="Standings" />
-              <Tab label="Schedules" />
-              <Tab label="Rosters" />
-              <Tab label="All Teams"/>
-              <Tab label="Message Board" />
-              <Tab label="League Settings" />
-              <Tab label="Draft Recap" />
-              {1 === 1 ? <Tab label="Commish Tools" 
-                aria-owns={this.state.commishOpen ? 'simple-menu' : null}
-                aria-haspopup="true"
-                onClick={this.handleCommishClick}/>: <div></div>}
-            </Tabs>
-          </AppBar>
-          <Menu
-            id="simple-menu"
-            anchorEl={this.state.commishAnchorEl}
-            open={this.state.commishOpen}
-            onClose={this.handleCommishClose}
+    return (
+      <div className={classes.root}>
+        <AppBar position="static" color="default">
+          <Tabs
+            value={value}
+            onChange={this.handleChange}
+            scrollable
+            scrollButtons="auto"
+            indicatorColor="primary"
+            textColor="primary"
+            centered
           >
-            {commishOptions.map((option, index) => (
-              <MenuItem
-                key={option}
-                //disabled={index === 0}
-                selected={index === this.state.commishIndex}
-                onClick={event => this.handleCommishMenuItemClick(event, index)}
-              >
-                {option}
-              </MenuItem>))}
-          </Menu>
-          {value === 4 && <TabContainer>Item Five</TabContainer>}
-          {value === 5 && <TabContainer>Item Six</TabContainer>}
-          {value === 6 && <TabContainer>Item Seven</TabContainer>}
-          {value === 7 && commishIndex === 0 && <TabContainer>Item Nine Point 1</TabContainer>}
-          {value === 7 && commishIndex === 2 && <TabContainer>Item Nine Point 3</TabContainer>}
+            <Tab label="Standings" />
+            <Tab label="Schedules" />
+            <Tab label="Rosters" />
+            <Tab label="All Teams"/>
+            <Tab label="Message Board" />
+            <Tab label="League Settings" />
+            <Tab label="Draft Recap" />
+            {1 === 1 ? <Tab label="Commish Tools"
+              aria-owns={this.state.commishOpen ? 'simple-menu' : null}
+              aria-haspopup="true"
+              onClick={this.handleCommishClick}/>: <div></div>}
+          </Tabs>
+        </AppBar>
+        <Menu
+          id="simple-menu"
+          anchorEl={this.state.commishAnchorEl}
+          open={this.state.commishOpen}
+          onClose={this.handleCommishClose}
+        >
+          {commishOptions.map((option, index) => (
+            <MenuItem
+              key={option}
+              //disabled={index === 0}
+              //selected={index === subIndex}
+              onClick={event => this.handleCommishMenuItemClick(event, index)}
+            >
+              {option}
+            </MenuItem>))}
+        </Menu>
+      </div>
 
-        </div>
-        
-      )
-    }
+    )
   }
 }
 

@@ -9,14 +9,12 @@ import storeFactory from '../common/store'
 class Logout extends React.Component {
 
   render() {
-    const page = () => <LogoutForm/>
     return (
       <div>
         <Layout >
           <RouteProtector 
-            ProtectedRoute={page}
+            ProtectedRoute={() => <LogoutForm/>}
             previousPage={'logout'}/>
-          {/* <LogoutForm /> */}
         </Layout>
       </div>
     )

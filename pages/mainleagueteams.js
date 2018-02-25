@@ -5,6 +5,7 @@ import withRoot from '../common/components/withRoot'
 import withRedux from 'next-redux-wrapper'
 import storeFactory from '../common/store'
 import MainLeagueTeams from '../common/components/MainLeague/MainLeagueTeams'
+import RouteProtector from '../common/components/RouteProtector'
 
 
 class Teams extends React.Component {
@@ -13,9 +14,12 @@ class Teams extends React.Component {
     return (
       <div>
         <Layout >
-          <MainLeagueLayout value={3}>
-            <MainLeagueTeams />
-          </MainLeagueLayout>
+          <RouteProtector 
+            ProtectedRoute={() => 
+              <MainLeagueLayout value={3}>
+                <MainLeagueTeams />
+              </MainLeagueLayout>}
+            previousPage={'mainleagueteams'}/>
         </Layout>
       </div>
     )

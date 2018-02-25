@@ -11,19 +11,15 @@ import MainLeagueSchedule from '../common/components/MainLeague/MainLeagueSchedu
 class Schedule extends React.Component {
 
   render() {
-
-    const page = () => 
-      <MainLeagueLayout value={1}>
-        <MainLeagueSchedule/>
-      </MainLeagueLayout>
-
     return (
       <div>
         <Layout >
           <RouteProtector 
-            ProtectedRoute={page}
+            ProtectedRoute={() => 
+              <MainLeagueLayout value={1}>
+                <MainLeagueSchedule/>
+              </MainLeagueLayout>}
             previousPage={'mainleagueschedule'}/>
-          {/* <LogoutForm /> */}
         </Layout>
       </div>
     )

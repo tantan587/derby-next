@@ -5,6 +5,7 @@ import withRoot from '../common/components/withRoot'
 import withRedux from 'next-redux-wrapper'
 import storeFactory from '../common/store'
 import AddOfflineDraftForm from '../common/components/MainLeague/AddOfflineDraftForm'
+import RouteProtector from '../common/components/RouteProtector'
 
 
 class AddDraft extends React.Component {
@@ -13,9 +14,12 @@ class AddDraft extends React.Component {
     return (
       <div>
         <Layout >
-          <MainLeagueLayout value={7}>
-            <AddOfflineDraftForm/>
-          </MainLeagueLayout>
+          <RouteProtector 
+            ProtectedRoute={() => 
+              <MainLeagueLayout value={7}>
+                <AddOfflineDraftForm/>
+              </MainLeagueLayout>}
+            previousPage={'add-draft'}/>
         </Layout>
       </div>
     )
