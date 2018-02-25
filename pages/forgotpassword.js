@@ -4,6 +4,7 @@ import ForgotPasswordForm from '../common/components/ForgotPasswordForm'
 import withRoot from '../common/components/withRoot'
 import withRedux from 'next-redux-wrapper'
 import storeFactory from '../common/store'
+import ReloadProtector from '../common/components/ReloadProtector'
 
 class ForgotPassword extends React.Component {
 
@@ -11,7 +12,9 @@ class ForgotPassword extends React.Component {
     return (
       <div>
         <Layout >
-          <ForgotPasswordForm />
+          <ReloadProtector 
+            ProtectedRoute={() => 
+              <ForgotPasswordForm/>}/>
         </Layout>
       </div>
     )

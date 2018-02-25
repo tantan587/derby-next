@@ -4,7 +4,7 @@ import LoginForm from '../common/components/LoginForm'
 import withRoot from '../common/components/withRoot'
 import withRedux from 'next-redux-wrapper'
 import initStore from '../common/store'
-
+import ReloadProtector from '../common/components/ReloadProtector'
 
 class Login extends React.Component {
 
@@ -12,7 +12,9 @@ class Login extends React.Component {
     return (
       <div>
         <Layout >
-          <LoginForm redirectInd={false}/>
+          <ReloadProtector 
+            ProtectedRoute={() => 
+              <LoginForm redirectInd={false}/>}/>
         </Layout>
       </div>
     )

@@ -15,6 +15,12 @@ export const loadSuccess = () => {
   return {type: C.DATA_LOAD_SUCCESS}
 }
 
+export const handledPressedLogin = () =>
+  ({
+    type: C.PRESSED_LOGIN
+  })
+
+
 export const clickedLogin = (username, password) => dispatch =>
   fetchThenDispatch(
     dispatch,

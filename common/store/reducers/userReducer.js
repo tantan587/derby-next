@@ -26,6 +26,7 @@ export default (state = {}, action={ type: null }) => {
       loggedIn: false,
       error: action.error
     }
+  case C.PRESSED_LOGIN:
   case C.LOGOUT:
     return {
       id: '',

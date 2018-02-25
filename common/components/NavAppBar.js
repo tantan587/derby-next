@@ -19,6 +19,7 @@ import { connect } from 'react-redux'
 import {clickedLeague} from '../actions/fantasy-actions'
 import {clickedStandings, clickedSportLeagues} from '../actions/sport-actions'
 import {isMobile} from '../lib/mobile'
+import { handledPressedLogin } from '../actions/auth-actions'
 
 const styles = theme => ({
   root: {
@@ -78,6 +79,12 @@ class NavAppBar extends React.Component {
     this.setState({ leaguesOpen: !this.state.leaguesOpen })
   };
 
+  pressedLogin = () => {
+    const { onPressedLogin } = this.props
+    console.log('here')
+    onPressedLogin()
+  };
+
   render() {
     const { classes } = this.props
     return (
@@ -102,12 +109,20 @@ class NavAppBar extends React.Component {
               </div>
               : 
               <div>
-                <Link href="/signup">
-                  <Button style={{float: 'right'}} color="contrast">Signup</Button>
-                </Link>
-                <Link href="/login">
-                  <Button style={{float: 'right'}} color="contrast">Login</Button>
-                </Link>
+                <Button style={{float: 'right'}} color="contrast" onClick={() => {this.pressedLogin()}}>
+                  <Link href="/signup">
+                    <div color="contrast">
+                      Signup
+                    </div>
+                  </Link>
+                </Button>
+                <Button style={{float: 'right'}} color="contrast" onClick={() => {this.pressedLogin()}}>
+                  <Link href="/login">
+                    <div color="contrast">
+                      Login
+                    </div>
+                  </Link>
+                </Button>
               </div>}
             
           </Toolbar>
@@ -186,6 +201,10 @@ NavAppBar.propTypes = {
 export default connect(({ user, leagues }) => ({ user, leagues }),
   dispatch =>
     ({
+      onPressedLogin() {
+        dispatch(
+          handledPressedLogin())
+      },
       onClickedLeague(league_id) {
         dispatch(
           clickedLeague(league_id))

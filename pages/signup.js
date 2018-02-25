@@ -4,6 +4,7 @@ import SignupForm from '../common/components/SignupForm'
 import withRoot from '../common/components/withRoot'
 import withRedux from 'next-redux-wrapper'
 import storeFactory from '../common/store'
+import ReloadProtector from '../common/components/ReloadProtector'
 
 class Signup extends React.Component {
 
@@ -11,7 +12,9 @@ class Signup extends React.Component {
     return (
       <div>
         <Layout >
-          <SignupForm />
+          <ReloadProtector 
+            ProtectedRoute={() => 
+              <SignupForm redirectInd={true}/>}/>
         </Layout>
       </div>
     )

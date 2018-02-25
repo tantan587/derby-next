@@ -1,9 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import Router from 'next/router'
 import { CircularProgress } from 'material-ui/Progress'
-import {handleForceLogin} from '../actions/auth-actions'
 import { withStyles } from 'material-ui/styles'
 
 
@@ -20,7 +18,7 @@ const styles = theme => ({
 })
 
 
-class RouteProtector extends React.Component {
+class ReloadProtector extends React.Component {
 
   constructor(props, context) {
     super(props, context)
@@ -28,21 +26,13 @@ class RouteProtector extends React.Component {
 
   render () {
 
-    const {ProtectedRoute, user, status, classes} = this.props
+    const {ProtectedRoute, status, classes} = this.props
 
     if(!status.loaded)
     {
       return(<CircularProgress className={classes.progress} size={50} />)
     }
     else{
-      if(user.loggedIn === false){
-        if (typeof document !== 'undefined'){
-          this.props.updateForceLogin(this.props.previousPage)
-          Router.push('/redirectlogin')
-        }
-        return(<div></div>)
-      }
-      // Pass the received 'props' and created functions to the ProtectedRoute component
       return (
         <ProtectedRoute/>
       )
@@ -50,7 +40,7 @@ class RouteProtector extends React.Component {
   }
 }
 
-RouteProtector.contextTypes = {
+ReloadProtector.contextTypes = {
   router: PropTypes.object.isRequired
 }
 
@@ -60,10 +50,4 @@ export default connect(
       status : state.status,
       user : state.user
     }),
-  dispatch =>
-    ({
-      updateForceLogin(previousPage) {
-        dispatch(
-          handleForceLogin(previousPage))
-      }
-    }))(withStyles(styles)(RouteProtector))
+  null)(withStyles(styles)(ReloadProtector))
