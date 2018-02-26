@@ -43,6 +43,9 @@ class MainLeaguePage extends React.Component {
       break
     case 3:
       Router.push('/mainleagueteams')
+      break
+    case 8:
+      Router.push('/livedraft')
     }
   }
 
@@ -93,6 +96,7 @@ class MainLeaguePage extends React.Component {
               aria-owns={this.state.commishOpen ? 'simple-menu' : null}
               aria-haspopup="true"
               onClick={this.handleCommishClick}/>: <div></div>}
+            <Tab label="Live Draft" />
           </Tabs>
         </AppBar>
         <Menu

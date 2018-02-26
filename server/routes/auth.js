@@ -68,7 +68,7 @@ router.post('/login', authHelpers.loginRedirect, (req, res, next) => {
   })(req, res, next)
 })
 
-router.post('/logout', authHelpers.loginRequired, (req, res, next) => {
+router.post('/logout', (req, res, next) => {
   req.logout()
   handleReduxResponse(res, 200, {
     type: C.LOGOUT  })

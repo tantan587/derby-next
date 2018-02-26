@@ -5,7 +5,6 @@ const authRoutes = require('./routes/auth')
 const fantasyRoutes = require('./routes/fantasy')
 const sportRoutes = require('./routes/sports')
 
-
 const app = require('express')()
 const server = require('http').Server(app)
 const io = require('socket.io')(server)
@@ -17,15 +16,36 @@ const handle = nextApp.getRequestHandler()
 
 
 
-
+//setInterval(() => {console.log('here1')}, 1000)
 const messages = []
 
-io.on('connection', socket => {
-  socket.on('message', (data) => {
+
+// io.on('connection', socket => {
+//   socket.on('message', (data) => {
+//     messages.push(data)
+//     socket.broadcast.emit('message', data)
+//   })
+// })
+
+io.sockets.on('connection', socket =>
+{
+  let theRoom
+  socket.on('room', room =>
+  {
+    
+    theRoom = room
+    socket.join(theRoom)
+  })
+
+  socket.in(theRoom).on('message', (data) => {
     messages.push(data)
     socket.broadcast.emit('message', data)
   })
+
 })
+
+// const room = 'room123'
+// io.sockets.in(room).emit('message', 'what is going on, party people?');
 
 nextApp.prepare()
   .then(() => {
