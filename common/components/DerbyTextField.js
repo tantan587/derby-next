@@ -42,6 +42,7 @@ class DerbyTextField extends React.Component {
         helperText = {parsedErrorText}
         label={this.props.label}
         value={this.props.value}
+        style={this.props.style}
         margin="normal"
         type={this.props.type}
         InputProps={InputProps}

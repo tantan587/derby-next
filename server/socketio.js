@@ -18,8 +18,8 @@ const draftRoom = (io, socket) =>
   })
 
   socket.in(theRoom).on('startTime', (data) => {
-    io.in(theRoom).emit('restart', 30)
     io.in(theRoom).emit('stop')
+    io.in(theRoom).emit('restart', 30)
     setTimeout(() => io.in(theRoom).emit('start'),1000*data)
   })
 

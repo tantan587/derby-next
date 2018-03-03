@@ -82,20 +82,30 @@ function createLeague(req, res) {
                         rank: 1
                       })
                       .then(() => {
-                        return knex.withSchema('fantasy').table('sports')
+                        return knex.withSchema('draft').table('settings')
                           .transacting(t)
-                          .insert(sportsData.sports)
+                          .insert({
+                            league_id: response[0].league_id,
+                            start_time: req.body.leagueInfo.fullStartTime,
+                            type: req.body.leagueInfo.draft_type,
+                            room_id: Math.random().toString(36).substr(2, 10)
+                          })
                           .then(() => {
-                            return knex.withSchema('fantasy').table('conferences')
+                            return knex.withSchema('fantasy').table('sports')
                               .transacting(t)
-                              .insert(sportsData.conferences)
-                              .returning('conference_id')
-                              .then(()=>{
-                                return knex.withSchema('fantasy').table('team_points')
+                              .insert(sportsData.sports)
+                              .then(() => {
+                                return knex.withSchema('fantasy').table('conferences')
                                   .transacting(t)
-                                  .insert(sportsData.teams)
+                                  .insert(sportsData.conferences)
+                                  .returning('conference_id')
                                   .then(()=>{
-                                    return response[0]
+                                    return knex.withSchema('fantasy').table('team_points')
+                                      .transacting(t)
+                                      .insert(sportsData.teams)
+                                      .then(()=>{
+                                        return response[0]
+                                      })
                                   })
                               })
                           })
@@ -110,17 +120,19 @@ function createLeague(req, res) {
                 return response
               })
               .catch(function (err) {
-                res.status(400).json(err)
+                console.log(err)
+                res.status(403).json(err)
               })
           })
         })
         .catch((err) => {
-          res.status(400).json(err)
+          console.log(err)
+          res.status(402).json(err)
         })
         
     })
     .catch((action) => {
-      handleReduxResponse(res,400,action)
+      handleReduxResponse(res,401,action)
     })
 }
 
@@ -196,6 +208,9 @@ function handleCreateErrors(req) {
     }
     if (req.body.leagueInfo.owner_name.length < 5) {
       errorText.addError('create_owner_name','Owner name must be longer than five characters')
+    }
+    if ((new Date(req.body.leagueInfo.fullStartTime)) - new Date() < 86400000) {
+      errorText.addError('create_draft_datetime','Draft Date/Time must be at least 24 hours from now')
     }
     if (errorText.foundError()) {
       reject({

@@ -11,6 +11,7 @@ import ChevronRightIcon from 'material-ui-icons/ChevronRight'
 import { connect } from 'react-redux'
 import Typography from 'material-ui/Typography'
 import {clickedDateChange} from '../../actions/sport-actions'
+import {GetLocalDateStr, GetNextDay, GetFullDateStr} from '../../lib/time'
 
 
 const styles = theme => ({
@@ -50,8 +51,8 @@ class MainLeagueSchedule extends React.Component {
     this.state = {
       owner: '',
       sport: '',
-      day: new Date(new Date().toString().slice(4,15)).toJSON().slice(0,10),
-      goodDay: new Date(new Date().toString().slice(4,15)).toJSON().slice(0,10),
+      day: GetLocalDateStr(),
+      goodDay: GetLocalDateStr(),
     }
   }
 
@@ -86,14 +87,8 @@ class MainLeagueSchedule extends React.Component {
     
     const { onDateChange, activeLeague } = this.props
     const {goodDay} = this.state
-    const date = new Date(goodDay+'T00:00:00')
-    
-    date.setDate(date.getDate() + (bool ? 1 : -1))
-    let month = date.getMonth() + 1
-    month = month < 10 ? '0' + month : month
-    let day = date.getDate()
-    day = day < 10 ? '0' + day : day
-    const newDay = date.getFullYear() + '-' + month + '-' + day
+    const newDay = GetNextDay(goodDay,bool)
+
     console.log(newDay)
     this.setState({
       goodDay: newDay,
@@ -117,13 +112,7 @@ class MainLeagueSchedule extends React.Component {
     
     sportLeaguesArr.unshift('All')
 
-    const weekdays = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
-    var monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December']
-    var split = goodDay.split('-')
-    var d = new Date(split[0],split[1]-1,split[2])
-
-    var dateStr = weekdays[d.getDay()] + ', ' + monthNames[d.getMonth()] + ' ' + (d.getDate()) + ', ' + d.getFullYear()
+    var dateStr = GetFullDateStr(goodDay)
 
     var schedules = []
     schedule

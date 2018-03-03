@@ -88,15 +88,24 @@ class DraftContainer extends React.Component {
   }
 
   onTick = () => {
-    if(this.state.time > 0)
-    {this.setState({ time: this.state.time -1, isOn:true })}
-    else
-    {this.setState({ isOn:false })}
+    const {time, isPaused} = this.state
+    if(!isPaused)
+    {
+      if(time > 0)
+      {this.setState(() => ({ time: time -1, isOn:true }))}
+      else
+      {this.setState(() => ({ isOn:false }))}
+    }
 
   }
 
   handleStartTime = event => {
     this.socket.emit('startTime',event.target.value)
+  }
+
+  onDraftButton = () => {
+    console.log('yep')
+    this.socket.emit('draft')
   }
 
   // send messages to server and add them to the state
@@ -155,7 +164,7 @@ class DraftContainer extends React.Component {
                     style={{backgroundColor:'red'}}>
                     <Grid container direction={'column'}>
                       <Grid item xs={12} style={{backgroundColor:'orange'}} >
-                        <Button style={{fontSize:30}}>
+                        <Button style={{fontSize:30}} onClick={() => this.onDraftButton()}>
                           Draft
                         </Button>
                       </Grid>

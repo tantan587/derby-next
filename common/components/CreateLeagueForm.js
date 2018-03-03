@@ -9,10 +9,12 @@ import TextField from 'material-ui/TextField'
 import {clickedCreateLeague} from '../actions/fantasy-actions'
 import MenuItem from 'material-ui/Menu/MenuItem'
 import DerbyTextField from './DerbyTextField'
+import {GetTomorrowLocalDateTimeStr, Timezones} from '../lib/time'
 
 import { connect } from 'react-redux'
 
 const privateIndBool = ['Private. I\'m very selective', 'Public. I need some friends']
+const draftType = ['Snake', 'Auction']
 const EPLBool = ['GOOOOOOOOALLLLLL','Ew... Soccer']
 
 const styles = {
@@ -24,6 +26,10 @@ const styles = {
   field: {
     textAlign: 'center',
     width: 300,
+  },
+  smallField: {
+    textAlign: 'center',
+    width: 75,
   },
   text: {color:'black',
     marginLeft:'10%',
@@ -46,7 +52,10 @@ class CreateLeagueForm extends React.Component {
     max_owners:8,
     privateInd:true,
     owner_name:'',
-    fireRedirect : false
+    fireRedirect : false,
+    startTime : GetTomorrowLocalDateTimeStr(),
+    draft_type: 'Snake',
+    timezone: '3'
   }
 
   updateEPLCheck = () => {
@@ -70,7 +79,8 @@ class CreateLeagueForm extends React.Component {
     const { onCreateLeague } = this.props
     this.setState({fireRedirect: true})
     e.preventDefault()
-    onCreateLeague(this.state)	
+    const fullStartTime = (this.state.startTime + Timezones[this.state.timezone].value).replace('T',' ')
+    onCreateLeague({...this.state, fullStartTime})	
   }
 
   submit(e) {
@@ -165,6 +175,46 @@ class CreateLeagueForm extends React.Component {
             {EPLBool.map(option => (
               <MenuItem key={option} value={option}>
                 {option}
+              </MenuItem>
+            ))}
+          </TextField>
+          <br/>
+          <TextField
+            id="draft-type"
+            select
+            label="Draft Type?"
+            className={classes.field}
+            value={this.state.draft_type}
+            margin="normal"
+            onChange = {this.handleChange('draft_type')}>
+            {draftType.map(option => (
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+          </TextField>
+          <br/>
+          <DerbyTextField
+            errorText={this.props.user.error.create_draft_datetime}
+            label="Draft Date/Time"
+            type="datetime-local"
+            style={{width: 225}}
+            value={this.state.startTime}
+            onChange = {this.handleChange('startTime')}
+          />
+          <TextField
+            id="timezone"
+            select
+            label="Timezone"
+            error={typeof this.props.user.error.create_draft_datetime !== 'undefined'}
+            className={classes.smallField}
+            style={{height:47}}
+            value={this.state.timezone}
+            margin="normal"
+            onChange = {this.handleChange('timezone')}>
+            {Object.keys(Timezones).map(option => (
+              <MenuItem key={option} value={option}>
+                {Timezones[option].name}
               </MenuItem>
             ))}
           </TextField>
