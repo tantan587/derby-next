@@ -5,6 +5,37 @@ const localDateTime = (extraHours = 0) =>
   return x
 }
 
+export function myTimeout(callback, delay) {
+  var id, started, remaining = delay, running
+
+  this.start = function() {
+    running = true
+    started = new Date()
+    id = setTimeout(callback, remaining)
+  }
+
+  this.pause = function() {
+    running = false
+    clearTimeout(id)
+    remaining -= new Date() - started
+  }
+
+  this.getTimeLeft = function() {
+    if (running) {
+      this.pause()
+      this.start()
+    }
+
+    return remaining
+  }
+
+  this.getStateRunning = function() {
+    return running
+  }
+
+  this.start()
+}
+
 export const GetLocalDateStr = () =>
 {
   return localDateTime().toJSON().slice(0,10)
@@ -27,6 +58,21 @@ export const GetFullDateStr = (date) =>
   var d = new Date(split[0],split[1]-1,split[2])
 
   return weekdays[d.getDay()] + ', ' + monthNames[d.getMonth()] + ' ' + (d.getDate()) + ', ' + d.getFullYear()
+}
+
+export const GetCountdownTimeStr = (num) =>
+{
+  const sec = 1
+  const min = sec * 60
+  const hour = min * 60
+  const day = hour * 24
+  let daysRemaining = Math.floor(num / day)
+  let hourRemaining = Math.floor((num- daysRemaining *day) / hour) 
+  let minRemaining = Math.floor((num- daysRemaining *day - hourRemaining*hour) / min)
+  let secRemaining = Math.floor((num- daysRemaining *day- hourRemaining*hour- minRemaining*min) / sec)
+
+  let str =  daysRemaining + ' Days ' + hourRemaining + ' Hours ' + minRemaining + ' Minutes ' + secRemaining + ' Seconds '
+  return str
 }
 
 export const GetNextDay = (inputDay, forward) =>

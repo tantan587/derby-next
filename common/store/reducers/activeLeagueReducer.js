@@ -12,7 +12,10 @@ export default (state = {}, action={ type: null }) => {
       total_players : action.owners.length,
       total_teams : action.total_teams,
       max_owners : action.max_owners,
-      owners : action.owners
+      owners : action.owners,
+      draft_start_time : action.draft_start_time,
+      room_id : action.room_id
+
     }
   case C.UPDATE_DRAFT_ORDER:
     return {...state, owners : owners(state.owners, action) }

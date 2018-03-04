@@ -8,6 +8,8 @@ import Button from 'material-ui/Button'
 import TextField from 'material-ui/TextField'
 import Grid from 'material-ui/Grid'
 import Countdown from './Countdown'
+import DraftHeader from './DraftHeader'
+import { connect } from 'react-redux'
 
 
 const styles = theme => ({
@@ -36,10 +38,14 @@ class DraftContainer extends React.Component {
     this.state = {
       field: '',
       preDraft:true,
+      draftState:'pre',
       messages:[],
-      time:0,
+      countdownTime:0,
+      countdownTimerId:0,
       isOn:false,
       isPaused:true,
+      startTime:new Date(this.props.activeLeague.draft_start_time)-new Date(),
+      startTimerId:0,
 
     }
   }
@@ -49,7 +55,7 @@ class DraftContainer extends React.Component {
     this.socket = io()
     this.socket.on('connect', () => {
       // Connected, let's sign-up for to receive messages for this room
-      this.socket.emit('room', 'room123')
+      this.socket.emit('room', this.props.activeLeague.room_id)
     })
     this.socket.on('message', this.handleMessage)
     this.socket.on('start', this.handleStart)
@@ -71,8 +77,19 @@ class DraftContainer extends React.Component {
     this.setState(state => ({ messages: state.messages.concat(message) }))
   }
 
-  handleRestart = (time) => {
-    this.setState({ time:time,isOn:false })
+  handleRestart = (data) => {
+    if(data.draftStartTime)
+    {
+      this.setState({ 
+        countdownTime:data.clock,
+        isOn:false,
+        draftState:'pre',
+        startTime:Math.round((new Date(data.draftStartTime)-new Date())/1000) })
+    }
+    else
+    {
+      this.setState({ countdownTime:data.clock,isOn:false })
+    }
   }
 
   handleStop =() => {
@@ -87,16 +104,36 @@ class DraftContainer extends React.Component {
     this.setState({ field: event.target.value })
   }
 
-  onTick = () => {
-    const {time, isPaused} = this.state
+  updateTimerId = (name, timerId) =>
+  {
+    console.log('udpateTimer')
+    this.setState({
+      [name]: timerId,
+    })
+  }
+
+  onDraftTick = () => {
+    const {countdownTime, isPaused} = this.state
     if(!isPaused)
     {
-      if(time > 0)
-      {this.setState(() => ({ time: time -1, isOn:true }))}
-      else
+      if(countdownTime > 0)
+      {this.setState(() => ({ countdownTime: countdownTime -1, isOn:true }))}
+      else if(this.state.isOn=== true)
       {this.setState(() => ({ isOn:false }))}
+      
     }
+  }
 
+  onStartTick = () => {
+    if(this.state.startTime === 1)
+    {
+      this.setState({ draftState: 'wait' })
+    }
+    if(this.state.startTime > 0)
+    {
+      this.setState({ startTime: this.state.startTime -1 })
+    }
+    
   }
 
   handleStartTime = event => {
@@ -104,7 +141,6 @@ class DraftContainer extends React.Component {
   }
 
   onDraftButton = () => {
-    console.log('yep')
     this.socket.emit('draft')
   }
 
@@ -135,9 +171,8 @@ class DraftContainer extends React.Component {
   }
 
   render() {
-    const { classes } = this.props
-    const { preDraft, time, isOn, isPaused } = this.state
-    console.log('isOn: ', isOn, ' isPaused; ', isPaused)
+    const { classes, activeLeague } = this.props
+    const { preDraft, countdownTime, countdownTimerId, isOn, isPaused, startTime,startTimerId, draftState } = this.state
     // const teams = [1,2,3,4,5]
     // const queueTeams = []
     // teams.map(num => queueTeams.push({id:num,text:num,order:num }))
@@ -163,22 +198,39 @@ class DraftContainer extends React.Component {
                   <Grid item xs={12} sm={2} 
                     style={{backgroundColor:'red'}}>
                     <Grid container direction={'column'}>
-                      <Grid item xs={12} style={{backgroundColor:'orange'}} >
-                        <Button style={{fontSize:30}} onClick={() => this.onDraftButton()}>
-                          Draft
-                        </Button>
-                      </Grid>
                       <Grid item xs={12} style={{backgroundColor:'yellow'}}>
-                        <Countdown countdownTime={time}  isOn={isOn} isPaused={isPaused} onTick={this.onTick}/>
+                        <Countdown 
+                          countdownTime={countdownTime}  
+                          isOn={isOn} 
+                          isPaused={isPaused} 
+                          onTick={this.onDraftTick}
+                          countdownTimerId={countdownTimerId}
+                          updateTimerId={this.updateTimerId}/>
                       </Grid>
                     </Grid>
 
                   </Grid>
                   <Grid item xs={12} sm={8} style={{backgroundColor:'blue'}}>
-                  2
+                    <Grid container direction={'column'}>
+                      <Grid item xs={12} style={{backgroundColor:'purple'}} >
+                        <DraftHeader 
+                          startTime={startTime} 
+                          league_name={activeLeague.league_name} 
+                          draftState={draftState} 
+                          onTick={this.onStartTick}
+                          startTimerId={startTimerId}
+                          updateTimerId={this.updateTimerId}/>
+                      </Grid>
+                    </Grid>
                   </Grid>
                   <Grid item xs={12} sm={2} style={{backgroundColor:'green'}}>
-                  3
+                    <Grid container direction={'column'}>
+                      <Grid item xs={12} style={{backgroundColor:'orange'}} >
+                        <Button style={{fontSize:30}} onClick={() => this.onDraftButton()}>
+                          Draft
+                        </Button>
+                      </Grid>
+                    </Grid>
                   </Grid>
                 </Grid>
               </Paper>
@@ -222,4 +274,10 @@ DraftContainer.propTypes = {
   classes: PropTypes.object.isRequired,
 }
 
-export default withStyles(styles)(DraftContainer)
+export default connect(
+  state =>
+    ({
+      user : state.user,
+      activeLeague : state.activeLeague
+    }),
+  null)(withStyles(styles)(DraftContainer))

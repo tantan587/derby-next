@@ -8,10 +8,10 @@ function handleReduxResponse(res, code, action){
 const getLeague = (league_id, res, type) =>{
 
 
-  var str = `select a.*, b.username, c.league_name, c.max_owners, c.league_id, d.total_points, d.rank, e.total_teams from
-  fantasy.owners a, users.users b, fantasy.leagues c, fantasy.points d,
-   (select league_id, sum(number_teams) as total_teams from fantasy.sports where league_id = '` + league_id + '\' group by league_id) e' +
-  ' where a.league_id = e.league_id and a.user_id = b.user_id and a.league_id = c.league_id and a.owner_id = d.owner_id'
+  var str = `select a.*, b.username, c.league_name, c.max_owners, c.league_id, d.total_points, d.rank, e.room_id, e.start_time, f.total_teams from
+  fantasy.owners a, users.users b, fantasy.leagues c, fantasy.points d, draft.settings e,
+   (select league_id, sum(number_teams) as total_teams from fantasy.sports where league_id = '` + league_id + '\' group by league_id) f' +
+  ' where a.league_id = e.league_id and a.league_id = f.league_id and a.user_id = b.user_id and a.league_id = c.league_id and a.owner_id = d.owner_id'
   return knex.raw(str)
     .then(result =>
     {
@@ -21,6 +21,8 @@ const getLeague = (league_id, res, type) =>{
         var max_owners = result.rows[0].max_owners
         var league_id = result.rows[0].league_id
         var total_teams = result.rows[0].total_teams
+        var room_id = result.rows[0].room_id
+        var start_time = result.rows[0].start_time
         var owners = []
         result.rows.map((owner,i) => owners.push(
           {
@@ -38,7 +40,9 @@ const getLeague = (league_id, res, type) =>{
           max_owners : max_owners,
           total_teams:total_teams,
           league_id : league_id,
-          owners : owners
+          owners : owners,
+          room_id: room_id,
+          draft_start_time:start_time
         })
       }
       else
