@@ -5,8 +5,7 @@ function handleReduxResponse(res, code, action){
   res.status(code).json(action)
 }
 
-const getLeague = (league_id, res, type) =>{
-
+const getLeague = (league_id, user_id, res, type) =>{
 
   var str = `select a.*, b.username, c.league_name, c.max_owners, c.league_id, d.total_points, d.rank, e.room_id, e.start_time, f.total_teams from
   fantasy.owners a, users.users b, fantasy.leagues c, fantasy.points d, draft.settings e,
@@ -23,17 +22,24 @@ const getLeague = (league_id, res, type) =>{
         var total_teams = result.rows[0].total_teams
         var room_id = result.rows[0].room_id
         var start_time = result.rows[0].start_time
+        var my_owner_id = ''
         var owners = []
-        result.rows.map((owner,i) => owners.push(
+        result.rows.map((owner,i) => {
+          if(owner.user_id === user_id)
           {
-            owner_name:owner.owner_name,
-            owner_id:owner.owner_id, 
-            total_points:owner.total_points,
-            rank:owner.rank,
-            username:owner.username,
-            user_id: owner.user_id,
-            draft_position: i
-          }))
+            my_owner_id = owner.owner_id
+          }
+          owners.push(
+            {
+              owner_name:owner.owner_name,
+              owner_id:owner.owner_id, 
+              total_points:owner.total_points,
+              rank:owner.rank,
+              username:owner.username,
+              user_id: owner.user_id,
+              draft_position: i
+            })
+        })
         return handleReduxResponse(res,200, {
           type: type,
           league_name : league_name,
@@ -42,7 +48,8 @@ const getLeague = (league_id, res, type) =>{
           league_id : league_id,
           owners : owners,
           room_id: room_id,
-          draft_start_time:start_time
+          draft_start_time:start_time,
+          my_owner_id:my_owner_id
         })
       }
       else

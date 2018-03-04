@@ -70,7 +70,7 @@ class NavAppBar extends React.Component {
   handleLeagueClick = (league_id) => {
     const { onClickedLeague, onStandings, onSportLeagues } = this.props
     this.toggleDrawer()
-    onClickedLeague(league_id)
+    onClickedLeague(league_id, this.props.user.id)
     onStandings(league_id)
     onSportLeagues(league_id)
   }
@@ -81,7 +81,6 @@ class NavAppBar extends React.Component {
 
   pressedLogin = () => {
     const { onPressedLogin } = this.props
-    console.log('here')
     onPressedLogin()
   };
 
@@ -205,9 +204,9 @@ export default connect(({ user, leagues }) => ({ user, leagues }),
         dispatch(
           handledPressedLogin())
       },
-      onClickedLeague(league_id) {
+      onClickedLeague(league_id, user_id) {
         dispatch(
-          clickedLeague(league_id))
+          clickedLeague(league_id, user_id))
       },
       onStandings(league_id) {
         dispatch(

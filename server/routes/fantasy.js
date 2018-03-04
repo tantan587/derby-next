@@ -30,7 +30,7 @@ router.post('/joinleague', authHelpers.loginRequired, (req, res, next)  => {
 })
 
 router.post('/clickleague', authHelpers.loginRequired, (req, res, next)  => {
-  return fantasyHelpers.getLeague(req.body.league_id,res, C.CLICKED_LEAGUE)
+  return fantasyHelpers.getLeague(req.body.league_id,req.body.user_id,res, C.CLICKED_LEAGUE)
 })
 
 function handleReduxResponse(res, code, action){

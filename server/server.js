@@ -13,7 +13,7 @@ const next = require('next')
 const dev = process.env.NODE_ENV !== 'production'
 const nextApp = next({ dev })
 const handle = nextApp.getRequestHandler()
-const mySocketIo = require('./socketio')
+const mySocketIo = require('./socketio/socketio')
 
 
 

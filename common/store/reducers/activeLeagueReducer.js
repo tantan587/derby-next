@@ -14,8 +14,8 @@ export default (state = {}, action={ type: null }) => {
       max_owners : action.max_owners,
       owners : action.owners,
       draft_start_time : action.draft_start_time,
-      room_id : action.room_id
-
+      room_id : action.room_id,
+      my_owner_id:action.my_owner_id
     }
   case C.UPDATE_DRAFT_ORDER:
     return {...state, owners : owners(state.owners, action) }

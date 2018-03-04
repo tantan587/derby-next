@@ -70,7 +70,6 @@ export const GetCountdownTimeStr = (num) =>
   let hourRemaining = Math.floor((num- daysRemaining *day) / hour) 
   let minRemaining = Math.floor((num- daysRemaining *day - hourRemaining*hour) / min)
   let secRemaining = Math.floor((num- daysRemaining *day- hourRemaining*hour- minRemaining*min) / sec)
-
   let str =  daysRemaining + ' Days ' + hourRemaining + ' Hours ' + minRemaining + ' Minutes ' + secRemaining + ' Seconds '
   return str
 }

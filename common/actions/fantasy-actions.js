@@ -26,11 +26,12 @@ export const clickedJoinLeague = (league_name, league_password, owner_name) => d
         JSON.stringify({league_name, league_password, owner_name})
 )
 
-export const clickedLeague = (league_id) => dispatch =>
-fetchThenDispatch(
+export const clickedLeague = (league_id, user_id) => dispatch =>
+{
+  fetchThenDispatch(
     dispatch,
     '/api/clickleague',
     'POST',
-    JSON.stringify({league_id})
-)
+    JSON.stringify({league_id, user_id}))
+}
 
