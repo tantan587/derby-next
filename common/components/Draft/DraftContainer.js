@@ -10,6 +10,7 @@ import Grid from 'material-ui/Grid'
 import Countdown from './Countdown'
 import DraftHeader from './DraftHeader'
 import SimpleSnackbar from './SimpleSnackbar'
+import DraftOrder from './DraftOrder'
 import { connect } from 'react-redux'
 
 
@@ -26,6 +27,7 @@ const styles = theme => ({
     padding: theme.spacing.unit * 2,
     textAlign: 'center',
     color: theme.palette.text.secondary,
+    minHeight:800
   },
   button : {
     backgroundColor: theme.palette.secondary.A700,
@@ -48,9 +50,9 @@ class DraftContainer extends React.Component {
       startTime:Math.round((new Date(this.props.activeLeague.draft_start_time)-new Date())/1000),
       startTimerId:0,
       snackbarOpen:false,
-      snackbarMessage:''
-
-
+      snackbarMessage:'',
+      ownerMap:{},
+      currPick:0,
     }
   }
 
@@ -59,13 +61,27 @@ class DraftContainer extends React.Component {
     this.socket = io()
     this.socket.on('connect', () => {
       // Connected, let's sign-up for to receive messages for this room
-      this.socket.emit('join', {roomName: this.props.activeLeague.room_id, owner_id:this.props.activeLeague.my_owner_id })
+      this.socket.emit('join', 
+        {roomName: this.props.activeLeague.room_id, 
+          owner_id:this.props.activeLeague.my_owner_id })
     })
     this.socket.on('people', this.handlePeople)
     this.socket.on('message', this.handleMessage)
     this.socket.on('start', this.handleStart)
     this.socket.on('stop', this.handleStop)
     this.socket.on('restart', this.handleRestart)
+    this.socket.on('reset', this.handleReset)
+
+    const ownerMap = {}
+    this.props.activeLeague.owners.map(owner => {
+      const here = owner.owner_id === this.props.activeLeague.my_owner_id
+      ownerMap[owner.owner_id] =
+       {draft_position:owner.draft_position, 
+         owner_name:owner.owner_name,
+         here:here}
+    })
+    console.log(ownerMap)
+    this.setState({ownerMap:ownerMap})
   }
 
   componentWillUnmount() {
@@ -75,11 +91,32 @@ class DraftContainer extends React.Component {
     this.socket.off('start', this.handleStart)
     this.socket.off('stop', this.handleStop)
     this.socket.off('restart', this.handleRestart)
+    this.socket.off('reset', this.handleReset)
     this.socket.close()
   }
 
-  handlePeople = (people) => {
-    this.setState({snackbarOpen:true, snackbarMessage: people.owner_id + ' has ' + people.state})
+  handlePeople = (owner) => {
+    const ownerMap = this.state.ownerMap
+
+    console.log(owner)
+
+    if(owner.state === 'joined')
+    {
+      owner.owners.map(owner_id =>
+        ownerMap[owner_id].here = true
+      )
+    }
+    else{
+      ownerMap[owner.owner_id].here = false
+    }
+    const snackbarMessage = this.props.activeLeague.my_owner_id === owner.owner_id 
+      ? 'You just ' + owner.state
+      : ownerMap[owner.owner_id].owner_name + ' has ' + owner.state
+    this.setState(
+      {snackbarOpen:true, 
+        ownerMap:ownerMap, 
+        snackbarMessage:snackbarMessage
+      })
   }
 
   // add messages from server to the state
@@ -89,18 +126,14 @@ class DraftContainer extends React.Component {
   }
 
   handleRestart = (data) => {
-    if(data.draftStartTime)
-    {
-      this.setState({ 
-        countdownTime:data.clock,
-        isOn:false,
-        draftState:'pre',
-        startTime:Math.round((new Date(data.draftStartTime)-new Date())/1000) })
-    }
-    else
-    {
-      this.setState({ countdownTime:data.clock,isOn:false })
-    }
+    console.log('restart')
+    this.setState({ countdownTime:data.clock,isOn:false })
+  }
+
+  handleReset = (data) => {
+    this.setState({ 
+      draftState:'pre',
+      startTime:Math.round((new Date(data.draftStartTime)-new Date())/1000) })
   }
 
   handleStop =() => {
@@ -108,7 +141,8 @@ class DraftContainer extends React.Component {
   }
 
   handleStart =() => {
-    this.setState({ isPaused:false, draftState:'live' })
+    console.log('start')
+    this.setState({ isPaused:false, draftState:'live', currPick:0 })
   }
 
   handleChange = event => {
@@ -153,6 +187,7 @@ class DraftContainer extends React.Component {
 
   onDraftButton = () => {
     this.socket.emit('draft')
+    this.setState({currPick:this.state.currPick+1})
   }
 
   // send messages to server and add them to the state
@@ -176,7 +211,6 @@ class DraftContainer extends React.Component {
   }
 
   handleSnackbarClose = (event, reason) => {
-    console.log('here')
     if (reason === 'clickaway') {
       return;
     }
@@ -194,7 +228,7 @@ class DraftContainer extends React.Component {
     const { classes, activeLeague } = this.props
     const { preDraft, countdownTime, countdownTimerId,
       isOn, isPaused, startTime,startTimerId, draftState,
-      snackbarOpen,snackbarMessage } = this.state
+      snackbarOpen,snackbarMessage, ownerMap, currPick } = this.state
     // const teams = [1,2,3,4,5]
     // const queueTeams = []
     // teams.map(num => queueTeams.push({id:num,text:num,order:num }))
@@ -218,7 +252,7 @@ class DraftContainer extends React.Component {
               <Paper className={classes.paper}>
                 <Grid container alignItems={'stretch'} direction='row'>
                   <Grid item xs={12} sm={2} 
-                    style={{backgroundColor:'red'}}>
+                    style={{backgroundColor:'white'}}>
                     <Grid container direction={'column'}>
                       <Grid item xs={12} style={{backgroundColor:'yellow'}}>
                         <Countdown 
@@ -229,12 +263,19 @@ class DraftContainer extends React.Component {
                           countdownTimerId={countdownTimerId}
                           updateTimerId={this.updateTimerId}/>
                       </Grid>
+                      <Grid item xs={12}>
+                        <DraftOrder 
+                          owners={Object.values(ownerMap)}
+                          myOwnerName={ownerMap[activeLeague.my_owner_id].owner_name}  
+                          totalTeams={activeLeague.total_teams}
+                          currPick={currPick}/>
+                      </Grid>
                     </Grid>
 
                   </Grid>
-                  <Grid item xs={12} sm={8} style={{backgroundColor:'blue'}}>
+                  <Grid item xs={12} sm={8} style={{backgroundColor:'white'}}>
                     <Grid container direction={'column'}>
-                      <Grid item xs={12} style={{backgroundColor:'purple'}} >
+                      <Grid item xs={12} style={{backgroundColor:'white'}} >
                         <DraftHeader 
                           startTime={startTime} 
                           league_name={activeLeague.league_name} 
@@ -245,7 +286,7 @@ class DraftContainer extends React.Component {
                       </Grid>
                     </Grid>
                   </Grid>
-                  <Grid item xs={12} sm={2} style={{backgroundColor:'green'}}>
+                  <Grid item xs={12} sm={2} style={{backgroundColor:'white'}}>
                     <Grid container direction={'column'}>
                       <Grid item xs={12} style={{backgroundColor:'orange'}} >
                         <Button style={{fontSize:30}} onClick={() => this.onDraftButton()}>
