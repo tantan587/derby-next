@@ -7,35 +7,50 @@ let ownersInDraft = {}
 const timeToDraft = 10
 let i = 0
 
-const autoDraft = (io, roomName) =>
+const clearTimers = (roomName) =>
 {
-  i++
-  console.log(i,'Draft Here')
-  io.in(roomName).emit('restart', {clock: timeToDraft})
+  clearInterval(draftTimers[roomName])
   clearTimeout(draftTimers[roomName])
-  draftTimers[roomName] =
-  setTimeout(() => autoDraft(io, roomName),timeToDraft*1000)
 }
 
-const myRestart = (io,roomName) =>
+const waitToAutoDraft = (io, roomName) =>
 {
-  console.log('myRestart')
-  io.in(roomName).emit('start')
-  io.in(roomName).emit('restart', {clock: timeToDraft})
-  clearTimeout(draftTimers[roomName])
-  draftTimers[roomName] =
-  setTimeout(() =>  autoDraft(io, roomName),timeToDraft*1000)
+  let counter = timeToDraft
+  clearTimers(roomName)
+
+  io.in(roomName).emit('draftTick', counter)
+
+  draftTimers[roomName] = setInterval(() => {
+    if(counter === 0){
+      clearInterval(draftTimers[roomName])
+      i++
+      console.log(i,'Draft Here')
+      io.in(roomName).emit('draftInfo')
+      waitToAutoDraft(io, roomName)
+      return
+    }
+    counter -= 1
+    io.in(roomName).emit('draftTick', counter)
+    console.log('counting in autodraft')
+    
+  }, 1000)
 }
 
-const runAtLaterTime = (io, roomName, time) =>
+const waitToStartDraft = (io, roomName, time) =>
 {
-  clearTimeout(draftTimers[roomName])
-  if (time > 0x7FFFFFFF)
-    draftTimers[roomName] = setTimeout(
-      () => {runAtLaterTime(io, roomName, time-0x7FFFFFFF)}, 0x7FFFFFFF)
-  else
-    draftTimers[roomName] = setTimeout(() => 
-      myRestart(io, roomName), time)
+  let counter = 0
+  clearTimers(roomName)
+  draftTimers[roomName] = setInterval(() => {
+    if(time < counter){
+      clearInterval(draftTimers[roomName])
+      io.in(roomName).emit('start')
+      waitToAutoDraft(io, roomName)
+      return
+    }
+    counter += 1000
+    console.log('counting in start draft', time, counter)
+    io.in(roomName).emit('startTick')
+  }, 1000)
 }
 
 const draftRoom = (io, socket) =>
@@ -56,9 +71,11 @@ const draftRoom = (io, socket) =>
       ownersInDraft.roomName = []
     ownersInDraft.roomName.push(roomInfo.owner_id)
 
-    io.in(roomName).emit('people', {state:'joined',owners:ownersInDraft.roomName, owner_id:roomInfo.owner_id})
-    //sets up draft time
-    //need logic to update on draft update. 
+    io.in(roomName).emit('people', 
+      {state:'joined',
+        owners:ownersInDraft.roomName,
+        owner_id:roomInfo.owner_id})
+
     if(localRoom.length === 1)
     {
       socketIoHelpers.GetDraftTime(roomName)
@@ -66,7 +83,7 @@ const draftRoom = (io, socket) =>
           const time = new Date(res)- new Date()
           if(time > 0)
           {
-            runAtLaterTime(io, roomName, time)
+            waitToStartDraft(io, roomName, time)//time)
           }
         })
     }
@@ -81,20 +98,14 @@ const draftRoom = (io, socket) =>
 
   socket.in(roomName).on('startTime', (startTime) => {
     let date = new Date(new Date().getTime() + startTime * 1000)
-    io.in(roomName).emit('stop')
     io.in(roomName).emit('reset', {draftStartTime: date.toJSON()})
+    waitToStartDraft(io, roomName, startTime*1000)
 
-    clearTimeout(draftTimers[roomName])
-    draftTimers[roomName] = setTimeout(() => {
-      myRestart(io, roomName)
-    }, 1000*startTime)
   })
 
   socket.in(roomName).on('draft', () => {
-    io.in(roomName).emit('restart', {clock: timeToDraft})
-    clearTimeout(draftTimers[roomName])
-    draftTimers[roomName] =
-    setTimeout(() =>  autoDraft(io, roomName),timeToDraft*1000)
+    io.in(roomName).emit('draftInfo')
+    waitToAutoDraft(io, roomName)
   })
 
   socket.in(roomName).on('leave', (owner_id) => {

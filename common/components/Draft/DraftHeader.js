@@ -8,23 +8,10 @@ class DraftHeader extends React.Component {
 
   render()
   {
-    const {startTime, league_name, draftState, onTick, startTimerId, updateTimerId} = this.props
+    const {startTime, league_name, draftState} = this.props
     
     if (draftState === 'pre')
     {
-      //continue
-      if (startTime > 0 && startTimerId === 0)
-      {
-        let timerId = setInterval(onTick, 1000)
-        updateTimerId('startTimerId', timerId)
-      }
-      //stop
-      else if(startTime===0 && startTimerId !== 0)
-      {
-        clearInterval(isNaN(startTimerId) ? startTimerId._id : startTimerId)
-        updateTimerId('startTimerId', 0)
-      }
-
       return (
         <div>
           <Typography type='headline'> {league_name}</Typography>

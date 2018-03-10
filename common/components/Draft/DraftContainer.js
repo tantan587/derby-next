@@ -13,7 +13,6 @@ import SimpleSnackbar from './SimpleSnackbar'
 import DraftOrder from './DraftOrder'
 import { connect } from 'react-redux'
 
-
 const styles = theme => ({
   container: {
     left: '50%',
@@ -44,18 +43,18 @@ class DraftContainer extends React.Component {
       draftState:'pre',
       messages:[],
       countdownTime:0,
-      countdownTimerId:0,
-      isOn:false,
-      isPaused:true,
       startTime:Math.round((new Date(this.props.activeLeague.draft_start_time)-new Date())/1000),
-      startTimerId:0,
       snackbarOpen:false,
       snackbarMessage:'',
       ownerMap:{},
       currPick:0,
+      sockets:['people','message','start','reset',
+        'startTick','draftTick', 'draftInfo'],
+      functions : [this.handlePeople,this.handleMessage,
+        this.handleStart, this.handleReset,
+        this.handleStartTick, this.handleDraftTick, this.handleDraftInfo]
     }
   }
-
   // connect to WS server and listen event
   componentDidMount() {
     this.socket = io()
@@ -65,13 +64,9 @@ class DraftContainer extends React.Component {
         {roomName: this.props.activeLeague.room_id, 
           owner_id:this.props.activeLeague.my_owner_id })
     })
-    this.socket.on('people', this.handlePeople)
-    this.socket.on('message', this.handleMessage)
-    this.socket.on('start', this.handleStart)
-    this.socket.on('stop', this.handleStop)
-    this.socket.on('restart', this.handleRestart)
-    this.socket.on('reset', this.handleReset)
-
+    this.state.sockets.map((socket,i) => 
+      this.socket.on(socket, this.state.functions[i]))
+ 
     const ownerMap = {}
     this.props.activeLeague.owners.map(owner => {
       const here = owner.owner_id === this.props.activeLeague.my_owner_id
@@ -80,18 +75,12 @@ class DraftContainer extends React.Component {
          owner_name:owner.owner_name,
          here:here}
     })
-    console.log(ownerMap)
     this.setState({ownerMap:ownerMap})
   }
 
   componentWillUnmount() {
-    this.socket.emit('leave', this.props.activeLeague.my_owner_id)
-    this.socket.off('people', this.handlePeople)
-    this.socket.off('message', this.handleMessage)
-    this.socket.off('start', this.handleStart)
-    this.socket.off('stop', this.handleStop)
-    this.socket.off('restart', this.handleRestart)
-    this.socket.off('reset', this.handleReset)
+    this.state.sockets.map((socket,i) => 
+      this.socket.off(socket, this.state.functions[i]))
     this.socket.close()
   }
 
@@ -125,51 +114,17 @@ class DraftContainer extends React.Component {
     this.setState(state => ({ messages: state.messages.concat(message) }))
   }
 
-  handleRestart = (data) => {
-    console.log('restart')
-    this.setState({ countdownTime:data.clock,isOn:false })
-  }
-
   handleReset = (data) => {
     this.setState({ 
       draftState:'pre',
       startTime:Math.round((new Date(data.draftStartTime)-new Date())/1000) })
   }
 
-  handleStop =() => {
-    this.setState({ isPaused:true })
-  }
-
   handleStart =() => {
-    console.log('start')
-    this.setState({ isPaused:false, draftState:'live', currPick:0 })
+    this.setState({draftState:'live', currPick:0 })
   }
 
-  handleChange = event => {
-    this.setState({ field: event.target.value })
-  }
-
-  updateTimerId = (name, timerId) =>
-  {
-    console.log('udpateTimer')
-    this.setState({
-      [name]: timerId,
-    })
-  }
-
-  onDraftTick = () => {
-    const {countdownTime, isPaused} = this.state
-    if(!isPaused)
-    {
-      if(countdownTime > 0)
-      {this.setState(() => ({ countdownTime: countdownTime -1, isOn:true }))}
-      else if(this.state.isOn=== true)
-      {this.setState(() => ({ isOn:false }))}
-      
-    }
-  }
-
-  onStartTick = () => {
+  handleStartTick = () => {
     if(this.state.startTime < 5 && this.state.draftState ==='pre')
     {
       this.setState({ draftState: 'wait' })
@@ -178,20 +133,31 @@ class DraftContainer extends React.Component {
     {
       this.setState({ startTime: this.state.startTime -1 })
     }
-    
   }
 
-  handleStartTime = event => {
+  handleDraftTick = (counter) => {
+
+    this.setState({countdownTime: counter})
+      
+  }
+  handleDraftInfo = () => {
+    this.setState({currPick:this.state.currPick+1})      
+  }
+
+  onTextChange = event => {
+    this.setState({ field: event.target.value })
+  }
+
+  onStartTimeChange = event => {
     this.socket.emit('startTime',event.target.value)
   }
 
   onDraftButton = () => {
     this.socket.emit('draft')
-    this.setState({currPick:this.state.currPick+1})
   }
 
   // send messages to server and add them to the state
-  handleSubmit = event => {
+  onSubmit = event => {
     event.preventDefault()
 
     // create message object
@@ -210,7 +176,7 @@ class DraftContainer extends React.Component {
     }))
   }
 
-  handleSnackbarClose = (event, reason) => {
+  onSnackbarClose = (event, reason) => {
     if (reason === 'clickaway') {
       return;
     }
@@ -226,8 +192,7 @@ class DraftContainer extends React.Component {
 
   render() {
     const { classes, activeLeague } = this.props
-    const { preDraft, countdownTime, countdownTimerId,
-      isOn, isPaused, startTime,startTimerId, draftState,
+    const { preDraft, countdownTime, startTime,draftState,
       snackbarOpen,snackbarMessage, ownerMap, currPick } = this.state
     // const teams = [1,2,3,4,5]
     // const queueTeams = []
@@ -256,12 +221,7 @@ class DraftContainer extends React.Component {
                     <Grid container direction={'column'}>
                       <Grid item xs={12} style={{backgroundColor:'yellow'}}>
                         <Countdown 
-                          countdownTime={countdownTime}  
-                          isOn={isOn} 
-                          isPaused={isPaused} 
-                          onTick={this.onDraftTick}
-                          countdownTimerId={countdownTimerId}
-                          updateTimerId={this.updateTimerId}/>
+                          countdownTime={countdownTime}/>
                       </Grid>
                       <Grid item xs={12}>
                         <DraftOrder 
@@ -279,10 +239,7 @@ class DraftContainer extends React.Component {
                         <DraftHeader 
                           startTime={startTime} 
                           league_name={activeLeague.league_name} 
-                          draftState={draftState} 
-                          onTick={this.onStartTick}
-                          startTimerId={startTimerId}
-                          updateTimerId={this.updateTimerId}/>
+                          draftState={draftState}/>
                       </Grid>
                     </Grid>
                   </Grid>
@@ -307,9 +264,9 @@ class DraftContainer extends React.Component {
                   ' c2-c: '+ (message.c2id - message.cid).toString() + ' ' + message.value}</li>
               )}
             </ul>
-            <form onSubmit={this.handleSubmit}>
+            <form onSubmit={this.onSubmit}>
               <input
-                onChange={this.handleChange}
+                onChange={this.onTextChange}
                 type="text"
                 placeholder="Hello world!"
                 value={this.state.field}/>
@@ -319,7 +276,7 @@ class DraftContainer extends React.Component {
               <TextField
                 id="number"
                 label="Start Time (secs)"
-                onChange={this.handleStartTime}
+                onChange={this.onStartTimeChange}
                 type="number"
                 defaultValue="5"
                 InputLabelProps={{
@@ -328,7 +285,7 @@ class DraftContainer extends React.Component {
               />
             </form>
           </div>
-          <SimpleSnackbar open={snackbarOpen} message={snackbarMessage} handleClose={this.handleSnackbarClose}/>    
+          <SimpleSnackbar open={snackbarOpen} message={snackbarMessage} handleClose={this.onSnackbarClose}/>    
         </div>
     )
   }
