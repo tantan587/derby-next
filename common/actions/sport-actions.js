@@ -1,18 +1,8 @@
-import fetch from 'isomorphic-fetch'
 import C from '../constants'
-
-const parseResponse = response => response.json()
-
-const logError = error => console.error(error)
-  
-const fetchThenDispatch = (dispatch, url, method, body) =>
-  fetch(url, {method, body, headers: { 'Content-Type': 'application/json' }, credentials: 'include'})
-    .then(parseResponse)
-    .then(dispatch)
-    .catch(logError)
+import {FetchThenDispatch} from './actionHelpers'
 
 export const clickedStandings = (league_id) => dispatch =>
-  fetchThenDispatch(
+  FetchThenDispatch(
     dispatch,
     '/api/standings',
     'POST',
@@ -20,7 +10,7 @@ export const clickedStandings = (league_id) => dispatch =>
   )
 
 export const clickedSportLeagues = (league_id) => dispatch =>
-  fetchThenDispatch(
+  FetchThenDispatch(
     dispatch,
     '/api/sportleagues',
     'POST',
@@ -28,7 +18,7 @@ export const clickedSportLeagues = (league_id) => dispatch =>
   )
 
 export const clickedSaveDraft = (league_id, allTeams) => dispatch =>
-  fetchThenDispatch(
+  FetchThenDispatch(
     dispatch,
     '/api/savedraft',
     'POST',
@@ -36,7 +26,7 @@ export const clickedSaveDraft = (league_id, allTeams) => dispatch =>
   )
 
 export const clickedDateChange = (league_id, date) => dispatch =>
-  fetchThenDispatch(
+  FetchThenDispatch(
     dispatch,
     '/api/schedule',
     'POST',

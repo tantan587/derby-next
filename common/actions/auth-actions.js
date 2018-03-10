@@ -1,15 +1,5 @@
-import fetch from 'isomorphic-fetch'
 import C from '../constants'
-
-const parseResponse = response => response.json()
-
-const logError = error => console.error(error)
-
-const fetchThenDispatch = (dispatch, url, method, body) =>
-  fetch(url, {method, body, headers: { 'Content-Type': 'application/json' }, credentials: 'include'})
-    .then(parseResponse)
-    .then(dispatch)
-    .catch(logError)
+import {FetchThenDispatch} from './actionHelpers'
 
 export const loadSuccess = () => {
   return {type: C.DATA_LOAD_SUCCESS}
@@ -22,7 +12,7 @@ export const handledPressedLogin = () =>
 
 
 export const clickedLogin = (username, password) => dispatch =>
-  fetchThenDispatch(
+  FetchThenDispatch(
     dispatch,
     '/api/login',
     'POST',
@@ -30,7 +20,7 @@ export const clickedLogin = (username, password) => dispatch =>
   ) 
 
 export const clickedLogout = () => dispatch =>
-  fetchThenDispatch(
+  FetchThenDispatch(
     dispatch,
     '/api/logout',
     'POST',
@@ -38,7 +28,7 @@ export const clickedLogout = () => dispatch =>
   )
 
 export const clickedSignup = (username,first_name,last_name,email,password) => dispatch =>
-  fetchThenDispatch(
+  FetchThenDispatch(
     dispatch,
     '/api/signup',
     'POST',
@@ -46,7 +36,7 @@ export const clickedSignup = (username,first_name,last_name,email,password) => d
   )
 
 export const clickedForgotPassword = (email) => dispatch =>
-  fetchThenDispatch(
+  FetchThenDispatch(
     dispatch,
     '/api/forgotpassword',
     'POST',
@@ -54,7 +44,7 @@ export const clickedForgotPassword = (email) => dispatch =>
   )
 
 export const clickedCreatePassword = (username,password,newPassword) => dispatch =>
-  fetchThenDispatch(
+  FetchThenDispatch(
     dispatch,
     '/api/createpassword',
     'POST',

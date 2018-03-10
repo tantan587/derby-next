@@ -44,6 +44,7 @@ const waitToStartDraft = (io, roomName, time) =>
     if(time < counter){
       clearInterval(draftTimers[roomName])
       io.in(roomName).emit('start')
+      socketIoHelpers.InsertDraftAction(roomName, 'server', 'STATE', {'mode':'live'})
       waitToAutoDraft(io, roomName)
       return
     }
@@ -97,6 +98,7 @@ const draftRoom = (io, socket) =>
   })
 
   socket.in(roomName).on('startTime', (startTime) => {
+    socketIoHelpers.RestartDraft(roomName)
     let date = new Date(new Date().getTime() + startTime * 1000)
     io.in(roomName).emit('reset', {draftStartTime: date.toJSON()})
     waitToStartDraft(io, roomName, startTime*1000)

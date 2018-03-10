@@ -11,6 +11,10 @@ import Countdown from './Countdown'
 import DraftHeader from './DraftHeader'
 import SimpleSnackbar from './SimpleSnackbar'
 import DraftOrder from './DraftOrder'
+import {clickedEnterDraft,
+  handleStartDraft,
+  handleSetDraftMode,
+  handleDraftPick} from '../../actions/draft-actions'
 import { connect } from 'react-redux'
 
 const styles = theme => ({
@@ -26,7 +30,7 @@ const styles = theme => ({
     padding: theme.spacing.unit * 2,
     textAlign: 'center',
     color: theme.palette.text.secondary,
-    minHeight:800
+    minHeight:600
   },
   button : {
     backgroundColor: theme.palette.secondary.A700,
@@ -40,20 +44,23 @@ class DraftContainer extends React.Component {
     this.state = {
       field: '',
       preDraft:true,
-      draftState:'pre',
       messages:[],
       countdownTime:0,
       startTime:Math.round((new Date(this.props.activeLeague.draft_start_time)-new Date())/1000),
       snackbarOpen:false,
       snackbarMessage:'',
       ownerMap:{},
-      currPick:0,
       sockets:['people','message','start','reset',
         'startTick','draftTick', 'draftInfo'],
       functions : [this.handlePeople,this.handleMessage,
         this.handleStart, this.handleReset,
         this.handleStartTick, this.handleDraftTick, this.handleDraftInfo]
     }
+  }
+
+  componentWillMount() {
+    console.log('get draft info')
+    this.props.onEnterDraft(this.props.activeLeague.room_id)
   }
   // connect to WS server and listen event
   componentDidMount() {
@@ -115,19 +122,19 @@ class DraftContainer extends React.Component {
   }
 
   handleReset = (data) => {
+    this.props.onSetDraftMode('pre')
     this.setState({ 
-      draftState:'pre',
       startTime:Math.round((new Date(data.draftStartTime)-new Date())/1000) })
   }
 
   handleStart =() => {
-    this.setState({draftState:'live', currPick:0 })
+    this.props.onStartDraft()
   }
 
   handleStartTick = () => {
-    if(this.state.startTime < 5 && this.state.draftState ==='pre')
+    if(this.state.startTime < 5 && this.props.draft.mode ==='pre')
     {
-      this.setState({ draftState: 'wait' })
+      this.props.onSetDraftMode('wait')
     }
     if(this.state.startTime > 0)
     {
@@ -141,7 +148,7 @@ class DraftContainer extends React.Component {
       
   }
   handleDraftInfo = () => {
-    this.setState({currPick:this.state.currPick+1})      
+    this.props.onDraftPick()      
   }
 
   onTextChange = event => {
@@ -187,13 +194,12 @@ class DraftContainer extends React.Component {
   enterDraft()
   {
     this.setState({preDraft:false})
-
   }
 
   render() {
-    const { classes, activeLeague } = this.props
-    const { preDraft, countdownTime, startTime,draftState,
-      snackbarOpen,snackbarMessage, ownerMap, currPick } = this.state
+    const { classes, activeLeague ,draft } = this.props
+    const { preDraft, countdownTime, startTime,
+      snackbarOpen,snackbarMessage, ownerMap } = this.state
     // const teams = [1,2,3,4,5]
     // const queueTeams = []
     // teams.map(num => queueTeams.push({id:num,text:num,order:num }))
@@ -228,7 +234,7 @@ class DraftContainer extends React.Component {
                           owners={Object.values(ownerMap)}
                           myOwnerName={ownerMap[activeLeague.my_owner_id].owner_name}  
                           totalTeams={activeLeague.total_teams}
-                          currPick={currPick}/>
+                          currPick={draft.pick}/>
                       </Grid>
                     </Grid>
 
@@ -239,7 +245,21 @@ class DraftContainer extends React.Component {
                         <DraftHeader 
                           startTime={startTime} 
                           league_name={activeLeague.league_name} 
-                          draftState={draftState}/>
+                          mode={draft.mode}/>
+                      </Grid>
+                      <form  noValidate>
+                        <TextField
+                          id="number"
+                          label="Start Time (secs)"
+                          onChange={this.onStartTimeChange}
+                          type="number"
+                          defaultValue="5"
+                          InputLabelProps={{
+                            shrink: true,
+                          }}
+                        />
+                      </form>
+                      <Grid item xs={12} style={{backgroundColor:'white'}} >
                       </Grid>
                     </Grid>
                   </Grid>
@@ -272,18 +292,6 @@ class DraftContainer extends React.Component {
                 value={this.state.field}/>
               <button>Send</button>
             </form>
-            <form  noValidate>
-              <TextField
-                id="number"
-                label="Start Time (secs)"
-                onChange={this.onStartTimeChange}
-                type="number"
-                defaultValue="5"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-              />
-            </form>
           </div>
           <SimpleSnackbar open={snackbarOpen} message={snackbarMessage} handleClose={this.onSnackbarClose}/>    
         </div>
@@ -299,6 +307,25 @@ export default connect(
   state =>
     ({
       user : state.user,
-      activeLeague : state.activeLeague
+      activeLeague : state.activeLeague,
+      draft : state.draft
     }),
-  null)(withStyles(styles)(DraftContainer))
+  dispatch =>
+    ({
+      onEnterDraft(room_id) {
+        dispatch(
+          clickedEnterDraft(room_id))
+      },
+      onStartDraft(room_id) {
+        dispatch(
+          handleStartDraft(room_id))
+      },
+      onSetDraftMode(mode) {
+        dispatch(
+          handleSetDraftMode(mode))
+      },
+      onDraftPick(mode) {
+        dispatch(
+          handleDraftPick(mode))
+      },
+    }))(withStyles(styles)(DraftContainer))

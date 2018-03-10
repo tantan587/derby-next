@@ -7,6 +7,7 @@ import sportLeaguesReducer from './sportLeaguesReducer'
 import statusReducer from './statusReducer'
 import teamsReducer from './teamsReducer'
 import userReducer from './userReducer'
+import draftReducer from './draftReducer'
 
 export default combineReducers({
   activeLeague: activeLeagueReducer,
@@ -17,4 +18,5 @@ export default combineReducers({
   status: statusReducer,
   teams: teamsReducer,
   user: userReducer,
+  draft: draftReducer
 })

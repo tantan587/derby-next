@@ -8,9 +8,9 @@ class DraftHeader extends React.Component {
 
   render()
   {
-    const {startTime, league_name, draftState} = this.props
+    const {startTime, league_name, mode} = this.props
     
-    if (draftState === 'pre')
+    if (mode === 'pre')
     {
       return (
         <div>
@@ -21,7 +21,7 @@ class DraftHeader extends React.Component {
       ) 
     }
 
-    if (draftState === 'wait')
+    if (mode === 'wait')
     {
       return (
         <div>
@@ -31,7 +31,7 @@ class DraftHeader extends React.Component {
       )
     }
 
-    if (draftState === 'live')
+    if (mode === 'live')
     {
       return (
         <div>
@@ -41,7 +41,7 @@ class DraftHeader extends React.Component {
       )
     }
 
-    if (draftState === 'post')
+    if (mode === 'post')
     {
       return (
         <div>
