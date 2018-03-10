@@ -65,16 +65,24 @@ const draftRoom = (io, socket) =>
     roomName = roomInfo.roomName
     socket.join(roomName)
     localRoom = io.sockets.adapter.rooms[roomName]
+    console.log(socket.id)
     console.log('room length: ' + localRoom.length)
     console.log(localRoom)
 
     if(!ownersInDraft.roomName)
-      ownersInDraft.roomName = []
-    ownersInDraft.roomName.push(roomInfo.owner_id)
+      ownersInDraft.roomName = {}
+    ownersInDraft.roomName[socket.id]= roomInfo.owner_id
+    console.log(ownersInDraft)
 
+    let owners = []
+    Object.keys(localRoom.sockets).map(socketId =>{
+      if(localRoom.sockets[socketId])
+        owners.push(ownersInDraft.roomName[socketId])
+    })
+    
     io.in(roomName).emit('people', 
       {state:'joined',
-        owners:ownersInDraft.roomName,
+        owners:owners,
         owner_id:roomInfo.owner_id})
 
     if(localRoom.length === 1)
@@ -110,18 +118,13 @@ const draftRoom = (io, socket) =>
     waitToAutoDraft(io, roomName)
   })
 
-  socket.in(roomName).on('leave', (owner_id) => {
-    
-    const index = ownersInDraft.roomName.indexOf(owner_id)
-    if (index > -1) {
-      ownersInDraft.roomName.splice(index, 1)
-    }
-
-    io.in(roomName).emit('people', {state:'left', owner_id:owner_id})
-    if(localRoom.length===1 && draftTimers[roomName])
+  socket.on('disconnect', () => {
+    io.in(roomName).emit('people', {state:'left', owner_id:ownersInDraft.roomName[socket.id]})
+    delete ownersInDraft.roomName[socket.id]
+    if(localRoom.length===0 && draftTimers[roomName])
     {
       clearTimeout(draftTimers[roomName])
-      draftTimers[roomName] = undefined
+      delete draftTimers[roomName]
     }
   })
 
