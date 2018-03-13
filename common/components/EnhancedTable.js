@@ -327,7 +327,7 @@ class EnhancedTable extends React.Component {
                         <TableCell key={header.id}
                           numeric={header.numeric}>
                           {header.id == 'logo_url' && n['logo_url'] !== 'none' ? 
-                            <img src={n['logo_url']} alt="Basketball" width="20" height="20"/>
+                            <img src={n['logo_url']} alt="Basketball" width="40" height="40"/>
                             : n[header.id]}
                         </TableCell>
                     )}

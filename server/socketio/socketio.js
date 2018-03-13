@@ -113,15 +113,15 @@ const draftRoom = (io, socket) =>
 
   })
 
-  socket.in(roomName).on('draft', () => {
-    io.in(roomName).emit('draftInfo')
+  socket.in(roomName).on('draft', (data) => {
+    io.in(roomName).emit('draftInfo',data)
     waitToAutoDraft(io, roomName)
   })
 
   socket.on('disconnect', () => {
     io.in(roomName).emit('people', {state:'left', owner_id:ownersInDraft.roomName[socket.id]})
     delete ownersInDraft.roomName[socket.id]
-    if(localRoom.length===0 && draftTimers[roomName])
+    if(localRoom && localRoom.length===0 && draftTimers[roomName])
     {
       clearTimeout(draftTimers[roomName])
       delete draftTimers[roomName]

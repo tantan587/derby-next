@@ -90,11 +90,13 @@ const getStandings = (league_id, res, type) =>{
             owner_name:team.owner_name ? team.owner_name : 'N/A',
             points: Number.parseFloat(team.reg_points)  
           }))
-        teams.sort(function(a,b)
-        { return a.team_name.toLowerCase() < b.team_name.toLowerCase() ? -1 : 1})
+        // teams.sort(function(a,b)
+        // { return a.team_name.toLowerCase() < b.team_name.toLowerCase() ? -1 : 1})
+        let rtnTeams = {}
+        teams.map(team => rtnTeams[team.team_id] = team)
         return handleReduxResponse(res,200, {
           type: type,
-          teams : teams
+          teams : rtnTeams
         })
       }
       else

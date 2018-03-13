@@ -66,12 +66,6 @@ class MainLeaguePage extends React.Component {
 
   render() {
     const { classes, value } = this.props
-    let myTeams = []
-    this.props.teams.map(team => myTeams.push({
-      ...team,
-      record:team.wins + '-' + team.losses + '-' + team.ties,
-      percentage: (team.wins + team.ties + team.losses) === 0 ? 0.0.toFixed(3) :  ((team.wins + 1/2*team.ties) / (team.wins + team.ties + team.losses)).toFixed(3)
-    }))
 
     return (
       <div className={classes.root}>
@@ -130,7 +124,6 @@ export default connect(
     ({
       activeLeague : state.activeLeague,
       user: state.user,
-      teams: state.teams,
       sportLeagues : state.sportLeagues
     }),
   dispatch =>

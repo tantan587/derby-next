@@ -52,6 +52,9 @@ class DraftOrder extends React.Component {
     return (
       <div >
         <List style={{maxHeight: 600, overflow: 'auto'}}>
+          <Typography key={'head'} type='display1'>
+            Next Up
+          </Typography>
           <Divider />
           <Typography key={'first'} type='subheading'>
             {ownerList.length > 0 ? 'Round ' + (ownerList[0].round) : 'Draft Over'}

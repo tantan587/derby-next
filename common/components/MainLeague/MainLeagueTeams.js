@@ -21,7 +21,7 @@ class MainLeagueTeams extends React.Component {
 
   render() {
     let myTeams = []
-    this.props.teams.map(team => myTeams.push({
+    Object.values(this.props.teams).map(team => myTeams.push({
       ...team, 
       record:team.wins + '-' + team.losses + '-' + team.ties, 
       percentage: (team.wins + team.ties + team.losses) === 0 ? 0.0.toFixed(3) :  ((team.wins + 1/2*team.ties) / (team.wins + team.ties + team.losses)).toFixed(3)

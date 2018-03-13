@@ -11,6 +11,8 @@ import Countdown from './Countdown'
 import DraftHeader from './DraftHeader'
 import SimpleSnackbar from './SimpleSnackbar'
 import DraftOrder from './DraftOrder'
+import DraftQueue from './DraftQueue'
+import TeamDisplay from './TeamDisplay'
 import {clickedEnterDraft,
   handleStartDraft,
   handleSetDraftMode,
@@ -50,6 +52,7 @@ class DraftContainer extends React.Component {
       snackbarOpen:false,
       snackbarMessage:'',
       ownerMap:{},
+      queue: ['101101'],
       sockets:['people','message','start','reset',
         'startTick','draftTick', 'draftInfo'],
       functions : [this.handlePeople,this.handleMessage,
@@ -59,7 +62,6 @@ class DraftContainer extends React.Component {
   }
 
   componentWillMount() {
-    console.log('get draft info')
     this.props.onEnterDraft(this.props.activeLeague.room_id)
   }
   // connect to WS server and listen event
@@ -93,8 +95,6 @@ class DraftContainer extends React.Component {
 
   handlePeople = (owner) => {
     const ownerMap = this.state.ownerMap
-
-    console.log(owner)
 
     if(owner.state === 'joined')
     {
@@ -147,8 +147,19 @@ class DraftContainer extends React.Component {
     this.setState({countdownTime: counter})
       
   }
-  handleDraftInfo = () => {
-    this.props.onDraftPick()      
+  handleDraftInfo = (data) => {
+    if(data)
+    {
+      const index = this.state.queue.indexOf(data.teamId)
+      if(index > -1)
+      {
+        let newQueue = this.state.queue
+        const index = newQueue.indexOf(data.teamId)
+        newQueue.splice(index, 1)
+        this.setState({queue:newQueue})
+      }
+    }
+    this.props.onDraftPick(data)      
   }
 
   onTextChange = event => {
@@ -160,7 +171,18 @@ class DraftContainer extends React.Component {
   }
 
   onDraftButton = () => {
-    this.socket.emit('draft')
+    if(this.props.draft.mode ==='live' && this.state.queue.length > 0)
+      this.socket.emit('draft', {ownerId:this.props.activeLeague.my_owner_id,teamId: this.state.queue[0]})
+  }
+
+  onUpdateQueue = (newQueue) => {
+    this.setState({queue:newQueue})
+  }
+
+  onAddQueue = (item) => {
+    const newQueue = Array.from(this.state.queue)
+    newQueue.push(item)
+    this.setState({queue:newQueue})
   }
 
   // send messages to server and add them to the state
@@ -185,11 +207,11 @@ class DraftContainer extends React.Component {
 
   onSnackbarClose = (event, reason) => {
     if (reason === 'clickaway') {
-      return;
+      return
     }
 
     this.setState({ snackbarOpen: false })
-  };
+  }
 
   enterDraft()
   {
@@ -197,9 +219,9 @@ class DraftContainer extends React.Component {
   }
 
   render() {
-    const { classes, activeLeague ,draft } = this.props
+    const { classes, activeLeague ,draft, teams } = this.props
     const { preDraft, countdownTime, startTime,
-      snackbarOpen,snackbarMessage, ownerMap } = this.state
+      snackbarOpen,snackbarMessage, ownerMap, queue } = this.state
     // const teams = [1,2,3,4,5]
     // const queueTeams = []
     // teams.map(num => queueTeams.push({id:num,text:num,order:num }))
@@ -247,6 +269,13 @@ class DraftContainer extends React.Component {
                           league_name={activeLeague.league_name} 
                           mode={draft.mode}/>
                       </Grid>
+                      <Grid item xs={12}>
+                        <TeamDisplay
+                          addToQueue={this.onAddQueue} 
+                          teams={teams}
+                          availableTeams={draft.availableTeams}
+                          queue={queue}/>
+                      </Grid>
                       <form  noValidate>
                         <TextField
                           id="number"
@@ -270,7 +299,11 @@ class DraftContainer extends React.Component {
                           Draft
                         </Button>
                       </Grid>
+                      <Grid item xs={12} style={{backgroundColor:'white'}} >
+                        <DraftQueue  items={queue} teams={teams} updateOrder={this.onUpdateQueue}/>
+                      </Grid>
                     </Grid>
+                    
                   </Grid>
                 </Grid>
               </Paper>
@@ -308,7 +341,8 @@ export default connect(
     ({
       user : state.user,
       activeLeague : state.activeLeague,
-      draft : state.draft
+      draft : state.draft,
+      teams:state.teams
     }),
   dispatch =>
     ({
@@ -324,8 +358,8 @@ export default connect(
         dispatch(
           handleSetDraftMode(mode))
       },
-      onDraftPick(mode) {
+      onDraftPick(data) {
         dispatch(
-          handleDraftPick(mode))
+          handleDraftPick(data))
       },
     }))(withStyles(styles)(DraftContainer))

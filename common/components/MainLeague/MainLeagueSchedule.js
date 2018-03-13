@@ -118,8 +118,8 @@ class MainLeagueSchedule extends React.Component {
     schedule
       .filter(x => sport === 'All' || sport === '' ? true : idToSport[x.sport_id] === sport)
       .map(x => {
-        const homeTeam = teams.filter(team => team.team_id === x.home_team_id)[0]
-        const awayTeam = teams.filter(team => team.team_id === x.away_team_id)[0]
+        const homeTeam = teams[x.home_team_id]
+        const awayTeam = teams[x.away_team_id]
         if(owner === 'All' || owner === '' || 
         (owner === 'League Only' && (homeTeam.owner_name !== 'N/A' || awayTeam.owner_name !== 'N/A' )) ||
         homeTeam.owner_name === owner || awayTeam.owner_name === owner)
@@ -163,7 +163,7 @@ class MainLeagueSchedule extends React.Component {
               </MenuItem>
             ))}
           </TextField>
-          <br style={{clear: 'both'}}/>
+          {/* <br style={{clear: 'both'}}/> */}
           <TextField
             id={'select-sport'}
             select
@@ -185,7 +185,7 @@ class MainLeagueSchedule extends React.Component {
               </MenuItem>
             ))}
           </TextField>
-          <br style={{clear: 'both'}}/>
+          {/* <br style={{clear: 'both'}}/> */}
           <TextField
             id="date"
             label="Day"

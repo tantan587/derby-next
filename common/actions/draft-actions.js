@@ -20,8 +20,9 @@ export const handleSetDraftMode = (mode) =>
     mode
   })
 
-export const handleDraftPick = () =>
+export const handleDraftPick = (data) =>
   ({
-    type: C.DRAFT_PICK
+    type: C.DRAFT_PICK,
+    data
   })
 
