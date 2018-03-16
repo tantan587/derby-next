@@ -45,7 +45,7 @@ const handleResponse = (res, code, statusMsg) => {
 
 const assembleDraft = (teams,owners, results, my_owner_id) =>
 {
-  let mode = ''
+  let mode = 'pre'
   let pick = 0
   let ownersMap = {}
   let draftedTeams = []
