@@ -19,7 +19,7 @@ import { connect } from 'react-redux'
 import {clickedLeague} from '../actions/fantasy-actions'
 import {clickedStandings, clickedSportLeagues} from '../actions/sport-actions'
 import {isMobile} from '../lib/mobile'
-import { handledPressedLogin } from '../actions/auth-actions'
+import { handledPressedLogin, clickedAdminUpdates } from '../actions/auth-actions'
 
 const styles = theme => ({
   root: {
@@ -73,6 +73,11 @@ class NavAppBar extends React.Component {
     onClickedLeague(league_id, this.props.user.id)
     onStandings(league_id)
     onSportLeagues(league_id)
+  }
+
+  handleAdminUpdates = () =>
+  {
+    this.props.onAdminUpdates()
   }
 
   toggleLeagueList = () => {
@@ -174,7 +179,7 @@ class NavAppBar extends React.Component {
               {this.props.user.loggedIn === true ?
                 <div>
                   <Link href="/participate">
-                    <ListItem button>
+                    <ListItem button >
                       <ListItemText primary="Create/Join League" />
                     </ListItem>
                   </Link>
@@ -185,6 +190,14 @@ class NavAppBar extends React.Component {
               <ListItem button>
                 <ListItemText primary="FAQ" />
               </ListItem>
+              {
+                this.props.user.username !== 'tantan587'
+                  ? <div></div>
+                  :
+                  <ListItem button onClick={() => {this.handleAdminUpdates()}} >
+                    <ListItemText primary="Make updates" />
+                  </ListItem>
+              }
             </List>
           </div>
         </Drawer>
@@ -215,5 +228,9 @@ export default connect(({ user, leagues }) => ({ user, leagues }),
       onSportLeagues(league_id) {
         dispatch(
           clickedSportLeagues(league_id))
+      },
+      onAdminUpdates() {
+        dispatch(
+          clickedAdminUpdates())
       }
     }))(withStyles(styles)(NavAppBar))

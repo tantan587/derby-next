@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const authHelpers = require('./helpers/authHelpers')
+const adminHelpers = require('./helpers/adminHelpers')
 const passport = require('./helpers/local')
 const C = require('../../common/constants')
 const ErrorText = require('../../common/models/ErrorText')
@@ -72,6 +73,10 @@ router.post('/logout', (req, res, next) => {
   req.logout()
   handleReduxResponse(res, 200, {
     type: C.LOGOUT  })
+})
+
+router.post('/adminupdates', (req, res, next) => {
+  adminHelpers.createDraftSetting()
 })
 
 router.post('/forgotpassword', (req, res, next) => {

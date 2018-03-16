@@ -51,6 +51,16 @@ export const clickedCreatePassword = (username,password,newPassword) => dispatch
     JSON.stringify({username,password,newPassword})
   )
 
+export const clickedAdminUpdates = () => dispatch =>
+{
+  FetchThenDispatch(
+    dispatch,
+    '/api/adminupdates',
+    'POST',
+    JSON.stringify()
+  )
+}
+
 export const handleForceLogin = previousPage =>
   ({
     type: C.FORCED_LOGIN,
