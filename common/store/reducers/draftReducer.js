@@ -6,13 +6,21 @@ export default (state = {}, action={ type: null }) => {
     return {
       mode : action.mode,
       pick : action.pick,
-      availableTeams: action.teams,
-      allTeams:Array.from(action.teams),
-      owners:action.owners
+      availableTeams: action.availableTeams,
+      draftedTeams:action.draftedTeams,
+      owners:action.owners,
+      queue:action.queue
     }
   case C.UPDATE_DRAFT_MODE:
     return {
-      ...state, mode : action.mode }
+      ...state, mode : action.mode 
+    }
+
+  case C.UPDATE_DRAFT_QUEUE:
+    return {
+      ...state, queue : action.queue 
+    }
+
   case C.START_DRAFT:
   {
     const newOwners = {}
@@ -21,7 +29,8 @@ export default (state = {}, action={ type: null }) => {
     )
     return {
       ...state,
-      availableTeams: Array.from(state.allTeams),
+      availableTeams: state.availableTeams.concat(state.draftedTeams),
+      draftedTeams:[],
       mode : 'live',
       pick : 0,
       owners: newOwners
@@ -30,19 +39,19 @@ export default (state = {}, action={ type: null }) => {
   case C.DRAFT_PICK:
   {
     const newAvailable = state.availableTeams
-    if(state.data) 
+    const newDrafted = state.draftedTeams
+    if(action.data) 
     {
-      const index = newAvailable.indexOf(state.data.teamId)
-      console.log(index)
+      const index = newAvailable.indexOf(action.data.teamId)
       newAvailable.splice(index, 1)
-      console.log(newAvailable.length)
-    }
-      
+      newDrafted.push(action.data.teamId)
+    }    
     return {
       ...state, 
       pick : state.pick+1, 
       owners : owners(state.owners, action, state.pick),
-      availableTeams :newAvailable }
+      availableTeams :newAvailable,
+      draftedTeams : newDrafted }
   }
   case C.LOGOUT:
     return {
@@ -59,7 +68,7 @@ export const owners = (state = {}, action={ type: null }, pick) => {
   {
     if(action.data)
     {
-      state[action.data.ownerId].push({pick:pick, team_id:action.data.teamId})
+      state[action.data.ownerId].push({pick:pick, teamId:action.data.teamId})
     }
     
     //action.draftOrder.map(order => owners.push(state.filter(owner => owner.user_id === order.id)[0]))

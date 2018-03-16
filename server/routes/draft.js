@@ -6,7 +6,7 @@ const C = require('../../common/constants')
 
 //router.post('/enterdraft', authHelpers.loginRequired, (req, res, next)  => {
 router.post('/enterdraft', (req, res, next)  => {
-  return getDraft(req.body.room_id)
+  return getDraft(req.body.room_id, req.body.owner_id)
     .then((resp) => { 
       handleReduxResponse(res, 200, resp)})
     .catch((err) => { 
@@ -14,7 +14,7 @@ router.post('/enterdraft', (req, res, next)  => {
       handleResponse(res, 500, err)})
 })
 
-const getDraft = (room_id) =>
+const getDraft = (room_id, owner_id) =>
 {
   const strTeams = `select b.team_id from draft.settings a, fantasy.team_points b
   where a.league_id = b.league_id and a.room_id = '` + room_id + '\''
@@ -30,7 +30,7 @@ const getDraft = (room_id) =>
         .then((teams) => {
           return knex.raw(strOwners)
             .then((owners) => {
-              return assembleDraft(teams.rows,owners.rows, results)})
+              return assembleDraft(teams.rows,owners.rows, results, owner_id)})
         })
     })
 }
@@ -43,26 +43,49 @@ const handleResponse = (res, code, statusMsg) => {
   res.status(code).json({status: statusMsg})
 }
 
-const assembleDraft = (teams,owners, results) =>
+const assembleDraft = (teams,owners, results, my_owner_id) =>
 {
   let mode = ''
+  let pick = 0
   let ownersMap = {}
+  let draftedTeams = []
+  let queue = []
   owners.map(x => ownersMap[x.owner_id] = [])
-  let teamIds = teams.map(x => x.team_id)
+  let availableTeams = teams.map(x => x.team_id)
   results.forEach(element => {
     switch (element.action_type){
     case 'STATE':
     {
       mode = element.action.mode ? element.action.mode : mode
-    }}
+      console.log(mode)
+      break
+    }
+    case 'PICK':
+    {
+      pick = element.action.pick
+      ownersMap[element.initiator].push(element.action)
+      const index = availableTeams.indexOf(element.action.teamId)
+      availableTeams.splice(index, 1)
+      draftedTeams.push(element.action.teamId)
+      return
+    }
+    case 'QUEUE':
+    {
+      if (my_owner_id === element.initiator)
+        queue = element.action.queue ? element.action.queue : queue
+    }
+    }
+
     
   })
   return {
     type:C.ENTERED_DRAFT,
-    mode:'pre',
-    pick:0,
-    teams:teamIds,
-    owners:ownersMap}
+    mode:mode,
+    pick:pick,
+    availableTeams:availableTeams,
+    draftedTeams:draftedTeams,
+    owners:ownersMap,
+    queue:queue}
 }
 
 module.exports = router
