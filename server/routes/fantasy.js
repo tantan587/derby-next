@@ -22,8 +22,8 @@ router.post('/createleague', authHelpers.loginRequired, (req, res, next)  => {
 
 router.post('/joinleague', authHelpers.loginRequired, (req, res, next)  => {
   return joinLeague(req, res)
-    .then((response) => { 
-      return getSimpleLeague(response.league_id,res, C.JOIN_LEAGUE_SUCCESS)
+    .then((league_id) => { 
+      return getSimpleLeague(league_id,res, C.JOIN_LEAGUE_SUCCESS)
     })
     .catch((err) => { 
       handleResponse(res, 500, err) })
@@ -88,7 +88,8 @@ function createLeague(req, res) {
                             league_id: response[0].league_id,
                             start_time: req.body.leagueInfo.fullStartTime,
                             type: req.body.leagueInfo.draft_type,
-                            room_id: Math.random().toString(36).substr(2, 10)
+                            room_id: Math.random().toString(36).substr(2, 10),
+                            draft_position: JSON.stringify([owner_id])
                           })
                           .then(() => {
                             return knex.withSchema('fantasy').table('sports')
@@ -150,8 +151,7 @@ function joinLeague(req, res) {
             owner_name:  req.body.owner_name,
             commissioner: false
           })
-          .returning('*')
-          .then((response) => {
+          .then(() => {
             return knex.withSchema('fantasy').table('points')
               .transacting(t)
               .insert({
@@ -159,16 +159,29 @@ function joinLeague(req, res) {
                 total_points: 0,
                 rank: 1
               })
-              .then(()=>{
-                return response[0]})
+              .then(() => {
+                return knex.withSchema('draft').table('settings')
+                  .transacting(t)
+                  .where('league_id', league_id)
+                  .then((resp) => {
+                    const draft_position = resp[0].draft_position
+                    draft_position.push(owner_id)
+                    return knex
+                      .withSchema('draft')
+                      .table('settings')
+                      .transacting(t)
+                      .where('league_id',league_id)
+                      .update('draft_position', JSON.stringify(draft_position))
+                      .then(()=> {return})
+                  })
+              })  
           })
-          .then((response)=>{
-            t.commit
-            return response})
-          .catch(t.rollback)
+          .then(()=>{
+            t.commit})
+          .catch((err) => {t.rollback; throw err})
       })
-        .then((response)=>{
-          return response
+        .then(()=>{
+          return league_id
         })
         .catch(function (err) {
           res.status(400).json(err)

@@ -53,6 +53,7 @@ class DraftContainer extends React.Component {
       snackbarOpen:false,
       snackbarMessage:'',
       linesToShow:20,
+      myDraftPosition:-1,
       ownerMap:{},
       sockets:['people','message','start','reset',
         'startTick','draftTick', 'draftInfo'],
@@ -77,16 +78,22 @@ class DraftContainer extends React.Component {
     })
     this.state.sockets.map((socket,i) => 
       this.socket.on(socket, this.state.functions[i]))
- 
+    let myDraftPosition =-1
     const ownerMap = {}
     this.props.activeLeague.owners.map(owner => {
-      const here = owner.owner_id === this.props.activeLeague.my_owner_id
+      let here = false
+
+      if(owner.owner_id === this.props.activeLeague.my_owner_id)
+      {
+        here = true
+        myDraftPosition = owner.draft_position
+      }
       ownerMap[owner.owner_id] =
        {draft_position:owner.draft_position, 
          owner_name:owner.owner_name,
          here:here}
     })
-    this.setState({ownerMap:ownerMap})
+    this.setState({ownerMap:ownerMap, myDraftPosition:myDraftPosition})
   }
 
   componentWillUnmount() {
@@ -130,7 +137,7 @@ class DraftContainer extends React.Component {
   }
 
   handleStart =() => {
-    this.onSetUpdateQueue(this.props.draft.queue)
+    this.props.onSetUpdateQueue(this.props.draft.queue)
     this.props.onStartDraft()
   }
 
@@ -150,6 +157,23 @@ class DraftContainer extends React.Component {
     this.setState({countdownTime: counter})
       
   }
+  onTextChange = event => {
+    this.setState({ field: event.target.value })
+  }
+
+
+  onDraftButton = () => {
+    const {activeLeague, draft} = this.props
+    const myTurn = this.state.myDraftPosition ===
+      activeLeague.draftOrder[draft.pick].ownerIndex
+    if(this.props.draft.mode ==='live' && 
+    this.props.draft.queue.length > 0 && myTurn)
+      this.socket.emit('draft', 
+        {teamId: draft.queue[0],
+          clientTs:new Date()
+        })
+  }
+
   handleDraftInfo = (data) => {
     if(data)
     {
@@ -163,20 +187,8 @@ class DraftContainer extends React.Component {
         this.props.onSetUpdateQueue(queue)
       }
     }
+    console.log('here')
     this.props.onDraftPick(data)      
-  }
-
-  onTextChange = event => {
-    this.setState({ field: event.target.value })
-  }
-
-
-  onDraftButton = () => {
-    if(this.props.draft.mode ==='live' && this.props.draft.queue.length > 0)
-      this.socket.emit('draft', 
-        {teamId: this.props.draft.queue[0],
-          clientTs:new Date()
-        })
   }
 
   onUpdateQueue = (newQueue) => {
@@ -236,7 +248,8 @@ class DraftContainer extends React.Component {
     const { classes, activeLeague ,draft, teams } = this.props
     const { preDraft, countdownTime, startTime,
       snackbarOpen,snackbarMessage, ownerMap, linesToShow} = this.state
-
+    const myTurn = this.state.myDraftPosition ===
+      activeLeague.draftOrder[draft.pick].ownerIndex
     return (
 
       preDraft
@@ -266,7 +279,7 @@ class DraftContainer extends React.Component {
                         <DraftOrder 
                           owners={Object.values(ownerMap)}
                           myOwnerName={ownerMap[activeLeague.my_owner_id].owner_name}  
-                          totalTeams={activeLeague.total_teams}
+                          draftOrder={activeLeague.draftOrder}
                           currPick={draft.pick}/>
                       </Grid>
                     </Grid>
@@ -278,7 +291,8 @@ class DraftContainer extends React.Component {
                         <DraftHeader 
                           startTime={startTime} 
                           league_name={activeLeague.league_name} 
-                          mode={draft.mode}/>
+                          mode={draft.mode}
+                          myTurn={myTurn}/>
                       </Grid>
                       <Grid item xs={12}>
                         <TeamDisplay

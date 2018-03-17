@@ -104,7 +104,7 @@ export default class DraftQueue extends React.Component {
                             snapshot.isDragging)}
                           {...provided.dragHandleProps}
                         >
-                          <ListItem button style={{padding:0}}>
+                          <ListItem button style={{paddingLeft:5}}>
                             <ListItemText primary={teams[item].team_name} />
                             <IconButton
                               key="close"

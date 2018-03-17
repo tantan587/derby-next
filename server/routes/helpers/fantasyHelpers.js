@@ -1,5 +1,6 @@
 const knex = require('../../db/connection')
 const C = require('../../../common/constants')
+const draftHelpers = require('./draftHelpers')
 
 function handleReduxResponse(res, code, action){
   res.status(code).json(action)
@@ -7,7 +8,7 @@ function handleReduxResponse(res, code, action){
 
 const getLeague = (league_id, user_id, res, type) =>{
 
-  var str = `select a.*, b.username, c.league_name, c.max_owners, c.league_id, d.total_points, d.rank, e.room_id, e.start_time, f.total_teams from
+  var str = `select a.*, b.username, c.league_name, c.max_owners, c.league_id, d.total_points, d.rank, e.room_id, e.start_time, e.draft_position, f.total_teams from
   fantasy.owners a, users.users b, fantasy.leagues c, fantasy.points d, draft.settings e,
    (select league_id, sum(number_teams) as total_teams from fantasy.sports where league_id = '` + league_id + '\' group by league_id) f' +
   ' where a.league_id = e.league_id and a.league_id = f.league_id and a.user_id = b.user_id and a.league_id = c.league_id and a.owner_id = d.owner_id'
@@ -22,9 +23,11 @@ const getLeague = (league_id, user_id, res, type) =>{
         var total_teams = result.rows[0].total_teams
         var room_id = result.rows[0].room_id
         var start_time = result.rows[0].start_time
+        var draft_position = result.rows[0].draft_position
         var my_owner_id = ''
         var owners = []
-        result.rows.map((owner,i) => {
+        
+        result.rows.map((owner) => {
           if(owner.user_id === user_id)
           {
             my_owner_id = owner.owner_id
@@ -37,9 +40,10 @@ const getLeague = (league_id, user_id, res, type) =>{
               rank:owner.rank,
               username:owner.username,
               user_id: owner.user_id,
-              draft_position: i
+              draft_position: draft_position.indexOf(owner.owner_id)
             })
         })
+        const draftOrder = draftHelpers.GetDraftOrder(total_teams,owners.length)
         return handleReduxResponse(res,200, {
           type: type,
           league_name : league_name,
@@ -49,7 +53,8 @@ const getLeague = (league_id, user_id, res, type) =>{
           owners : owners,
           room_id: room_id,
           draft_start_time:start_time,
-          my_owner_id:my_owner_id
+          my_owner_id:my_owner_id,
+          draftOrder:draftOrder
         })
       }
       else

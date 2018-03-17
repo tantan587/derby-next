@@ -1,15 +1,22 @@
 
 const knex = require('../db/connection')
 
-const GetDraftTime = (room_id) =>
+const GetDraftInfo = (room_id) =>
 {
-  return knex
-    .withSchema('draft')
-    .table('settings')
-    .where('room_id', room_id)
-    .then(res => {
-      return res[0].start_time})
+  const knexStr1 = 'select (select sum(b.number_teams) from draft.settings a, fantasy.sports b where room_id = \'' + room_id +
+   '\' and a.league_id = b.league_id group by a.league_id) as total_teams, * from  draft.settings where room_id = \'' + room_id + '\''
+
+  const knexStr2 = `select team_id from fantasy.team_points a, 
+   draft.settings b where a.league_id = b.league_id and b.room_id = '` + room_id + '\' order by 1'
+
+  return knex.raw(knexStr1)
+    .then(res1 => {
+      return knex.raw(knexStr2)
+        .then(res2 => 
+        {return {...res1.rows[0], availableTeams:res2.rows.map(x =>x.team_id)}})
+    })
 }
+
 const InsertDraftAction = (roomId, initiator, actionType, action, client_ts ='' ) =>
 {
   return knex.withSchema('draft').table('results')
@@ -42,7 +49,7 @@ const RestartDraft = (roomId) =>
 }
 
 module.exports = {
-  GetDraftTime,
+  GetDraftInfo,
   InsertDraftAction,
   RestartDraft
 }

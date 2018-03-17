@@ -8,7 +8,7 @@ class DraftHeader extends React.Component {
 
   render()
   {
-    const {startTime, league_name, mode} = this.props
+    const {startTime, league_name, mode, myTurn} = this.props
     
     if (mode === 'pre')
     {
@@ -37,6 +37,10 @@ class DraftHeader extends React.Component {
         <div>
           <Typography type='headline'> {league_name}</Typography>
           <Typography type='headline'> Draft is Live!</Typography>
+          {myTurn
+            ? <Typography type='title'> Your Turn!</Typography>
+            : <div/>
+          }
         </div>
       )
     }

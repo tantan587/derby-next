@@ -76,7 +76,7 @@ router.post('/logout', (req, res, next) => {
 })
 
 router.post('/adminupdates', (req, res, next) => {
-  //adminHelpers.createDraftSetting()
+  adminHelpers.admin1()
 })
 
 router.post('/forgotpassword', (req, res, next) => {

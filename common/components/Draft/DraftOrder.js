@@ -35,20 +35,22 @@ const styles = theme => ({
 class DraftOrder extends React.Component {
 
   render() {
-    const { classes, owners,myOwnerName, totalTeams, currPick } = this.props
+    const { classes, owners,myOwnerName, draftOrder, currPick } = this.props
+
+    const ownerDraftOrder = []
+    owners.map(x => ownerDraftOrder[x.draft_position]  = x)
 
     const ownerList = []
-    for(let round = 0; round < totalTeams; round++)
-    {
-      for(let pick = 0; pick < owners.length; pick++)
-      {
-        let overallPick = pick + round*owners.length
-        if(overallPick >= currPick)
-        {
-          ownerList.push({...owners[pick], pick:pick+1, round:round+1, overallPick:overallPick+1})
-        }
-      }
-    }
+
+    draftOrder.map(x => {
+      if(x.pick >= currPick)
+        ownerList.push(
+          {...ownerDraftOrder[x.ownerIndex],
+            pick:x.pick % owners.length +1,
+            round:Math.floor(x.pick /owners.length) + 1,
+            overallPick:x.pick})
+        
+    })
     return (
       <div >
         <List style={{maxHeight: 600, overflow: 'auto'}}>
@@ -70,7 +72,7 @@ class DraftOrder extends React.Component {
                   secondary={'Pick '+ owner.round +'.'+owner.pick} />
                 <div className={owner.here ? classes.greenFullCircle : classes.greenOutlineCircle}/>
               </ListItem>
-              {owner.pick % owners.length === 0 && owner.round < totalTeams
+              {owner.pick % owners.length === 0 && owner.round < draftOrder.length
                 ?
                 <div>
                   <Divider />
