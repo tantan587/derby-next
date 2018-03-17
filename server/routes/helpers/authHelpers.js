@@ -32,7 +32,8 @@ function createUser(req, res) {
 }
 
 function loginRequired(req, res, next) {
-  if (!req.user) return res.status(401).json({type: C.LOGOUT})
+  //if (!req.user) return res.status(401).json({type: C.LOGOUT})
+  if (!req.user) return res.status(401).json({message:'need to be loggged in'})
   return next()
 }
 

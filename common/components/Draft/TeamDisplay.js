@@ -42,7 +42,7 @@ class TeamDisplay extends React.Component {
   }
 
   render() {
-    const { classes,teams, availableTeams, queue } = this.props
+    const { classes,teams, availableTeams, queue, linesToShow } = this.props
     const teamsToShow = []
     availableTeams.map(teamId => {
       if(queue.indexOf(teamId) === -1)
@@ -57,7 +57,7 @@ class TeamDisplay extends React.Component {
             Teams
           </Typography>
           <Divider />
-          {teamsToShow.slice(0,20).map( team => 
+          {teamsToShow.slice(0,linesToShow).map( team => 
             <div key={team.team_id}>
               <ListItem key={team.team_id} style={{paddingTop:0, paddingLeft:100}}>
                 {/* <Avatar>

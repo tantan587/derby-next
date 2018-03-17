@@ -52,6 +52,7 @@ class DraftContainer extends React.Component {
       startTime:Math.round((new Date(this.props.activeLeague.draft_start_time)-new Date())/1000),
       snackbarOpen:false,
       snackbarMessage:'',
+      linesToShow:20,
       ownerMap:{},
       sockets:['people','message','start','reset',
         'startTick','draftTick', 'draftInfo'],
@@ -169,9 +170,6 @@ class DraftContainer extends React.Component {
     this.setState({ field: event.target.value })
   }
 
-  onStartTimeChange = event => {
-    this.socket.emit('startTime',event.target.value)
-  }
 
   onDraftButton = () => {
     if(this.props.draft.mode ==='live' && this.props.draft.queue.length > 0)
@@ -213,6 +211,14 @@ class DraftContainer extends React.Component {
     }))
   }
 
+  onStartTimeChange = event => {
+    this.socket.emit('startTime',event.target.value)
+  }
+  
+  onUpdateLinesToShow = event => {
+    this.setState({linesToShow:event.target.value})
+  }
+
   onSnackbarClose = (event, reason) => {
     if (reason === 'clickaway') {
       return
@@ -229,7 +235,7 @@ class DraftContainer extends React.Component {
   render() {
     const { classes, activeLeague ,draft, teams } = this.props
     const { preDraft, countdownTime, startTime,
-      snackbarOpen,snackbarMessage, ownerMap} = this.state
+      snackbarOpen,snackbarMessage, ownerMap, linesToShow} = this.state
 
     return (
 
@@ -279,8 +285,21 @@ class DraftContainer extends React.Component {
                           addToQueue={this.onAddQueue} 
                           teams={teams}
                           availableTeams={draft.availableTeams}
-                          queue={draft.queue}/>
+                          queue={draft.queue}
+                          linesToShow={linesToShow}/>
                       </Grid>
+                      <form  noValidate>
+                        <TextField
+                          id="number1"
+                          label="Rows Tow Show"
+                          onChange={this.onUpdateLinesToShow}
+                          type="number"
+                          defaultValue="20"
+                          InputLabelProps={{
+                            shrink: true,
+                          }}
+                        />
+                      </form>
                       <form  noValidate>
                         <TextField
                           id="number"
@@ -293,6 +312,7 @@ class DraftContainer extends React.Component {
                           }}
                         />
                       </form>
+                      
                       <Grid item xs={12} style={{backgroundColor:'white'}} >
                       </Grid>
                     </Grid>
