@@ -1,4 +1,3 @@
-
 const bodyParser = require('body-parser')
 const passport = require('passport')
 const authRoutes = require('./routes/auth')
@@ -15,24 +14,24 @@ const dev = process.env.NODE_ENV !== 'production'
 const nextApp = next({ dev })
 const handle = nextApp.getRequestHandler()
 const mySocketIo = require('./socketio/socketio')
+const socketIoHelpers = require('./socketio/socketioHelpers')
+const DraftManager = require('./socketio/DraftManager')
 
+const draftManagers = {}
+setInterval(async () => {
+  console.log('im checking', i)
+  const roomIds = await socketIoHelpers.GetActiveDrafts()
+  roomIds.map(async roomId => {
+    if(!draftManagers[roomId] && i>10)
+    {
+      draftManagers[roomId] = new DraftManager(roomId)
+      await draftManagers[roomId].Create()
+      console.log('this worked?', draftManagers)
+    }
+  })
+  i++}, 2000)
 
-
-//setInterval(() => {console.log('here1')}, 1000)
-
-
-
-// io.on('connection', socket => {
-//   socket.on('message', (data) => {
-//     messages.push(data)
-//     socket.broadcast.emit('message', data)
-//   })
-// })
-
-io.sockets.on('connection', socket => mySocketIo.draftRoom(io,socket))
-
-// const room = 'room123'
-// io.sockets.in(room).emit('message', 'what is going on, party people?');
+io.sockets.on('connection', socket => mySocketIo.draftRoom(io,socket, draftManagers))
 
 nextApp.prepare()
   .then(() => {
@@ -46,11 +45,6 @@ nextApp.prepare()
     app.use('/api', fantasyRoutes)
     app.use('/api', sportRoutes)
     app.use('/api', draftRoutes)
-
-    // app.get('/messages', (req, res) => {
-    //   console.log(messages)
-    //   res.json(messages)
-    // })
 
     app.get('*', (req, res) => {
       return handle(req, res)

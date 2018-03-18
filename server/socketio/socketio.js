@@ -4,8 +4,6 @@ const DraftManager = require('./DraftManager')
 
 const messages = []
 let ownersInDraft = {}
-let draftManagers = {}
-
 
 const waitToAutoDraft = (io, draftInfo) =>
 {
@@ -44,7 +42,7 @@ const waitToStartDraft = (io, draftInfo) =>
   draftInfo.WaitToStartDraft(emitStartTick, startDraft, emitDraftTick, sendDraftInfo)
 }
 
-const draftRoom = (io, socket) =>
+const draftRoom = (io, socket, draftManagers) =>
 {
   let roomId
   let localRoom
@@ -75,11 +73,11 @@ const draftRoom = (io, socket) =>
 
     if(localRoom.length === 1)
     {
-      console.log('Im setting up the room')
-      if (draftManagers[roomId])
-        draftManagers[roomId].Clear()
-      draftManagers[roomId] = new DraftManager(roomId)
-      await draftManagers[roomId].Create()
+      // console.log('Im setting up the room')
+      // if (draftManagers[roomId])
+      //   draftManagers[roomId].Clear()
+      // draftManagers[roomId] = new DraftManager(roomId)
+      // await draftManagers[roomId].Create()
       if(draftManagers[roomId].TimeUntilStart() > 0)
       {
         waitToStartDraft(io,draftManagers[roomId])//time)
@@ -113,6 +111,7 @@ const draftRoom = (io, socket) =>
   })
 
   socket.in(roomId).on('queue', (queue) => {
+    console.log(typeof draftManagers[roomId] !== 'undefined')
     socketIoHelpers.InsertDraftAction(
       roomId, ownersInDraft[roomId][socket.id], 'QUEUE', {queue:queue})
   })

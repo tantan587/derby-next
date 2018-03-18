@@ -1,6 +1,15 @@
 
 const knex = require('../db/connection')
 
+const GetActiveDrafts = async () =>
+{
+  const str1 = `SELECT room_id from draft.settings WHERE start_time >
+   NOW() AND start_time < NOW() + INTERVAL '100 days'`
+
+  const resp = await knex.raw(str1)
+  return resp.rows.map(x =>x.room_id)
+}
+
 const GetDraftInfo = async (room_id) =>
 {
   const knexStr1 = 'select (select sum(b.number_teams) from draft.settings a, fantasy.sports b where room_id = \'' + room_id +
@@ -49,6 +58,7 @@ const RestartDraft = (roomId) =>
 }
 
 module.exports = {
+  GetActiveDrafts,
   GetDraftInfo,
   InsertDraftAction,
   RestartDraft
