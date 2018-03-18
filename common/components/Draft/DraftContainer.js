@@ -248,8 +248,10 @@ class DraftContainer extends React.Component {
     const { classes, activeLeague ,draft, teams } = this.props
     const { preDraft, countdownTime, startTime,
       snackbarOpen,snackbarMessage, ownerMap, linesToShow} = this.state
+
+    const currDraftPick = draft.pick ? draft.pick : 0
     const myTurn = this.state.myDraftPosition ===
-      activeLeague.draftOrder[draft.pick].ownerIndex
+      activeLeague.draftOrder[currDraftPick].ownerIndex
     return (
 
       preDraft

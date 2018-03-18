@@ -1,72 +1,55 @@
 
 const socketIoHelpers = require('./socketioHelpers')
-const draftHelpers = require('../routes/helpers/draftHelpers')
-const ServerDraftInfo = require('../../common/models/ServerDraftInfo')
+const DraftManager = require('./DraftManager')
 
 const messages = []
-let draftTimers = {}
 let ownersInDraft = {}
-const timeToDraft = 3
+let draftManagers = {}
 
-const clearTimers = (roomId) =>
+
+const waitToAutoDraft = (io, draftInfo) =>
 {
-  clearInterval(draftTimers[roomId])
-  clearTimeout(draftTimers[roomId])
-}
-
-const waitToAutoDraft = (io, roomId, draftInfo) =>
-{
-  let counter = timeToDraft
-  clearTimers(roomId)
-
-  io.in(roomId).emit('draftTick', counter)
-
-  draftTimers[roomId] = setInterval(() => {
-    if(counter === 0){
-      clearInterval(draftTimers[roomId])
-      const teamId = draftInfo.GetAutoDraftTeam()
-      const ownerId = draftInfo.GetCurrentOwnerId()
-      const localPick = draftInfo.GetThenIncrementPick()
-      console.log(localPick, teamId, ownerId)
-      io.in(roomId).emit('draftInfo', {teamId, ownerId})
-      waitToAutoDraft(io, roomId, draftInfo)
-      return
-    }
-    counter -= 1
+  const emitDraftTick = (roomId, counter) =>
+  {
     io.in(roomId).emit('draftTick', counter)
-    console.log('counting in autodraft')
-    
-  }, 1000)
+  }
+
+  const sendDraftInfo = (roomId, teamId, ownerId) =>
+  {
+    io.in(roomId).emit('draftInfo', {teamId, ownerId})
+  }
+  draftInfo.WaitToAutoDraft(emitDraftTick,sendDraftInfo)
 }
 
-const waitToStartDraft = (io, roomId, time, draftInfo) =>
+const waitToStartDraft = (io, draftInfo) =>
 {
-  let counter = 0
-  clearTimers(roomId)
-  draftTimers[roomId] = setInterval(() => {
-    if(time < counter){
-      clearInterval(draftTimers[roomId])
-      io.in(roomId).emit('start')
-      socketIoHelpers.InsertDraftAction(roomId, 'server', 'STATE', {'mode':'live'})
-      waitToAutoDraft(io, roomId, draftInfo)
-      return
-    }
-    counter += 1000
-    console.log('counting in start draft', time, counter)
+  const emitStartTick = (roomId) =>
+  {
     io.in(roomId).emit('startTick')
-  }, 1000)
+  }
+  const startDraft = (roomId) =>
+  {
+    io.in(roomId).emit('start')
+    socketIoHelpers.InsertDraftAction(roomId, 'server', 'STATE', {'mode':'live'})
+  }
+  const emitDraftTick = (roomId, counter) =>
+  {
+    io.in(roomId).emit('draftTick', counter)
+  }
+
+  const sendDraftInfo = (roomId, teamId, ownerId) =>
+  {
+    io.in(roomId).emit('draftInfo', {teamId, ownerId})
+  }
+  draftInfo.WaitToStartDraft(emitStartTick, startDraft, emitDraftTick, sendDraftInfo)
 }
 
 const draftRoom = (io, socket) =>
 {
   let roomId
   let localRoom
-  let draftInfo
-
-  //closure
-  //let pick = (() => {let count = 0; return () => {return count++}})()
   
-  socket.on('join', roomInfo =>
+  socket.on('join', async roomInfo =>
   {
     roomId = roomInfo.roomId
     socket.join(roomId)
@@ -92,20 +75,17 @@ const draftRoom = (io, socket) =>
 
     if(localRoom.length === 1)
     {
-      socketIoHelpers.GetDraftInfo(roomId)
-        .then(res => {
-          draftInfo = new ServerDraftInfo(
-            res.draft_position,
-            draftHelpers.GetDraftOrder(res.total_teams,res.draft_position.length),
-            res.availableTeams)
-          const time = new Date(res.start_time)- new Date()
-          if(time > 0)
-          {
-            waitToStartDraft(io, roomId, time, draftInfo)//time)
-          }
-        })
-    }
+      console.log('Im setting up the room')
+      if (draftManagers[roomId])
+        draftManagers[roomId].Clear()
+      draftManagers[roomId] = new DraftManager(roomId)
+      await draftManagers[roomId].Create()
+      if(draftManagers[roomId].TimeUntilStart() > 0)
+      {
+        waitToStartDraft(io,draftManagers[roomId])//time)
+      }
 
+    }
   })
 
   socket.in(roomId).on('message', (data) => {
@@ -114,16 +94,21 @@ const draftRoom = (io, socket) =>
     io.in(roomId).emit('message', data)
   })
 
-  socket.in(roomId).on('startTime', (startTime) => {
+  socket.in(roomId).on('startTime', async startTime => {
     socketIoHelpers.RestartDraft(roomId)
     
     
     let date = new Date(new Date().getTime() + startTime * 1000)
     io.in(roomId).emit('reset', {draftStartTime: date.toJSON()})
-    
-    draftInfo.StartAgain()
 
-    waitToStartDraft(io, roomId, startTime*1000, draftInfo)
+    if(!draftManagers[roomId])
+    {
+      draftManagers[roomId] = new DraftManager(roomId)
+      await draftManagers[roomId].Create()
+    }
+    draftManagers[roomId].StartAgain(startTime*1000)
+
+    waitToStartDraft(io, draftManagers[roomId])
 
   })
 
@@ -134,8 +119,8 @@ const draftRoom = (io, socket) =>
 
   socket.in(roomId).on('draft', (data) => {
     const ownerId = ownersInDraft[roomId][socket.id]
-    draftInfo.DraftedTeam(data.teamId)
-    const localPick = draftInfo.GetThenIncrementPick()
+    draftManagers[roomId].DraftedTeam(data.teamId)
+    const localPick = draftManagers[roomId].GetThenIncrementPick()
     console.log(localPick, data.teamId, ownerId)
 
     socketIoHelpers.InsertDraftAction(
@@ -143,7 +128,7 @@ const draftRoom = (io, socket) =>
     data = {...data, ownerId:ownerId}
     io.in(roomId).emit('draftInfo',data)
 
-    waitToAutoDraft(io, roomId, draftInfo)
+    waitToAutoDraft(io,draftManagers[roomId])
   })
 
   socket.on('disconnect', () => {
@@ -152,11 +137,14 @@ const draftRoom = (io, socket) =>
       io.in(roomId).emit('people', {state:'left', owner_id:ownersInDraft[roomId][socket.id]})
       delete ownersInDraft[roomId][socket.id]
     }
-    if(localRoom && localRoom.length===0 && draftTimers[roomId])
+    if (draftManagers[roomId])
+    {
+      draftManagers[roomId].Clear()
+      delete draftManagers[roomId]
+    }
+    if(localRoom && localRoom.length===0)
     {
       socketIoHelpers.InsertDraftAction(roomId, 'server', 'STATE', {'mode':'pre'})
-      clearTimeout(draftTimers[roomId])
-      delete draftTimers[roomId]
     }
   })
 

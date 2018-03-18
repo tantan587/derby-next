@@ -1,7 +1,7 @@
 
 const knex = require('../db/connection')
 
-const GetDraftInfo = (room_id) =>
+const GetDraftInfo = async (room_id) =>
 {
   const knexStr1 = 'select (select sum(b.number_teams) from draft.settings a, fantasy.sports b where room_id = \'' + room_id +
    '\' and a.league_id = b.league_id group by a.league_id) as total_teams, * from  draft.settings where room_id = \'' + room_id + '\''
