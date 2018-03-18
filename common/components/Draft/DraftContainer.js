@@ -55,9 +55,9 @@ class DraftContainer extends React.Component {
       linesToShow:20,
       myDraftPosition:-1,
       ownerMap:{},
-      sockets:['people','message','start','reset',
+      sockets:['whoshere', 'people','message','start','reset',
         'startTick','draftTick', 'draftInfo'],
-      functions : [this.handlePeople,this.handleMessage,
+      functions : [this.handleWhosHere, this.handlePeople,this.handleMessage,
         this.handleStart, this.handleReset,
         this.handleStartTick, this.handleDraftTick, this.handleDraftInfo]
     }
@@ -100,6 +100,12 @@ class DraftContainer extends React.Component {
     this.state.sockets.map((socket,i) => 
       this.socket.off(socket, this.state.functions[i]))
     this.socket.close()
+  }
+
+  handleWhosHere = () =>
+  {
+    console.log('im here', this.props.activeLeague.my_owner_id)
+    this.socket.emit('imhere', this.props.activeLeague.my_owner_id)
   }
 
   handlePeople = (owner) => {
@@ -175,19 +181,25 @@ class DraftContainer extends React.Component {
   }
 
   handleDraftInfo = (data) => {
+    console.log(data)
     if(data)
     {
       let queue =  this.props.draft.queue
       const index =queue.indexOf(data.teamId)
       if(index > -1)
       {
-        const index = queue.indexOf(data.teamId)
         queue.splice(index, 1)
         this.socket.emit('queue', queue)
         this.props.onSetUpdateQueue(queue)
       }
     }
-    console.log('here')
+    const teamName =  this.props.teams[data.teamId].team_name
+    const snackbarMessage = this.props.activeLeague.my_owner_id === data.ownerId 
+      ? 'You just drafted the ' + teamName
+      : this.state.ownerMap[data.ownerId].owner_name + ' just drafted the ' + teamName
+
+    this.setState({snackbarMessage:snackbarMessage, snackbarOpen:true})
+
     this.props.onDraftPick(data)      
   }
 

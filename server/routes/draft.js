@@ -75,8 +75,6 @@ const assembleDraft = (teams,owners, results, my_owner_id) =>
         queue = element.action.queue ? element.action.queue : queue
     }
     }
-
-    
   })
   return {
     type:C.ENTERED_DRAFT,

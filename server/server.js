@@ -14,24 +14,8 @@ const dev = process.env.NODE_ENV !== 'production'
 const nextApp = next({ dev })
 const handle = nextApp.getRequestHandler()
 const mySocketIo = require('./socketio/socketio')
-const socketIoHelpers = require('./socketio/socketioHelpers')
-const DraftManager = require('./socketio/DraftManager')
 
-const draftManagers = {}
-setInterval(async () => {
-  console.log('im checking', i)
-  const roomIds = await socketIoHelpers.GetActiveDrafts()
-  roomIds.map(async roomId => {
-    if(!draftManagers[roomId] && i>10)
-    {
-      draftManagers[roomId] = new DraftManager(roomId)
-      await draftManagers[roomId].Create()
-      console.log('this worked?', draftManagers)
-    }
-  })
-  i++}, 2000)
-
-io.sockets.on('connection', socket => mySocketIo.draftRoom(io,socket, draftManagers))
+mySocketIo.startSocketIo(io)
 
 nextApp.prepare()
   .then(() => {

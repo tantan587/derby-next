@@ -18,12 +18,18 @@ const GetDraftInfo = async (room_id) =>
   const knexStr2 = `select team_id from fantasy.team_points a, 
    draft.settings b where a.league_id = b.league_id and b.room_id = '` + room_id + '\' order by 1'
 
-  return knex.raw(knexStr1)
-    .then(res1 => {
-      return knex.raw(knexStr2)
-        .then(res2 => 
-        {return {...res1.rows[0], availableTeams:res2.rows.map(x =>x.team_id)}})
-    })
+  const knexStr3 = `select owner_id from fantasy.owners a, 
+   draft.settings b where a.league_id = b.league_id and b.room_id = '` + room_id + '\' order by 1'
+ 
+  const settings = await knex.raw(knexStr1)
+  const teams = await knex.raw(knexStr2)
+  const owners = await knex.raw(knexStr3)
+
+  return {
+    ...settings.rows[0],
+    teams:teams.rows.map(x =>x.team_id),
+    owners:owners.rows.map(x =>x.owner_id)
+  }
 }
 
 const InsertDraftAction = (roomId, initiator, actionType, action, client_ts ='' ) =>
