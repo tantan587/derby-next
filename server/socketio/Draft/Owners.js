@@ -1,10 +1,12 @@
 const Owner = require('./Owner')
 
-function Owners(ownerIds) {
+function Owners(ownerIds, queueByOwner) {
   
   var owners = {}
   var socketOwnerMap = {}
   ownerIds.map(x => owners[x] = new Owner(x))
+  Object.keys(queueByOwner).map(x => 
+    owners[x].UpdateQueue(queueByOwner[x]))
 
   this.GetOwnerIdFromSocketId = (socketId) => {
     return socketOwnerMap[socketId]

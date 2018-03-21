@@ -190,10 +190,6 @@ class EnhancedTable extends React.Component {
     this.setState({ rowsPerPage: event.target.value })
   };
 
-  handleChangeRowsPerPage = event => {
-    this.setState({ rowsPerPage: event.target.value })
-  };
-
   handleCheckboxClick = i => event =>
   {
     let localCheck = this.state.checkboxes

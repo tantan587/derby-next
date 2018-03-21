@@ -20,7 +20,7 @@ const checkForActiveDrafts = async (io) => {
 
 const startSocketIo = (io) =>
 {
-  setInterval(() => checkForActiveDrafts(io), 10000)
+  setInterval(() => checkForActiveDrafts(io), 2000)
 
   io.sockets.on('connection', socket => draftRoom(io,socket))
 }
@@ -49,7 +49,10 @@ const draftRoom = (io, socket) =>
 
   socket.on('imhere', ownerId =>
   {
-    draftManagers[roomId].OwnerJoined(socket.id, ownerId)
+    if(draftIsGood())
+    {
+      draftManagers[roomId].OwnerJoined(socket.id, ownerId)
+    }
   })
 
   socket.in(roomId).on('message', (data) => {
@@ -65,11 +68,14 @@ const draftRoom = (io, socket) =>
     }
   })
   
-  socket.in(roomId).on('queue', (queue) => {
+  socket.in(roomId).on('queue', (data) => {
     if(draftIsGood())
     {
-      draftManagers[roomId].UpdateQueue(socket.id, queue)
+      draftManagers[roomId].UpdateQueue(socket.id, data.queue)
     }
+    socketIoHelpers.InsertDraftAction(
+      roomId, data.ownerId, 'QUEUE', {queue:data.queue})
+  
   })
 
   socket.in(roomId).on('draft', (data) => {

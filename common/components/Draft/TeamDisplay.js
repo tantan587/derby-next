@@ -1,10 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from 'material-ui/styles'
-import List, { ListItem, ListItemText } from 'material-ui/List';
-import Avatar from 'material-ui/Avatar';
-import ImageIcon from 'material-ui-icons/Image';
-import Divider from 'material-ui/Divider';
+import List, { ListItem, ListItemText } from 'material-ui/List'
+import Avatar from 'material-ui/Avatar'
+import ImageIcon from 'material-ui-icons/Image'
+import Divider from 'material-ui/Divider'
+import AppBar from 'material-ui/AppBar'
+import Toolbar from 'material-ui/Toolbar'
 import Typography from 'material-ui/Typography'
 import IconButton from 'material-ui/IconButton'
 import ChevronRightIcon from 'material-ui-icons/ChevronRight'
@@ -38,24 +40,30 @@ class TeamDisplay extends React.Component {
 
   addItem = (team) =>
   {
-    this.props.addToQueue(team)
+    this.props.dataForTeams.addToQueue(team)
   }
 
   render() {
-    const { classes,teams, availableTeams, queue, linesToShow } = this.props
+    const { classes, dataForTeams } = this.props
+    const availableTeams = dataForTeams.availableTeams
+    const queue = dataForTeams.queue
+    const linesToShow = dataForTeams.linesToShow
     const teamsToShow = []
     availableTeams.map(teamId => {
       if(queue.indexOf(teamId) === -1)
-        teamsToShow.push(teams[teamId])
+        teamsToShow.push(dataForTeams.teams[teamId])
     })
     teamsToShow.sort(function(a,b)
     { return a.team_id < b.team_id ? -1 : 1})
     return (
-      <div >
-        <List style={{maxHeight: 600, overflow: 'auto'}}>
-          <Typography key={'head'} type='display1'>
-            Teams
+      <div style={{paddingTop:10}}>
+        <Toolbar style={{backgroundColor:'#DDDDDD'}}>
+          <Typography variant="title" color="inherit">
+            Autosuggest for team, chips for sport, draft toggle
           </Typography>
+        </Toolbar>
+
+        <List style={{maxHeight: 600, overflow: 'auto'}}>
           <Divider />
           {teamsToShow.slice(0,linesToShow).map( team => 
             <div key={team.team_id}>

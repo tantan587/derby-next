@@ -16,7 +16,7 @@ function DraftManager(io, roomId) {
     that.availableTeams=  resp.teams
     that.allTeams = Array.from(resp.teams)
     that.time = new Date(resp.start_time)- new Date()
-    that.owners = new Owners(resp.owners)
+    that.owners = new Owners(resp.owners, resp.queueByOwner)
   }
 
   this.DraftIsUp = () => {
@@ -76,8 +76,6 @@ function DraftManager(io, roomId) {
   
   this.UpdateQueue = (socketId, queue) => {
     that.owners.UpdateQueue(socketId, queue)
-    socketIoHelpers.InsertDraftAction(
-      roomId, that.owners.GetOwnerIdFromSocketId(socketId), 'QUEUE', {queue:queue})
   }
 
   const waitToStartDraft = () => {
@@ -107,8 +105,8 @@ function DraftManager(io, roomId) {
     that.timer = setInterval(() => {
       if(counter === 0){
         clearInterval(that.timer)
-        const teamId = getAutoDraftTeam()
         const ownerId = getCurrentOwnerId()
+        const teamId = getAutoDraftTeam(ownerId)
         draftTeam(ownerId,teamId)
         return
       }
@@ -141,8 +139,9 @@ function DraftManager(io, roomId) {
     return that.pick -1  
   }
 
-  const getAutoDraftTeam = () => {
-    return that.availableTeams.shift()
+  const getAutoDraftTeam = (ownerId) => {
+    const teamId = that.owners.GetNextInQueue(ownerId)
+    return teamId ? teamId : that.availableTeams.shift()
   }
 
   const getCurrentOwnerId = () => {

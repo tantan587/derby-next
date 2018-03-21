@@ -12,7 +12,7 @@ import DraftHeader from './DraftHeader'
 import SimpleSnackbar from './SimpleSnackbar'
 import DraftOrder from './DraftOrder'
 import DraftQueue from './DraftQueue'
-import TeamDisplay from './TeamDisplay'
+import CenteredTabs from './CenteredTabs'
 import {clickedEnterDraft,
   handleStartDraft,
   handleSetDraftMode,
@@ -104,7 +104,6 @@ class DraftContainer extends React.Component {
 
   handleWhosHere = () =>
   {
-    console.log('im here', this.props.activeLeague.my_owner_id)
     this.socket.emit('imhere', this.props.activeLeague.my_owner_id)
   }
 
@@ -189,7 +188,8 @@ class DraftContainer extends React.Component {
       if(index > -1)
       {
         queue.splice(index, 1)
-        this.socket.emit('queue', queue)
+        this.socket.emit('queue',
+          {queue:queue, ownerId:this.props.activeLeague.my_owner_id})
         this.props.onSetUpdateQueue(queue)
       }
     }
@@ -204,14 +204,16 @@ class DraftContainer extends React.Component {
   }
 
   onUpdateQueue = (newQueue) => {
-    this.socket.emit('queue', newQueue)
+    this.socket.emit('queue', 
+      {queue:newQueue, ownerId:this.props.activeLeague.my_owner_id})
     this.props.onSetUpdateQueue(newQueue)
   }
 
   onAddQueue = (item) => {
     const newQueue = Array.from(this.props.draft.queue)
     newQueue.push(item)
-    this.socket.emit('queue', newQueue)
+    this.socket.emit('queue',
+      {queue:newQueue, ownerId:this.props.activeLeague.my_owner_id})
     this.props.onSetUpdateQueue(newQueue)
   }
 
@@ -264,6 +266,13 @@ class DraftContainer extends React.Component {
     const currDraftPick = draft.pick ? draft.pick : 0
     const myTurn = this.state.myDraftPosition ===
       activeLeague.draftOrder[currDraftPick].ownerIndex
+
+    const dataForTeams = {}
+    dataForTeams.addToQueue=this.onAddQueue
+    dataForTeams.teams=teams
+    dataForTeams.availableTeams=draft.availableTeams
+    dataForTeams.queue=draft.queue
+    dataForTeams.linesToShow=linesToShow
     return (
 
       preDraft
@@ -309,12 +318,9 @@ class DraftContainer extends React.Component {
                           myTurn={myTurn}/>
                       </Grid>
                       <Grid item xs={12}>
-                        <TeamDisplay
-                          addToQueue={this.onAddQueue} 
-                          teams={teams}
-                          availableTeams={draft.availableTeams}
-                          queue={draft.queue}
-                          linesToShow={linesToShow}/>
+
+                        <CenteredTabs
+                          dataForTeams={dataForTeams}/>
                       </Grid>
                       <form  noValidate>
                         <TextField
@@ -347,8 +353,9 @@ class DraftContainer extends React.Component {
                   </Grid>
                   <Grid item xs={12} sm={2} style={{backgroundColor:'white'}}>
                     <Grid container direction={'column'}>
-                      <Grid item xs={12} style={{backgroundColor:'orange'}} >
-                        <Button style={{fontSize:30}} onClick={() => this.onDraftButton()}>
+                      <Grid item xs={12} style={{backgroundColor:'white'}} >
+                        <Button style={{fontSize:30, backgroundColor:'orange'}} 
+                          onClick={() => this.onDraftButton()}>
                           Draft
                         </Button>
                       </Grid>

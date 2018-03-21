@@ -21,14 +21,25 @@ const GetDraftInfo = async (room_id) =>
   const knexStr3 = `select owner_id from fantasy.owners a, 
    draft.settings b where a.league_id = b.league_id and b.room_id = '` + room_id + '\' order by 1'
  
+  const knexStr4 = `select * from draft.results 
+    where action_type ='QUEUE' order by server_ts`
+
   const settings = await knex.raw(knexStr1)
   const teams = await knex.raw(knexStr2)
   const owners = await knex.raw(knexStr3)
+  const allQueues = await knex.raw(knexStr4)
+
+
+  const queueByOwner = {}
+  allQueues.rows.map(x => {
+    queueByOwner[x.initiator] = x.action.queue
+  })
 
   return {
     ...settings.rows[0],
     teams:teams.rows.map(x =>x.team_id),
-    owners:owners.rows.map(x =>x.owner_id)
+    owners:owners.rows.map(x =>x.owner_id),
+    queueByOwner:queueByOwner
   }
 }
 
