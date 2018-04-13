@@ -36,7 +36,7 @@ const getLeague = (league_id, user_id, res, type) =>{
             {
               owner_name:owner.owner_name,
               owner_id:owner.owner_id, 
-              total_points:owner.total_points,
+              total_points:parseFloat(owner.total_points),
               rank:owner.rank,
               username:owner.username,
               user_id: owner.user_id,

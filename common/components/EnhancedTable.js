@@ -173,7 +173,6 @@ class EnhancedTable extends React.Component {
             ? (a[orderBy].toLowerCase() < b[orderBy].toLowerCase() ? -1 : 1)
             : (a[orderBy] < b[orderBy] ? -1 : 1))
 
-
     // const myRows =
     //   order === 'desc'
     //     ? this.state.myRows.sort((a, b) => (b[orderBy].toLowerCase() < a[orderBy].toLowerCase() ? -1 : 1) )

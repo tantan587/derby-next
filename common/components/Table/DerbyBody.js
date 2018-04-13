@@ -1,7 +1,8 @@
 import React from 'react'
 import {
   TableCell,
-  TableRow} from 'material-ui/Table'
+  TableRow,
+  TableBody} from 'material-ui/Table'
 
 class DerbyBody extends React.Component {
   

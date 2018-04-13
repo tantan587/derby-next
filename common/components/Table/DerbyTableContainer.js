@@ -1,22 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from 'material-ui/styles'
-import Table, {
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  TablePagination,
-  TableFooter,
-  TableSortLabel,
-} from 'material-ui/Table'
 import Typography from 'material-ui/Typography'
 import Paper from 'material-ui/Paper'
-import Tooltip from 'material-ui/Tooltip'
-import { FormGroup, FormControlLabel } from 'material-ui/Form'
-import Checkbox from 'material-ui/Checkbox'
 import TextField from 'material-ui/TextField'
 import {MenuItem} from 'material-ui/Menu'
+import DerbyTable from './DerbyTable'
 
 
 
@@ -51,99 +40,10 @@ class DerbyTableContainer extends React.Component {
     super(props, context)
 
     this.state = {
-      myRows: [],
-      checkboxes: [],
-      dropdown: '',
-      myOwnerName:''
     }
   }
-  componentWillMount() {
-    if (this.state.myRows.length === 0)
-    {
-      this.setState({ myRows:this.props.myRows })
-      let checkboxes = []
-      if (this.props.sportLeagues)
-      {
-        checkboxes = [{val: true, label: 'All'}]
-        this.props.sportLeagues.map(col => checkboxes.push({val:true, label:col.sport}))
-      }
-      this.setState({ checkboxes:checkboxes})
-      if (this.props.owners)
-      {
-        const myOwnerName = this.props.owners.filter(x => x.owner_id === this.props.myOwnerId)[0].owner_name
-        const dropdown = myOwnerName
-        this.setState({myOwnerName, dropdown})
-      }
-      
-    }
-  }
-  
-  componentWillReceiveProps(nextProps) {
-    if(this.props != nextProps) {
-      let checkboxes = []
-      if (nextProps.sportLeagues)
-      {
-        checkboxes = [{val: true, label: 'All'}]
-        nextProps.sportLeagues.map(col => checkboxes.push({val:true, label:col.sport}))
-      }
-      this.setState({
-        myRows: nextProps.myRows,
-        myHeaders: [{label: 'Order', key: 'order'}].concat(nextProps.myHeaders),
-        orderBy: nextProps.myHeaders.length > 0 ? nextProps.myHeaders[0].key : '',
-        checkboxes:checkboxes
-      })
-      if (nextProps.owners)
-      {
-        const myOwnerName = nextProps.owners.filter(x => x.owner_id === nextProps.myOwnerId)[0].owner_name
-        const dropdown = myOwnerName
-        this.setState({myOwnerName, dropdown})
-      }
-    }
-  }
-
- 
-
-  handleCheckboxClick = i => event =>
-  {
-    let localCheck = this.state.checkboxes
-    if(localCheck[i].label ==='All')  {
-      localCheck.map(check => check.val = event.target.checked)
-    }
-    else{
-      localCheck[i].val = event.target.checked
-    }
-    this.setState({ checkboxes: localCheck })
-  }
-
-  handleUpdateDropdown = () => event => {
-    this.setState({
-      dropdown: event.target.value
-    })
-  }
-
-
   render() {
-    const { classes, usePagination, checkboxColumn } = this.props
-    const {order, orderBy, orderByDisplay, myRows, myHeaders, rowsPerPage, page, checkboxes} = this.state
-
-    let localRows = myRows
-    if (typeof myRows === 'undefined')
-    {
-      localRows = []
-    }
-    
-    if(typeof checkboxes !== 'undefined' )
-    {
-      let localCheckboxes =[]
-      checkboxes.filter(check => check.val !== true).map(check => localCheckboxes.push(check.label))
-      localRows = localRows.filter(row => !localCheckboxes.includes(row[checkboxColumn]))
-    }
-
-    if(this.state.dropdown !== '')
-    {
-      localRows = localRows.filter(row => row.owner_name === this.state.dropdown)
-    }
-
+    const { classes, usePagination, myHeaders, myRows } = this.props
 
     return (
       <Paper className={classes.root}>
@@ -180,9 +80,9 @@ class DerbyTableContainer extends React.Component {
           }
           <br/>
           <DerbyTable 
-            usePagination={true}
+            usePagination={usePagination}
             rows={myRows}
-            headers={headers}/>
+            headers={myHeaders}/>
           <br/>
           <br/>
         </div>

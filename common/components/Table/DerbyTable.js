@@ -16,15 +16,12 @@ class DerbyTable extends React.Component {
       rowsPerPage: 20,
     }
   }
-  
-  componentWillReceiveProps(nextProps) {
-    if(this.props != nextProps) {
-      this.setState({
-        orderBy: nextProps.myHeaders.length > 0 ? nextProps.myHeaders[0].key : '',
-      })
-    }
-  }
 
+  componentWillMount()
+  {
+    console.log('herehere')
+  }
+  
   handleRequestSort = (property, propertyDisplay) => {
     const orderBy = property
     const orderByDisplay = propertyDisplay
@@ -48,8 +45,7 @@ class DerbyTable extends React.Component {
   render() {
     const { usePagination, rows, headers } = this.props
     const {order, orderBy, orderByDisplay, rowsPerPage, page} = this.state
-
-    const localRows = rows.sort((a, b) =>  
+    const localRows = orderBy === '' ? rows : rows.sort((a, b) =>  
       (order === 'desc') 
         ? isNaN(b[orderBy]) 
           ? (b[orderBy].toLowerCase() < a[orderBy].toLowerCase() ? -1 : 1)
@@ -58,8 +54,9 @@ class DerbyTable extends React.Component {
           ? (a[orderBy].toLowerCase() < b[orderBy].toLowerCase() ? -1 : 1)
           : (a[orderBy] < b[orderBy] ? -1 : 1))
 
-    const myHeaders = [{label: 'Order', key: 'order'}]
-    myHeaders.concat(headers)
+    console.log(rows,localRows)
+
+    const myHeaders = headers
     
     const localColumns = 
     myHeaders.map(header => ({
@@ -70,26 +67,41 @@ class DerbyTable extends React.Component {
       label: header.label
     }))
 
+    console.log(localColumns)
+
     const sliceStart = usePagination ?  page * rowsPerPage : 0
     const sliceEnd = usePagination ? sliceStart + rowsPerPage : localRows.length
     return (
-      <Table style={{minWidth: 600,maxWidth: 1000}}>
-        <DerbyHeader
-          order={order}
-          orderBy={orderBy}
-          orderByDisplay={orderByDisplay}
-          onRequestSort={this.handleRequestSort}
-          columnData={localColumns}/>
-        <DerbyBody
-          rows={localRows.slice(sliceStart,sliceEnd)}
-          columns={localColumns}/>
-        <DerbyFooter
-          count={localRows.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          handleChangePage={this.handleChangePage}
-          handleChangeRowsPerPage={this.handleChangeRowsPerPage}/>
-      </Table>
+      usePagination ? 
+        <Table style={{minWidth: 600,maxWidth: 1000}}>
+          <DerbyHeader
+            order={order}
+            orderBy={orderBy}
+            orderByDisplay={orderByDisplay}
+            onRequestSort={this.handleRequestSort}
+            columnData={localColumns}/>
+          <DerbyBody
+            rows={localRows.slice(sliceStart,sliceEnd)}
+            columns={localColumns}/>
+          <DerbyFooter
+            count={localRows.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            handleChangePage={this.handleChangePage}
+            handleChangeRowsPerPage={this.handleChangeRowsPerPage}/>
+        </Table>
+        :
+        <Table style={{minWidth: 600,maxWidth: 1000}}>
+          <DerbyHeader
+            order={order}
+            orderBy={orderBy}
+            orderByDisplay={orderByDisplay}
+            onRequestSort={this.handleRequestSort}
+            columnData={localColumns}/>
+          <DerbyBody
+            rows={localRows.slice(sliceStart,sliceEnd)}
+            columns={localColumns}/>
+        </Table>
     )
   }
 }
