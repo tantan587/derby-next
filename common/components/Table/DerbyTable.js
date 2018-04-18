@@ -16,11 +16,6 @@ class DerbyTable extends React.Component {
       rowsPerPage: 20,
     }
   }
-
-  componentWillMount()
-  {
-    console.log('herehere')
-  }
   
   handleRequestSort = (property, propertyDisplay) => {
     const orderBy = property
@@ -54,8 +49,6 @@ class DerbyTable extends React.Component {
           ? (a[orderBy].toLowerCase() < b[orderBy].toLowerCase() ? -1 : 1)
           : (a[orderBy] < b[orderBy] ? -1 : 1))
 
-    console.log(rows,localRows)
-
     const myHeaders = headers
     
     const localColumns = 
@@ -66,9 +59,7 @@ class DerbyTable extends React.Component {
       disablePadding: false,
       label: header.label
     }))
-
-    console.log(localColumns)
-
+  
     const sliceStart = usePagination ?  page * rowsPerPage : 0
     const sliceEnd = usePagination ? sliceStart + rowsPerPage : localRows.length
     return (

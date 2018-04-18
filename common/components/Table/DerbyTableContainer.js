@@ -1,11 +1,8 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import { withStyles } from 'material-ui/styles'
-import Typography from 'material-ui/Typography'
 import Paper from 'material-ui/Paper'
-import TextField from 'material-ui/TextField'
-import {MenuItem} from 'material-ui/Menu'
 import DerbyTable from './DerbyTable'
+import DerbyTitle from './DerbyTitle'
 
 
 
@@ -20,9 +17,6 @@ const styles = theme => ({
   },
   tableWrapper: {
     overflowX: 'auto',
-  },
-  title : {
-    textAlign : 'center'
   },
   textField: {
     marginLeft: 40,//theme.spacing.unit,
@@ -40,52 +34,44 @@ class DerbyTableContainer extends React.Component {
     super(props, context)
 
     this.state = {
+      myRows : [],
+      allRows : []
     }
   }
+
+  componentWillMount() {
+    this.updateMyRows(this.props.myRows)
+    this.setState({allRows:this.props.myRows})
+  }
+  componentWillReceiveProps(nextProps) {
+    this.updateMyRows(nextProps.myRows)
+    this.setState({allRows:this.props.myRows})
+
+  }
+  updateMyRows = (rows) =>
+  {
+    this.setState({myRows:rows})
+  }
   render() {
-    const { classes, usePagination, myHeaders, myRows } = this.props
+    const { classes, usePagination, myHeaders, filters } = this.props
+    const {myRows, allRows} = this.state
 
     return (
       <Paper className={classes.root}>
-        <div className={classes.tableWrapper}>
-          <br/>
-          {this.props.rosterTitle 
-            ? <div>
-              <TextField
-                id={'select-owner'}
-                select
-                label="Select Owner"
-                className={classes.textField}
-                value={this.state.dropdown}
-                onChange={this.handleUpdateDropdown()}
-                SelectProps={{
-                  MenuProps: {
-                    className: classes.menu,
-                  },
-                }}
-                //helperText="Please select your currency"
-                margin="normal"
-              >
-                {this.props.owners.map(option => (
-                  <MenuItem key={option.owner_name} value={option.owner_name}>
-                    {option.owner_name === this.state.myOwnerName ? 'Me' : option.owner_name}
-                  </MenuItem>
-                ))}
-              </TextField>
-              <Typography className={classes.title} type="display1" style={{paddingTop:'20px'}}>
-                {this.state.myOwnerName === this.state.dropdown ? 'My Roster' : this.state.dropdown + '\'s Roster'}
-              </Typography>
-            </div>
-            : <Typography className={classes.title} type="display1">{this.props.title}</Typography>
-          }
-          <br/>
-          <DerbyTable 
-            usePagination={usePagination}
-            rows={myRows}
-            headers={myHeaders}/>
-          <br/>
-          <br/>
-        </div>
+        <br/>
+        <br/>
+        <DerbyTitle
+          title={this.props.title}
+          updateMyRows={this.updateMyRows}
+          rows={allRows}
+          filters={filters ? filters : []}/>
+        <br/>
+        <DerbyTable 
+          usePagination={usePagination}
+          rows={myRows}
+          headers={myHeaders}/>
+        <br/>
+        <br/>
       </Paper>
     )
   }
