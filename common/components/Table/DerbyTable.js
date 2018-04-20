@@ -63,36 +63,27 @@ class DerbyTable extends React.Component {
     const sliceStart = usePagination ?  page * rowsPerPage : 0
     const sliceEnd = usePagination ? sliceStart + rowsPerPage : localRows.length
     return (
-      usePagination ? 
-        <Table style={{minWidth: 600,maxWidth: 1000}}>
-          <DerbyHeader
-            order={order}
-            orderBy={orderBy}
-            orderByDisplay={orderByDisplay}
-            onRequestSort={this.handleRequestSort}
-            columnData={localColumns}/>
-          <DerbyBody
-            rows={localRows.slice(sliceStart,sliceEnd)}
-            columns={localColumns}/>
-          <DerbyFooter
+      <Table style={{minWidth: 600,maxWidth: 1000,  overflowX: 'auto', width:'94%', marginLeft:'3%'}}>
+        <DerbyHeader
+          order={order}
+          orderBy={orderBy}
+          orderByDisplay={orderByDisplay}
+          onRequestSort={this.handleRequestSort}
+          columnData={localColumns}/>
+        <DerbyBody
+          rows={localRows.slice(sliceStart,sliceEnd)}
+          columns={localColumns}/>
+        {[1].map(() => {if (usePagination)
+        {
+          return <DerbyFooter
             count={localRows.length}
             rowsPerPage={rowsPerPage}
             page={page}
             handleChangePage={this.handleChangePage}
             handleChangeRowsPerPage={this.handleChangeRowsPerPage}/>
-        </Table>
-        :
-        <Table style={{minWidth: 600,maxWidth: 1000}}>
-          <DerbyHeader
-            order={order}
-            orderBy={orderBy}
-            orderByDisplay={orderByDisplay}
-            onRequestSort={this.handleRequestSort}
-            columnData={localColumns}/>
-          <DerbyBody
-            rows={localRows.slice(sliceStart,sliceEnd)}
-            columns={localColumns}/>
-        </Table>
+        }
+        })}
+      </Table>
     )
   }
 }

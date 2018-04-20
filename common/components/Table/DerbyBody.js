@@ -17,6 +17,7 @@ class DerbyBody extends React.Component {
               hover
               tabIndex={-1}
               key={i}
+              style= {i % 2 === 0 ? {} : {backgroundColor:'#d3d3d3'}}
             >
               <TableCell key={'order'}
                 numeric>

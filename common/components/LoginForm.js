@@ -22,7 +22,7 @@ const styles = theme => ({
   button : {
     //fontFamily: 'Titillium Web',
     backgroundColor: theme.palette.secondary.A700,
-    color: theme.palette.secondary.A100,
+    color: theme.palette.tertiary.A700,
   }
 })
 
@@ -57,6 +57,7 @@ class LoginForm extends React.Component {
     }
   }
   render() {
+    const { classes } = this.props
     if(this.state.fireRedirect && this.props.user.loggedIn === true){
       if(this.props.redirectInd)
       {
@@ -69,7 +70,7 @@ class LoginForm extends React.Component {
       return(<div></div>)
     }
     else{
-      const { classes } = this.props
+      
       return (
         <form className={classes.container} noValidate autoComplete="off"
           onKeyPress={(event) => this.keypress(event)}>

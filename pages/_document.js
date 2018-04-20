@@ -67,12 +67,12 @@ MyDocument.getInitialProps = ctx => {
   // 3. page.render
 
   // Get the context to collected side effects.
-  const context = getContext();
+  const context = getContext()
   const page = ctx.renderPage(Component => props => (
     <JssProvider registry={context.sheetsRegistry} jss={context.jss}>
       <Component {...props} />
     </JssProvider>
-  ));
+  ))
 
   return {
     ...page,
@@ -84,6 +84,6 @@ MyDocument.getInitialProps = ctx => {
         dangerouslySetInnerHTML={{ __html: context.sheetsRegistry.toString() }}
       />
     ),
-  };
-};
+  }
+}
 

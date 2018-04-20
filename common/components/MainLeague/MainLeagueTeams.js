@@ -33,9 +33,13 @@ class MainLeagueTeams extends React.Component {
         usePagination={true}
         myRows={myTeams}
         filters={[
-          {type:'checkbox', 
+          {type:'tab', 
             values :this.props.sportLeagues.map(x => x.sport),
-            column:'sport'}]}
+            column:'sport'},
+          // {type:'checkbox', 
+          //   values :this.props.sportLeagues.map(x => x.sport),
+          //   column:'sport'}
+        ]}
         myHeaders = {[
           {label: 'Logo', key: 'logo_url', sortId:'team_name'},
           {label: 'Team Name', key: 'team_name'},

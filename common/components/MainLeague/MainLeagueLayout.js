@@ -11,9 +11,9 @@ const layoutStyle = {
 const Layout = (props) => (
   <div style={layoutStyle}>
     <MainLeagueBar value={props.value}/>
-    <Typography component="div" style={{ padding: 8 * 3 }}>
+    {/* <Typography component="div" style={{ padding: 8 * 3 }}> */}
       {props.children}
-    </Typography>
+    {/* </Typography> */}
   </div>
 )
 

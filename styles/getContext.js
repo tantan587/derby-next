@@ -3,8 +3,7 @@
 import { create, SheetsRegistry } from 'jss'
 import preset from 'jss-preset-default'
 import { createMuiTheme } from 'material-ui/styles'
-import { brown } from 'material-ui/colors'
-import green from 'material-ui/colors/green'
+import { brown, yellow } from 'material-ui/colors'
 import createGenerateClassName from 'material-ui/styles/createGenerateClassName'
 import materialpalette from 'material-palette'
 import hsl from 'hsl-to-hex'
@@ -26,6 +25,7 @@ const theme = createMuiTheme({
   palette: {
     primary: derbyGreen,
     secondary: brown,
+    tertiary : yellow
   },
 })
 
@@ -53,8 +53,8 @@ export default function getContext() {
 
   // Reuse context on the client-side
   if (!global.__INIT_MATERIAL_UI__) {
-    global.__INIT_MATERIAL_UI__ = createContext();
+    global.__INIT_MATERIAL_UI__ = createContext()
   }
 
-  return global.__INIT_MATERIAL_UI__;
+  return global.__INIT_MATERIAL_UI__
 }

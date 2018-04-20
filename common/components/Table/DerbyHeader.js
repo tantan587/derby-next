@@ -5,6 +5,21 @@ import {
   TableRow,
   TableSortLabel} from 'material-ui/Table'
 import Tooltip from 'material-ui/Tooltip'
+import { withStyles } from 'material-ui/styles'
+const styles = theme => ({
+  header:{
+    backgroundColor:theme.palette.secondary.A700,
+    color:'white'},
+  deepheader : {
+    '&:hover': {
+      color: 'white',
+    },
+    '&:focus': {
+      color: 'white', 
+    }
+  }
+})
+
 
 class DerbyHeader extends React.Component {
   
@@ -13,26 +28,27 @@ class DerbyHeader extends React.Component {
     };
   
     render() {
-      const { order, orderBy, orderByDisplay, columnData } = this.props
+      const { order, orderBy, orderByDisplay, columnData, classes } = this.props
   
       return (
-        <TableHead>
+        <TableHead className={classes.header}>
           <TableRow>
-            <TableCell></TableCell>
+            <TableCell/>
             {columnData.filter(col => col.id !== 'order').map(column => {
               return (
-                <TableCell
+                <TableCell 
                   key={column.id}
                   numeric={column.numeric}
                   padding={column.disablePadding ? 'none' : 'default'}
                   sortDirection={orderBy === column.id ? order : false}
                 >
-                  <Tooltip
+                  <Tooltip 
                     title="Sort"
                     placement={column.numeric ? 'bottom-end' : 'bottom-start'}
                     enterDelay={300}
                   >
-                    <TableSortLabel
+                    <TableSortLabel 
+                      classes={{root: classes.deepheader}}
                       active={orderByDisplay === column.id}
                       direction={order}
                       onClick={this.createSortHandler(column.sortId, column.id)}
@@ -49,4 +65,4 @@ class DerbyHeader extends React.Component {
     }
 }
 
-export default DerbyHeader
+export default withStyles(styles)(DerbyHeader)
