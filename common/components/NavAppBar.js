@@ -77,7 +77,7 @@ class NavAppBar extends React.Component {
 
   handleAdminUpdates = () =>
   {
-    this.props.onAdminUpdates()
+    //this.props.onAdminUpdates()
   }
 
   toggleLeagueList = () => {
@@ -163,7 +163,7 @@ class NavAppBar extends React.Component {
                     <List disablePadding>
                       {this.props.leagues.map((league, i) =>
                         (
-                          <ListItem id={i} button onClick={() => {this.handleLeagueClick(league.league_id)}}>
+                          <ListItem id={i} key={i} button onClick={() => {this.handleLeagueClick(league.league_id)}}>
                             <Link href='/mainleaguestandings'>
                               <ListItemText style={{paddingLeft:'18px'}} primary={league.league_name} />
                             </Link>

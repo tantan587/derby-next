@@ -1,19 +1,15 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Button from 'material-ui/Button'
-import Dialog, {
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-} from 'material-ui/Dialog'
+import Link from 'next/link'
 import Typography from 'material-ui/Typography'
 import { withStyles } from 'material-ui/styles'
 import withRoot from '../common/components/withRoot'
-import Layout from '../common/components/Layout'
 import withRedux from 'next-redux-wrapper'
 import '../styles/style.css'
 import initStore from '../common/store'
+import TopNavHome from '../common/components/Navigation/TopNavHome'
+import SportIconText from '../common/components/Icons/SportIconText'
 
 //https://github.com/zeit/next.js/tree/master/examples/with-global-stylesheet
 
@@ -22,13 +18,15 @@ import initStore from '../common/store'
 const styles = {
   root: {
     textAlign: 'center',
-    paddingTop: 200,
-    backgroundImage: 'url("/static/images/derbyhome.png")',
-    backgroundRepeat: 'no-repeat',
-    backgroundAttachment: 'fixed',
+    paddingTop: 100,
+    backgroundColor:'#48311A',
+    color:'white',
+    //backgroundImage: 'url("/static/images/derbyhome.png")',
+    //backgroundRepeat: 'no-repeat',
+    //backgroundAttachment: 'fixed',
+    //backgroundPosition: 'center',
+    //backgroundSize: 'cover',
     minHeight: '600px',
-    backgroundPosition: 'center',
-    backgroundSize: 'cover',
     //fontFamily:'Tinos'
   }
 }
@@ -52,40 +50,64 @@ class Index extends React.Component {
   };
 
   render() {
+    const sports = [
+      {name:'NFL', link:'/static/icons/sport_icon_football.svg'},
+      {name:'NCAA', link:'/static/icons/sport_icon_football.svg'},
+      {name:'MLB', link:'/static/icons/sport_icon_baseball.svg'},
+      {name:'NBA', link:'/static/icons/sport_icon_basketball.svg'},
+      {name:'NCAAM', link:'/static/icons/sport_icon_basketball.svg'},
+      {name:'NHL', link:'/static/icons/sport_icon_hockey.svg'},
+      {name:'EPL', link:'/static/icons/sport_icon_soccer.svg'}
+    ]
     return (
-      <Layout>
+
+      <div>
+        <TopNavHome/>
         <div className={this.props.classes.root}>
-          <Dialog open={this.state.open} onClose={this.handleClose}>
-            <DialogTitle>Our Super Secret Password</DialogTitle>
-            <DialogContent>
-              <DialogContentText>Why would we give this to you?</DialogContentText>
-            </DialogContent>
-            <DialogActions>
-              <Button color="primary" onClick={this.handleClose}>
-                OK
-              </Button>
-            </DialogActions>
-          </Dialog>
           <Typography 
-            type="display1" style={{color:'white', fontFamily:'HorsebackSlab'}} gutterBottom>
-            Derby
+            type="display3" style={{color:'white'}}>
+            <div style={{ fontFamily:'HorsebackSlab', display: 'inline'}}>
+              {'Draft '}
+            </div>
+            <div style={{fontFamily:'museo-slab', display: 'inline'}}>
+            Teams
+            </div>
+            <br/>
+            <div style={{ fontFamily:'HorsebackSlab', display: 'inline'}}>
+              {'Watch '}
+            </div>
+            <div style={{fontFamily:'museo-slab', display: 'inline'}}>
+            Sports
+            </div>
+            <br/>
+            <div style={{ fontFamily:'HorsebackSlab', display: 'inline'}}>
+              {'Win '}
+            </div>
+            <div style={{fontFamily:'museo-slab', display: 'inline'}}>
+            The Race
+            </div>
           </Typography>
-          <Typography type="subheading" style={{color:'white'}} gutterBottom>
-            Draft Teams.
-            Watch Games.
+          <Typography type='headline'style={{color:'white',width:'50%', marginLeft:'25%'}}>
+            Derby Fantasy Wins League is a new way to 
+            play fantasy sports. Instead of drafting players,
+            friends compete by drafting entire teams from multiple sports.
           </Typography>
-          <Typography type="subheading" style={{color:'white'}} gutterBottom>
-            Earn Points.
-            Win The Race.
-          </Typography>
-          <Button raised color="accent" onClick={this.handleClick}>
-            Our Super Secret Password
+          <br/>
+          {
+            sports.map((x,i) => { 
+              return <SportIconText key={i} name={x.name} link={x.link} color='white'/>})
+          }
+          <br/>
+          <br/>
+          <Button style={{color:'white', backgroundColor:'#ebab38',height:50, width:125}}>
+            <Link href="/signup">
+              <div>
+                signup
+              </div>
+            </Link>
           </Button>
-          <div>
-            <img src='https://upload.wikimedia.org/wikipedia/en/0/02/Washington_Wizards_logo.svg' alt="Basketball" width="16" height="16"/>
-          </div>
         </div>
-      </Layout>
+      </div>
     )
   }
 }
