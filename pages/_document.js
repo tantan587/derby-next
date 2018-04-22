@@ -10,7 +10,7 @@ export default class MyDocument extends Document {
     return (
       <html lang="en" dir="ltr">
         <Head>
-          <link rel="icon" href="/static/favicon2.ico" type="image/x-icon" />
+          <link rel="icon" href="/static/favicon3.ico" type="image/x-icon" />
           <title>Derby. Fantasy Wins League</title>
           <meta charSet="utf-8" />
           {/* Use minimum-scale=1 to enable GPU rasterization */}
