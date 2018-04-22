@@ -10,10 +10,16 @@
     src: url('/static/fonts/digital-7 (mono).ttf')  format('truetype');
     }
 
+  @font-face {
+    font-family: 'museo-slab';
+    src: url('/static/fonts/MuseoSlab-300.otf');
+    src: url('/static/fonts/MuseoSlab-300.otf')  format('truetype');
+    }
+
     @font-face {
-      font-family: 'museo-slab';
-      src: url('/static/fonts/MuseoSlab-300.otf');
-      src: url('/static/fonts/MuseoSlab-300.otf')  format('truetype');
+      font-family: 'museo-slab-bold';
+      src: url('/static/fonts/MuseoSlab-900.otf');
+      src: url('/static/fonts/MuseoSlab-900.otf')  format('truetype');
       }
 
   horseText {

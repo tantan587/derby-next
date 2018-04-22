@@ -10,13 +10,17 @@ import '../styles/style.css'
 import initStore from '../common/store'
 import TopNavHome from '../common/components/Navigation/TopNavHome'
 import SportIconText from '../common/components/Icons/SportIconText'
+import HowToPlayIconText from '../common/components/Icons/HowToPlayIconText'
+import TitleCopyButton from '../common/components/CopyFields/TitleCopyButton'
+import HomeTitle from '../common/components/CopyFields/HomeTitle'
+import BottomNav from '../common/components/Navigation/BottomNav'
 
 //https://github.com/zeit/next.js/tree/master/examples/with-global-stylesheet
 
 
 
 const styles = {
-  root: {
+  section1: {
     textAlign: 'center',
     paddingTop: 100,
     backgroundColor:'#48311A',
@@ -28,42 +32,45 @@ const styles = {
     //backgroundSize: 'cover',
     minHeight: '600px',
     //fontFamily:'Tinos'
-  }
+  },
+  section2: {
+    textAlign: 'center',
+    paddingTop: 50,
+    backgroundColor:'#229246',
+    color:'white'},
+  section3: {
+    textAlign: 'center',
+    paddingTop: 50,
+    color:'#229246'}
 }
 
 
 class Index extends React.Component {
-  state = {
-    open: false,
-  };
-
-  handleClose = () => {
-    this.setState({
-      open: false,
-    })
-  };
-
-  handleClick = () => {
-    this.setState({
-      open: true,
-    })
-  };
 
   render() {
+    const {classes} = this.props
     const sports = [
-      {name:'NFL', link:'/static/icons/sport_icon_football.svg'},
-      {name:'NCAA', link:'/static/icons/sport_icon_football.svg'},
-      {name:'MLB', link:'/static/icons/sport_icon_baseball.svg'},
-      {name:'NBA', link:'/static/icons/sport_icon_basketball.svg'},
-      {name:'NCAAM', link:'/static/icons/sport_icon_basketball.svg'},
-      {name:'NHL', link:'/static/icons/sport_icon_hockey.svg'},
-      {name:'EPL', link:'/static/icons/sport_icon_soccer.svg'}
+      {name:'NFL', link:'/static/icons/SportIcons/sport_icon_football.svg'},
+      {name:'NCAA', link:'/static/icons/SportIcons/sport_icon_football.svg'},
+      {name:'MLB', link:'/static/icons/SportIcons/sport_icon_baseball.svg'},
+      {name:'NBA', link:'/static/icons/SportIcons/sport_icon_basketball.svg'},
+      {name:'NCAAM', link:'/static/icons/SportIcons/sport_icon_basketball.svg'},
+      {name:'NHL', link:'/static/icons/SportIcons/sport_icon_hockey.svg'},
+      {name:'EPL', link:'/static/icons/SportIcons/sport_icon_soccer.svg'}
     ]
+
+    const howTopPlay = [
+      {name:'1. Create Your Free Acount', link:'/static/icons/HowToPlayIcons/CreateAccount.svg'},
+      {name:'2. Form a League of Friends', link:'/static/icons/HowToPlayIcons/DraftTeam.svg'},
+      {name:'3. Draft your Team', link:'/static/icons/HowToPlayIcons/FormLeague.svg'},
+      {name:'4. Watch and Win', link:'/static/icons/HowToPlayIcons/WatchWin.svg'}
+    ]
+
     return (
 
       <div>
         <TopNavHome/>
-        <div className={this.props.classes.root}>
+        <div className={classes.section1}>
           <Typography 
             type="display3" style={{color:'white'}}>
             <div style={{ fontFamily:'HorsebackSlab', display: 'inline'}}>
@@ -95,7 +102,7 @@ class Index extends React.Component {
           <br/>
           {
             sports.map((x,i) => { 
-              return <SportIconText key={i} name={x.name} link={x.link} color='white'/>})
+              return <SportIconText key={i} name={x.name} link={x.link}/>})
           }
           <br/>
           <br/>
@@ -107,7 +114,45 @@ class Index extends React.Component {
             </Link>
           </Button>
         </div>
+        <div className={classes.section2}>
+          <HomeTitle title='Why Derby Is Great' color='white'/>
+          <br/>
+          <TitleCopyButton 
+            title='Free To Join'
+            copy='Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod sed do eiusmod tempor incididunt ut labore etelit, do eiusmod tempor incididunt ut labore et dolore magna aliqua'
+            buttonText='Create An Account'
+            marginRight={20}
+          />
+          <TitleCopyButton 
+            title='Unique Draft'
+            copy='Unique Draft Instead of drafting a roster players, Derby Leagues draft entire teams from seven different sports. Lorem ipsum dolor sit amet, consectetur adipiscing elit, do eiusmod tempor magna aliqua.'
+            buttonText='More'
+          />
+          <TitleCopyButton 
+            title='Simple To Play'
+            copy='Simple To Play With Derby, no roster maintenance is needed. Derby is great to play with friends who are casual sports fans or people who don’t have time to manage a team. Just Draft, Watch and Win!'
+            buttonText='View Rules'
+            marginLeft={20}
+          />
+          <br/>
+          <br/>
+          <br/>
+        </div>
+        <div className={classes.section3}>
+          <HomeTitle title='How To Play' color='#229246'/>
+          <br/>
+          {
+            howTopPlay.map((x,i) => { 
+              return <HowToPlayIconText key={i} name={x.name} link={x.link}/>})
+          }
+          <br/>
+        </div>
+        <br/>
+        <br/>
+        <BottomNav/>
+        {/* <img src={'/static/icons/racehorse_plain.svg'} alt="none" height={300} width={300}/> */}
       </div>
+      
     )
   }
 }
