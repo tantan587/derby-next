@@ -23,13 +23,13 @@ const styles = {
   section1: {
     textAlign: 'center',
     paddingTop: 100,
-    backgroundColor:'#48311A',
+    //backgroundColor:'#48311A',
     color:'white',
-    //backgroundImage: 'url("/static/images/derbyhome.png")',
-    //backgroundRepeat: 'no-repeat',
+    backgroundImage: 'url("/static/images/derbyhome1.jpg")',
+    backgroundRepeat: 'no-repeat',
     //backgroundAttachment: 'fixed',
-    //backgroundPosition: 'center',
-    //backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundSize: 'cover',
     minHeight: '600px',
     //fontFamily:'Tinos'
   },
@@ -59,7 +59,7 @@ class Index extends React.Component {
       {name:'EPL', link:'/static/icons/SportIcons/sport_icon_soccer.svg'}
     ]
 
-    const howTopPlay = [
+    const howToPlay = [
       {name:'1. Create Your Free Acount', link:'/static/icons/HowToPlayIcons/CreateAccount.svg'},
       {name:'2. Form a League of Friends', link:'/static/icons/HowToPlayIcons/DraftTeam.svg'},
       {name:'3. Draft your Team', link:'/static/icons/HowToPlayIcons/FormLeague.svg'},
@@ -147,7 +147,7 @@ class Index extends React.Component {
           <HomeTitle title='How To Play' color='#229246'/>
           <br/>
           {
-            howTopPlay.map((x,i) => { 
+            howToPlay.map((x,i) => { 
               return <HowToPlayIconText key={i} name={x.name} link={x.link}/>})
           }
           <br/>
