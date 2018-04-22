@@ -10,7 +10,7 @@ const styles = () => ({
     flexGrow: 1,
     backgroundColor:'#48311A',
     textAlign: 'center',
-    height:325
+    minHeight:325
   },
   flex: {
     flex: 1,

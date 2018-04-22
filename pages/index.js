@@ -94,7 +94,7 @@ class Index extends React.Component {
             The Race
             </div>
           </Typography>
-          <Typography type='headline'style={{color:'white',width:'50%', marginLeft:'25%'}}>
+          <Typography type='headline'style={{color:'white',width:'60%', marginLeft:'20%'}}>
             Derby Fantasy Wins League is a new way to 
             play fantasy sports. Instead of drafting players,
             friends compete by drafting entire teams from multiple sports.
@@ -113,6 +113,8 @@ class Index extends React.Component {
               </div>
             </Link>
           </Button>
+          <br/>
+          <br/>
         </div>
         <div className={classes.section2}>
           <HomeTitle title='Why Derby Is Great' color='white'/>
@@ -122,11 +124,14 @@ class Index extends React.Component {
             copy='Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod sed do eiusmod tempor incididunt ut labore etelit, do eiusmod tempor incididunt ut labore et dolore magna aliqua'
             buttonText='Create An Account'
             marginRight={20}
+            marginLeft={20}
           />
           <TitleCopyButton 
             title='Unique Draft'
             copy='Unique Draft Instead of drafting a roster players, Derby Leagues draft entire teams from seven different sports. Lorem ipsum dolor sit amet, consectetur adipiscing elit, do eiusmod tempor magna aliqua.'
             buttonText='More'
+            marginRight={20}
+            marginLeft={20}
           />
           <TitleCopyButton 
             title='Simple To Play'
