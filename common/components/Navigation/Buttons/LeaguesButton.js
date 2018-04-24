@@ -8,14 +8,13 @@ import MenuBase from './MenuBase'
 class LeaguesButton extends React.Component {
   handleClick = (league_id) => {
     const { onClickedLeague, onStandings, onSportLeagues } = this.props
-    console.log('user_id', this.props.user.user_id)
-    onClickedLeague(league_id, this.props.user.user_id)
+    onClickedLeague(league_id, this.props.user.id)
     onStandings(league_id)
     onSportLeagues(league_id)
   };
   render() {
     const { color, backgroundColor, leagues } = this.props
-    const items = leagues.leagues.map(league => { 
+    const items = leagues.map(league => { 
       return {
         text:league.league_name,
         id:league.league_id,
@@ -31,7 +30,7 @@ class LeaguesButton extends React.Component {
     )
   }
 }
-export default connect((leagues,user) =>({leagues, user}),
+export default connect(({ user, leagues }) => ({ user, leagues }),
   dispatch =>
     ({
       onClickedLeague(league_id, user_id) {
