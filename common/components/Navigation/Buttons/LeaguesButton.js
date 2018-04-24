@@ -8,6 +8,7 @@ import MenuBase from './MenuBase'
 class LeaguesButton extends React.Component {
   handleClick = (league_id) => {
     const { onClickedLeague, onStandings, onSportLeagues } = this.props
+    console.log('user_id', this.props.user.user_id)
     onClickedLeague(league_id, this.props.user.user_id)
     onStandings(league_id)
     onSportLeagues(league_id)
