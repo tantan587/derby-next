@@ -49,6 +49,7 @@ class DerbyTable extends React.Component {
           ? (a[orderBy].toLowerCase() < b[orderBy].toLowerCase() ? -1 : 1)
           : (a[orderBy] < b[orderBy] ? -1 : 1))
 
+    console.log('local',rows, localRows)
     const myHeaders = headers
     
     const localColumns = 

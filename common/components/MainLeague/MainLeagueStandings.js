@@ -19,12 +19,33 @@ const styles = {
 
 class MainLeagueStandings extends React.Component {
   
+  constructor(props, context) {
+    super(props, context)
+
+    this.state = {
+      myRows : []
+    }
+  }
+
+  componentWillMount() {
+    this.updateMyRows(this.props.activeLeague.owners)
+  }
+  
+  componentWillReceiveProps(nextProps) {
+    this.updateMyRows(nextProps.activeLeague.owners)
+  }
+  updateMyRows = (myRows) =>
+  {
+    this.setState({myRows:myRows})
+  }
+
+
 
   render() {
     return(<DerbyTableContainer
       title='League Standings'
       usePagination={false}
-      myRows={this.props.activeLeague.owners}
+      myRows={this.state.myRows}
       myHeaders = {[
         {label: 'Rank', key: 'rank'},
         {label: 'Owner', key: 'owner_name'},
