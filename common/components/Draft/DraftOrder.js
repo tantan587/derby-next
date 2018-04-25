@@ -1,10 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from 'material-ui/styles'
-import List, { ListItem, ListItemText } from 'material-ui/List';
-import Avatar from 'material-ui/Avatar';
-import ImageIcon from 'material-ui-icons/Image';
-import Divider from 'material-ui/Divider';
+import List, { ListItem, ListItemText } from 'material-ui/List'
+// import Avatar from 'material-ui/Avatar'
+// import ImageIcon from 'material-ui-icons/Image'
+import Divider from 'material-ui/Divider'
 import Typography from 'material-ui/Typography'
 
 const styles = theme => ({
@@ -57,7 +57,7 @@ class DraftOrder extends React.Component {
           <Typography key={'head'} type='display1'>
             Next Up
           </Typography>
-          <Divider />
+          <Divider style={{backgroundColor:'yellow'}}/>
           <Typography key={'first'} type='subheading'>
             {ownerList.length > 0 ? 'Round ' + (ownerList[0].round) : 'Draft Over'}
           </Typography>

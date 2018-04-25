@@ -13,6 +13,7 @@ import SimpleSnackbar from './SimpleSnackbar'
 import DraftOrder from './DraftOrder'
 import DraftQueue from './DraftQueue'
 import CenteredTabs from './CenteredTabs'
+import Title from '../Navigation/Title'
 import {clickedEnterDraft,
   handleStartDraft,
   handleSetDraftMode,
@@ -30,7 +31,7 @@ const styles = theme => ({
     flexGrow: 1,
   },
   paper: {
-    padding: theme.spacing.unit * 2,
+    padding: 0,
     textAlign: 'center',
     color: theme.palette.text.secondary,
     minHeight:600
@@ -264,6 +265,7 @@ class DraftContainer extends React.Component {
       snackbarOpen,snackbarMessage, ownerMap, linesToShow} = this.state
 
     const currDraftPick = draft.pick ? draft.pick : 0
+
     const myTurn = this.state.myDraftPosition ===
       activeLeague.draftOrder[currDraftPick].ownerIndex
 
@@ -287,6 +289,7 @@ class DraftContainer extends React.Component {
         </form>
         :
         <div className={classes.root}>
+          <Title backgroundColor='#EBAB38' color='white' title='Live Draft'/>
           <Grid container spacing={24} >
             <Grid item xs={12}>
               <Paper className={classes.paper}>
@@ -294,7 +297,7 @@ class DraftContainer extends React.Component {
                   <Grid item xs={12} sm={2} 
                     style={{backgroundColor:'white'}}>
                     <Grid container direction={'column'}>
-                      <Grid item xs={12} style={{backgroundColor:'yellow'}}>
+                      <Grid item xs={12} style={{backgroundColor:'black'}}>
                         <Countdown 
                           countdownTime={countdownTime}/>
                       </Grid>

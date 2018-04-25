@@ -6,17 +6,22 @@ import Typography from 'material-ui/Typography'
 const styles = () => ({
   countdownBase : {
     fontFamily:'digital-7',
-    fontSize:45,
-    color:'#d3d3d3',
+    fontSize:55,
+    color:'#292929',
     display: 'inline-block'
   },
   countdown : {
     fontFamily:'digital-7',
-    fontSize:45,
-    color:'black',
+    fontSize:55,
+    color:'#EBAB38',
     display: 'inline-block',
-    marginLeft: -102
-  }
+    marginLeft: -123
+  },
+  title : {
+    textAlign : 'center',
+    color:'white',
+    fontFamily:'museo-slab-bold'
+  },
 })
 
 
@@ -32,6 +37,8 @@ class Countdown extends React.Component {
     return (
       //{countdownTime}
       <div>
+        <br/>
+        <Typography className={classes.title} type="body2">{'DRAFT CLOCK'}</Typography>
         <Typography className={classes.countdownBase}>88:88</Typography>
         <Typography className={classes.countdown}>{minutes}:{seconds}</Typography>
       </div>
