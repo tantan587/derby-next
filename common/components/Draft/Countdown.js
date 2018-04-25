@@ -6,16 +6,15 @@ import Typography from 'material-ui/Typography'
 const styles = () => ({
   countdownBase : {
     fontFamily:'digital-7',
-    fontSize:55,
+    fontSize:65,
     color:'#292929',
     display: 'inline-block'
   },
   countdown : {
     fontFamily:'digital-7',
-    fontSize:55,
+    fontSize:65,
     color:'#EBAB38',
     display: 'inline-block',
-    marginLeft: -123
   },
   title : {
     textAlign : 'center',
@@ -29,7 +28,7 @@ class Countdown extends React.Component {
 
   render()
   {
-    const { countdownTime, classes} = this.props
+    let { countdownTime, classes} = this.props
     let minutes = Math.floor(countdownTime / 60)
     let seconds = countdownTime - minutes * 60
     minutes = minutes < 10 ? '0' + minutes : minutes
@@ -38,9 +37,13 @@ class Countdown extends React.Component {
       //{countdownTime}
       <div>
         <br/>
-        <Typography className={classes.title} type="body2">{'DRAFT CLOCK'}</Typography>
-        <Typography className={classes.countdownBase}>88:88</Typography>
-        <Typography className={classes.countdown}>{minutes}:{seconds}</Typography>
+        <Typography className={classes.title} variant="subheading">{'DRAFT CLOCK'}</Typography>
+        <Typography className={classes.countdownBase}>88</Typography>
+        <Typography className={classes.countdownBase} style={{marginLeft:-10}}>:</Typography>
+        <Typography className={classes.countdownBase}style={{marginLeft:-10}}>88</Typography>
+        <Typography className={classes.countdown}style={{marginLeft:-129}}>{minutes}</Typography>
+        <Typography className={classes.countdown} style={{marginLeft:-10}}>:</Typography>
+        <Typography className={classes.countdown}style={{marginLeft:-10}}>{seconds}</Typography>
       </div>
     ) 
   }

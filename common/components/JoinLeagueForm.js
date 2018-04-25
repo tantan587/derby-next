@@ -83,7 +83,7 @@ class JoinLeagueForm extends React.Component {
       return (
         <form className={classes.container} noValidate autoComplete="off"
           onKeyPress={(event) => this.keypress(event)}>
-          <Typography type="display2" style={{color:'black'}} gutterBottom>
+          <Typography variant="display2" style={{color:'black'}} gutterBottom>
             Join Existing League
           </Typography>
           <br/>

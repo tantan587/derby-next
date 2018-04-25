@@ -10,12 +10,12 @@ class TitleCopyButton extends React.Component {
       <div style={{width:325, display:'inline-block', marginLeft:marginLeft,
         marginRight:marginRight}}>
         <Typography 
-          type="title" style={{color:'white', fontFamily:'museo-slab-bold'}}>
+          variant="title" style={{color:'white', fontFamily:'museo-slab-bold'}}>
           {title}
         </Typography>
         <br/>
         <Typography 
-          type="subheading" style={{color:'white'}}>
+          variant="subheading" style={{color:'white'}}>
           {copy}
         </Typography>
         <Button style={{backgroundColor:'#229246', color:'#ebab38',paddingTop:12}}>

@@ -11,6 +11,7 @@ const styles = theme => ({
     backgroundColor:theme.palette.secondary.A700,
     color:'white'},
   deepheader : {
+    color:'white',
     '&:hover': {
       color: 'white',
     },

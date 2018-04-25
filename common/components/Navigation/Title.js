@@ -25,7 +25,7 @@ class Title extends React.Component {
         className={classes.appBar}
         style={{backgroundColor:backgroundColor, color:color}}>
         <Toolbar>
-          <Typography className={classes.title} type="display1">{title}</Typography>
+          <Typography className={classes.title} variant="display1">{title}</Typography>
       
         </Toolbar>
       </AppBar> 

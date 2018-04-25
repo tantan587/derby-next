@@ -14,9 +14,9 @@ class DraftHeader extends React.Component {
     {
       return (
         <div>
-          <Typography type='headline'> {league_name}</Typography>
+          <Typography variant='headline'> {league_name}</Typography>
           <br/>
-          <Typography type='title'>{'Time until draft: ' + GetCountdownTimeStr(startTime)}</Typography>
+          <Typography variant='title'>{'Time until draft: ' + GetCountdownTimeStr(startTime)}</Typography>
         </div>
       ) 
     }
@@ -25,8 +25,8 @@ class DraftHeader extends React.Component {
     {
       return (
         <div>
-          <Typography type='headline'> {league_name}</Typography>
-          <Typography type='title'> Waiting for draft to start</Typography>
+          <Typography variant='headline'> {league_name}</Typography>
+          <Typography variant='title'> Waiting for draft to start</Typography>
         </div>
       )
     }
@@ -35,10 +35,10 @@ class DraftHeader extends React.Component {
     {
       return (
         <div>
-          <Typography type='headline'> {league_name}</Typography>
-          <Typography type='headline'> Draft is Live!</Typography>
+          <Typography variant='headline'> {league_name}</Typography>
+          <Typography variant='headline'> Draft is Live!</Typography>
           {myTurn
-            ? <Typography type='title'> Your Turn!</Typography>
+            ? <Typography variant='title'> Your Turn!</Typography>
             : <div/>
           }
         </div>
@@ -49,8 +49,8 @@ class DraftHeader extends React.Component {
     {
       return (
         <div>
-          <Typography type='headline'> {league_name}</Typography>
-          <Typography type='headline'> Draft is Over</Typography>
+          <Typography variant='headline'> {league_name}</Typography>
+          <Typography variant='headline'> Draft is Over</Typography>
         </div>
       )
     }

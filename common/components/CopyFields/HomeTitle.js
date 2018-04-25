@@ -6,7 +6,7 @@ class HomeTitle extends React.Component {
     const {title, color} = this.props
     return (
       <Typography 
-        type="display1" style={{color:color}}>
+        variant="display1" style={{color:color}}>
         <div style={{ fontFamily:'HorsebackSlab', display: 'inline'}}>
           {title}
         </div>

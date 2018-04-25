@@ -30,15 +30,15 @@ class BottomNav extends React.Component {
             <LogoIcon color='#594632' viewbox='15 0 62 62'/>
           </div>
         </div>
-        <Typography type='display3' style={{color:'white', paddingTop:50, display:'inline-block'}}>
+        <Typography variant='display3' style={{color:'white', paddingTop:50, display:'inline-block'}}>
         Footer Info
         </Typography>
         <br/>
-        <Typography type='display3' style={{color:'white', display:'inline-block'}}>
+        <Typography variant='display3' style={{color:'white', display:'inline-block'}}>
         Footer Info
         </Typography>
         <br/>
-        <Typography type='display3' style={{color:'white', display:'inline-block'}}>
+        <Typography variant='display3' style={{color:'white', display:'inline-block'}}>
         Footer Info
         </Typography>
       </div>

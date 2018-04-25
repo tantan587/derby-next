@@ -120,12 +120,12 @@ class AddOfflineDraftForm extends React.Component {
       return (
         <form className={classes.container} noValidate autoComplete="off"
           onKeyPress={(event) => this.keypress(event)}>
-          <Typography type="display2" style={{color:'black'}} gutterBottom>
+          <Typography variant="display2" style={{color:'black'}} gutterBottom>
             Enter in Offline Draft
           </Typography>
           {(activeLeague.total_players !== activeLeague.max_owners)
             ?
-            <Typography type="subheading" className={classes.text} gutterBottom>
+            <Typography variant="subheading" className={classes.text} gutterBottom>
             The league has not been fully set yet. You are still waiting on {activeLeague.max_owners-activeLeague.total_players}
               {activeLeague.max_owners-activeLeague.total_players === 1 ? ' more owner.' : ' more owners.'}
             </Typography>
@@ -133,7 +133,7 @@ class AddOfflineDraftForm extends React.Component {
             round === 0 
               ?
               <div>
-                <Typography type="subheading" className={classes.text} gutterBottom>
+                <Typography variant="subheading" className={classes.text} gutterBottom>
                   {'Some text explaining how to sort.' + round }
                 </Typography>
                 <SortableList  items={owners} updateOrder={this.props.onUpdateDraftOrder}/>

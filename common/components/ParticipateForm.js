@@ -50,12 +50,12 @@ class ParticipateForm extends React.Component {
     else{
       return (
         <form className={classes.container} noValidate autoComplete="off">
-          <Typography type="display2" className={classes.text} gutterBottom>
+          <Typography variant="display2" className={classes.text} gutterBottom>
             Derby: Fantasy Wins League
           </Typography>
           <br/>
           <br/>
-          <Typography type="subheading" className={classes.text} gutterBottom>
+          <Typography variant="subheading" className={classes.text} gutterBottom>
             Derby: Fantasy Wins League is a new type of league that has never been seen before.
              Instead of drafting players, you are drafting teams.
               Each team earns points based upon wins, 

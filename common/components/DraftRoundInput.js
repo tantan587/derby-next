@@ -88,7 +88,7 @@ class DraftRoundInput extends Component {
               return(
                 <TableRow style={{height:100}} key={owner.order}>
                   <TableCell padding='none'>
-                    <Typography type="subheading" className={classes.text} gutterBottom>
+                    <Typography variant="subheading" className={classes.text} gutterBottom>
                       {owner.text +':'} &nbsp; &nbsp; &nbsp;
                     </Typography>
                   </TableCell>

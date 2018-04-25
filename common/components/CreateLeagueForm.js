@@ -110,11 +110,11 @@ class CreateLeagueForm extends React.Component {
       return (
         <form className={classes.container} noValidate autoComplete="off"
           onKeyPress={(event) => this.keypress(event)}>
-          <Typography type="display2" style={{color:'black'}} gutterBottom>
+          <Typography variant="display2" style={{color:'black'}} gutterBottom>
             Create New League
           </Typography>
           <br/>
-          <Typography type="subheading" className={classes.text} gutterBottom>
+          <Typography variant="subheading" className={classes.text} gutterBottom>
           Time to create your own league! Our default league
           contains NBA, NFL, MLB, NHL, College Football, and NCAA Basketball.
           You draft one team per conference in the professional sports,

@@ -280,7 +280,7 @@ class DraftContainer extends React.Component {
       preDraft
         ?
         <form className={classes.container}>
-          <Typography type="subheading" className={classes.text} gutterBottom>
+          <Typography variant="subheading" className={classes.text} gutterBottom>
             {'Some text explaining about the draft'}
           </Typography>
           <Button raised className={classes.button} onClick={() => this.enterDraft()}>
