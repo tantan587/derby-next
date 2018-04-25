@@ -306,7 +306,8 @@ class DraftContainer extends React.Component {
                           owners={Object.values(ownerMap)}
                           myOwnerName={ownerMap[activeLeague.my_owner_id].owner_name}  
                           draftOrder={activeLeague.draftOrder}
-                          currPick={draft.pick}/>
+                          currPick={draft.pick}
+                          mode={draft.mode}/>
                       </Grid>
                     </Grid>
 

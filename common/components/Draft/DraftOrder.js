@@ -12,13 +12,13 @@ const styles = theme => ({
     width: '15px',
     height: '15px',
     borderRadius: '50%',
-    backgroundColor:'green',
+    backgroundColor:'#229246',
   },
   greenOutlineCircle: {
     width: '11px',
     height: '11px',
     borderRadius: '50%',
-    borderColor : 'green', 
+    borderColor : '#229246', 
     borderWidth:2,
     border:'solid'
   },
@@ -29,18 +29,33 @@ const styles = theme => ({
   banner : {
     color: theme.palette.secondary[100],
     backgroundColor: theme.palette.primary[500],
+  },
+  onTheClock :
+  { backgroundColor:'#229246', color:'white', textAlign: 'left', paddingLeft:20},
+
+  round :
+  {
+    backgroundColor:'#707070', color:'white', textAlign: 'left', 
+    paddingLeft:20, fontWeight : 'bold', paddingTop:5, paddingBottom:5
+  },
+
+  owner :
+  {
+    backgroundColor:'black', textAlign: 'left'
   }
 })
 
 class DraftOrder extends React.Component {
 
   render() {
-    const { classes, owners,myOwnerName, draftOrder, currPick } = this.props
+    const { classes, owners,myOwnerName, draftOrder, currPick, mode } = this.props
 
     const ownerDraftOrder = []
     owners.map(x => ownerDraftOrder[x.draft_position]  = x)
 
     const ownerList = []
+
+    const showOnTheClock = true // mode === 'live' && ownerList.length > 0
 
     draftOrder.map(x => {
       if(x.pick >= currPick)
@@ -48,36 +63,60 @@ class DraftOrder extends React.Component {
           {...ownerDraftOrder[x.ownerIndex],
             pick:x.pick % owners.length +1,
             round:Math.floor(x.pick /owners.length) + 1,
-            overallPick:x.pick})
-        
+            overallPick:x.pick})        
     })
+    const lastRound = ownerList.length > 0 ? ownerList[ownerList.length - 1].round : -1
     return (
       <div >
-        <List style={{maxHeight: 600, overflow: 'auto'}}>
-          <Typography key={'head'} type='display1'>
-            Next Up
-          </Typography>
-          <Divider style={{backgroundColor:'yellow'}}/>
-          <Typography key={'first'} type='subheading'>
-            {ownerList.length > 0 ? 'Round ' + (ownerList[0].round) : 'Draft Over'}
+        <Divider style={{backgroundColor:'white'}}/>
+        <Typography key={'head'} variant='subheading' 
+          style={{fontFamily:'HorsebackSlab', backgroundColor:'black', color:'white', 
+            paddingTop:10, paddingBottom:10}}>
+            Draft Order
+        </Typography>
+
+        {showOnTheClock
+          ?
+          <div style={{paddingBottom:5, backgroundColor:'#229246'}}>
+            <Typography variant='body2' 
+              className={classes.onTheClock}>
+            ON THE CLOCK:
+            </Typography> 
+            <Typography variant='title' 
+              className={classes.onTheClock}>
+              {myOwnerName ?ownerList[0].owner_name +' (you)':ownerList[0].owner_name}
+            </Typography>
+          </div> : <div/>}
+        <Divider style={{backgroundColor:'white'}}/>  
+        <List style={{maxHeight: 600, overflow: 'auto', paddingTop:0}}>
+          <Typography className={classes.round} key={'first'} variant='subheading'>
+            {ownerList.length > 1 ? 'ROUND ' + (ownerList[1].round) : 'DRAFT OVER'}
           </Typography>
           <Divider />
-          {ownerList.map( owner => 
+
+          {ownerList.filter((x,i) => showOnTheClock ? i !== 0 : i > -1).map( owner => 
             <div key={owner.overallPick}>
-              <ListItem key={owner.overallPick}>
+              <ListItem className={classes.owner} key={owner.overallPick}>
                 {/* <Avatar>
                   <ImageIcon />
                 </Avatar> */}
-                <ListItemText primary={owner.owner_name===myOwnerName ? owner.owner_name +' (you)':owner.owner_name}
-                  secondary={'Pick '+ owner.round +'.'+owner.pick} />
+                <ListItemText disableTypography 
+                  primary=
+                    {<Typography variant="subheading" style={{ color: '#FFFFFF' }}>
+                      {owner.owner_name===myOwnerName ? owner.owner_name +' (you)':owner.owner_name}
+                    </Typography>}
+                  secondary={<Typography variant="body1" style={{ color: '#A0A0A0' }}>
+                    {'Pick '+ owner.round +'.'+owner.pick}
+                  </Typography>}/>
+
                 <div className={owner.here ? classes.greenFullCircle : classes.greenOutlineCircle}/>
               </ListItem>
               {owner.pick % owners.length === 0 && owner.round < draftOrder.length
                 ?
                 <div>
                   <Divider />
-                  <Typography key={owner.round} type='subheading'>
-                    {'Round ' + (owner.round+1)}
+                  <Typography key={owner.round} className={classes.round} variant='subheading'>
+                    {lastRound !== owner.round ? 'ROUND ' + (owner.round+1) : 'DRAFT OVER'}
                   </Typography>
                   <Divider />
                 </div>
