@@ -37,13 +37,14 @@ class Countdown extends React.Component {
       //{countdownTime}
       <div>
         <br/>
+        
         <Typography className={classes.title} variant="subheading">{'DRAFT CLOCK'}</Typography>
         <Typography className={classes.countdownBase}>88</Typography>
-        <Typography className={classes.countdownBase} style={{marginLeft:-10}}>:</Typography>
-        <Typography className={classes.countdownBase}style={{marginLeft:-10}}>88</Typography>
-        <Typography className={classes.countdown}style={{marginLeft:-129}}>{minutes}</Typography>
-        <Typography className={classes.countdown} style={{marginLeft:-10}}>:</Typography>
-        <Typography className={classes.countdown}style={{marginLeft:-10}}>{seconds}</Typography>
+        <Typography className={classes.countdownBase} style={{marginLeft:-5}}>:</Typography>
+        <Typography className={classes.countdownBase}style={{marginLeft:-5}}>88</Typography>
+        <Typography className={classes.countdown}style={{marginLeft:-136}}>{minutes}</Typography>
+        <Typography className={classes.countdown} style={{marginLeft:-5}}>:</Typography>
+        <Typography className={classes.countdown}style={{marginLeft:-5}}>{seconds}</Typography>
       </div>
     ) 
   }

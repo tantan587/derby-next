@@ -32,6 +32,14 @@ export const clickedDateChange = (league_id, date) => dispatch =>
     'POST',
     JSON.stringify({league_id, date})
   )
+
+export const clickedOneTeam = (team_id, league_id) => dispatch =>
+  FetchThenDispatch(
+    dispatch,
+    '/api/oneteam',
+    'POST',
+    JSON.stringify({team_id,league_id})
+  )
   
 export const handleUpdateDraftOrder = draftOrder =>
   ({

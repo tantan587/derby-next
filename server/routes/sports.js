@@ -23,6 +23,12 @@ router.post('/schedule', authHelpers.loginRequired, (req, res, next)  => {
       handleResponse(res, 500, err)})
 })
 
+router.post('/oneteam',  (req, res, next)  => {
+  return getOneTeam(req.body.league_id, req.body.team_id, res)
+    .catch((err) => { 
+      handleResponse(res, 500, err)})
+})
+
 router.post('/savedraft', authHelpers.loginRequired, (req, res, next)  => {
   return enterDraftToDb(req, res)
     .then(() => { 
@@ -184,6 +190,100 @@ const getSportLeagues = (league_id, res, type) =>{
         return handleReduxResponse(res,400, {})
       }
     })
+}
+
+const getOneTeam  = async(league_id, team_id, res) =>{
+
+  const str1 = `select a.*, b.wins, b.losses, b.ties 
+   from sports.team_info a, sports.standings b
+   where a.team_id = b.team_id and a.team_id = ` + team_id
+
+  const str2 = `select * 
+    from (
+      select * 
+      from fantasy.team_points a 
+      where a.team_id = `+ team_id +
+      ' and league_id = \'' + league_id + '\') x' + 
+    ` left outer join (
+      select c.team_id, d.owner_name, d.owner_id, c.overall_pick 
+      from fantasy.rosters c, fantasy.owners d 
+      where c.owner_id = d.owner_id and c.team_id = ` + team_id +
+      ' and c.league_id = \'' + league_id + `') y 
+    on x.team_id = y.team_id `
+
+  const str3 = `select * 
+    from sports.schedule a, sports.results b 
+    where a.global_game_id = b.global_game_id 
+    and (a.home_team_id = `+ team_id + ' or a.away_team_id = ' + team_id + ' ) order by day_count'
+  let teamInfo = await knex.raw(str1)
+  let fantasyInfo = await knex.raw(str2)
+  let schedule = await knex.raw(str3)
+
+  teamInfo = teamInfo.rows[0]
+  fantasyInfo = fantasyInfo.rows[0]
+  schedule = schedule.rows
+  let oneTeam = {}
+  oneTeam.team_name = teamInfo.sport_name !== 'EPL' ? teamInfo.city + ' ' + teamInfo.name : teamInfo.name
+  oneTeam.owner = fantasyInfo.owner_name
+  oneTeam.owned_in_derby_leagues = 'TBD'
+  oneTeam.rank_in_league = 'TBD'
+  oneTeam.record = teamInfo.wins + '-' + teamInfo.losses + (teamInfo.ties > 0 ? '-' + teamInfo.ties : '')
+  oneTeam.curr_points = parseFloat(fantasyInfo.reg_points) + parseFloat(fantasyInfo.bonus_points)
+
+  const currDayCount =  fantasyHelpers.getDayCountStr((new Date()).toJSON())
+  let lastFive = []
+  let nextFive = []
+
+  schedule.forEach(row => {
+    if(row.day_count >= currDayCount && nextFive.length < 5)
+    {
+      if(row.status[0] != 'F')
+      {
+        nextFive.push({
+          global_game_id:row.global_game_id,
+          home_team_id:row.home_team_id,
+          away_team_id:row.away_team_id,
+          date_time:row.date_time,
+          sport_id:row.sport_id,
+          time:fantasyHelpers.formatAMPM(new Date(row.date_time)),
+          home_team_score:row.home_team_score,
+          away_team_score:row.away_team_score,
+          status:row.status,
+          winner:row.winner,
+          game_time:row.time,
+          period:row.period
+        })
+      }
+    }
+  })
+
+  schedule.slice(0).reverse().forEach(row => {
+    if(row.day_count <= currDayCount && lastFive.length < 5)
+    {
+      if(row.status[0] === 'F')
+      {
+        lastFive.push({
+          global_game_id:row.global_game_id,
+          home_team_id:row.home_team_id,
+          away_team_id:row.away_team_id,
+          date_time:row.date_time,
+          sport_id:row.sport_id,
+          time:fantasyHelpers.formatAMPM(new Date(row.date_time)),
+          home_team_score:row.home_team_score,
+          away_team_score:row.away_team_score,
+          status:row.status,
+          winner:row.winner,
+          game_time:row.time,
+          period:row.period
+        })
+      }
+    }
+  })
+  oneTeam.nextFive = nextFive
+  oneTeam.lastFive = lastFive
+
+  return handleReduxResponse(res,200, { type : C.GET_ONE_TEAM, oneTeam : oneTeam })
+   
 }
 
 module.exports = router

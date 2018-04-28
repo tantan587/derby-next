@@ -47,6 +47,7 @@
     "raw-loader": "^0.5.1",
     "react": "^16.2.0",
     "react-beautiful-dnd": "^3.0.0",
+    "react-custom-scrollbars": "^4.2.1",
     "react-dnd-html5-backend": "^2.5.4",
     "react-dom": "^16.2.0",
     "react-redux": "^5.0.6",

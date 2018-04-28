@@ -6,6 +6,7 @@ import List, { ListItem, ListItemText } from 'material-ui/List'
 // import ImageIcon from 'material-ui-icons/Image'
 import Divider from 'material-ui/Divider'
 import Typography from 'material-ui/Typography'
+import { Scrollbars } from 'react-custom-scrollbars'
 
 const styles = theme => ({
   greenFullCircle: {
@@ -46,7 +47,31 @@ const styles = theme => ({
 })
 
 class DraftOrder extends React.Component {
+  // constructor(props) {
+  //   super(props)
+  //   this.state = {
+  //     top: 0 
+  //   }}
 
+  // handleUpdate =  (values)  => {
+  //   const { top } = values
+  //   this.setState({ top })
+  // }
+
+  // renderView =  ({ style, ...props }) => {
+  //   const { top } = this.state
+  //   const viewStyle = {
+  //     padding: 15,
+  //     backgroundColor: `rgb(${Math.round(255 - (top * 255))}, ${Math.round(top * 255)}, ${Math.round(255)})`,
+  //     color: `rgb(${Math.round(255 - (top * 255))}, ${Math.round(255 - (top * 255))}, ${Math.round(255 - (top * 255))})`
+  //   }
+  //   return (
+  //     <div
+  //       className="box"
+  //       style={{ ...style, ...viewStyle }}
+  //       {...props}/>
+  //   )
+  // }
   render() {
     const { classes, owners,myOwnerName, draftOrder, currPick, mode } = this.props
 
@@ -89,42 +114,45 @@ class DraftOrder extends React.Component {
           </div> : <div/>}
         <Divider style={{backgroundColor:'white'}}/>  
         <List style={{maxHeight: 600, overflow: 'auto', paddingTop:0}}>
-          <Typography className={classes.round} key={'first'} variant='subheading'>
-            {ownerList.length > 1 ? 'ROUND ' + (ownerList[1].round) : 'DRAFT OVER'}
-          </Typography>
-          <Divider />
+          <Scrollbars autoHide style={{ height: 500 }}>
+            {/*renderView={this.renderView} onUpdate={this.handleUpdate}> */}
+            <Typography className={classes.round} key={'first'} variant='subheading'>
+              {ownerList.length > 1 ? 'ROUND ' + (ownerList[1].round) : 'DRAFT OVER'}
+            </Typography>
+            <Divider />
 
-          {ownerList.filter((x,i) => showOnTheClock ? i !== 0 : i > -1).map( owner => 
-            <div key={owner.overallPick}>
-              <ListItem className={classes.owner} key={owner.overallPick}>
-                {/* <Avatar>
-                  <ImageIcon />
-                </Avatar> */}
-                <ListItemText disableTypography 
-                  primary=
-                    {<Typography variant="subheading" style={{ color: '#FFFFFF' }}>
-                      {owner.owner_name===myOwnerName ? owner.owner_name +' (you)':owner.owner_name}
-                    </Typography>}
-                  secondary={<Typography variant="body1" style={{ color: '#A0A0A0' }}>
-                    {'Pick '+ owner.round +'.'+owner.pick}
-                  </Typography>}/>
+            {ownerList.filter((x,i) => showOnTheClock ? i !== 0 : i > -1).map( owner => 
+              <div key={owner.overallPick}>
+                <ListItem className={classes.owner} key={owner.overallPick}>
+                  {/* <Avatar>
+                    <ImageIcon />
+                  </Avatar> */}
+                  <ListItemText disableTypography 
+                    primary=
+                      {<Typography variant="subheading" style={{ color: '#FFFFFF' }}>
+                        {owner.owner_name===myOwnerName ? owner.owner_name +' (you)':owner.owner_name}
+                      </Typography>}
+                    secondary={<Typography variant="body1" style={{ color: '#A0A0A0' }}>
+                      {'Pick '+ owner.round +'.'+owner.pick}
+                    </Typography>}/>
 
-                <div className={owner.here ? classes.greenFullCircle : classes.greenOutlineCircle}/>
-              </ListItem>
-              {owner.pick % owners.length === 0 && owner.round < draftOrder.length
-                ?
-                <div>
+                  <div className={owner.here ? classes.greenFullCircle : classes.greenOutlineCircle}/>
+                </ListItem>
+                {owner.pick % owners.length === 0 && owner.round < draftOrder.length
+                  ?
+                  <div>
+                    <Divider />
+                    <Typography key={owner.round} className={classes.round} variant='subheading'>
+                      {lastRound !== owner.round ? 'ROUND ' + (owner.round+1) : 'DRAFT OVER'}
+                    </Typography>
+                    <Divider />
+                  </div>
+                  :
                   <Divider />
-                  <Typography key={owner.round} className={classes.round} variant='subheading'>
-                    {lastRound !== owner.round ? 'ROUND ' + (owner.round+1) : 'DRAFT OVER'}
-                  </Typography>
-                  <Divider />
-                </div>
-                :
-                <Divider />
-              }
-            </div>
-          )}
+                }
+              </div>
+            )}
+          </Scrollbars>
         </List>
 
       </div>
