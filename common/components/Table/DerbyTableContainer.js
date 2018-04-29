@@ -31,9 +31,14 @@ class DerbyTableContainer extends React.Component {
   updateMyRows = (rows) =>
   {
     this.setState({myRows:rows})
+    if(this.props.callerNeedsTeamIds)
+    {
+      this.props.callerNeedsTeamIds(rows.map(x => x.team_id))
+    }
   }
+
   render() {
-    const { usePagination, myHeaders, filters } = this.props
+    const { usePagination, myHeaders, filters, passUpFilterInfo } = this.props
     const {myRows, allRows} = this.state
 
     return (
@@ -43,6 +48,7 @@ class DerbyTableContainer extends React.Component {
           : <div/>
         }
         <DerbyTableFilters
+          passUpFilterInfo={passUpFilterInfo}
           updateMyRows={this.updateMyRows}
           rows={allRows}
           filters={filters ? filters : []}/>

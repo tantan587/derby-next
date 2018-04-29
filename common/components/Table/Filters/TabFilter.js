@@ -38,12 +38,17 @@ class TabFilter extends React.Component {
   }
 
   filterRows = (index) => {
-    const {rows, column, tabs, updateMyRows} = this.props
+    const {rows, column, tabs, updateMyRows, passUpFilterInfo} = this.props
 
     const filter = index === tabs.length ? 0 : tabs[index]
 
     const localRows = filter ? rows.filter(row => row[column] === filter) : rows
     updateMyRows(localRows)
+    if (passUpFilterInfo)
+    {
+      passUpFilterInfo({key:column, value:filter})
+    }
+
   }
 
   render() {

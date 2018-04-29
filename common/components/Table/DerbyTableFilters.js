@@ -5,7 +5,7 @@ import TabFilter from './Filters/TabFilter'
 class DerbyTableFilters extends React.Component {
   
   render() {
-    const {filters, rows, updateMyRows } = this.props
+    const {filters, rows, updateMyRows, passUpFilterInfo } = this.props
     
     return (
       <div>
@@ -23,6 +23,7 @@ class DerbyTableFilters extends React.Component {
             if (filter.type === 'tab')
             {
               return <TabFilter
+                passUpFilterInfo={passUpFilterInfo}
                 updateMyRows={updateMyRows} 
                 key={i} 
                 tabs={filter.values} 

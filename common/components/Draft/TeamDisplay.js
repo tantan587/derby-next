@@ -9,6 +9,7 @@ import IconButton from 'material-ui/IconButton'
 import ChevronRightIcon from 'material-ui-icons/ChevronRight'
 import DerbyTableContainer from '../Table/DerbyTableContainer'
 import { connect } from 'react-redux'
+import {handleFilterTab} from '../../actions/draft-actions'
 
 const styles = theme => ({
   greenFullCircle: {
@@ -36,10 +37,32 @@ const styles = theme => ({
 })
 
 class TeamDisplay extends React.Component {
+  constructor(props, context) {
+    super(props, context)
+
+    this.state = {
+      teamIdsHold : [],
+      teamIdsToUse : []
+    }
+  }
+
+  // componentWillMount() {
+  //   this.setState({teamIdsToUse:this.state.teamIdsHold})
+  // }
+  // componentWillReceiveProps(nextProps) {
+  //   this.setState({teamIdsToUse:this.state.teamIdsHold})
+  // }
 
   addItem = (team) =>
   {
     this.props.dataForTeams.addToQueue(team)
+  }
+
+  passUpFilterInfo = (filterInfo) =>
+  {
+    console.log(filterInfo, this.props.draft.filterInfo)
+    this.props.onFilterTab(filterInfo)
+    
   }
 
   render() {
@@ -47,14 +70,17 @@ class TeamDisplay extends React.Component {
     const availableTeams = draft.availableTeams
     const queue = draft.queue
     const linesToShow = dataForTeams.linesToShow
-    const teamsToShow = []
+    let teamsToShow = []
     availableTeams.map(teamId => {
       if(queue.indexOf(teamId) === -1)
         teamsToShow.push(teams[teamId])
     })
+    if (draft.filterInfo.key && draft.filterInfo.value)
+      teamsToShow = teamsToShow.filter(x => x[draft.filterInfo.key] === draft.filterInfo.value)
     return (
       <div>
         <DerbyTableContainer
+          passUpFilterInfo={this.passUpFilterInfo}
           usePagination={true}
           myRows={teamsToShow}
           filters={[
@@ -116,4 +142,7 @@ export default connect(
       teams:state.teams
     }),
   dispatch =>
-    ({}))(withStyles(styles)(TeamDisplay))
+    ({onFilterTab(teamIds) {
+      dispatch(
+        handleFilterTab(teamIds))
+    },}))(withStyles(styles)(TeamDisplay))

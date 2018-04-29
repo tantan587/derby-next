@@ -20,6 +20,12 @@ export const handleUpdateQueue = (queue) =>
     queue
   })
 
+export const handleFilterTab = (filterInfo) =>
+  ({
+    type: C.FILTER_TAB,
+    filterInfo
+  })
+
 export const handleSetDraftMode = (mode) =>
   ({
     type: C.UPDATE_DRAFT_MODE,

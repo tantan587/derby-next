@@ -9,7 +9,8 @@ export default (state = {}, action={ type: null }) => {
       availableTeams: action.availableTeams,
       draftedTeams:action.draftedTeams,
       owners:action.owners,
-      queue:action.queue
+      queue:action.queue,
+      filterInfo:{key:'', value:''}
     }
   case C.UPDATE_DRAFT_MODE:
     return {
@@ -19,6 +20,11 @@ export default (state = {}, action={ type: null }) => {
   case C.UPDATE_DRAFT_QUEUE:
     return {
       ...state, queue : action.queue 
+    }
+
+  case C.FILTER_TAB:
+    return {
+      ...state, filterInfo : action.filterInfo 
     }
 
   case C.START_DRAFT:
