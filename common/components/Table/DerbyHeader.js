@@ -8,7 +8,7 @@ import Tooltip from 'material-ui/Tooltip'
 import { withStyles } from 'material-ui/styles'
 const styles = theme => ({
   header:{
-    backgroundColor:theme.palette.secondary.A700,
+    backgroundColor:'#48311A',
     color:'white'},
   deepheader : {
     color:'white',

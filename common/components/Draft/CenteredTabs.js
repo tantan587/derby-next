@@ -18,6 +18,20 @@ const styles = theme => ({
   root: {
     flexGrow: 1
   },
+  deepindicator : {
+    height:0
+  },
+  deeptext : {
+    fontSize:18
+  },
+  tab : {
+    fontFamily:'museo-slab-bold',
+    backgroundColor: '#707070'
+  },
+  tabSelected : {
+    fontFamily:'museo-slab-bold',
+    backgroundColor: '#E2E2E2'
+  }
 })
 
 class CenteredTabs extends React.Component {
@@ -38,14 +52,25 @@ class CenteredTabs extends React.Component {
         <Tabs
           value={this.state.value}
           onChange={this.handleChange}
-          indicatorColor="primary"
+          classes={{indicator: classes.deepindicator}}
           textColor="primary"
           fullWidth
         >
-          <Tab label="Roster" />
-          <Tab label="Teams" />
-          <Tab label="Team Roster Grid" />
-          <Tab label="Draft Results" />
+          <Tab label="ROSTER" 
+            classes={{label: classes.deeptext}}
+            className={ value === 0 ? classes.tabSelected : classes.tab}
+            style={{ borderRight: '0.1em solid #E2E2E2', padding: '0.5em' }} />
+          <Tab label="TEAMS" 
+            classes={{label: classes.deeptext}}
+            className={ value === 1 ? classes.tabSelected : classes.tab} 
+            style={{ borderRight: '0.1em solid #E2E2E2', padding: '0.5em' }} />
+          <Tab label="ROSTER GRID" 
+            classes={{label: classes.deeptext}}
+            className={ value === 2 ? classes.tabSelected : classes.tab}
+            style={{ borderRight: '0.1em solid #E2E2E2', padding: '0.5em' }}  />
+          <Tab label="DRAFT RESULTS" 
+            classes={{label: classes.deeptext}}
+            className={ value === 3 ? classes.tabSelected : classes.tab} />
         </Tabs>
         {value === 0 && <TabContainer>One</TabContainer>}
         {value === 1 && <TeamDisplay dataForTeams={this.props.dataForTeams}/>}

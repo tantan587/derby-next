@@ -1,8 +1,8 @@
 import React from 'react'
 import { withStyles } from 'material-ui/styles'
-import Paper from 'material-ui/Paper'
 import DerbyTable from './DerbyTable'
-import DerbyTitle from './DerbyTitle'
+import Title from '../Navigation/Title'
+import DerbyTableFilters from './DerbyTableFilters'
 
 
 
@@ -38,8 +38,11 @@ class DerbyTableContainer extends React.Component {
 
     return (
       <div>
-        <DerbyTitle
-          title={this.props.title}
+        {this.props.title 
+          ? <Title color='white' backgroundColor='black' title={this.props.title}/>
+          : <div/>
+        }
+        <DerbyTableFilters
           updateMyRows={this.updateMyRows}
           rows={allRows}
           filters={filters ? filters : []}/>

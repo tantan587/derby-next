@@ -273,9 +273,6 @@ class DraftContainer extends React.Component {
 
     const dataForTeams = {}
     dataForTeams.addToQueue=this.onAddQueue
-    dataForTeams.teams=teams
-    dataForTeams.availableTeams=draft.availableTeams
-    dataForTeams.queue=draft.queue
     dataForTeams.linesToShow=linesToShow
     return (
 
@@ -285,7 +282,7 @@ class DraftContainer extends React.Component {
           <Typography variant="subheading" className={classes.text} gutterBottom>
             {'Some text explaining about the draft'}
           </Typography>
-          <Button raised className={classes.button} onClick={() => this.enterDraft()}>
+          <Button className={classes.button} onClick={() => this.enterDraft()}>
             Enter Draft
           </Button>
         </form>
@@ -316,17 +313,16 @@ class DraftContainer extends React.Component {
                   </Grid>
                   <Grid item xs={12} sm={8} style={{backgroundColor:'white'}}>
                     <Grid container direction={'column'}>
+                      <Grid item xs={12}>
+                        <CenteredTabs
+                          dataForTeams={dataForTeams}/>
+                      </Grid>
                       <Grid item xs={12} style={{backgroundColor:'white'}} >
                         <DraftHeader 
                           startTime={startTime} 
                           league_name={activeLeague.league_name} 
                           mode={draft.mode}
                           myTurn={myTurn}/>
-                      </Grid>
-                      <Grid item xs={12}>
-
-                        <CenteredTabs
-                          dataForTeams={dataForTeams}/>
                       </Grid>
                       <form  noValidate>
                         <TextField

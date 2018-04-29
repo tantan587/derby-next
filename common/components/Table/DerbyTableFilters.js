@@ -1,36 +1,14 @@
 import React from 'react'
-
-
 import CheckboxFilter from './Filters/CheckboxFilter'
 import TabFilter from './Filters/TabFilter'
-import Title from '../Navigation/Title'
 
-
-class DerbyHeader extends React.Component {
-  
-  constructor(props, context) {
-    super(props, context)
-
-    this.state = {
-      myTitle : ''
-    }
-  }
-
-  componentWillMount() {
-    this.updateTitle(this.props.title)
-  }
-  updateTitle = (title) =>
-  {
-    this.setState({myTitle:title})
-  }
+class DerbyTableFilters extends React.Component {
   
   render() {
     const {filters, rows, updateMyRows } = this.props
-    const {myTitle} = this.state
     
     return (
       <div>
-        <Title color='white' backgroundColor='black' title={myTitle}/>
         {
           filters.map((filter,i) => {
             if (filter.type === 'checkbox')
@@ -50,14 +28,14 @@ class DerbyHeader extends React.Component {
                 tabs={filter.values} 
                 rows={rows} 
                 allInd={true}
-                column={filter.column}/>
+                column={filter.column}
+                tabColors={filter.tabColors}/>
             }
           })
         }
       </div>
-
     )
   }
 }
 
-export default DerbyHeader
+export default DerbyTableFilters

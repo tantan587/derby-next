@@ -35,7 +35,9 @@ class MainLeagueTeams extends React.Component {
         filters={[
           {type:'tab', 
             values :this.props.sportLeagues.map(x => x.sport),
-            column:'sport'},
+            column:'sport',
+            tabColors:{background:'#707070', foreground:'white', text:'#229246'}
+          },
           // {type:'checkbox', 
           //   values :this.props.sportLeagues.map(x => x.sport),
           //   column:'sport'}

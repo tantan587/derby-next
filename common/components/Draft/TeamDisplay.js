@@ -2,14 +2,13 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from 'material-ui/styles'
 import List, { ListItem, ListItemText } from 'material-ui/List'
-import Avatar from 'material-ui/Avatar'
-import ImageIcon from 'material-ui-icons/Image'
 import Divider from 'material-ui/Divider'
-import AppBar from 'material-ui/AppBar'
 import Toolbar from 'material-ui/Toolbar'
 import Typography from 'material-ui/Typography'
 import IconButton from 'material-ui/IconButton'
 import ChevronRightIcon from 'material-ui-icons/ChevronRight'
+import DerbyTableContainer from '../Table/DerbyTableContainer'
+import { connect } from 'react-redux'
 
 const styles = theme => ({
   greenFullCircle: {
@@ -44,19 +43,32 @@ class TeamDisplay extends React.Component {
   }
 
   render() {
-    const { classes, dataForTeams } = this.props
-    const availableTeams = dataForTeams.availableTeams
-    const queue = dataForTeams.queue
+    const { classes, draft,teams,dataForTeams } = this.props
+    const availableTeams = draft.availableTeams
+    const queue = draft.queue
     const linesToShow = dataForTeams.linesToShow
     const teamsToShow = []
     availableTeams.map(teamId => {
       if(queue.indexOf(teamId) === -1)
-        teamsToShow.push(dataForTeams.teams[teamId])
+        teamsToShow.push(teams[teamId])
     })
-    teamsToShow.sort(function(a,b)
-    { return a.team_id < b.team_id ? -1 : 1})
     return (
-      <div style={{paddingTop:10}}>
+      <div>
+        <DerbyTableContainer
+          usePagination={true}
+          myRows={teamsToShow}
+          filters={[
+            {type:'tab', 
+              values :this.props.sportLeagues.map(x => x.sport),
+              column:'sport',
+              tabColors:{background:'#E2E2E2', foreground:'white', text:'#229246'}
+            },
+          ]}
+          myHeaders = {[
+            {label: 'Logo', key: 'logo_url', sortId:'team_name'},
+            {label: 'Team Name', key: 'team_name'},
+            {label: 'Conference', key: 'conference'}
+          ]}/>
         <Toolbar style={{backgroundColor:'#DDDDDD'}}>
           <Typography variant="title" color="inherit">
             Autosuggest for team, chips for sport, draft toggle
@@ -95,4 +107,13 @@ TeamDisplay.propTypes = {
   classes: PropTypes.object.isRequired,
 }
 
-export default withStyles(styles)(TeamDisplay)
+export default connect(
+  state =>
+    ({
+      sportLeagues : state.sportLeagues,
+      activeLeague : state.activeLeague,
+      draft : state.draft,
+      teams:state.teams
+    }),
+  dispatch =>
+    ({}))(withStyles(styles)(TeamDisplay))
