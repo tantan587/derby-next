@@ -42,6 +42,7 @@ class MainLeagueTeams extends React.Component {
           //   values :this.props.sportLeagues.map(x => x.sport),
           //   column:'sport'}
         ]}
+        orderInd={true}
         myHeaders = {[
           {label: 'Logo', key: 'logo_url', sortId:'team_name'},
           {label: 'Team Name', key: 'team_name'},

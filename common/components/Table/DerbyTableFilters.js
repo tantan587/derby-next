@@ -1,6 +1,7 @@
 import React from 'react'
 import CheckboxFilter from './Filters/CheckboxFilter'
 import TabFilter from './Filters/TabFilter'
+import SearchFilter from './Filters/SearchFilter'
 
 class DerbyTableFilters extends React.Component {
   
@@ -31,6 +32,14 @@ class DerbyTableFilters extends React.Component {
                 allInd={true}
                 column={filter.column}
                 tabColors={filter.tabColors}/>
+            }
+            if (filter.type === 'search')
+            {
+              return <SearchFilter key={i}
+                rows={rows} 
+                column={filter.column} 
+                passUpFilterInfo={passUpFilterInfo}
+                updateMyRows={updateMyRows}/>
             }
           })
         }

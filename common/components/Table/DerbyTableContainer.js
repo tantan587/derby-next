@@ -38,9 +38,8 @@ class DerbyTableContainer extends React.Component {
   }
 
   render() {
-    const { usePagination, myHeaders, filters, passUpFilterInfo } = this.props
+    const { usePagination, myHeaders, filters, passUpFilterInfo, orderInd } = this.props
     const {myRows, allRows} = this.state
-
     return (
       <div>
         {this.props.title 
@@ -57,7 +56,8 @@ class DerbyTableContainer extends React.Component {
         <DerbyTable 
           usePagination={usePagination}
           rows={myRows}
-          headers={myHeaders}/>
+          headers={myHeaders}
+          orderInd={orderInd}/>
         <br/>
         <br/>
       </div>

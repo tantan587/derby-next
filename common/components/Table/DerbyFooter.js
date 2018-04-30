@@ -17,7 +17,7 @@ class DerbyFooter extends React.Component {
             page={this.props.page}
             onChangePage={this.props.handleChangePage}
             onChangeRowsPerPage={this.props.handleChangeRowsPerPage}
-            rowsPerPageOptions={[5,20,40,80]}
+            rowsPerPageOptions={[5,10,20,40,80]}
           />
         </TableRow> 
       </TableFooter>

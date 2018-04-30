@@ -271,9 +271,6 @@ class DraftContainer extends React.Component {
     const myTurn = this.state.myDraftPosition ===
       activeLeague.draftOrder[currDraftPick].ownerIndex
 
-    const dataForTeams = {}
-    dataForTeams.addToQueue=this.onAddQueue
-    dataForTeams.linesToShow=linesToShow
     return (
 
       preDraft
@@ -315,7 +312,7 @@ class DraftContainer extends React.Component {
                     <Grid container direction={'column'}>
                       <Grid item xs={12}>
                         <CenteredTabs
-                          dataForTeams={dataForTeams}/>
+                          onAddQueue={this.onAddQueue}/>
                       </Grid>
                       <Grid item xs={12} style={{backgroundColor:'white'}} >
                         <DraftHeader 
@@ -373,20 +370,28 @@ class DraftContainer extends React.Component {
                           DRAFT #1 TEAM
                         </Button>
                       </Grid>
+                      <Divider style={{backgroundColor:'white'}}/>
                       <Grid item xs={12}>
-                        <Divider style={{backgroundColor:'white'}}/>
-                        <div style={{color:'white', display:'inline-block'}}>
-                          <ChatIcon/>
-                          {/* //viewBox="0 -10 24 34" style={{width:24,height:34}}/> */}
+                        <div style={{height:300, maxHeight:300}}>
+                          <div style={{color:'white', display:'inline-block'}}>
+                            <ChatIcon/>
+                            {/* //viewBox="0 -10 24 34" style={{width:24,height:34}}/> */}
+                          </div>
+                          <Typography key={'head'} variant='subheading' 
+                            style={{fontFamily:'HorsebackSlab', color:'white',
+                              paddingTop:15, paddingBottom:15, marginLeft:10,display:'inline-block'}}>
+                              Chat
+                          </Typography>
                         </div>
-                        <Typography key={'head'} variant='subheading' 
-                          style={{fontFamily:'HorsebackSlab', color:'white', 
-                            paddingTop:15, paddingBottom:15, marginLeft:10,display:'inline-block'}}>
-                            Chat
-                        </Typography>
+                      </Grid>
+                      <Grid item xs={12} style={{backgroundColor:'white'}}>
+                      <Typography key={'head'} variant='subheading' 
+                            style={{fontFamily:'HorsebackSlab', color:'white',
+                              paddingTop:15, paddingBottom:15, marginLeft:10,display:'inline-block'}}>
+                              Chat
+                      </Typography>
                       </Grid>
                     </Grid>
-                    
                   </Grid>
                 </Grid>
               </Paper>

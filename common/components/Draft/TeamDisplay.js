@@ -55,30 +55,38 @@ class TeamDisplay extends React.Component {
 
   addItem = (team) =>
   {
-    this.props.dataForTeams.addToQueue(team)
+    this.props.onAddQueue(team)
   }
 
   passUpFilterInfo = (filterInfo) =>
   {
-    console.log(filterInfo, this.props.draft.filterInfo)
-    this.props.onFilterTab(filterInfo)
     
+    const newFilterInfo = this.props.draft.filterInfo
+    newFilterInfo[filterInfo.type] = {'key':filterInfo.key, 'value': filterInfo.value}
+
+    console.log(newFilterInfo)
+    
+    this.props.onFilterTab(newFilterInfo) 
   }
 
   render() {
-    const { classes, draft,teams,dataForTeams } = this.props
+    const { classes, draft,teams } = this.props
     const availableTeams = draft.availableTeams
     const queue = draft.queue
-    const linesToShow = dataForTeams.linesToShow
     let teamsToShow = []
     availableTeams.map(teamId => {
       if(queue.indexOf(teamId) === -1)
         teamsToShow.push(teams[teamId])
     })
-    if (draft.filterInfo.key && draft.filterInfo.value)
-      teamsToShow = teamsToShow.filter(x => x[draft.filterInfo.key] === draft.filterInfo.value)
+    if (draft.filterInfo['tab'])
+      teamsToShow = teamsToShow.filter(x => x[draft.filterInfo['tab'].key] === draft.filterInfo['tab'].value)
+
+    if (draft.filterInfo['search'] && draft.filterInfo['search'].value)
+      teamsToShow = teamsToShow.filter(x => 
+        x[draft.filterInfo['search'].key].toLowerCase().includes(draft.filterInfo['search'].value.toLowerCase()))
+
     return (
-      <div>
+      <div style={{maxHeight:700, overflow:'auto'}}>
         <DerbyTableContainer
           passUpFilterInfo={this.passUpFilterInfo}
           usePagination={true}
@@ -89,41 +97,26 @@ class TeamDisplay extends React.Component {
               column:'sport',
               tabColors:{background:'#E2E2E2', foreground:'white', text:'#229246'}
             },
+            {type:'search',
+              column:'team_name', 
+            },
           ]}
           myHeaders = {[
-            {label: 'Logo', key: 'logo_url', sortId:'team_name'},
+            {key: 'logo_url', sortId:'team_name'},
             {label: 'Team Name', key: 'team_name'},
-            {label: 'Conference', key: 'conference'}
+            {key: 'team_id', 
+              button:{
+                onClick:this.addItem,
+                label:'Queue',
+                color:'white',
+                backgroundColor: '#269349'//'#EBAB38',
+              }},
+            {label: 'Conference', key: 'conference'},
+            {label: 'Sport League', key: 'sport'},
+            {label: 'Record', key: 'record', sortId:'percentage'},
+            {label: 'Percentage', key: 'percentage'},
+            {label: 'Points', key: 'points'}
           ]}/>
-        <Toolbar style={{backgroundColor:'#DDDDDD'}}>
-          <Typography variant="title" color="inherit">
-            Autosuggest for team, chips for sport, draft toggle
-          </Typography>
-        </Toolbar>
-
-        <List style={{maxHeight: 600, overflow: 'auto'}}>
-          <Divider />
-          {teamsToShow.slice(0,linesToShow).map( team => 
-            <div key={team.team_id}>
-              <ListItem key={team.team_id} style={{paddingTop:0, paddingLeft:100}}>
-                {/* <Avatar>
-                  <ImageIcon />
-                </Avatar> */}
-                <ListItemText primary={team.team_name}/>
-                <IconButton
-                  key="close"
-                  aria-label="Close"
-                  color="inherit"
-                  //className={classes.close}
-                  onClick={() => this.addItem(team.team_id)}
-                >
-                  <ChevronRightIcon />
-                </IconButton>
-              </ListItem>
-            </div>
-          )}
-        </List>
-
       </div>
     )
   }

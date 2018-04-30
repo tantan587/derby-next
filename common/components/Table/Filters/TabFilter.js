@@ -46,7 +46,7 @@ class TabFilter extends React.Component {
     updateMyRows(localRows)
     if (passUpFilterInfo)
     {
-      passUpFilterInfo({key:column, value:filter})
+      passUpFilterInfo({key:column, value:filter, type:'tab'})
     }
 
   }

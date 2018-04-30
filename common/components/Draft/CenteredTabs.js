@@ -26,17 +26,19 @@ const styles = theme => ({
   },
   tab : {
     fontFamily:'museo-slab-bold',
-    backgroundColor: '#707070'
+    backgroundColor: '#707070',
+    borderRight: '0.1em solid #E2E2E2', padding: '0.5em'
   },
   tabSelected : {
     fontFamily:'museo-slab-bold',
-    backgroundColor: '#E2E2E2'
+    backgroundColor: '#E2E2E2',
+    borderRight: '0.1em solid #E2E2E2', padding: '0.5em'
   }
 })
 
 class CenteredTabs extends React.Component {
   state = {
-    value: 0
+    value: 1
   };
 
   handleChange = (event, value) => {
@@ -51,29 +53,29 @@ class CenteredTabs extends React.Component {
       <div  className={classes.root}>
         <Tabs
           value={this.state.value}
+          style={{backgroundColor:'#707070'}}
           onChange={this.handleChange}
           classes={{indicator: classes.deepindicator}}
           textColor="primary"
           fullWidth
+          centered
         >
           <Tab label="ROSTER" 
             classes={{label: classes.deeptext}}
             className={ value === 0 ? classes.tabSelected : classes.tab}
-            style={{ borderRight: '0.1em solid #E2E2E2', padding: '0.5em' }} />
+            style={{borderLeft: '0.1em solid #E2E2E2', padding: '0.5em'}}/>
           <Tab label="TEAMS" 
             classes={{label: classes.deeptext}}
-            className={ value === 1 ? classes.tabSelected : classes.tab} 
-            style={{ borderRight: '0.1em solid #E2E2E2', padding: '0.5em' }} />
+            className={ value === 1 ? classes.tabSelected : classes.tab} />
           <Tab label="ROSTER GRID" 
             classes={{label: classes.deeptext}}
-            className={ value === 2 ? classes.tabSelected : classes.tab}
-            style={{ borderRight: '0.1em solid #E2E2E2', padding: '0.5em' }}  />
+            className={ value === 2 ? classes.tabSelected : classes.tab}/>
           <Tab label="DRAFT RESULTS" 
             classes={{label: classes.deeptext}}
             className={ value === 3 ? classes.tabSelected : classes.tab} />
         </Tabs>
         {value === 0 && <TabContainer>One</TabContainer>}
-        {value === 1 && <TeamDisplay dataForTeams={this.props.dataForTeams}/>}
+        {value === 1 && <TeamDisplay onAddQueue={this.props.onAddQueue}/>}
         {value === 2 && <TabContainer>Three</TabContainer>}
         {value === 3 && <TabContainer>Four</TabContainer>}
       </div>
