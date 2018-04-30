@@ -12,7 +12,7 @@ import MenuIcon from 'material-ui-icons/Menu'
 import List, { ListItem, ListItemText } from 'material-ui/List'
 import Divider from 'material-ui/Divider'
 import ChevronLeftIcon from 'material-ui-icons/ChevronLeft'
-import Collapse from 'material-ui/transitions/Collapse';
+import Collapse from 'material-ui/transitions/Collapse'
 import ExpandLess from 'material-ui-icons/ExpandLess'
 import ExpandMore from 'material-ui-icons/ExpandMore'
 import { connect } from 'react-redux'
@@ -95,9 +95,9 @@ class NavAppBar extends React.Component {
       <div className={classes.root}>
         <AppBar position="static" style={{height:'60px'}}>
           <Toolbar className={classes.appBar}>
-            <IconButton 
-              className={classes.menuButton} 
-              color="contrast" 
+            <IconButton
+              className={classes.menuButton}
+              color="inherit"
               aria-label="Menu"
               onClick={this.toggleDrawer}>
               <MenuIcon />
@@ -105,22 +105,22 @@ class NavAppBar extends React.Component {
             <Typography type="title" color="inherit" className={classes.flex}>
               {isMobile() ? 'Derby' :'Derby. Fantasy Wins League'}
             </Typography>
-            {this.props.user.loggedIn ? 
+            {this.props.user.loggedIn ?
               <div>
                 <Link href="/logout">
-                  <Button style={{float: 'right'}} color="contrast">Logout</Button>
+                  <Button style={{float: 'right'}} color="inherit">Logout</Button>
                 </Link>
               </div>
-              : 
+              :
               <div>
-                <Button style={{float: 'right'}} color="contrast" onClick={() => {this.pressedLogin()}}>
+                <Button style={{float: 'right'}} color="inherit" onClick={() => {this.pressedLogin()}}>
                   <Link href="/signup">
                     <div color="contrast">
                       Signup
                     </div>
                   </Link>
                 </Button>
-                <Button style={{float: 'right'}} color="contrast" onClick={() => {this.pressedLogin()}}>
+                <Button style={{float: 'right'}} color="inherit" onClick={() => {this.pressedLogin()}}>
                   <Link href="/login">
                     <div color="contrast">
                       Login
@@ -128,11 +128,11 @@ class NavAppBar extends React.Component {
                   </Link>
                 </Button>
               </div>}
-            
+
           </Toolbar>
         </AppBar>
-        <Drawer 
-          open={this.state.open} 
+        <Drawer
+          open={this.state.open}
           onClose={this.toggleDrawer}
           classes={{
             paper: classes.drawerPaper,

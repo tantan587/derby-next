@@ -77,7 +77,7 @@ class MainLeaguePage extends React.Component {
             scrollButtons="auto"
             indicatorColor="primary"
             textColor="primary"
-            centered
+            // centered
           >
             <Tab label="Standings" />
             <Tab label="Schedules" />
@@ -134,5 +134,3 @@ export default connect(
       }
     })
 )(withStyles(styles)(MainLeaguePage))
-
-

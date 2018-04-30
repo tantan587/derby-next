@@ -16,7 +16,7 @@ class DerbyTable extends React.Component {
       rowsPerPage: 20,
     }
   }
-  
+
   handleRequestSort = (property, propertyDisplay) => {
     const orderBy = property
     const orderByDisplay = propertyDisplay
@@ -38,28 +38,28 @@ class DerbyTable extends React.Component {
   };
 
   render() {
-    const { usePagination, rows, headers } = this.props
+    const { usePagination, rows, headers, openDialog } = this.props
     const {order, orderBy, orderByDisplay, rowsPerPage, page} = this.state
-    const localRows = orderBy === '' ? rows : rows.sort((a, b) =>  
-      (order === 'desc') 
-        ? isNaN(b[orderBy]) 
+    const localRows = orderBy === '' ? rows : rows.sort((a, b) =>
+      (order === 'desc')
+        ? isNaN(b[orderBy])
           ? (b[orderBy].toLowerCase() < a[orderBy].toLowerCase() ? -1 : 1)
           : (b[orderBy] < a[orderBy] ? -1 : 1)
-        : isNaN(b[orderBy]) 
+        : isNaN(b[orderBy])
           ? (a[orderBy].toLowerCase() < b[orderBy].toLowerCase() ? -1 : 1)
           : (a[orderBy] < b[orderBy] ? -1 : 1))
 
     const myHeaders = headers
-    
-    const localColumns = 
+
+    const localColumns =
     myHeaders.map(header => ({
-      id: header.key, 
+      id: header.key,
       sortId: header.sortId ? header.sortId : header.key,
-      numeric: localRows.length > 0 ? !isNaN(localRows[0][header.key]) : false, 
+      numeric: localRows.length > 0 ? !isNaN(localRows[0][header.key]) : false,
       disablePadding: false,
       label: header.label
     }))
-  
+
     const sliceStart = usePagination ?  page * rowsPerPage : 0
     const sliceEnd = usePagination ? sliceStart + rowsPerPage : localRows.length
     return (

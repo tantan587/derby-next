@@ -1,0 +1,53 @@
+{
+  "team_name": "Chicago Cubs",
+  "owner": "Capricorn",
+  "owned_in_derby_leagues": "1.00",
+  "mlb_nl_rank": "9 of 15",
+  "record": "xx-xx",
+  "current_points": 99,
+  "projected_points": 99,
+  "last_five_games": [
+    {
+      "game_id": 99,
+      "date": "2012-04-23T18:25:43.511Z",
+      "opponent": "rockies",
+      "result": "l",
+      "score": "5-2",
+      "location": "coors field",
+      "derby_points": 0
+    },
+    {
+      "game_id": 99,
+      "date": "2012-04-23T18:25:43.511Z",
+      "opponent": "rockies",
+      "result": "l",
+      "score": "5-2",
+      "location": "coors field",
+      "derby_points": 0
+    }
+  ],
+  "next_five_games": [
+    {
+      "game_id": 99,
+      "date": "2012-04-23T18:25:43.511Z",
+      "opponent": "rockies",
+      "result": "l",
+      "score": "5-2",
+      "location": "coors field",
+      "derby_points": 0
+    },
+    {
+      "game_id": 99,
+      "date": "2012-04-23T18:25:43.511Z",
+      "opponent": "rockies",
+      "result": "l",
+      "score": "5-2",
+      "location": "coors field",
+      "derby_points": 0
+    }
+  ],
+  "additional_info": {
+    "headline": "Headline",
+    "text_blurb": "Lorem ipsum dolor sit amet, consectetur adipisicing elit..."
+  }
+}
