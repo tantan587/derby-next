@@ -64,6 +64,9 @@ class TeamDisplay extends React.Component {
     const newFilterInfo = this.props.draft.filterInfo
     newFilterInfo[filterInfo.type] = {'key':filterInfo.key, 'value': filterInfo.value}
 
+    if (filterInfo.type === 'tab')
+      newFilterInfo['dropdown'] = null
+
     console.log(newFilterInfo)
     
     this.props.onFilterTab(newFilterInfo) 
@@ -79,7 +82,16 @@ class TeamDisplay extends React.Component {
         teamsToShow.push(teams[teamId])
     })
     if (draft.filterInfo['tab'])
-      teamsToShow = teamsToShow.filter(x => x[draft.filterInfo['tab'].key] === draft.filterInfo['tab'].value)
+      teamsToShow = draft.filterInfo['tab'].value ? 
+        teamsToShow = teamsToShow.filter(x => x[draft.filterInfo['tab'].key] === draft.filterInfo['tab'].value) :
+        teamsToShow
+
+    const confs = [...new Set(teamsToShow.map(x => x.conference))]
+
+    if (draft.filterInfo['dropdown'])
+      teamsToShow = draft.filterInfo['dropdown'].value ? 
+        teamsToShow.filter(x => x[draft.filterInfo['dropdown'].key] === draft.filterInfo['dropdown'].value) : 
+        teamsToShow
 
     if (draft.filterInfo['search'] && draft.filterInfo['search'].value)
       teamsToShow = teamsToShow.filter(x => 
@@ -97,6 +109,11 @@ class TeamDisplay extends React.Component {
               column:'sport',
               tabColors:{background:'#E2E2E2', foreground:'white', text:'#229246'}
             },
+            {type:'dropdown',
+              values:confs,
+              column:'conference', 
+              name:'Conference'
+            },
             {type:'search',
               column:'team_name', 
             },
@@ -107,9 +124,16 @@ class TeamDisplay extends React.Component {
             {key: 'team_id', 
               button:{
                 onClick:this.addItem,
-                label:'Queue',
+                label:'Add to Queue',
                 color:'white',
                 backgroundColor: '#269349'//'#EBAB38',
+              }},
+            {key: 'team_id', 
+              button:{
+                onClick:this.addItem,
+                label:'Draft Team',
+                color:'white',
+                backgroundColor: '#EBAB38',
               }},
             {label: 'Conference', key: 'conference'},
             {label: 'Sport League', key: 'sport'},

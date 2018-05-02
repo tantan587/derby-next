@@ -9,9 +9,13 @@ import SearchBar from 'material-ui-search-bar'
 
 
 const styles = theme => ({
-  button : {
+  searchIcon : {
+    marginTop:8,
     color:'black',
-    borderRadius: '0px',
+    fontSize:16,
+    font:'roboto',
+    marginLeft:-28,
+    opacity:1
   },
   appBar : {
     height:'50px', 
@@ -57,20 +61,25 @@ class SearchFilter extends React.Component {
   // }
 
   render() {
+    const {classes} = this.props
     return(
       <SearchBar
         onChange={this.filterRows}
         onRequestSearch={() => console.log('onRequestSearch')}
         value={this.state.value}
+        placeholder='Search Teams'
         style={{
-          margin: 10,
-          marginRight:'5%',
+          marginTop:15,
+          marginBottom:5,
+          marginRight:'3.1%',
           float:'right',
-          width:'30%',
+          width:300,
           boxShadow: 'none',
-          borderBottom: '0.1em solid #707070'
-
+          borderBottom: '1px solid #A0A0A0',
+          height:37,
+          color:'black'
         }}
+        classes={{root: classes.searchIcon}}
       />
     )
   }

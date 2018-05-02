@@ -2,12 +2,12 @@ import React from 'react'
 import CheckboxFilter from './Filters/CheckboxFilter'
 import TabFilter from './Filters/TabFilter'
 import SearchFilter from './Filters/SearchFilter'
+import DropdownFilter from './Filters/DropdownFilter'
 
 class DerbyTableFilters extends React.Component {
   
   render() {
     const {filters, rows, updateMyRows, passUpFilterInfo } = this.props
-    
     return (
       <div>
         {
@@ -40,6 +40,18 @@ class DerbyTableFilters extends React.Component {
                 column={filter.column} 
                 passUpFilterInfo={passUpFilterInfo}
                 updateMyRows={updateMyRows}/>
+            }
+            if (filter.type === 'dropdown')
+            {
+              return <DropdownFilter key={i}
+                passUpFilterInfo={passUpFilterInfo}
+                updateMyRows={updateMyRows} 
+                key={i} 
+                dropdowns={filter.values} 
+                rows={rows} 
+                allInd={true}
+                name={filter.name}
+                column={filter.column}/>
             }
           })
         }

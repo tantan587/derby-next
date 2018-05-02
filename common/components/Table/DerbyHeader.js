@@ -44,11 +44,11 @@ class DerbyHeader extends React.Component {
         <TableHead className={classes.header}>
           <TableRow style={{overflow: 'auto'}}>
             {[0].map(() => {if (orderInd) return <TableCell key='order' classes={{root: classes.deeppadding}}/>})}
-            {columnData.filter(col => col.id !== 'order').map(column => {
+            {columnData.filter(col => col.id !== 'order').map((column,i) => {
               return (
                 column.label ?
                   <TableCell 
-                    key={column.id}
+                    key={i}
                     numeric={column.numeric}
                     padding={column.disablePadding ? 'none' : 'default'}
                     sortDirection={orderBy === column.id ? order : false}
@@ -70,7 +70,7 @@ class DerbyHeader extends React.Component {
                     </Tooltip>
                   </TableCell> 
                   : <TableCell 
-                    key={column.id}/>
+                    key={i}/>
               )
             }, this)}
           </TableRow>
