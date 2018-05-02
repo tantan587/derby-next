@@ -64,10 +64,10 @@ class ForgotPasswordForm extends React.Component {
       return (
         <form className={classes.container} noValidate autoComplete="off"
           onKeyPress={(event) => this.keypress(event)}>
-          <Typography type="display2" style={{color:'black'}} gutterBottom>
+          <Typography variant="display2" style={{color:'black'}} gutterBottom>
             Forgot Password?
           </Typography>
-          <Typography type="subheading" className={classes.text} gutterBottom>
+          <Typography variant="subheading" className={classes.text} gutterBottom>
             Some other text
           </Typography>
           <DerbyTextField

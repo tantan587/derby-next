@@ -39,7 +39,7 @@ async function getNflData()
             home_team_score : game.HomeScore !== null ? game.HomeScore : -1, 
             away_team_score : game.AwayScore !== null ? game.AwayScore : -1,
             status: status,
-            winner: status[0] === 'F' ? game.HomeTeamScore > game.AwayTeamScore ? 'H' :'A' : myNull,
+            winner: status[0] === 'F' ? game.HomeTeam > game.AwayTeam ? 'H' :'A' : myNull,
             time: game.TimeRemaining === null ? myNull : game.TimeRemaining,
             period: game.Quarter === null || game.Quarter[0] === 'F' ? myNull : game.Querter,
             updated_time:game.LastUpdated ? game.LastUpdated: myNull}) 
@@ -64,7 +64,7 @@ async function getMlbData()
             home_team_score : game.HomeTeamRuns !== null ? game.HomeTeamRuns : -1, 
             away_team_score : game.AwayTeamRuns !== null ? game.AwayTeamRuns : -1,
             status: game.Status,
-            winner: game.Status[0] === 'F' ? game.HomeTeamScore > game.AwayTeamScore ? 'H' :'A' : myNull,
+            winner: game.Status[0] === 'F' ? game.HomeTeamRuns > game.AwayTeamRuns ? 'H' :'A' : myNull,
             time: game.Outs === null ? myNull : game.Outs,
             period: game.Inning === null ? myNull : game.InningHalf + game.Inning,
             updated_time:game.Status === 'InProcess' ? game.InningHalf + game.Inning+'-'+ game.Outs+':'+game.Balls+':'+game.Strikes : game.Status}) 

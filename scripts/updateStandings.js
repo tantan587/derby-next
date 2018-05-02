@@ -64,12 +64,12 @@ async function getNbaData()
 
 async function getMlbData()
 {
-  return db_helpers.getFantasyData(knex, 'MLB', 'https://api.fantasydata.net/v3/mlb/scores/JSON/Standings/2017?', 'Key', 'League')
+  return db_helpers.getFantasyData(knex, 'MLB', 'https://api.fantasydata.net/v3/mlb/scores/JSON/Standings/2018?', 'Key', 'League')
     .then(result => { 
       let newStandings = []
       result.map(team => 
       {
-        newStandings.push({team_id: team.team_id, wins : 0, losses: 0, ties: 0})    
+        newStandings.push({team_id: team.team_id, wins : team.Wins, losses: team.Losses, ties: 0})    
       })
       return newStandings
     })
@@ -95,8 +95,10 @@ async function getCbbData()
       let newStandings = []
       result.map(team => 
       {
+
         newStandings.push({team_id: team.team_id, wins : team.Wins, losses: team.Losses, ties: 0})    
       })
+
       return newStandings
     })
 }

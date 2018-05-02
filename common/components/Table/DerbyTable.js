@@ -40,7 +40,8 @@ class DerbyTable extends React.Component {
   render() {
     const { usePagination, rows, headers, openDialog } = this.props
     const {order, orderBy, orderByDisplay, rowsPerPage, page} = this.state
-    const localRows = orderBy === '' ? rows : rows.sort((a, b) =>
+
+    let localRows = orderBy === '' ? rows : rows.sort((a, b) =>
       (order === 'desc')
         ? isNaN(b[orderBy])
           ? (b[orderBy].toLowerCase() < a[orderBy].toLowerCase() ? -1 : 1)
@@ -48,6 +49,8 @@ class DerbyTable extends React.Component {
         : isNaN(b[orderBy])
           ? (a[orderBy].toLowerCase() < b[orderBy].toLowerCase() ? -1 : 1)
           : (a[orderBy] < b[orderBy] ? -1 : 1))
+
+    localRows = localRows ? localRows : []
 
     const myHeaders = headers
 
@@ -73,9 +76,9 @@ class DerbyTable extends React.Component {
         <DerbyBody
           rows={localRows.slice(sliceStart,sliceEnd)}
           columns={localColumns}/>
-        {[1].map(() => {if (usePagination)
+        {[1].map((x) => {if (usePagination)
         {
-          return <DerbyFooter
+          return <DerbyFooter key={x}
             count={localRows.length}
             rowsPerPage={rowsPerPage}
             page={page}

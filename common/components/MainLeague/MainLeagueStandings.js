@@ -18,8 +18,6 @@ const styles = {
 }
 
 class MainLeagueStandings extends React.Component {
-  
-
   render() {
     return(<DerbyTableContainer
       title='League Standings'

@@ -46,16 +46,16 @@ class Logout extends React.Component {
     else{
       return (
         <form className={classes.container} noValidate autoComplete="off">
-          <Typography type="display2" style={{color:'black'}} gutterBottom>
+          <Typography variant="display2" style={{color:'black'}} gutterBottom>
             Logout?
           </Typography>
           
           <br/>
           <br/>
-          <Button raised color="accent" onClick={(event) => this.submitYes(event)}>
+          <Button style={{color:'white', backgroundColor:'#ebab38',height:50, width:125}} onClick={(event) => this.submitYes(event)}>
             Yes
           </Button>
-          <Button style={{marginLeft:'20px'}} raised color="accent" onClick={(event) => this.submitNo(event)}>
+          <Button style={{marginLeft:'20px', color:'#FFFFFF', backgroundColor:'#EBAB38', height:50, width:125}} onClick={(event) => this.submitNo(event)}>
             No
           </Button>
         </form>

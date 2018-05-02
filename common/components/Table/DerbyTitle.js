@@ -1,22 +1,11 @@
 import React from 'react'
-import { withStyles } from 'material-ui/styles'
-import AppBar from 'material-ui/AppBar'
-import Toolbar from 'material-ui/Toolbar'
-import Typography from 'material-ui/Typography'
+
+
 import CheckboxFilter from './Filters/CheckboxFilter'
 import TabFilter from './Filters/TabFilter'
+import Title from '../Navigation/Title'
 
-const styles = () => ({
-  title : {
-    textAlign : 'center',
-    color:'white',
-    fontFamily:'HorsebackSlab',
-    marginLeft:'3%'
-  },
-  appBar : {
-    height:'55px', 
-    boxShadow: ['none']}
-})
+
 class DerbyHeader extends React.Component {
   
   constructor(props, context) {
@@ -36,19 +25,12 @@ class DerbyHeader extends React.Component {
   }
   
   render() {
-    const {classes, filters, rows, updateMyRows } = this.props
+    const {filters, rows, updateMyRows } = this.props
     const {myTitle} = this.state
     
     return (
       <div>
-        <AppBar position="static" 
-          className={classes.appBar}
-          style={{backgroundColor:'black'}}>
-          <Toolbar>
-            <Typography className={classes.title} type="display1">{myTitle}</Typography>
-        
-          </Toolbar>
-        </AppBar>
+        <Title color='white' backgroundColor='black' title={myTitle}/>
         {
           filters.map((filter,i) => {
             if (filter.type === 'checkbox')
@@ -78,4 +60,4 @@ class DerbyHeader extends React.Component {
   }
 }
 
-export default withStyles(styles)(DerbyHeader)
+export default DerbyHeader

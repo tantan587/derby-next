@@ -74,7 +74,7 @@ class LoginForm extends React.Component {
       return (
         <form className={classes.container} noValidate autoComplete="off"
           onKeyPress={(event) => this.keypress(event)}>
-          <Typography type="display2" style={{color:'black'}} gutterBottom>
+          <Typography variant="display2" style={{color:'black'}} gutterBottom>
             Login
           </Typography>
           <TextField
@@ -100,15 +100,15 @@ class LoginForm extends React.Component {
             onChange = {this.handleChange('password')}/>
           <br/>
           <br/>
-          <Typography type="subheading" style={{color:'black'}} gutterBottom>
+          <Typography variant="subheading" style={{color:'black'}} gutterBottom>
           Don't have an account? <Link href="/signup"><a>Signup.</a></Link>
           </Typography>
           <br/>
-          <Typography type="subheading" style={{color:'black'}} gutterBottom>
+          <Typography variant="subheading" style={{color:'black'}} gutterBottom>
           Forgot your Username / <Link href="/forgotpassword"><a>Password</a></Link>?
           </Typography>
           <br/>
-          <Button raised className={classes.button} onClick={(event) => this.submit(event)}>
+          <Button className={classes.button} onClick={(event) => this.submit(event)}>
             Submit
           </Button>
          

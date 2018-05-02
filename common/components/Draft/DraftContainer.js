@@ -13,12 +13,15 @@ import SimpleSnackbar from './SimpleSnackbar'
 import DraftOrder from './DraftOrder'
 import DraftQueue from './DraftQueue'
 import CenteredTabs from './CenteredTabs'
+import Title from '../Navigation/Title'
 import {clickedEnterDraft,
   handleStartDraft,
   handleSetDraftMode,
   handleDraftPick,
   handleUpdateQueue} from '../../actions/draft-actions'
 import { connect } from 'react-redux'
+import Divider from 'material-ui/Divider'
+import ChatIcon from 'material-ui-icons/Chat'
 
 const styles = theme => ({
   container: {
@@ -30,7 +33,7 @@ const styles = theme => ({
     flexGrow: 1,
   },
   paper: {
-    padding: theme.spacing.unit * 2,
+    padding: 0,
     textAlign: 'center',
     color: theme.palette.text.secondary,
     minHeight:600
@@ -264,6 +267,7 @@ class DraftContainer extends React.Component {
       snackbarOpen,snackbarMessage, ownerMap, linesToShow} = this.state
 
     const currDraftPick = draft.pick ? draft.pick : 0
+
     const myTurn = this.state.myDraftPosition ===
       activeLeague.draftOrder[currDraftPick].ownerIndex
 
@@ -278,7 +282,7 @@ class DraftContainer extends React.Component {
       preDraft
         ?
         <form className={classes.container}>
-          <Typography type="subheading" className={classes.text} gutterBottom>
+          <Typography variant="subheading" className={classes.text} gutterBottom>
             {'Some text explaining about the draft'}
           </Typography>
           <Button raised className={classes.button} onClick={() => this.enterDraft()}>
@@ -287,6 +291,7 @@ class DraftContainer extends React.Component {
         </form>
         :
         <div className={classes.root}>
+          <Title backgroundColor='#EBAB38' color='white' title='Live Draft'/>
           <Grid container spacing={24} >
             <Grid item xs={12}>
               <Paper className={classes.paper}>
@@ -294,7 +299,7 @@ class DraftContainer extends React.Component {
                   <Grid item xs={12} sm={2} 
                     style={{backgroundColor:'white'}}>
                     <Grid container direction={'column'}>
-                      <Grid item xs={12} style={{backgroundColor:'yellow'}}>
+                      <Grid item xs={12} style={{backgroundColor:'black'}}>
                         <Countdown 
                           countdownTime={countdownTime}/>
                       </Grid>
@@ -303,7 +308,8 @@ class DraftContainer extends React.Component {
                           owners={Object.values(ownerMap)}
                           myOwnerName={ownerMap[activeLeague.my_owner_id].owner_name}  
                           draftOrder={activeLeague.draftOrder}
-                          currPick={draft.pick}/>
+                          currPick={draft.pick}
+                          mode={draft.mode}/>
                       </Grid>
                     </Grid>
 
@@ -351,16 +357,37 @@ class DraftContainer extends React.Component {
                       </Grid>
                     </Grid>
                   </Grid>
-                  <Grid item xs={12} sm={2} style={{backgroundColor:'white'}}>
+                  <Grid item xs={12} sm={2} style={{backgroundColor:'black'}}>
+                    <Grid item xs={12}>
+                      <Typography key={'head'} variant='subheading' 
+                        style={{fontFamily:'HorsebackSlab', color:'white', 
+                          paddingTop:15, paddingBottom:15}}>
+                          Draft Queue
+                      </Typography>
+                      <Divider style={{backgroundColor:'white'}}/>
+                    </Grid>
                     <Grid container direction={'column'}>
-                      <Grid item xs={12} style={{backgroundColor:'white'}} >
-                        <Button style={{fontSize:30, backgroundColor:'orange'}} 
-                          onClick={() => this.onDraftButton()}>
-                          Draft
+                      <Grid item xs={12}>
+                        <DraftQueue  items={draft.queue} teams={teams} updateOrder={this.onUpdateQueue}/>
+                      </Grid>
+                      <Grid item xs={12} style={{marginBottom:5}}>
+                        <Button style={{fontSize:14, backgroundColor:'#EBAB38',
+                          marginTop:10, marginLeft:-5, color:'white', width:'90%'}} 
+                        onClick={() => this.onDraftButton()}>
+                          DRAFT #1 TEAM
                         </Button>
                       </Grid>
-                      <Grid item xs={12} style={{backgroundColor:'white'}} >
-                        <DraftQueue  items={draft.queue} teams={teams} updateOrder={this.onUpdateQueue}/>
+                      <Grid item xs={12}>
+                        <Divider style={{backgroundColor:'white'}}/>
+                        <div style={{color:'white', display:'inline-block'}}>
+                          <ChatIcon/>
+                          {/* //viewBox="0 -10 24 34" style={{width:24,height:34}}/> */}
+                        </div>
+                        <Typography key={'head'} variant='subheading' 
+                          style={{fontFamily:'HorsebackSlab', color:'white', 
+                            paddingTop:15, paddingBottom:15, marginLeft:10,display:'inline-block'}}>
+                            Chat
+                        </Typography>
                       </Grid>
                     </Grid>
                     

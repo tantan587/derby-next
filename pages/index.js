@@ -72,7 +72,7 @@ class Index extends React.Component {
         <TopNavHome/>
         <div className={classes.section1}>
           <Typography 
-            type="display3" style={{color:'white'}}>
+            variant="display3" style={{color:'white'}}>
             <div style={{ fontFamily:'HorsebackSlab', display: 'inline'}}>
               {'Draft '}
             </div>
@@ -94,7 +94,7 @@ class Index extends React.Component {
             The Race
             </div>
           </Typography>
-          <Typography type='headline'style={{color:'white',width:'60%', marginLeft:'20%'}}>
+          <Typography variant='headline'style={{color:'white',width:'60%', marginLeft:'20%'}}>
             Derby Fantasy Wins League is a new way to 
             play fantasy sports. Instead of drafting players,
             friends compete by drafting entire teams from multiple sports.

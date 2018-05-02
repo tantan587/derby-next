@@ -69,7 +69,7 @@ class SignupForm extends React.Component {
       return (
         <form className={classes.container} noValidate autoComplete="off"
           onKeyPress={(event) => this.keypress(event)}>
-          <Typography type="display2" style={{color:'black'}} gutterBottom>
+          <Typography variant="display2" style={{color:'black'}} gutterBottom>
             Signup
           </Typography>
           <TextField
@@ -121,7 +121,7 @@ class SignupForm extends React.Component {
             onChange = {this.handleChange('email')}/>
           <br/>
           <br/>
-          <Typography type="subheading" style={{color:'black'}} gutterBottom>
+          <Typography variant="subheading" style={{color:'black'}} gutterBottom>
           Already have an account? <Link href="/login"><a>Login.</a></Link>
           </Typography>
           <br/>

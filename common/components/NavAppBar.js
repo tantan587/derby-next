@@ -95,34 +95,33 @@ class NavAppBar extends React.Component {
       <div className={classes.root}>
         <AppBar position="static" style={{height:'60px'}}>
           <Toolbar className={classes.appBar}>
-            <IconButton
+            <IconButton 
               className={classes.menuButton}
-              color="inherit"
               aria-label="Menu"
               onClick={this.toggleDrawer}>
               <MenuIcon />
             </IconButton>
-            <Typography type="title" color="inherit" className={classes.flex}>
+            <Typography variant="title" color="inherit" className={classes.flex}>
               {isMobile() ? 'Derby' :'Derby. Fantasy Wins League'}
             </Typography>
             {this.props.user.loggedIn ?
               <div>
                 <Link href="/logout">
-                  <Button style={{float: 'right'}} color="inherit">Logout</Button>
+                  <Button style={{float: 'right', color:'white'}}>Logout</Button>
                 </Link>
               </div>
               :
               <div>
-                <Button style={{float: 'right'}} color="inherit" onClick={() => {this.pressedLogin()}}>
+                <Button style={{float: 'right', color:'white'}}  onClick={() => {this.pressedLogin()}}>
                   <Link href="/signup">
-                    <div color="contrast">
+                    <div color={'white'}>
                       Signup
                     </div>
                   </Link>
                 </Button>
-                <Button style={{float: 'right'}} color="inherit" onClick={() => {this.pressedLogin()}}>
+                <Button style={{float: 'right', color:'white'}} onClick={() => {this.pressedLogin()}}>
                   <Link href="/login">
-                    <div color="contrast">
+                    <div>
                       Login
                     </div>
                   </Link>
