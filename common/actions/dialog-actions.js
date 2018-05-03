@@ -1,9 +1,11 @@
 import C from '../constants'
 
-export const handleOpenDialog = () => ({
-  type: C.OPEN_DIALOG
+export const handleOpenDialog = (payload) => ({
+  type: C.OPEN_DIALOG,
+  payload,
 })
 
-export const handleCloseDialog = () => ({
-  type: C.CLOSE_DIALOG
+export const handleCloseDialog = (payload) => ({
+  type: C.CLOSE_DIALOG,
+  payload,
 })

@@ -7,34 +7,34 @@ const fantasyHelpers = require('./helpers/fantasyHelpers')
 
 router.post('/standings', authHelpers.loginRequired, (req, res, next)  => {
   return getStandings(req.body.league_id, res, C.GET_TEAMS)
-    .catch((err) => { 
+    .catch((err) => {
       handleResponse(res, 500, err)})
 })
 
 router.post('/sportleagues', authHelpers.loginRequired, (req, res, next)  => {
   return getSportLeagues(req.body.league_id, res, C.GET_SPORT_LEAGUES)
-    .catch((err) => { 
+    .catch((err) => {
       handleResponse(res, 500, err)})
 })
 
 router.post('/schedule', authHelpers.loginRequired, (req, res, next)  => {
   return getSchedule(req.body.league_id, req.body.date, res)
-    .catch((err) => { 
+    .catch((err) => {
       handleResponse(res, 500, err)})
 })
 
 router.post('/oneteam',  (req, res, next)  => {
   return getOneTeam(req.body.league_id, req.body.team_id, res)
-    .catch((err) => { 
+    .catch((err) => {
       handleResponse(res, 500, err)})
 })
 
 router.post('/savedraft', authHelpers.loginRequired, (req, res, next)  => {
   return enterDraftToDb(req, res)
-    .then(() => { 
+    .then(() => {
       return fantasyHelpers.updateFantasy(req.body.league_id, res)
     })
-    .catch((err) => { 
+    .catch((err) => {
       handleResponse(res, 500, err) })
 })
 
@@ -51,7 +51,7 @@ const enterDraftToDb = (req, res) =>
   const dataToInput = req.body.allTeams.map(team => {team.league_id = req.body.league_id; return team})
   return knex.withSchema('fantasy').table('rosters')
     .where('league_id', req.body.league_id).del()
-    .then(() => 
+    .then(() =>
     {
       return knex.withSchema('fantasy').table('rosters').insert(dataToInput)
     })
@@ -60,18 +60,18 @@ const enterDraftToDb = (req, res) =>
 const getStandings = (league_id, res, type) =>{
 
 
-  var str = `select x.*, y.owner_id, y.owner_name from 
-  (select a.team_id, a.key, a.city, a.name, a.logo_url, 
+  var str = `select x.*, y.owner_id, y.owner_name from
+  (select a.team_id, a.key, a.city, a.name, a.logo_url,
     c.conference_id, c.display_name, d.sport_name, b.wins,
-     b.losses, b.ties, e.reg_points from 
-  sports.team_info a, sports.standings b, sports.conferences c, 
+     b.losses, b.ties, e.reg_points from
+  sports.team_info a, sports.standings b, sports.conferences c,
   sports.leagues d, fantasy.team_points e
-  where a.team_id = b.team_id and c.conference_id = a.conference_id 
+  where a.team_id = b.team_id and c.conference_id = a.conference_id
   and a.sport_id = d.sport_id and a.team_id = e.team_id and e.league_id = '` + league_id + '\'' +
   `) x
   left outer join
-  (select f.team_id, g.owner_id, g.owner_name from 
-  fantasy.rosters f, fantasy.owners g 
+  (select f.team_id, g.owner_id, g.owner_name from
+  fantasy.rosters f, fantasy.owners g
   where f.owner_id = g.owner_id and f.league_id ='` + league_id + '\') y on x.team_id = y.team_id'
 
 
@@ -81,12 +81,12 @@ const getStandings = (league_id, res, type) =>{
   return knex.raw(str)
     .then(result =>
     {
-      if (result.rows.length > 0) 
+      if (result.rows.length > 0)
       {
         var teams = []
         result.rows.map(team => teams.push(
           {
-            key:team.key, 
+            key:team.key,
             team_id:team.team_id,
             team_name:team.sport_name !== 'EPL' ? team.city + ' ' + team.name : team.name,
             sport:team.sport_name,
@@ -98,7 +98,7 @@ const getStandings = (league_id, res, type) =>{
             logo_url:team.logo_url,
             owner_id:team.owner_id ? team.owner_id : 'N/A',
             owner_name:team.owner_name ? team.owner_name : 'N/A',
-            points: Number.parseFloat(team.reg_points)  
+            points: Number.parseFloat(team.reg_points)
           }))
         // teams.sort(function(a,b)
         // { return a.team_name.toLowerCase() < b.team_name.toLowerCase() ? -1 : 1})
@@ -118,16 +118,16 @@ const getStandings = (league_id, res, type) =>{
 
 const getSchedule = (league_id, date, res) => {
   const dayCount = fantasyHelpers.getDayCountStr(date)
-  var str =  `select a.*, c.* from sports.schedule a, fantasy.sports b, sports.results c where 
+  var str =  `select a.*, c.* from sports.schedule a, fantasy.sports b, sports.results c where
           b.league_id = '` + league_id + `' and a.sport_id = b.sport_id and a.global_game_id = c.global_game_id
           and day_count = ` + dayCount
   return knex.raw(str)
     .then(result =>
     {
-      if (result.rows.length > 0) 
+      if (result.rows.length > 0)
       {
         const scheduleRows = []
-        result.rows.map(row => 
+        result.rows.map(row =>
         {
           scheduleRows.push({
             global_game_id:row.global_game_id,
@@ -167,14 +167,14 @@ const getSportLeagues = (league_id, res, type) =>{
   return knex.raw(str)
     .then(result =>
     {
-      if (result.rows.length > 0) 
+      if (result.rows.length > 0)
       {
         const leaguesToConferenceMap = {}
-        result.rows.map(row => 
+        result.rows.map(row =>
         {
           if(!leaguesToConferenceMap[row.sport_id])
           {
-            leaguesToConferenceMap[row.sport_id] = 
+            leaguesToConferenceMap[row.sport_id] =
             {sport_id:row.sport_id, sport:row.sport_name, conf_strict:row.conf_strict, num:row.num_of_conf, conferences:[]}
           }
           leaguesToConferenceMap[row.sport_id].conferences.push({conference_id:row.conference_id, conference:row.display_name, num:row.num_in_conf})
@@ -194,26 +194,26 @@ const getSportLeagues = (league_id, res, type) =>{
 
 const getOneTeam  = async(league_id, team_id, res) =>{
 
-  const str1 = `select a.*, b.wins, b.losses, b.ties 
+  const str1 = `select a.*, b.wins, b.losses, b.ties
    from sports.team_info a, sports.standings b
    where a.team_id = b.team_id and a.team_id = ` + team_id
 
-  const str2 = `select * 
+  const str2 = `select *
     from (
-      select * 
-      from fantasy.team_points a 
+      select *
+      from fantasy.team_points a
       where a.team_id = `+ team_id +
-      ' and league_id = \'' + league_id + '\') x' + 
+      ' and league_id = \'' + league_id + '\') x' +
     ` left outer join (
-      select c.team_id, d.owner_name, d.owner_id, c.overall_pick 
-      from fantasy.rosters c, fantasy.owners d 
+      select c.team_id, d.owner_name, d.owner_id, c.overall_pick
+      from fantasy.rosters c, fantasy.owners d
       where c.owner_id = d.owner_id and c.team_id = ` + team_id +
-      ' and c.league_id = \'' + league_id + `') y 
+      ' and c.league_id = \'' + league_id + `') y
     on x.team_id = y.team_id `
 
-  const str3 = `select * 
-    from sports.schedule a, sports.results b 
-    where a.global_game_id = b.global_game_id 
+  const str3 = `select *
+    from sports.schedule a, sports.results b
+    where a.global_game_id = b.global_game_id
     and (a.home_team_id = `+ team_id + ' or a.away_team_id = ' + team_id + ' ) order by day_count'
   let teamInfo = await knex.raw(str1)
   let fantasyInfo = await knex.raw(str2)
@@ -243,7 +243,7 @@ const getOneTeam  = async(league_id, team_id, res) =>{
           global_game_id:row.global_game_id,
           home_team_id:row.home_team_id,
           away_team_id:row.away_team_id,
-          date_time:row.date_time,
+          date_time:fantasyHelpers.formatGameDate(new Date(row.date_time)),
           sport_id:row.sport_id,
           time:fantasyHelpers.formatAMPM(new Date(row.date_time)),
           home_team_score:row.home_team_score,
@@ -266,7 +266,7 @@ const getOneTeam  = async(league_id, team_id, res) =>{
           global_game_id:row.global_game_id,
           home_team_id:row.home_team_id,
           away_team_id:row.away_team_id,
-          date_time:row.date_time,
+          date_time:fantasyHelpers.formatGameDate(new Date(row.date_time)),
           sport_id:row.sport_id,
           time:fantasyHelpers.formatAMPM(new Date(row.date_time)),
           home_team_score:row.home_team_score,
@@ -283,8 +283,7 @@ const getOneTeam  = async(league_id, team_id, res) =>{
   oneTeam.lastFive = lastFive
 
   return handleReduxResponse(res,200, { type : C.GET_ONE_TEAM, oneTeam : oneTeam })
-   
+
 }
 
 module.exports = router
-

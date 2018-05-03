@@ -7,13 +7,13 @@ import {
 } from 'material-ui/Table'
 
 import { handleOpenDialog } from '../../actions/dialog-actions.js'
+import { clickedOneTeam } from '../../actions/sport-actions.js'
 
 class DerbyBody extends React.Component {
 
   render() {
-    const {rows, columns, handleOpenDialog} = this.props
+    const { rows, columns, handleOpenDialog, clickedOneTeam, activeLeague } = this.props
 
-    console.log('HELLO', handleOpenDialog)
     return(
 
       <TableBody>
@@ -33,7 +33,7 @@ class DerbyBody extends React.Component {
                 //   </div>
                 // }
               >
-                {i+1+'hiii'} :)
+                {i+1}
               </TableCell>
               {columns.filter(
                 header => header.id !=='order').map(
@@ -47,11 +47,19 @@ class DerbyBody extends React.Component {
                           alt="Basketball"
                           width="40"
                           height="40"
-                          onClick={() => handleOpenDialog(n)}
+                          onClick={() => {
+                            handleOpenDialog(n)
+                            clickedOneTeam(n.team_id, activeLeague.league_id)
+                          }}
                         />
                         // : n[header.id]
                         : header.id == 'team_name' && n['team_name'] !== 'none' ?
-                          <div onClick={handleOpenDialog}>
+                          <div
+                            onClick={() => {
+                              handleOpenDialog(n)
+                              clickedOneTeam(n.team_id, activeLeague.league_id)
+                            }}
+                          >
                             {n[header.id]}
                           </div>
                           : n[header.id]
@@ -63,6 +71,12 @@ class DerbyBody extends React.Component {
           )
         })}
       </TableBody>
-    )}}
+    )
+  }
+}
 
-export default connect(null, { handleOpenDialog })(DerbyBody)
+const mapStateToProps = state => ({
+  activeLeague: state.activeLeague,
+})
+
+export default connect(mapStateToProps, { handleOpenDialog, clickedOneTeam })(DerbyBody)

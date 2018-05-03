@@ -1,9 +1,9 @@
 import React from 'react'
 import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Table'
 
-const DialogTable = ({ data }) =>
+const DialogTable = ({ data, lastFive, teams }) =>
   <Table>
-    <TableHead style={{ backgroundColor: 'green' }}>
+    <TableHead style={{ backgroundColor: '#229246' }}>
       <TableRow>
         <TableCell style={{ color: 'white' }}>Date</TableCell>
         <TableCell style={{ color: 'white' }}>Opponent</TableCell>

@@ -33,9 +33,6 @@ class MainLeagueTeams extends React.Component {
       <div>
         <TeamsDialog />
         <DerbyTableContainer
-
-          openDialog={this.props.openDialog}
-
           title='All Teams'
           usePagination={true}
           myRows={myTeams}

@@ -8,11 +8,15 @@ const initialState = {
 export default (state = initialState, action = { type: null }) => {
   switch (action.type) {
   case C.OPEN_DIALOG:
-    console.log('YOU DID OPEN_DIALOG', state)
-    return { open: true }
+    return {
+      open: true,
+      currTeam: action.payload,
+    }
   case C.CLOSE_DIALOG:
-    console.log('YOU DID CLOSE_DIALOG', state)
-    return { open: false }
+    return {
+      open: false,
+      // currTeam: action.payload,
+    }
   default:
     return state
   }
