@@ -67,6 +67,22 @@ const draftRoom = (io, socket) =>
       draftManagers[roomId].StartAgain(startTime*1000)
     }
   })
+
+  socket.in(roomId).on('timeout', (amountOfTime) => {
+    
+    if(draftIsGood())
+    {
+      draftManagers[roomId].Timeout(amountOfTime)
+    }
+  })
+
+  socket.in(roomId).on('timein', () => {
+    
+    if(draftIsGood())
+    {
+      draftManagers[roomId].TimeIn()
+    }
+  })
   
   socket.in(roomId).on('queue', (data) => {
     if(draftIsGood())

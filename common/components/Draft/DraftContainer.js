@@ -55,14 +55,14 @@ class DraftContainer extends React.Component {
       startTime:Math.round((new Date(this.props.activeLeague.draft_start_time)-new Date())/1000),
       snackbarOpen:false,
       snackbarMessage:'',
-      linesToShow:20,
       myDraftPosition:-1,
       ownerMap:{},
       sockets:['whoshere', 'people','message','start','reset',
-        'startTick','draftTick', 'draftInfo'],
+        'startTick','draftTick', 'draftInfo', 'modechange'],
       functions : [this.handleWhosHere, this.handlePeople,this.handleMessage,
         this.handleStart, this.handleReset,
-        this.handleStartTick, this.handleDraftTick, this.handleDraftInfo]
+        this.handleStartTick, this.handleDraftTick, this.handleDraftInfo,
+        this.handleModeChange]
     }
   }
 
@@ -160,6 +160,10 @@ class DraftContainer extends React.Component {
     }
   }
 
+  handleModeChange = (mode) => {
+    this.props.onSetDraftMode(mode)
+  }
+
   handleDraftTick = (counter) => {
 
     this.setState({countdownTime: counter})
@@ -243,6 +247,14 @@ class DraftContainer extends React.Component {
   onStartTimeChange = event => {
     this.socket.emit('startTime',event.target.value)
   }
+
+  onTimeout = () => {
+    this.socket.emit('timeout')
+  }
+
+  onTimeIn = () => {
+    this.socket.emit('timein')
+  }
   
   onUpdateLinesToShow = event => {
     this.setState({linesToShow:event.target.value})
@@ -264,7 +276,7 @@ class DraftContainer extends React.Component {
   render() {
     const { classes, activeLeague ,draft, teams } = this.props
     const { preDraft, countdownTime, startTime,
-      snackbarOpen,snackbarMessage, ownerMap, linesToShow} = this.state
+      snackbarOpen,snackbarMessage, ownerMap} = this.state
 
     const currDraftPick = draft.pick ? draft.pick : 0
 
@@ -321,18 +333,12 @@ class DraftContainer extends React.Component {
                           mode={draft.mode}
                           myTurn={myTurn}/>
                       </Grid>
-                      <form  noValidate>
-                        <TextField
-                          id="number1"
-                          label="Rows Tow Show"
-                          onChange={this.onUpdateLinesToShow}
-                          type="number"
-                          defaultValue="20"
-                          InputLabelProps={{
-                            shrink: true,
-                          }}
-                        />
-                      </form>
+                      <Button onClick={draft.mode === 'timeout' ? 
+                        this.onTimeIn : 
+                        draft.mode ==='live' ? 
+                          this.onTimeout : null}>
+                        {draft.mode === 'timeout' ? 'Continue' : 'Pause'}
+                      </Button>
                       <form  noValidate>
                         <TextField
                           id="number"
@@ -385,11 +391,11 @@ class DraftContainer extends React.Component {
                         </div>
                       </Grid>
                       <Grid item xs={12} style={{backgroundColor:'white'}}>
-                      <Typography key={'head'} variant='subheading' 
-                            style={{fontFamily:'HorsebackSlab', color:'white',
-                              paddingTop:15, paddingBottom:15, marginLeft:10,display:'inline-block'}}>
-                              Chat
-                      </Typography>
+                        <Typography key={'head'} variant='subheading' 
+                          style={{fontFamily:'HorsebackSlab', color:'white',
+                            paddingTop:15, paddingBottom:15, marginLeft:10,display:'inline-block'}}>
+                                Chat
+                        </Typography>
                       </Grid>
                     </Grid>
                   </Grid>

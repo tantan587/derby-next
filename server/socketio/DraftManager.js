@@ -16,7 +16,9 @@ function DraftManager(io, roomId) {
     that.availableTeams=  resp.teams
     that.allTeams = Array.from(resp.teams)
     that.time = new Date(resp.start_time)- new Date()
-    that.owners = new Owners(resp.owners, resp.queueByOwner)
+    that.owners = new Owners()
+    that.owners.CreateOwners(resp.owners, resp.queueByOwner, roomId)
+    that.counter = 0
   }
 
   this.DraftIsUp = () => {
@@ -29,7 +31,7 @@ function DraftManager(io, roomId) {
     that.availableTeams = Array.from(that.allTeams)
     console.log(roomId, 'is online')
     console.log(io.sockets.adapter.rooms)
-    whosHere()
+    emitWhosHere()
     waitToStartDraft()
   }
 
@@ -78,6 +80,25 @@ function DraftManager(io, roomId) {
     that.owners.UpdateQueue(socketId, queue)
   }
 
+  this.Timeout = (amountOfTime) =>
+  {
+    console.log('in timeout')
+    clearTimers()
+    socketIoHelpers.InsertDraftAction(roomId, 'server', 'STATE', {'mode':'timeout'})
+    emitModeChange('timeout')
+    if (amountOfTime) 
+    {
+      that.timer = setTimeout(() => {
+        timeIn()
+      }, 1000*amountOfTime)
+    }
+  }
+
+  this.TimeIn = () =>
+  {
+    timeIn()
+  }
+
   const waitToStartDraft = () => {
     draftIsUp = true
     let counter = 0
@@ -85,8 +106,9 @@ function DraftManager(io, roomId) {
     that.timer = setInterval(() => {
       if(that.time < counter){
         clearInterval(that.timer)
-        makeDraftLive()
-        waitToAutoDraft()
+        emitDraftLive()
+        socketIoHelpers.InsertDraftAction(roomId, 'server', 'STATE', {'mode':'live'})
+        waitToAutoDraft(timeToDraft)
         return
       }
       counter += 1000
@@ -97,21 +119,21 @@ function DraftManager(io, roomId) {
     }, 1000)
   }
 
-  const waitToAutoDraft = () => {
-    let counter = timeToDraft
+  const waitToAutoDraft = (timeOnClock) => {
+    that.counter = timeOnClock
     clearTimers()
-    emitDraftTick(counter)
+    emitDraftTick()
   
     that.timer = setInterval(() => {
-      if(counter === 0){
+      if(that.counter === 0){
         clearInterval(that.timer)
         const ownerId = getCurrentOwnerId()
         const teamId = getAutoDraftTeam(ownerId)
         draftTeam(ownerId,teamId)
         return
       }
-      counter -= 1
-      emitDraftTick(counter)
+      that.counter -= 1
+      emitDraftTick()
       console.log('counting in autodraft')
       
     }, 1000)
@@ -125,13 +147,16 @@ function DraftManager(io, roomId) {
       console.log(teamId,' removed')
       that.owners.RemoveFromAllQueues(teamId)
     }
+    let draftResult = that.owners.Draft(ownerId,teamId)
     const localPick = getThenIncrementPick()
-    console.log(localPick, teamId, ownerId)
+
+    console.log(draftResult, localPick, teamId, ownerId)
+
     socketIoHelpers.InsertDraftAction(
       roomId, ownerId, 'PICK', {pick:localPick, teamId:teamId},clientTs)
 
     io.in(roomId).emit('draftInfo',{teamId:teamId, ownerId:ownerId})
-    waitToAutoDraft()
+    waitToAutoDraft(timeToDraft)
   }
 
   const getThenIncrementPick = ()  => {
@@ -153,23 +178,33 @@ function DraftManager(io, roomId) {
     clearTimeout(that.timer)
   }
 
-  ///SOCKET IO FUNCTIONS
-  const makeDraftLive = () => {
-    io.in(roomId).emit('start')
+  const timeIn = () => {
     socketIoHelpers.InsertDraftAction(roomId, 'server', 'STATE', {'mode':'live'})
+    emitModeChange('live')
+    waitToAutoDraft(that.counter)
+  }
+
+  ///SOCKET IO FUNCTIONS
+  const emitDraftLive = () => {
+    io.in(roomId).emit('start')
   }
 
   const emitStartTick = () => {
     io.in(roomId).emit('startTick')
   }
 
-  const emitDraftTick = (counter) => {
-    io.in(roomId).emit('draftTick', counter)
+  const emitDraftTick = () => {
+    io.in(roomId).emit('draftTick', that.counter)
   }
 
-  const whosHere = () => {
+  const emitWhosHere = () => {
     io.in(roomId).emit('whoshere')
   }
+
+  const emitModeChange = (mode) => {
+    io.in(roomId).emit('modechange', mode)
+  }
+
   ////
 }
 

@@ -1,4 +1,4 @@
-function Owner(ownerId) {
+function Owner(ownerId, draftRules) {
   
   this.ownerId = ownerId
   var queue = []
@@ -21,10 +21,26 @@ function Owner(ownerId) {
       queue.splice(index, 1)
     }
   }
+
+  this.TryDraft = (sportId,confId,teamId) =>{
+    let sport = draftRules[sportId]
+    let conf = sport.conferences[confId]
+    if(sport.total < sport.max && 
+      conf.total < conf.max)
+    {
+      teams.push(teamId)
+      sport.total++
+      conf.total++
+      return true
+    }
+    return false
+  }
+
   this.Joined = () =>
   {
     here = true
   }
+
 
   this.Left = () =>
   {

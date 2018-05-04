@@ -66,7 +66,7 @@ class DerbyTable extends React.Component {
     const sliceEnd = usePagination ? sliceStart + rowsPerPage : localRows.length
     return (
       //maxWidth: 1000, 
-      <Table style={{ overflowX: 'auto', minWidth: 600,width:'94%', marginLeft:'3%'}}>
+      <Table style={{minWidth: 600,width:'94%', marginLeft:'3%'}}>
         <DerbyHeader
           order={order}
           orderBy={orderBy}

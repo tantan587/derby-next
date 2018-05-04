@@ -98,7 +98,7 @@ class TeamDisplay extends React.Component {
         x[draft.filterInfo['search'].key].toLowerCase().includes(draft.filterInfo['search'].value.toLowerCase()))
 
     return (
-      <div style={{maxHeight:700, overflow:'auto'}}>
+      <div>
         <DerbyTableContainer
           passUpFilterInfo={this.passUpFilterInfo}
           usePagination={true}

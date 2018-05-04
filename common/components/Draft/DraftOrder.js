@@ -79,9 +79,6 @@ class DraftOrder extends React.Component {
     owners.map(x => ownerDraftOrder[x.draft_position]  = x)
 
     const ownerList = []
-
-    const showOnTheClock = true // mode === 'live' && ownerList.length > 0
-
     draftOrder.map(x => {
       if(x.pick >= currPick)
         ownerList.push(
@@ -91,6 +88,7 @@ class DraftOrder extends React.Component {
             overallPick:x.pick})        
     })
     const lastRound = ownerList.length > 0 ? ownerList[ownerList.length - 1].round : -1
+    const showOnTheClock = mode === 'live' && ownerList.length > 0
     return (
       <div >
         <Divider style={{backgroundColor:'white'}}/>
@@ -109,7 +107,7 @@ class DraftOrder extends React.Component {
             </Typography> 
             <Typography variant='title' 
               className={classes.onTheClock}>
-              {myOwnerName ?ownerList[0].owner_name +' (you)':ownerList[0].owner_name}
+              {myOwnerName === ownerList[0].owner_name ? ownerList[0].owner_name +' (you)':ownerList[0].owner_name}
             </Typography>
           </div> : <div/>}
         <Divider style={{backgroundColor:'white'}}/>  

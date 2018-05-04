@@ -17,7 +17,7 @@ router.post('/enterdraft', (req, res, next)  => {
 const getDraft = (room_id, owner_id) =>
 {
   const strTeams = `select b.team_id from draft.settings a, fantasy.team_points b
-  where a.league_id = b.league_id and a.room_id = '` + room_id + '\''
+where a.league_id = b.league_id and a.room_id = '` + room_id + '\''
 
   const strOwners = `select b.owner_id from draft.settings a, fantasy.owners b
   where a.league_id = b.league_id and a.room_id = '` + room_id + '\''
@@ -51,6 +51,7 @@ const assembleDraft = (teams,owners, results, my_owner_id) =>
   let draftedTeams = []
   let queue = []
   owners.map(x => ownersMap[x.owner_id] = [])
+  let allTeams = teams.map(x => x.team_id)
   let availableTeams = teams.map(x => x.team_id)
   results.forEach(element => {
     switch (element.action_type){
@@ -82,6 +83,7 @@ const assembleDraft = (teams,owners, results, my_owner_id) =>
     pick:pick,
     availableTeams:availableTeams,
     draftedTeams:draftedTeams,
+    allTeams:allTeams,
     owners:ownersMap,
     queue:queue}
 }

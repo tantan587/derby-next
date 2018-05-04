@@ -6,6 +6,7 @@ export default (state = {}, action={ type: null }) => {
     return {
       mode : action.mode,
       pick : action.pick,
+      allTeams:action.allTeams,
       availableTeams: action.availableTeams,
       draftedTeams:action.draftedTeams,
       owners:action.owners,
@@ -35,7 +36,7 @@ export default (state = {}, action={ type: null }) => {
     )
     return {
       ...state,
-      availableTeams: state.availableTeams.concat(state.draftedTeams),
+      availableTeams: state.allTeams,
       draftedTeams:[],
       mode : 'live',
       pick : 0,

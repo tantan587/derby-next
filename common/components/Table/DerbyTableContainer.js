@@ -53,11 +53,13 @@ class DerbyTableContainer extends React.Component {
           filters={filters ? filters : []}/>
         <br/>
         <br/>
-        <DerbyTable 
-          usePagination={usePagination}
-          rows={myRows}
-          headers={myHeaders}
-          orderInd={orderInd}/>
+        <div style={{ width:'100%',overflowX:'auto', overflowY:'scroll', maxHeight:700}}>
+          <DerbyTable 
+            usePagination={usePagination}
+            rows={myRows}
+            headers={myHeaders}
+            orderInd={orderInd}/>
+        </div>
         <br/>
         <br/>
       </div>
