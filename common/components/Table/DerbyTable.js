@@ -13,7 +13,7 @@ class DerbyTable extends React.Component {
       orderBy: '',
       orderByDisplay:'',
       page: 0,
-      rowsPerPage: 20,
+      rowsPerPage: 10,
     }
   }
   
@@ -36,9 +36,8 @@ class DerbyTable extends React.Component {
   handleChangeRowsPerPage = event => {
     this.setState({ rowsPerPage: event.target.value })
   };
-
   render() {
-    const { usePagination, rows, headers } = this.props
+    const { usePagination, rows, headers, orderInd } = this.props
     const {order, orderBy, orderByDisplay, rowsPerPage, page} = this.state
 
     let localRows = orderBy === '' ? rows : rows.sort((a, b) =>  
@@ -53,27 +52,30 @@ class DerbyTable extends React.Component {
     localRows = localRows ? localRows : [] 
 
     const myHeaders = headers
-    
     const localColumns = 
     myHeaders.map(header => ({
       id: header.key, 
       sortId: header.sortId ? header.sortId : header.key,
-      numeric: localRows.length > 0 ? !isNaN(localRows[0][header.key]) : false, 
-      disablePadding: false,
-      label: header.label
+      numeric: false,//localRows.length > 0 && !header.button ? !isNaN(localRows[0][header.key]) : false, 
+      disablePadding: true,
+      label: header.label,
+      button:header.button
     }))
   
     const sliceStart = usePagination ?  page * rowsPerPage : 0
     const sliceEnd = usePagination ? sliceStart + rowsPerPage : localRows.length
     return (
-      <Table style={{minWidth: 600,maxWidth: 1000,  overflowX: 'auto', width:'94%', marginLeft:'3%'}}>
+      //maxWidth: 1000, 
+      <Table style={{minWidth: 600,width:'94%', marginLeft:'3%'}}>
         <DerbyHeader
           order={order}
           orderBy={orderBy}
           orderByDisplay={orderByDisplay}
           onRequestSort={this.handleRequestSort}
-          columnData={localColumns}/>
+          columnData={localColumns}
+          orderInd={orderInd}/>
         <DerbyBody
+          orderInd={orderInd}
           rows={localRows.slice(sliceStart,sliceEnd)}
           columns={localColumns}/>
         {[1].map((x) => {if (usePagination)

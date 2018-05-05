@@ -1,8 +1,8 @@
 import React from 'react'
 import { withStyles } from 'material-ui/styles'
-import Paper from 'material-ui/Paper'
 import DerbyTable from './DerbyTable'
-import DerbyTitle from './DerbyTitle'
+import Title from '../Navigation/Title'
+import DerbyTableFilters from './DerbyTableFilters'
 
 
 
@@ -31,24 +31,35 @@ class DerbyTableContainer extends React.Component {
   updateMyRows = (rows) =>
   {
     this.setState({myRows:rows})
+    if(this.props.callerNeedsTeamIds)
+    {
+      this.props.callerNeedsTeamIds(rows.map(x => x.team_id))
+    }
   }
-  render() {
-    const { usePagination, myHeaders, filters } = this.props
-    const {myRows, allRows} = this.state
 
+  render() {
+    const { usePagination, myHeaders, filters, passUpFilterInfo, orderInd } = this.props
+    const {myRows, allRows} = this.state
     return (
       <div>
-        <DerbyTitle
-          title={this.props.title}
+        {this.props.title 
+          ? <Title color='white' backgroundColor='black' title={this.props.title}/>
+          : <div/>
+        }
+        <DerbyTableFilters
+          passUpFilterInfo={passUpFilterInfo}
           updateMyRows={this.updateMyRows}
           rows={allRows}
           filters={filters ? filters : []}/>
         <br/>
         <br/>
-        <DerbyTable 
-          usePagination={usePagination}
-          rows={myRows}
-          headers={myHeaders}/>
+        <div style={{ width:'100%',overflowX:'auto', overflowY:'scroll', maxHeight:700}}>
+          <DerbyTable 
+            usePagination={usePagination}
+            rows={myRows}
+            headers={myHeaders}
+            orderInd={orderInd}/>
+        </div>
         <br/>
         <br/>
       </div>

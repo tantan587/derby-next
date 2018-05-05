@@ -6,10 +6,20 @@ import {
   TableSortLabel} from 'material-ui/Table'
 import Tooltip from 'material-ui/Tooltip'
 import { withStyles } from 'material-ui/styles'
+
 const styles = theme => ({
   header:{
-    backgroundColor:theme.palette.secondary.A700,
-    color:'white'},
+    backgroundColor:'#48311A',
+    color:'white',
+  },
+  deeppadding :
+  {
+    padding: '5px 20px 5px 5px'
+  },
+  deepAlign :
+  {
+    textAlign: 'center'
+  },
   deepheader : {
     color:'white',
     '&:hover': {
@@ -29,35 +39,38 @@ class DerbyHeader extends React.Component {
     };
   
     render() {
-      const { order, orderBy, orderByDisplay, columnData, classes } = this.props
-  
+      const { order, orderBy, orderByDisplay, columnData, orderInd,classes } = this.props
       return (
         <TableHead className={classes.header}>
-          <TableRow>
-            <TableCell/>
-            {columnData.filter(col => col.id !== 'order').map(column => {
+          <TableRow style={{overflow: 'auto'}}>
+            {[0].map(() => {if (orderInd) return <TableCell key='order' classes={{root: classes.deeppadding}}/>})}
+            {columnData.filter(col => col.id !== 'order').map((column,i) => {
               return (
-                <TableCell 
-                  key={column.id}
-                  numeric={column.numeric}
-                  padding={column.disablePadding ? 'none' : 'default'}
-                  sortDirection={orderBy === column.id ? order : false}
-                >
-                  <Tooltip 
-                    title="Sort"
-                    placement={column.numeric ? 'bottom-end' : 'bottom-start'}
-                    enterDelay={300}
+                column.label ?
+                  <TableCell 
+                    key={i}
+                    numeric={column.numeric}
+                    padding={column.disablePadding ? 'none' : 'default'}
+                    sortDirection={orderBy === column.id ? order : false}
+                    classes={{root: classes.deepAlign}}
                   >
-                    <TableSortLabel 
-                      classes={{root: classes.deepheader}}
-                      active={orderByDisplay === column.id}
-                      direction={order}
-                      onClick={this.createSortHandler(column.sortId, column.id)}
+                    <Tooltip 
+                      title="Sort"
+                      placement={column.numeric ? 'bottom-end' : 'bottom-start'}
+                      enterDelay={300}
                     >
-                      {column.label}
-                    </TableSortLabel>
-                  </Tooltip>
-                </TableCell>
+                      <TableSortLabel 
+                        classes={{root: classes.deepheader}}
+                        active={orderByDisplay === column.id}
+                        direction={order}
+                        onClick={this.createSortHandler(column.sortId, column.id)}
+                      >
+                        {column.label}
+                      </TableSortLabel>
+                    </Tooltip>
+                  </TableCell> 
+                  : <TableCell 
+                    key={i}/>
               )
             }, this)}
           </TableRow>

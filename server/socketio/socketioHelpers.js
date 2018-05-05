@@ -10,8 +10,7 @@ const GetActiveDrafts = async () =>
   return resp.rows.map(x =>x.room_id)
 }
 
-const GetDraftInfo = async (room_id) =>
-{
+const GetDraftInfo = async (room_id) =>{
   const knexStr1 = 'select (select sum(b.number_teams) from draft.settings a, fantasy.sports b where room_id = \'' + room_id +
    '\' and a.league_id = b.league_id group by a.league_id) as total_teams, * from  draft.settings where room_id = \'' + room_id + '\''
 
@@ -56,8 +55,8 @@ const InsertDraftAction = (roomId, initiator, actionType, action, client_ts ='' 
     })
     .then( () => {return} )
 }
-const RestartDraft = (roomId) =>
-{
+
+const RestartDraft = (roomId) =>{
   return knex.transaction(function (t) {
     return knex.withSchema('draft').table('results')
       .transacting(t)
@@ -78,5 +77,5 @@ module.exports = {
   GetActiveDrafts,
   GetDraftInfo,
   InsertDraftAction,
-  RestartDraft
+  RestartDraft,
 }

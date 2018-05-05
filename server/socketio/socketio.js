@@ -67,15 +67,44 @@ const draftRoom = (io, socket) =>
       draftManagers[roomId].StartAgain(startTime*1000)
     }
   })
+
+  socket.in(roomId).on('timeout', (amountOfTime) => {
+    
+    if(draftIsGood())
+    {
+      draftManagers[roomId].Timeout(amountOfTime)
+    }
+  })
+
+  socket.in(roomId).on('timein', () => {
+    
+    if(draftIsGood())
+    {
+      draftManagers[roomId].TimeIn()
+    }
+  })
   
   socket.in(roomId).on('queue', (data) => {
     if(draftIsGood())
     {
-      draftManagers[roomId].UpdateQueue(socket.id, data.queue)
+      draftManagers[roomId].SetQueue(socket.id, data.queue)
     }
     socketIoHelpers.InsertDraftAction(
       roomId, data.ownerId, 'QUEUE', {queue:data.queue})
   
+  })
+
+  socket.in(roomId).on('addqueue', (data) => {
+    if(draftIsGood())
+    {
+      draftManagers[roomId].TryUpdateQueue( data)
+    }
+    else{
+      const distinctQueue = [...new Set(data.queue.concat([data.teamId]))]
+      socketIoHelpers.InsertDraftAction(
+        roomId, data.ownerId, 'QUEUE', {queue:distinctQueue})
+      io.in(roomId).emit('addqueueresp', {ownerId:data.ownerId, queue:distinctQueue, success:true})
+    }  
   })
 
   socket.in(roomId).on('draft', (data) => {

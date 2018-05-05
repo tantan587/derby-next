@@ -14,7 +14,9 @@ import hsl from 'hsl-to-hex'
 //https://www.materialpalette.com/green/brown
 //https://www.npmjs.com/package/material-palette
 
-const hslDerbyGreen = materialpalette({ h: 139, s: 100, l: 29 })
+//#269349
+//'#EBAB38',
+const hslDerbyGreen = materialpalette({ h: 139, s: 59, l: 36 })
 let derbyGreen = {}
 for (const key of Object.keys(hslDerbyGreen)) {
   derbyGreen[key] = hsl(hslDerbyGreen[key].h, hslDerbyGreen[key].s, hslDerbyGreen[key].l)

@@ -1,31 +1,53 @@
 const Owner = require('./Owner')
+const draftHelpers = require('../../routes/helpers/draftHelpers')
 
-function Owners(ownerIds, queueByOwner) {
+function Owners() {
   
   var owners = {}
   var socketOwnerMap = {}
-  ownerIds.map(x => owners[x] = new Owner(x))
-  Object.keys(queueByOwner).map(x => 
-    owners[x].UpdateQueue(queueByOwner[x]))
+  var draftRules
+  var teamMap
+  
+  this.CreateOwners = async (ownerIds, queueByOwner, roomId, allTeams) =>
+  {
+    draftRules = await draftHelpers.GetDraftRules(roomId)
+    teamMap = await draftHelpers.GetTeamMap(roomId)
+    ownerIds.map(x => owners[x] = 
+      new Owner(x, JSON.parse(JSON.stringify(draftRules)), [].concat(allTeams), teamMap))
+    Object.keys(queueByOwner).map(x => 
+      owners[x].SetQueue(queueByOwner[x]))
+  }
 
   this.GetOwnerIdFromSocketId = (socketId) => {
     return socketOwnerMap[socketId]
   }
 
-  this.UpdateQueue = (socketId, newQueue) =>
-  {
-    console.log(socketOwnerMap)
-    owners[socketOwnerMap[socketId]].UpdateQueue(newQueue)
+  this.ResetEligible = () => {
+    Object.values(owners).forEach(owner => owner.ResetEligible())
   }
 
-  this.GetNextInQueue = (ownerId) =>
-  {
-    return owners[ownerId].GetNextInQueue()
+  this.SetQueue = (socketId, newQueue) =>{
+    owners[socketOwnerMap[socketId]].SetQueue(newQueue)
   }
 
-  this.RemoveFromAllQueues = (teamId) =>
+  this.TryUpdateQueue = (data) =>
   {
-    Object.values(owners).map(x => x.RemoveFromQueue(teamId))
+    return owners[data.ownerId].TryUpdateQueue(data.teamId)
+  }
+
+  this.GetNextTeam = (ownerId) =>
+  {
+    return owners[ownerId].GetNextTeam()
+  }
+
+  this.TryDraft = (ownerId, teamId) =>
+  {
+    return owners[ownerId].TryDraft(teamId)
+  }
+
+  this.RemoveTeam = (teamId) =>
+  {
+    Object.values(owners).map(x => x.RemoveTeam(teamId))
   }
 
   this.WhoIsInDraft = () =>

@@ -44,6 +44,15 @@ class DraftHeader extends React.Component {
         </div>
       )
     }
+    if (mode === 'timeout')
+    {
+      return (
+        <div>
+          <Typography variant='headline'> {league_name}</Typography>
+          <Typography variant='headline'>Timeout</Typography>
+        </div>
+      )
+    }
 
     if (mode === 'post')
     {

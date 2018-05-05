@@ -55,14 +55,14 @@ class DraftContainer extends React.Component {
       startTime:Math.round((new Date(this.props.activeLeague.draft_start_time)-new Date())/1000),
       snackbarOpen:false,
       snackbarMessage:'',
-      linesToShow:20,
       myDraftPosition:-1,
       ownerMap:{},
       sockets:['whoshere', 'people','message','start','reset',
-        'startTick','draftTick', 'draftInfo'],
+        'startTick','draftTick', 'draftInfo', 'modechange', 'addqueueresp'],
       functions : [this.handleWhosHere, this.handlePeople,this.handleMessage,
         this.handleStart, this.handleReset,
-        this.handleStartTick, this.handleDraftTick, this.handleDraftInfo]
+        this.handleStartTick, this.handleDraftTick, this.handleDraftInfo,
+        this.handleModeChange, this.handleAddQueueResponse]
     }
   }
 
@@ -160,6 +160,10 @@ class DraftContainer extends React.Component {
     }
   }
 
+  handleModeChange = (mode) => {
+    this.props.onSetDraftMode(mode)
+  }
+
   handleDraftTick = (counter) => {
 
     this.setState({countdownTime: counter})
@@ -183,26 +187,27 @@ class DraftContainer extends React.Component {
   }
 
   handleDraftInfo = (data) => {
-    console.log(data)
+    const myOwnerId = this.props.activeLeague.my_owner_id
+    const thisIsMe = myOwnerId === data.ownerId
     if(data)
     {
       let queue =  this.props.draft.queue
       const index =queue.indexOf(data.teamId)
-      if(index > -1)
+      if(index > -1 && !thisIsMe)
       {
         queue.splice(index, 1)
         this.socket.emit('queue',
-          {queue:queue, ownerId:this.props.activeLeague.my_owner_id})
+          {queue:queue, ownerId:myOwnerId})
         this.props.onSetUpdateQueue(queue)
       }
     }
     const teamName =  this.props.teams[data.teamId].team_name
-    const snackbarMessage = this.props.activeLeague.my_owner_id === data.ownerId 
+    const snackbarMessage = thisIsMe
       ? 'You just drafted the ' + teamName
       : this.state.ownerMap[data.ownerId].owner_name + ' just drafted the ' + teamName
 
     this.setState({snackbarMessage:snackbarMessage, snackbarOpen:true})
-
+    data['thisIsMe'] = thisIsMe
     this.props.onDraftPick(data)      
   }
 
@@ -212,12 +217,25 @@ class DraftContainer extends React.Component {
     this.props.onSetUpdateQueue(newQueue)
   }
 
+  handleAddQueueResponse = (payload) =>{
+    console.log(payload)
+    if(payload.ownerId === this.props.activeLeague.my_owner_id)
+    {
+      if(payload.success)
+        this.props.onSetUpdateQueue(payload.queue)
+      else
+        this.setState({snackbarMessage:
+          'You can\'t queue the ' + this.props.teams[parseInt(payload.teamId)].team_name, 
+        snackbarOpen:true})
+    }
+  }
+
   onAddQueue = (item) => {
-    const newQueue = Array.from(this.props.draft.queue)
-    newQueue.push(item)
-    this.socket.emit('queue',
-      {queue:newQueue, ownerId:this.props.activeLeague.my_owner_id})
-    this.props.onSetUpdateQueue(newQueue)
+    if( !this.props.draft.queue.includes(item))
+      this.socket.emit('addqueue',
+        {teamId:item, 
+          ownerId:this.props.activeLeague.my_owner_id, 
+          queue:this.props.draft.queue})
   }
 
   // send messages to server and add them to the state
@@ -243,6 +261,14 @@ class DraftContainer extends React.Component {
   onStartTimeChange = event => {
     this.socket.emit('startTime',event.target.value)
   }
+
+  onTimeout = () => {
+    this.socket.emit('timeout')
+  }
+
+  onTimeIn = () => {
+    this.socket.emit('timein')
+  }
   
   onUpdateLinesToShow = event => {
     this.setState({linesToShow:event.target.value})
@@ -264,19 +290,13 @@ class DraftContainer extends React.Component {
   render() {
     const { classes, activeLeague ,draft, teams } = this.props
     const { preDraft, countdownTime, startTime,
-      snackbarOpen,snackbarMessage, ownerMap, linesToShow} = this.state
+      snackbarOpen,snackbarMessage, ownerMap} = this.state
 
     const currDraftPick = draft.pick ? draft.pick : 0
 
     const myTurn = this.state.myDraftPosition ===
       activeLeague.draftOrder[currDraftPick].ownerIndex
 
-    const dataForTeams = {}
-    dataForTeams.addToQueue=this.onAddQueue
-    dataForTeams.teams=teams
-    dataForTeams.availableTeams=draft.availableTeams
-    dataForTeams.queue=draft.queue
-    dataForTeams.linesToShow=linesToShow
     return (
 
       preDraft
@@ -285,7 +305,7 @@ class DraftContainer extends React.Component {
           <Typography variant="subheading" className={classes.text} gutterBottom>
             {'Some text explaining about the draft'}
           </Typography>
-          <Button raised className={classes.button} onClick={() => this.enterDraft()}>
+          <Button className={classes.button} onClick={() => this.enterDraft()}>
             Enter Draft
           </Button>
         </form>
@@ -316,6 +336,10 @@ class DraftContainer extends React.Component {
                   </Grid>
                   <Grid item xs={12} sm={8} style={{backgroundColor:'white'}}>
                     <Grid container direction={'column'}>
+                      <Grid item xs={12}>
+                        <CenteredTabs
+                          onAddQueue={this.onAddQueue}/>
+                      </Grid>
                       <Grid item xs={12} style={{backgroundColor:'white'}} >
                         <DraftHeader 
                           startTime={startTime} 
@@ -323,23 +347,12 @@ class DraftContainer extends React.Component {
                           mode={draft.mode}
                           myTurn={myTurn}/>
                       </Grid>
-                      <Grid item xs={12}>
-
-                        <CenteredTabs
-                          dataForTeams={dataForTeams}/>
-                      </Grid>
-                      <form  noValidate>
-                        <TextField
-                          id="number1"
-                          label="Rows Tow Show"
-                          onChange={this.onUpdateLinesToShow}
-                          type="number"
-                          defaultValue="20"
-                          InputLabelProps={{
-                            shrink: true,
-                          }}
-                        />
-                      </form>
+                      <Button onClick={draft.mode === 'timeout' ? 
+                        this.onTimeIn : 
+                        draft.mode ==='live' ? 
+                          this.onTimeout : null}>
+                        {draft.mode === 'timeout' ? 'Continue' : 'Pause'}
+                      </Button>
                       <form  noValidate>
                         <TextField
                           id="number"
@@ -377,20 +390,28 @@ class DraftContainer extends React.Component {
                           DRAFT #1 TEAM
                         </Button>
                       </Grid>
+                      <Divider style={{backgroundColor:'white'}}/>
                       <Grid item xs={12}>
-                        <Divider style={{backgroundColor:'white'}}/>
-                        <div style={{color:'white', display:'inline-block'}}>
-                          <ChatIcon/>
-                          {/* //viewBox="0 -10 24 34" style={{width:24,height:34}}/> */}
+                        <div style={{height:300, maxHeight:300}}>
+                          <div style={{color:'white', display:'inline-block'}}>
+                            <ChatIcon/>
+                            {/* //viewBox="0 -10 24 34" style={{width:24,height:34}}/> */}
+                          </div>
+                          <Typography key={'head'} variant='subheading' 
+                            style={{fontFamily:'HorsebackSlab', color:'white',
+                              paddingTop:15, paddingBottom:15, marginLeft:10,display:'inline-block'}}>
+                              Chat
+                          </Typography>
                         </div>
+                      </Grid>
+                      <Grid item xs={12} style={{backgroundColor:'white'}}>
                         <Typography key={'head'} variant='subheading' 
-                          style={{fontFamily:'HorsebackSlab', color:'white', 
+                          style={{fontFamily:'HorsebackSlab', color:'white',
                             paddingTop:15, paddingBottom:15, marginLeft:10,display:'inline-block'}}>
-                            Chat
+                                Chat
                         </Typography>
                       </Grid>
                     </Grid>
-                    
                   </Grid>
                 </Grid>
               </Paper>

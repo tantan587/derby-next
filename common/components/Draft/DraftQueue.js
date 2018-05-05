@@ -6,6 +6,7 @@ import Typography from 'material-ui/Typography'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 import IconButton from 'material-ui/IconButton'
 import CloseIcon from 'material-ui-icons/Close'
+import ReorderIcon from 'material-ui-icons/Reorder'
 import { Scrollbars } from 'react-custom-scrollbars'
 
 const styles = theme => ({
@@ -107,10 +108,18 @@ export default class DraftQueue extends React.Component {
                             {...provided.dragHandleProps}
                           >
                             <ListItem style={{display: 'flex'}}>
-                              <ListItemText style={{marginTop:-15, padding:0, marginLeft:-15}} disableTypography primary=
+                              <IconButton
+                                key="drag"
+                                aria-label="Close"
+                                style={{color:'white', marginTop:-14, padding:0, marginLeft:-35}}
+                              >
+                                <ReorderIcon style={{width:20,height:20}}/>
+                              </IconButton>
+                              <ListItemText style={{marginTop:-15, padding:0, marginLeft:-10}} disableTypography primary=
                                 {<Typography variant="body2" style={{ color: '#FFFFFF' }}>
-                                  {(i+1) + '. ' + teams[item].team_name}
+                                  {teams[item].team_name}
                                 </Typography>}  />
+
                               <IconButton
                                 key="close"
                                 aria-label="Close"

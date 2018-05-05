@@ -9,12 +9,11 @@ import Button from 'material-ui/Button'
 
 const styles = theme => ({
   button : {
-    marginTop:15,
     color:'black',
     borderRadius: '0px',
   },
   appBar : {
-    height:'55px', 
+    height:'50px', 
     boxShadow: ['none']}
 })
 
@@ -39,30 +38,35 @@ class TabFilter extends React.Component {
   }
 
   filterRows = (index) => {
-    const {rows, column, tabs, updateMyRows} = this.props
+    const {rows, column, tabs, updateMyRows, passUpFilterInfo} = this.props
 
     const filter = index === tabs.length ? 0 : tabs[index]
 
     const localRows = filter ? rows.filter(row => row[column] === filter) : rows
     updateMyRows(localRows)
+    if (passUpFilterInfo)
+    {
+      passUpFilterInfo({key:column, value:filter, type:'tab'})
+    }
+
   }
 
   render() {
-    const {tabs, allInd, classes} = this.props
+    const {tabs, allInd, classes, tabColors} = this.props
     const {index} = this.state
     let localTabs = allInd ? tabs.concat('All') : tabs
     
     return (
-      <div style={{width: '94%'}}>
+      <div style={{width: '96%'}}>
         <AppBar position="static" 
           className={classes.appBar}
-          style={{backgroundColor:'grey', marginLeft:'3%'}} >
+          style={{backgroundColor:tabColors.background, marginLeft:'2%'}} >
           <Toolbar>
             {localTabs.map((x,i) => 
               i === index ?
                 <Button key={i} 
                   className={classes.button} 
-                  style={{backgroundColor:'white', color:'green'}}
+                  style={{backgroundColor:tabColors.foreground, color:tabColors.text}}
                   onClick={this.handleTabClick(i)}
                 >{x}</Button> :
                 <Button key={i} 

@@ -35,11 +35,14 @@ class MainLeagueTeams extends React.Component {
         filters={[
           {type:'tab', 
             values :this.props.sportLeagues.map(x => x.sport),
-            column:'sport'},
+            column:'sport',
+            tabColors:{background:'#707070', foreground:'white', text:'#229246'}
+          },
           // {type:'checkbox', 
           //   values :this.props.sportLeagues.map(x => x.sport),
           //   column:'sport'}
         ]}
+        orderInd={true}
         myHeaders = {[
           {label: 'Logo', key: 'logo_url', sortId:'team_name'},
           {label: 'Team Name', key: 'team_name'},
