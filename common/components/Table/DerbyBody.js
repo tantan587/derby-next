@@ -6,6 +6,8 @@ import {
   TableBody} from 'material-ui/Table'
 import Button from 'material-ui/Button'
 import { withStyles } from 'material-ui/styles'
+import { handleOpenDialog } from '../../actions/dialog-actions.js'
+import { clickedOneTeam } from '../../actions/sport-actions.js'
 
 const styles = theme => ({
   deeppadding :
@@ -26,9 +28,9 @@ const styles = theme => ({
 
 class DerbyBody extends React.Component {
   
-  rowRender = (classes, columns,clickedOneTeam, activeLeague, n) =>
+  rowRender = (classes, columns, n) =>
   {
-    let ok = true
+    const {handleOpenDialog, clickedOneTeam, activeLeague} = this.props
     return (
       columns.filter(
         header => header.id !=='order').map(
@@ -47,17 +49,18 @@ class DerbyBody extends React.Component {
                     backgroundColor:header.button.backgroundColor, 
                     fontSize:10, height:22, width:100}}
                   onClick={() => header.button.onClick(n[header.id])}>{header.button.label}</Button>
-                // : n[header.id]
-                        : header.id == 'team_name' && n['team_name'] !== 'none' ?
-                          <div
-                            onClick={() => {
-                              handleOpenDialog(n)
-                              clickedOneTeam(n.team_id, activeLeague.league_id)
-                            }}
-                          >
-                            {n[header.id]}
-                          </div>
-                          : n[header.id]
+                
+                    : header.id == 'team_name' && n['team_name'] !== 'none' ?
+                      <div
+                        onClick={() => {
+                          handleOpenDialog(n)
+                          clickedOneTeam(n.team_id, activeLeague.league_id)
+                        }}
+                      >
+                        {n[header.id]}
+                      </div>
+                      : n[header.id]
+                  }
           </TableCell>
       )
     )
@@ -66,7 +69,7 @@ class DerbyBody extends React.Component {
   black
 
   render() {
-    const { rows, columns, handleOpenDialog, clickedOneTeam, activeLeague,orderInd, classes } = this.props
+    const { rows, columns, orderInd, classes } = this.props
     return(
 
       <TableBody>
@@ -88,7 +91,7 @@ class DerbyBody extends React.Component {
                     </TableCell>
                 })
               }
-              {this.rowRender(classes, columns, clickedOneTeam, activeLeague,n)}
+              {this.rowRender(classes, columns, n)}
             </TableRow>
           )
         })}
@@ -101,4 +104,7 @@ const mapStateToProps = state => ({
   activeLeague: state.activeLeague,
 })
 
-export default connect(mapStateToProps, { handleOpenDialog, clickedOneTeam })(DerbyBody)
+export default connect(
+  mapStateToProps, 
+  { handleOpenDialog, clickedOneTeam }
+)(withStyles(styles)(DerbyBody))
