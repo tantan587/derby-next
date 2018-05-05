@@ -8,6 +8,7 @@ import statusReducer from './statusReducer'
 import teamsReducer from './teamsReducer'
 import userReducer from './userReducer'
 import draftReducer from './draftReducer'
+import dialogReducer from './dialogReducer'
 import oneTeamReducer from './oneTeamReducer'
 
 export default combineReducers({
@@ -20,5 +21,6 @@ export default combineReducers({
   teams: teamsReducer,
   user: userReducer,
   draft: draftReducer,
+  teamsDialog: dialogReducer,
   oneTeam : oneTeamReducer
 })

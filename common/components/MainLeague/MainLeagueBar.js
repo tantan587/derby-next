@@ -134,5 +134,3 @@ export default connect(
       }
     })
 )(withStyles(styles)(MainLeaguePage))
-
-

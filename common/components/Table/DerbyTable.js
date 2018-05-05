@@ -16,7 +16,7 @@ class DerbyTable extends React.Component {
       rowsPerPage: 10,
     }
   }
-  
+
   handleRequestSort = (property, propertyDisplay) => {
     const orderBy = property
     const orderByDisplay = propertyDisplay
@@ -37,19 +37,19 @@ class DerbyTable extends React.Component {
     this.setState({ rowsPerPage: event.target.value })
   };
   render() {
-    const { usePagination, rows, headers, orderInd } = this.props
+    const { usePagination, rows, headers, openDialog } = this.props
     const {order, orderBy, orderByDisplay, rowsPerPage, page} = this.state
 
-    let localRows = orderBy === '' ? rows : rows.sort((a, b) =>  
-      (order === 'desc') 
-        ? isNaN(b[orderBy]) 
+    let localRows = orderBy === '' ? rows : rows.sort((a, b) =>
+      (order === 'desc')
+        ? isNaN(b[orderBy])
           ? (b[orderBy].toLowerCase() < a[orderBy].toLowerCase() ? -1 : 1)
           : (b[orderBy] < a[orderBy] ? -1 : 1)
-        : isNaN(b[orderBy]) 
+        : isNaN(b[orderBy])
           ? (a[orderBy].toLowerCase() < b[orderBy].toLowerCase() ? -1 : 1)
           : (a[orderBy] < b[orderBy] ? -1 : 1))
 
-    localRows = localRows ? localRows : [] 
+    localRows = localRows ? localRows : []
 
     const myHeaders = headers
     const localColumns = 

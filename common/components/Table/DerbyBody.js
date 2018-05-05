@@ -1,4 +1,5 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import {
   TableCell,
   TableRow,
@@ -25,7 +26,7 @@ const styles = theme => ({
 
 class DerbyBody extends React.Component {
   
-  rowRender = (classes, columns, n) =>
+  rowRender = (classes, columns,clickedOneTeam, activeLeague, n) =>
   {
     let ok = true
     return (
@@ -46,7 +47,17 @@ class DerbyBody extends React.Component {
                     backgroundColor:header.button.backgroundColor, 
                     fontSize:10, height:22, width:100}}
                   onClick={() => header.button.onClick(n[header.id])}>{header.button.label}</Button>
-                : n[header.id]}
+                // : n[header.id]
+                        : header.id == 'team_name' && n['team_name'] !== 'none' ?
+                          <div
+                            onClick={() => {
+                              handleOpenDialog(n)
+                              clickedOneTeam(n.team_id, activeLeague.league_id)
+                            }}
+                          >
+                            {n[header.id]}
+                          </div>
+                          : n[header.id]
           </TableCell>
       )
     )
@@ -55,9 +66,9 @@ class DerbyBody extends React.Component {
   black
 
   render() {
-    const {rows, columns, orderInd, classes} = this.props
+    const { rows, columns, handleOpenDialog, clickedOneTeam, activeLeague,orderInd, classes } = this.props
     return(
-    
+
       <TableBody>
         {rows.map((n,i) => {
           return (
@@ -77,10 +88,17 @@ class DerbyBody extends React.Component {
                     </TableCell>
                 })
               }
-              {this.rowRender(classes, columns,n)}
+              {this.rowRender(classes, columns, clickedOneTeam, activeLeague,n)}
             </TableRow>
           )
         })}
       </TableBody>
-    )}}
-export default withStyles(styles)(DerbyBody)
+    )
+  }
+}
+
+const mapStateToProps = state => ({
+  activeLeague: state.activeLeague,
+})
+
+export default connect(mapStateToProps, { handleOpenDialog, clickedOneTeam })(DerbyBody)

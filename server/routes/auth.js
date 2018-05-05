@@ -17,9 +17,9 @@ router.post('/signup', authHelpers.loginRedirect, (req, res, next)  => {
       if (response)
       {
         passport.authenticate('local', (err, user, info) => {
-          if (err || !user) { 
+          if (err || !user) {
             handleResponse(res, 500, err) }
-          if (user) { 
+          if (user) {
             req.login(user, function (err) {
               if (err) { handleResponse(res, 500, 'error') }
               handleReduxResponse(res, 200, {
@@ -34,20 +34,20 @@ router.post('/signup', authHelpers.loginRedirect, (req, res, next)  => {
         })(req, res, next)
       }
     })
-    .catch((err) => { 
+    .catch((err) => {
       handleResponse(res, 500, 'error'); });
 })
 
 router.post('/login', authHelpers.loginRedirect, (req, res, next) => {
   passport.authenticate('local', (err, user, info) => {
     if (err) { handleResponse(res, 500, 'error') }
-    if (!user) { 
+    if (!user) {
       var errorText = new ErrorText()
       errorText.addError('login_password','Username / Password does not match')
       handleReduxResponse(res, 404, {
         type: C.LOGIN_FAIL,
         error: errorText
-      }) 
+      })
     }
     if (user) {
       return req.login(user, function (err) {
@@ -84,7 +84,7 @@ router.post('/forgotpassword', (req, res, next) => {
     .then((user) => {
       if (user)
       {
-        authHelpers.sendForgotPasswordEmail(user, res)  
+        authHelpers.sendForgotPasswordEmail(user, res)
       }
     })
 })
@@ -92,13 +92,13 @@ router.post('/forgotpassword', (req, res, next) => {
 router.post('/createpassword', authHelpers.loginRedirect, (req, res, next) => {
   passport.authenticate('local', (err, user, info) => {
     if (err) { handleResponse(res, 500, 'error') }
-    if (!user) { 
+    if (!user) {
       var errorText = new ErrorText()
       errorText.addError('create_password_password','Username / Password does not match')
       handleReduxResponse(res, 404, {
         type: C.CREATE_PASSWORD_FAIL,
         error: errorText
-      })  
+      })
     }
     if (user) {
       authHelpers.updatePassword(req)
@@ -116,7 +116,7 @@ router.post('/createpassword', authHelpers.loginRedirect, (req, res, next) => {
 // *** helpers *** //
 
 function handleResponse(res, code, statusMsg) {
-  res.status(code).json({status: statusMsg});
+  res.status(code).json({status: statusMsg})
 }
 
 function handleReduxResponse(res, code, action)

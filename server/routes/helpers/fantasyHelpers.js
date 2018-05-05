@@ -7,7 +7,6 @@ function handleReduxResponse(res, code, action){
 }
 
 const getLeague = (league_id, user_id, res, type) =>{
-  console.log('hello', league_id, user_id)
   var str = `select a.*, b.username, c.league_name, c.max_owners, c.league_id, d.total_points, d.rank, e.room_id, e.start_time, e.draft_position, f.total_teams from
   fantasy.owners a, users.users b, fantasy.leagues c, fantasy.points d, draft.settings e,
    (select league_id, sum(number_teams) as total_teams from fantasy.sports where league_id = '` + league_id + '\' group by league_id) f' +
@@ -15,7 +14,7 @@ const getLeague = (league_id, user_id, res, type) =>{
   return knex.raw(str)
     .then(result =>
     {
-      if (result.rows.length > 0) 
+      if (result.rows.length > 0)
       {
         var league_name = result.rows[0].league_name
         var max_owners = result.rows[0].max_owners
@@ -26,7 +25,7 @@ const getLeague = (league_id, user_id, res, type) =>{
         var draft_position = result.rows[0].draft_position
         var my_owner_id = ''
         var owners = []
-        
+
         result.rows.map((owner) => {
           if(owner.user_id === user_id)
           {
@@ -35,7 +34,7 @@ const getLeague = (league_id, user_id, res, type) =>{
           owners.push(
             {
               owner_name:owner.owner_name,
-              owner_id:owner.owner_id, 
+              owner_id:owner.owner_id,
               total_points:parseFloat(owner.total_points),
               rank:owner.rank,
               username:owner.username,
@@ -85,15 +84,15 @@ const updateTeamPointsTable = (newTeamPoints) =>
         if(oldTeamPoints[teamPoints.league_id][teamPoints.team_id].reg_points != teamPoints.reg_points)
         {
           updateList.push(Promise.resolve(updateOneRowTeamPoints(teamPoints.league_id,teamPoints.team_id,'reg_points',teamPoints.reg_points )))
-        }  
-         
-        if(oldTeamPoints[teamPoints.league_id][teamPoints.team_id].bonus_points != teamPoints.bonus_points)  
+        }
+
+        if(oldTeamPoints[teamPoints.league_id][teamPoints.team_id].bonus_points != teamPoints.bonus_points)
           updateList.push(Promise.resolve(updateOneRowTeamPoints(teamPoints.owner_id,teamPoints.team_id,'bonus_points',teamPoints.bonus_points )))
       })
       if (updateList.length > 0)
       {
         return Promise.all(updateList)
-          .then(() => { 
+          .then(() => {
             console.log("im done updating!")
             return updateList.length
           })
@@ -115,15 +114,15 @@ const updatePointsTable = (newPoints) =>
 
       newPoints.map(owner =>
       {
-        if(oldPoints[owner.owner_id].total_points !== owner.total_points)  
+        if(oldPoints[owner.owner_id].total_points !== owner.total_points)
           updateList.push(Promise.resolve(updateOneRow('fantasy','points','owner_id',owner.owner_id,'total_points',owner.total_points )))
-        if(oldPoints[owner.owner_id].rank !== owner.rank)  
+        if(oldPoints[owner.owner_id].rank !== owner.rank)
           updateList.push(Promise.resolve(updateOneRow('fantasy','points','owner_id',owner.owner_id,'rank',owner.rank )))
       })
       if (updateList.length > 0)
       {
         return Promise.all(updateList)
-          .then(() => { 
+          .then(() => {
             console.log("im done updating!")
             return updateList.length
           })
@@ -173,30 +172,30 @@ const updateTeamPoints = (league_id) =>
         {sport_id: 105, win:16.75, tie:0},
         {sport_id: 106, win:7, tie:0},
         {sport_id: 107, win:6.75, tie:2.25}]
-    
-      
-      let str = league_id 
+
+
+      let str = league_id
         ? 'select a.*, b.sport_id from fantasy.team_points a, sports.team_info b where a.team_id = b.team_id and a.league_id = \'' + league_id + '\''
         : 'select a.*, b.sport_id from fantasy.team_points a, sports.team_info b where a.team_id = b.team_id'
-      
+
       return knex.raw(str)
         .then(result =>
         {
-          if (result.rows.length > 0) 
+          if (result.rows.length > 0)
           {
             const teamPoints = result.rows.map(fteam => {
               const team = data[fteam.team_id]
               const league = points.filter(league => league.sport_id == fteam.sport_id)[0]
               fteam.reg_points = league.win * team.wins + league.tie * team.ties
               fteam.bonus_points = 0
-              return fteam}) 
+              return fteam})
             updateTeamPointsTable(teamPoints)
               .then((result) =>
               {
                 console.log('Number of Teams Updated: ' + result)
                 return 0
               })
-             
+
 
           }
 
@@ -206,14 +205,14 @@ const updateTeamPoints = (league_id) =>
 
 const updateLeaguePoints = (league_id) =>
 {
-  let str = league_id 
+  let str = league_id
     ? 'select a.reg_points, a.bonus_points, b.owner_id, b.league_id from fantasy.team_points a, fantasy.rosters b where a.team_id = b.team_id and a.league_id = b.league_id and a.league_id = \'' + league_id + '\''
     : 'select a.reg_points, a.bonus_points, b.owner_id, b.league_id from fantasy.team_points a, fantasy.rosters b where a.team_id = b.team_id and a.league_id = b.league_id'
-  
+
   return knex.raw(str)
     .then(result =>
     {
-      if (result.rows.length > 0) 
+      if (result.rows.length > 0)
       {
         let byOwner = {}
         result.rows.map(roster => {
@@ -302,6 +301,14 @@ const formatAMPM = (date) => {
   return strTime
 }
 
+const formatGameDate = (date) => {
+  const month = date.getMonth() + 1
+  const day = date.getDate()
+  const year = date.getFullYear()
+
+  return `${month}/${day}/${year}`
+}
+
 //const getSports
 
 module.exports = {
@@ -311,5 +318,6 @@ module.exports = {
   updateFantasy,
   updatePoints,
   getDayCountStr,
-  formatAMPM
+  formatAMPM,
+  formatGameDate
 }

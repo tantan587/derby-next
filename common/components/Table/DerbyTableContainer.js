@@ -31,15 +31,11 @@ class DerbyTableContainer extends React.Component {
   updateMyRows = (rows) =>
   {
     this.setState({myRows:rows})
-    if(this.props.callerNeedsTeamIds)
-    {
-      this.props.callerNeedsTeamIds(rows.map(x => x.team_id))
-    }
   }
-
   render() {
-    const { usePagination, myHeaders, filters, passUpFilterInfo, orderInd } = this.props
+    const { usePagination, myHeaders, filters, openDialog, passUpFilterInfo, orderInd } = this.props
     const {myRows, allRows} = this.state
+
     return (
       <div>
         {this.props.title 
@@ -54,7 +50,8 @@ class DerbyTableContainer extends React.Component {
         <br/>
         <br/>
         <div style={{ width:'100%',overflowX:'auto', overflowY:'scroll', maxHeight:700}}>
-          <DerbyTable 
+        <DerbyTable 
+          openDialog={openDialog}
             usePagination={usePagination}
             rows={myRows}
             headers={myHeaders}
