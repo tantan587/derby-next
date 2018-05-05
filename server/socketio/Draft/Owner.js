@@ -1,4 +1,6 @@
-function Owner(ownerId, draftRules, allTeams) {
+const draftHelpers = require('../../routes/helpers/draftHelpers')
+
+function Owner(ownerId, draftRules, allTeams, teamMap) {
   this.ownerId = ownerId
 
   const shuffle = (array) => {
@@ -22,6 +24,7 @@ function Owner(ownerId, draftRules, allTeams) {
       queue.push(teamId)
       return true
     }
+    console.log(eligibleTeams.length, queue)
     return false
   }
 
@@ -55,22 +58,16 @@ function Owner(ownerId, draftRules, allTeams) {
     }    
   }
 
-  this.TryDraft = (sportId,confId,teamId,teamsInSport, teamsInConf) =>{
-    let sport = theDraftRules[sportId]
-    let conf = sport.conferences[confId]
-    if(eligibleTeams.includes(teamId))
+  this.TryDraft = (teamId) =>{
+    let resp = draftHelpers.FilterDraftPick(teamId, teamMap, theDraftRules, eligibleTeams, queue)
+    if(resp)
     {
       teams.push(teamId)
-      sport.total++
-      conf.total++
-      sport.total === sport.max ?
-        filterdownEligibleTeams(teamsInSport) :
-        conf.total === conf.max ?
-          filterdownEligibleTeams(teamsInConf) :
-          () => {}
-      return true
+      eligibleTeams = resp.eligibleTeams
+      queue = resp.queue
+      console.log(queue)
     }
-    return false
+    return resp
   }
 
   this.Joined = () =>
@@ -89,12 +86,6 @@ function Owner(ownerId, draftRules, allTeams) {
     return here
   }
 
-  const filterdownEligibleTeams = (teams) =>
-  {
-    eligibleTeams = eligibleTeams.filter(team => {
-      return !teams.includes(team)
-    })
-  }
 }
 
 module.exports = Owner

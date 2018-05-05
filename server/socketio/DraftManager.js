@@ -71,8 +71,9 @@ function DraftManager(io, roomId) {
 
   this.DraftedTeam = (socketId, data) => { 
     const ownerId = that.owners.GetOwnerIdFromSocketId(socketId)
-    if (that.owners.TryDraft(ownerId,data.teamId)) 
-      draftTeam(ownerId, data.teamId, data.clientTs)
+    let resp = that.owners.TryDraft(ownerId,data.teamId)
+    if (resp) 
+      draftTeam(ownerId, data.teamId, resp, data.clientTs)
   }
   
   this.TryUpdateQueue = (data) => {
@@ -143,7 +144,7 @@ function DraftManager(io, roomId) {
         const teamId = getAutoDraftTeam(ownerId)
         let draftResult = that.owners.TryDraft(ownerId,teamId)
 
-        draftTeam(ownerId,teamId)
+        draftTeam(ownerId,teamId, draftResult)
         return
       }
       that.counter -= 1
@@ -154,10 +155,8 @@ function DraftManager(io, roomId) {
   }
 
   //the team id needs to be verified before this function is hit.
-  const draftTeam = (ownerId, teamId, clientTs = undefined) =>{
+  const draftTeam = (ownerId, teamId, draftResult, clientTs = undefined) =>{
     
-    console.log(teamId,' was drated')
-
     that.owners.RemoveTeam(teamId)
     const localPick = getThenIncrementPick()
 
@@ -165,8 +164,11 @@ function DraftManager(io, roomId) {
 
     socketIoHelpers.InsertDraftAction(
       roomId, ownerId, 'PICK', {pick:localPick, teamId:teamId},clientTs)
+    socketIoHelpers.InsertDraftAction(
+      roomId, ownerId, 'QUEUE', {queue:draftResult.queue})
 
-    io.in(roomId).emit('draftInfo',{teamId:teamId, ownerId:ownerId})
+    io.in(roomId).emit('draftInfo',{
+      teamId:teamId, ownerId:ownerId, queue:draftResult.queue, eligibleTeams:draftResult.eligibleTeams})
     waitToAutoDraft(timeToDraft)
   }
 

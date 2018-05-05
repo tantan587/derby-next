@@ -1,5 +1,5 @@
 const Owner = require('./Owner')
-const socketIoHelpers = require('../socketioHelpers')
+const draftHelpers = require('../../routes/helpers/draftHelpers')
 
 function Owners() {
   
@@ -10,10 +10,10 @@ function Owners() {
   
   this.CreateOwners = async (ownerIds, queueByOwner, roomId, allTeams) =>
   {
-    draftRules = await socketIoHelpers.GetDraftRules(roomId)
-    teamMap = await socketIoHelpers.GetTeamMap(roomId)
+    draftRules = await draftHelpers.GetDraftRules(roomId)
+    teamMap = await draftHelpers.GetTeamMap(roomId)
     ownerIds.map(x => owners[x] = 
-      new Owner(x, JSON.parse(JSON.stringify(draftRules)), [].concat(allTeams)))
+      new Owner(x, JSON.parse(JSON.stringify(draftRules)), [].concat(allTeams), teamMap))
     Object.keys(queueByOwner).map(x => 
       owners[x].SetQueue(queueByOwner[x]))
   }
@@ -42,11 +42,7 @@ function Owners() {
 
   this.TryDraft = (ownerId, teamId) =>
   {
-    let confId = teamMap[teamId].conference_id
-    let sportId = teamMap[teamId].sport_id
-    let teamsInConf = teamMap[confId]
-    let teamsInSport = teamMap[sportId]
-    return owners[ownerId].TryDraft(sportId,confId,teamId, teamsInSport, teamsInConf)
+    return owners[ownerId].TryDraft(teamId)
   }
 
   this.RemoveTeam = (teamId) =>

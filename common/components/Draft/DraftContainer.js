@@ -187,26 +187,27 @@ class DraftContainer extends React.Component {
   }
 
   handleDraftInfo = (data) => {
-    console.log(data)
+    const myOwnerId = this.props.activeLeague.my_owner_id
+    const thisIsMe = myOwnerId === data.ownerId
     if(data)
     {
       let queue =  this.props.draft.queue
       const index =queue.indexOf(data.teamId)
-      if(index > -1)
+      if(index > -1 && !thisIsMe)
       {
         queue.splice(index, 1)
         this.socket.emit('queue',
-          {queue:queue, ownerId:this.props.activeLeague.my_owner_id})
+          {queue:queue, ownerId:myOwnerId})
         this.props.onSetUpdateQueue(queue)
       }
     }
     const teamName =  this.props.teams[data.teamId].team_name
-    const snackbarMessage = this.props.activeLeague.my_owner_id === data.ownerId 
+    const snackbarMessage = thisIsMe
       ? 'You just drafted the ' + teamName
       : this.state.ownerMap[data.ownerId].owner_name + ' just drafted the ' + teamName
 
     this.setState({snackbarMessage:snackbarMessage, snackbarOpen:true})
-
+    data['thisIsMe'] = thisIsMe
     this.props.onDraftPick(data)      
   }
 

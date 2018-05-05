@@ -13,7 +13,7 @@ export default (state = {}, action={ type: null }) => {
       queue:action.queue,
       rules:action.rules,
       filterInfo:{},
-      disallowedTeams:[]
+      eligibleTeams:action.eligibleTeams
     }
   case C.UPDATE_DRAFT_MODE:
     return {
@@ -40,6 +40,7 @@ export default (state = {}, action={ type: null }) => {
       ...state,
       availableTeams: [].concat(state.allTeams),
       draftedTeams:[],
+      eligibleTeams:[].concat(state.allTeams),
       mode : 'live',
       pick : 0,
       owners: newOwners
@@ -49,18 +50,27 @@ export default (state = {}, action={ type: null }) => {
   {
     const newAvailable = state.availableTeams
     const newDrafted = state.draftedTeams
+    let newQueue = state.queue
+    let eligibleTeams = state.eligibleTeams
     if(action.data) 
     {
       const index = newAvailable.indexOf(action.data.teamId)
       newAvailable.splice(index, 1)
       newDrafted.push(action.data.teamId)
+      if(action.data.thisIsMe)
+      {
+        newQueue = action.data.queue
+        eligibleTeams = action.data.eligibleTeams
+      }
     }    
     return {
       ...state, 
       pick : state.pick+1, 
       owners : owners(state.owners, action, state.pick),
       availableTeams :newAvailable,
-      draftedTeams : newDrafted }
+      draftedTeams : newDrafted,
+      queue : newQueue,
+      eligibleTeams : eligibleTeams }
   }
   case C.LOGOUT:
     return {
