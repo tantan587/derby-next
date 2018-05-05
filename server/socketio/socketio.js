@@ -87,11 +87,24 @@ const draftRoom = (io, socket) =>
   socket.in(roomId).on('queue', (data) => {
     if(draftIsGood())
     {
-      draftManagers[roomId].UpdateQueue(socket.id, data.queue)
+      draftManagers[roomId].SetQueue(socket.id, data.queue)
     }
     socketIoHelpers.InsertDraftAction(
       roomId, data.ownerId, 'QUEUE', {queue:data.queue})
   
+  })
+
+  socket.in(roomId).on('addqueue', (data) => {
+    if(draftIsGood())
+    {
+      draftManagers[roomId].TryUpdateQueue( data)
+    }
+    else{
+      const distinctQueue = [...new Set(data.queue.concat([data.teamId]))]
+      socketIoHelpers.InsertDraftAction(
+        roomId, data.ownerId, 'QUEUE', {queue:distinctQueue})
+      io.in(roomId).emit('addqueueresp', {ownerId:data.ownerId, queue:distinctQueue, success:true})
+    }  
   })
 
   socket.in(roomId).on('draft', (data) => {

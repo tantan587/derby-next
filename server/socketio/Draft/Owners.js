@@ -8,40 +8,50 @@ function Owners() {
   var draftRules
   var teamMap
   
-  this.CreateOwners = async (ownerIds, queueByOwner, roomId) =>
+  this.CreateOwners = async (ownerIds, queueByOwner, roomId, allTeams) =>
   {
-    draftRules = socketIoHelpers.GetDraftRules(roomId)
+    draftRules = await socketIoHelpers.GetDraftRules(roomId)
     teamMap = await socketIoHelpers.GetTeamMap(roomId)
-    ownerIds.map(x => owners[x] = new Owner(x, JSON.parse(JSON.stringify(draftRules))))
+    ownerIds.map(x => owners[x] = 
+      new Owner(x, JSON.parse(JSON.stringify(draftRules)), [].concat(allTeams)))
     Object.keys(queueByOwner).map(x => 
-      owners[x].UpdateQueue(queueByOwner[x]))
+      owners[x].SetQueue(queueByOwner[x]))
   }
 
   this.GetOwnerIdFromSocketId = (socketId) => {
     return socketOwnerMap[socketId]
   }
 
-  this.UpdateQueue = (socketId, newQueue) =>
-  {
-    console.log(socketOwnerMap)
-    owners[socketOwnerMap[socketId]].UpdateQueue(newQueue)
+  this.ResetEligible = () => {
+    Object.values(owners).forEach(owner => owner.ResetEligible())
   }
 
-  this.GetNextInQueue = (ownerId) =>
-  {
-    return owners[ownerId].GetNextInQueue()
+  this.SetQueue = (socketId, newQueue) =>{
+    owners[socketOwnerMap[socketId]].SetQueue(newQueue)
   }
 
-  this.Draft = (ownerId, teamId) =>
+  this.TryUpdateQueue = (data) =>
+  {
+    return owners[data.ownerId].TryUpdateQueue(data.teamId)
+  }
+
+  this.GetNextTeam = (ownerId) =>
+  {
+    return owners[ownerId].GetNextTeam()
+  }
+
+  this.TryDraft = (ownerId, teamId) =>
   {
     let confId = teamMap[teamId].conference_id
     let sportId = teamMap[teamId].sport_id
-    return owners[ownerId].TryDraft(sportId,confId,teamId)
+    let teamsInConf = teamMap[confId]
+    let teamsInSport = teamMap[sportId]
+    return owners[ownerId].TryDraft(sportId,confId,teamId, teamsInSport, teamsInConf)
   }
 
-  this.RemoveFromAllQueues = (teamId) =>
+  this.RemoveTeam = (teamId) =>
   {
-    Object.values(owners).map(x => x.RemoveFromQueue(teamId))
+    Object.values(owners).map(x => x.RemoveTeam(teamId))
   }
 
   this.WhoIsInDraft = () =>

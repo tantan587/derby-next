@@ -11,7 +11,9 @@ export default (state = {}, action={ type: null }) => {
       draftedTeams:action.draftedTeams,
       owners:action.owners,
       queue:action.queue,
-      filterInfo:{}
+      rules:action.rules,
+      filterInfo:{},
+      disallowedTeams:[]
     }
   case C.UPDATE_DRAFT_MODE:
     return {
@@ -36,7 +38,7 @@ export default (state = {}, action={ type: null }) => {
     )
     return {
       ...state,
-      availableTeams: state.allTeams,
+      availableTeams: [].concat(state.allTeams),
       draftedTeams:[],
       mode : 'live',
       pick : 0,

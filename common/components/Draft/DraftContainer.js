@@ -58,11 +58,11 @@ class DraftContainer extends React.Component {
       myDraftPosition:-1,
       ownerMap:{},
       sockets:['whoshere', 'people','message','start','reset',
-        'startTick','draftTick', 'draftInfo', 'modechange'],
+        'startTick','draftTick', 'draftInfo', 'modechange', 'addqueueresp'],
       functions : [this.handleWhosHere, this.handlePeople,this.handleMessage,
         this.handleStart, this.handleReset,
         this.handleStartTick, this.handleDraftTick, this.handleDraftInfo,
-        this.handleModeChange]
+        this.handleModeChange, this.handleAddQueueResponse]
     }
   }
 
@@ -216,12 +216,25 @@ class DraftContainer extends React.Component {
     this.props.onSetUpdateQueue(newQueue)
   }
 
+  handleAddQueueResponse = (payload) =>{
+    console.log(payload)
+    if(payload.ownerId === this.props.activeLeague.my_owner_id)
+    {
+      if(payload.success)
+        this.props.onSetUpdateQueue(payload.queue)
+      else
+        this.setState({snackbarMessage:
+          'You can\'t queue the ' + this.props.teams[parseInt(payload.teamId)].team_name, 
+        snackbarOpen:true})
+    }
+  }
+
   onAddQueue = (item) => {
-    const newQueue = Array.from(this.props.draft.queue)
-    newQueue.push(item)
-    this.socket.emit('queue',
-      {queue:newQueue, ownerId:this.props.activeLeague.my_owner_id})
-    this.props.onSetUpdateQueue(newQueue)
+    if( !this.props.draft.queue.includes(item))
+      this.socket.emit('addqueue',
+        {teamId:item, 
+          ownerId:this.props.activeLeague.my_owner_id, 
+          queue:this.props.draft.queue})
   }
 
   // send messages to server and add them to the state

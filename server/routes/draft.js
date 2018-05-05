@@ -3,6 +3,7 @@ const router = express.Router()
 const authHelpers = require('./helpers/authHelpers')
 const knex = require('../db/connection')
 const C = require('../../common/constants')
+const draftHelpers = require('./helpers/draftHelpers')
 
 //router.post('/enterdraft', authHelpers.loginRequired, (req, res, next)  => {
 router.post('/enterdraft', (req, res, next)  => {
@@ -30,7 +31,10 @@ where a.league_id = b.league_id and a.room_id = '` + room_id + '\''
         .then((teams) => {
           return knex.raw(strOwners)
             .then((owners) => {
-              return assembleDraft(teams.rows,owners.rows, results, owner_id)})
+              return draftHelpers.GetDraftRules(knex, room_id)
+                .then((rules) => {
+                  return assembleDraft(teams.rows,owners.rows, results, owner_id, rules)})
+            })
         })
     })
 }
@@ -43,7 +47,7 @@ const handleResponse = (res, code, statusMsg) => {
   res.status(code).json({status: statusMsg})
 }
 
-const assembleDraft = (teams,owners, results, my_owner_id) =>
+const assembleDraft = (teams,owners, results, my_owner_id, rules) =>
 {
   let mode = 'pre'
   let pick = 0
@@ -85,7 +89,8 @@ const assembleDraft = (teams,owners, results, my_owner_id) =>
     draftedTeams:draftedTeams,
     allTeams:allTeams,
     owners:ownersMap,
-    queue:queue}
+    queue:queue,
+    rules:rules}
 }
 
 module.exports = router

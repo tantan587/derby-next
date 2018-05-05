@@ -74,43 +74,33 @@ const RestartDraft = (roomId) =>{
 }
 
 //obviously needs to be derived from the db
-const GetDraftRules = (roomId) => {
+const GetDraftRules = async (roomId) => {
 
-  return {
-    '101' : {max:2,total:0,conferences: 
-      {'10101':{max:1, total:0,team:''},
-        '10102':{max:1, total:0,team:''},} },
-    '102': {max:2,total:0,conferences: 
-      {'10201':{max:1, total:0,team:''},
-        '10202':{max:1, total:0,team:''},} },
-    '103' : {max:2,total:0,conferences: 
-        {'10301':{max:1, total:0,team:''},
-          '10302':{max:1, total:0,team:''},} },
-    '104' : {max:2,total:0,conferences: 
-        {'10401':{max:1, total:0,team:''},
-          '10402':{max:1, total:0,team:''},} },
-    '105' : {max:3,total:0,conferences: 
-      {'10501':{max:1, total:0,team:''},
-        '10502':{max:1, total:0,team:''},
-        '10503':{max:1, total:0,team:''},
-        '10504':{max:1, total:0,team:''},
-        '10505':{max:1, total:0,team:''},
-        '10506':{max:1, total:0,team:''},
-        '10507':{max:1, total:0,team:''},}, 
-    },
-    '106' : {max:3,total:0,conferences: 
-      {'10601':{max:1, total:0,team:''},
-        '10602':{max:1, total:0,team:''},
-        '10603':{max:1, total:0,team:''},
-        '10604':{max:1, total:0,team:''},
-        '10605':{max:1, total:0,team:''},
-        '10606':{max:1, total:0,team:''},
-        '10607':{max:1, total:0,team:''},}, 
-    },
-    '107' : {max:1,total:0,conferences: 
-      {'10701':{max:1, total:0,team:''}},
-    }
-  }
+  const knexStr = `select distinct 
+    c.sport_id, b.conference_id, 
+    b.number_teams as conf_teams, c.number_teams as sport_teams 
+    from draft.settings a, fantasy.conferences b, fantasy.sports c 
+    where a.league_id = b.league_id 
+    and a.league_id = c.league_id 
+    and b.sport_id = c.sport_id 
+    and a.room_id = '` + roomId + '\''
+
+  const rtnObj = {}
+  return knex.raw(knexStr)
+    .then(rules => {
+      rules.rows.map(rule => 
+      {
+        if(!rtnObj[rule.sport_id])
+        {
+          rtnObj[rule.sport_id] = 
+          {max:parseInt(rule.sport_teams), total:0, conferences:{}}
+        }
+
+        rtnObj[rule.sport_id].conferences[rule.conference_id] = 
+        {max:parseInt(rule.conf_teams), total:0, team:''}
+      })
+      return rtnObj
+    })
 }
 
 const GetTeamMap = async (roomId) =>{
@@ -126,6 +116,16 @@ const GetTeamMap = async (roomId) =>{
         rtnObj[team.team_id] = 
         {'conference_id':team.conference_id,
           'sport_id': team.sport_id}
+        if(!rtnObj[team.sport_id])
+        {
+          rtnObj[team.sport_id] = []
+        }
+        if(!rtnObj[team.conference_id])
+        {
+          rtnObj[team.conference_id] = []
+        }
+        rtnObj[team.sport_id].push(team.team_id)
+        rtnObj[team.conference_id].push(team.team_id)
       })
       return rtnObj
     })
