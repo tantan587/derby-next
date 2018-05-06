@@ -9,6 +9,7 @@ import { withStyles } from 'material-ui/styles'
 
 import { handleCloseDialog } from '../../actions/dialog-actions'
 import { clickedOneTeam } from '../../actions/sport-actions'
+import { organizeData } from './tableData'
 
 import DialogHead from './DialogHead'
 import DialogInfo from './DialogInfo'
@@ -51,6 +52,8 @@ class TeamsDialog extends Component {
     const { open } = teamsDialog
     const { lastFive, nextFive } = oneTeam
 
+    // organizeData({ oneTeam, lastFive, nextFive, teams })
+
     return ( open &&
       <Dialog
         open={open}
@@ -58,14 +61,25 @@ class TeamsDialog extends Component {
         maxWidth={false}
         classes={{ root: classes.dialog_styles }}
       >
-        <div style={{ width: 750, height: 500 }}>
-          <div>
+        <div
+          onClick={handleCloseDialog}
+          style={{
+            position: 'absolute',
+            top: 15,
+            right: 15,
+            cursor: 'pointer',
+          }}
+        >
+          x
+        </div>
+        <div style={{ width: 775, height: 500 }}>
+          <div style={{ height: '30%' }}>
             <DialogHead
               oneTeam={oneTeam}
               currTeam={teamsDialog.currTeam}
             />
           </div>
-          <div>
+          <div style={{ height: '60%' }}>
             <Tabs
               value={value}
               onChange={this.handleChange}
@@ -103,19 +117,23 @@ class TeamsDialog extends Component {
                 /> :
                 <DialogInfo />
             } */}
-            {{
-              0: <DialogLastFive
-                oneTeam={oneTeam}
-                lastFive={lastFive}
-                teams={teams}
-              />,
-              1: <DialogNextFive
-                oneTeam={oneTeam}
-                nextFive={nextFive}
-                teams={teams}
-              />,
-              2: <DialogInfo />
-            }[this.state.value]}
+            <div style={{ height: '89%', overflowY: 'scroll' }}> { /* scrolling div */ }
+              {{
+                0: <DialogLastFive
+                  oneTeam={oneTeam}
+                  lastFive={lastFive}
+                  teams={teams}
+                  tableData={lastFive.map(game => organizeData({ teams, game, oneTeam }))}
+                />,
+                1: <DialogNextFive
+                  oneTeam={oneTeam}
+                  nextFive={nextFive}
+                  teams={teams}
+                  tableData={nextFive.map(game => organizeData({ teams, game, oneTeam }))}
+                />,
+                2: <DialogInfo />
+              }[this.state.value]}
+            </div>
           </div>
         </div>
       </Dialog>

@@ -1,7 +1,7 @@
 import React from 'react'
 import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Table'
 
-const DialogLastFive = ({ data, teams, lastFive, oneTeam }) => {
+const DialogLastFive = ({ tableData, teams, lastFive, oneTeam }) => {
 
   return <Table>
     <TableHead style={{ backgroundColor: '#229246' }}>
@@ -16,7 +16,7 @@ const DialogLastFive = ({ data, teams, lastFive, oneTeam }) => {
     </TableHead>
     <TableBody>
       {
-        lastFive.map(game => {
+        lastFive.map((game, idx) => {
           let opponent
           let current
 
@@ -43,20 +43,24 @@ const DialogLastFive = ({ data, teams, lastFive, oneTeam }) => {
 
           return <TableRow key={game.game_id}>
             <TableCell>{game.date_time|| '4/322/18'}</TableCell>
-            <TableCell>{opponent.name || 'Rockies'}</TableCell>
             <TableCell>
+              {/* { console.log('the data for opponent is', tableData[idx].opponent) } */}
+              {tableData[idx].opponent|| 'Rockies'}</TableCell>
+            <TableCell>
+              {/* { console.log('the data for outcome is', tableData[idx].result) } */}
               {
-                (current.score > opponent.score ? 'W' : 'L')
+                tableData[idx].result
                 || 'L'
               }
             </TableCell>
             <TableCell>
+              {/* { console.log('the data for score is', tableData[idx].score) } */}
               {
-                `${current.score}-${opponent.score}` || '5-2'
+                `${tableData[idx].score}` || '5-2'
               }
             </TableCell>
-            <TableCell>{data && data.location || 'Boston Celtics Stadium'}</TableCell>
-            <TableCell>{data && data.derby_points || '0'}</TableCell>
+            <TableCell>{tableData && tableData.location || 'Boston Celtics Stadium'}</TableCell>
+            <TableCell>{tableData && tableData.derby_points || '0'}</TableCell>
           </TableRow>
         }
         )
