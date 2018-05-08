@@ -72,7 +72,7 @@ class TeamsDialog extends Component {
         >
           x
         </div>
-        <div style={{ width: 775, height: 500 }}>
+        <div style={{ width: 775, height: 650 }}>
           <div style={{ height: '30%' }}>
             <DialogHead
               oneTeam={oneTeam}
@@ -117,7 +117,7 @@ class TeamsDialog extends Component {
                 /> :
                 <DialogInfo />
             } */}
-            <div style={{ height: '89%', overflowY: 'scroll' }}> { /* scrolling div */ }
+            <div style={{ height: '89%', }}> { /* scrolling div */ }
               {{
                 0: <DialogLastFive
                   oneTeam={oneTeam}

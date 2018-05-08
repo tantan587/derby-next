@@ -1,10 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from 'material-ui/styles'
+import { connect } from 'react-redux'
+
 import EnhancedTable from '../EnhancedTable'
 import DerbyTableContainer from '../Table/DerbyTableContainer'
-
-import { connect } from 'react-redux'
+// import hello from '/static/icons/derby_home_logo.svg'
 
 const styles = {
   container: {
@@ -19,16 +20,26 @@ const styles = {
 
 class MainLeagueStandings extends React.Component {
   render() {
-    return(<DerbyTableContainer
-      title='League Standings'
-      usePagination={false}
-      myRows={this.props.activeLeague.owners}
-      myHeaders = {[
-        {label: 'Rank', key: 'rank'},
-        {label: 'Owner', key: 'owner_name'},
-        {label: 'User', key: 'username'},
-        {label: 'Points', key: 'total_points'}
-      ]}/>)
+    return(
+      <div>
+        hi
+        <img
+          src='/static/icons/derby_home_logo.svg'
+          style={{ backgroundColor: '#874321' }}
+        />
+        <DerbyTableContainer
+          title='League Standings'
+          usePagination={false}
+          myRows={this.props.activeLeague.owners}
+          myHeaders = {[
+            {label: 'Rank', key: 'rank'},
+            {label: 'Owner', key: 'owner_name'},
+            {label: 'User', key: 'username'},
+            {label: 'Points', key: 'total_points'}
+          ]}
+        />
+      </div>
+    )
   }
 }
 
@@ -43,5 +54,3 @@ export default connect(
     }),
   null
 )(withStyles(styles)(MainLeagueStandings))
-
-
