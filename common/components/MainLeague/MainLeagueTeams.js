@@ -7,6 +7,7 @@ import { handleOpenDialog } from '../../actions/dialog-actions'
 import DerbyTableContainer from '../Table/DerbyTableContainer'
 import TeamsDialog from '../TeamsDialog/TeamsDialog'
 
+
 const styles = {
   container: {
     left: '50%',

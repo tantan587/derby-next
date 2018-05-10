@@ -111,8 +111,8 @@ class DraftOrder extends React.Component {
             </Typography>
           </div> : <div/>}
         <Divider style={{backgroundColor:'white'}}/>  
-        <List style={{maxHeight: 600, overflow: 'auto', paddingTop:0}}>
-          <Scrollbars autoHide style={{ height: 500 }}>
+        <List style={{maxHeight: 700, overflow: 'auto', paddingTop:0}}>
+          <Scrollbars autoHide style={{ height: 600 }}>
             {/*renderView={this.renderView} onUpdate={this.handleUpdate}> */}
             <Typography className={classes.round} key={'first'} variant='subheading'>
               {ownerList.length > 1 ? 'ROUND ' + (ownerList[1].round) : 'DRAFT OVER'}

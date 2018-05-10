@@ -37,7 +37,7 @@ class DerbyTable extends React.Component {
     this.setState({ rowsPerPage: event.target.value })
   };
   render() {
-    const { usePagination, rows, headers, openDialog, orderInd } = this.props
+    const { usePagination, rows, headers, openDialog, orderInd, extraTableRow } = this.props
     const {order, orderBy, orderByDisplay, rowsPerPage, page} = this.state
 
     let localRows = orderBy === '' ? rows : rows.sort((a, b) =>
@@ -77,7 +77,8 @@ class DerbyTable extends React.Component {
         <DerbyBody
           orderInd={orderInd}
           rows={localRows.slice(sliceStart,sliceEnd)}
-          columns={localColumns}/>
+          columns={localColumns}
+          extraTableRow={extraTableRow}/>
         {[1].map((x) => {if (usePagination)
         {
           return <DerbyFooter key={x}

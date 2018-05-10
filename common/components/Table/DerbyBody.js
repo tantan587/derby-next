@@ -28,10 +28,20 @@ const styles = theme => ({
 
 class DerbyBody extends React.Component {
   
+  extraRowRender = (extraTableRow, i, n) =>
+  {
+    return <TableRow key={'round'+i}>
+      <TableCell key={'round1'+i} colSpan={4} style={{color:'#269349', fontSize:16, fontWeight:'bold'}}>
+        {extraTableRow.message + parseInt(n[extraTableRow.key])}
+      </TableCell>
+    </TableRow>
+  }
+
   rowRender = (classes, columns, n) =>
   {
     const {handleOpenDialog, clickedOneTeam, activeLeague} = this.props
     return (
+
       columns.filter(
         header => header.id !=='order').map(
         (header,i) =>
@@ -39,28 +49,28 @@ class DerbyBody extends React.Component {
             classes={{root: classes.deepAlign}}
             padding={header.disablePadding ? 'none' : 'default'}
             numeric={header.numeric}>
-            {header.id == 'logo_url' && n['logo_url'] !== 'none' 
-              ?  <img src={n['logo_url']} alt="Basketball" width="40" height="40"/>
+            {header.id == 'logo_url' && n['logo_url'] !== 'none' && n['logo_url']
+              ?  <img src={n['logo_url']} width="40" height="40"/>
               : header.button 
                 ? <Button
                   key={i} 
-                  classes={ok ? {root: classes.deepbutton} :{}}
+                  classes={{root: classes.deepbutton}}
                   style={{color:header.button.color, 
                     backgroundColor:header.button.backgroundColor, 
                     fontSize:10, height:22, width:100}}
                   onClick={() => header.button.onClick(n[header.id])}>{header.button.label}</Button>
                 
-                    : header.id == 'team_name' && n['team_name'] !== 'none' ?
-                      <div
-                        onClick={() => {
-                          handleOpenDialog(n)
-                          clickedOneTeam(n.team_id, activeLeague.league_id)
-                        }}
-                      >
-                        {n[header.id]}
-                      </div>
-                      : n[header.id]
-                  }
+                : header.id == 'team_name' && n['team_name'] !== 'none' ?
+                  <div
+                    onClick={() => {
+                      handleOpenDialog(n)
+                      clickedOneTeam(n.team_id, activeLeague.league_id)
+                    }}
+                  >
+                    {n[header.id]}
+                  </div>
+                  : n[header.id]
+            }
           </TableCell>
       )
     )
@@ -69,30 +79,38 @@ class DerbyBody extends React.Component {
   black
 
   render() {
-    const { rows, columns, orderInd, classes } = this.props
+    const { rows, columns, orderInd, classes, extraTableRow } = this.props
+
     return(
 
       <TableBody>
+        {extraTableRow && rows.length > 0 ?
+          this.extraRowRender(extraTableRow,-1,rows[0]) : null}
         {rows.map((n,i) => {
           return (
-            <TableRow 
-              hover
-              tabIndex={-1}
-              key={i}
-              style= {i % 2 === 0 ? {} : {backgroundColor:'#d3d3d3'} }
-            >
-              {
-                [1].map(() => 
+            [
+              extraTableRow && n['pick'] % extraTableRow.freq === 1 && i !==0 ?
+                this.extraRowRender(extraTableRow,i,n) : null,
+              <TableRow 
+                hover
+                tabIndex={-1}
+                key={i}
+                style= {i % 2 === 0 ? {} : {backgroundColor:'#d3d3d3'} }
+              >
                 {
-                  if(orderInd)
-                    return <TableCell key={'order'} classes={{root: classes.deeppadding}}
-                      numeric>
-                      {i+1}
-                    </TableCell>
-                })
-              }
-              {this.rowRender(classes, columns, n)}
-            </TableRow>
+                  [1].map(() => 
+                  {
+                    if(orderInd)
+                      return <TableCell key={'order'} classes={{root: classes.deeppadding}}
+                        numeric>
+                        {i+1}
+                      </TableCell>
+                  })
+                }
+                
+                {this.rowRender(classes, columns, n)}
+              </TableRow>
+             ]
           )
         })}
       </TableBody>

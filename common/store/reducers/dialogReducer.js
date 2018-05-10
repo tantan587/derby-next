@@ -17,6 +17,11 @@ export default (state = initialState, action = { type: null }) => {
       open: false,
       // currTeam: action.payload,
     }
+  case C.LOGOUT:
+    return {
+      open: false,
+      currTeam: {}
+    }
   default:
     return state
   }

@@ -1,40 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { withStyles } from 'material-ui/styles'
-import List, { ListItem, ListItemText } from 'material-ui/List'
-import Divider from 'material-ui/Divider'
-import Toolbar from 'material-ui/Toolbar'
-import Typography from 'material-ui/Typography'
-import IconButton from 'material-ui/IconButton'
-import ChevronRightIcon from 'material-ui-icons/ChevronRight'
 import DerbyTableContainer from '../Table/DerbyTableContainer'
 import { connect } from 'react-redux'
 import {handleFilterTab} from '../../actions/draft-actions'
+import TeamsDialog from '../TeamsDialog/TeamsDialog'
 
-const styles = theme => ({
-  greenFullCircle: {
-    width: '15px',
-    height: '15px',
-    borderRadius: '50%',
-    backgroundColor:'green',
-  },
-  greenOutlineCircle: {
-    width: '11px',
-    height: '11px',
-    borderRadius: '50%',
-    borderColor : 'green', 
-    borderWidth:2,
-    border:'solid'
-  },
-  button : {
-    backgroundColor: theme.palette.secondary.A700,
-    color: theme.palette.secondary.A100,
-  },
-  banner : {
-    color: theme.palette.secondary[100],
-    backgroundColor: theme.palette.primary[500],
-  }
-})
 
 class TeamDisplay extends React.Component {
   constructor(props, context) {
@@ -45,14 +15,6 @@ class TeamDisplay extends React.Component {
       teamIdsToUse : []
     }
   }
-
-  // componentWillMount() {
-  //   this.setState({teamIdsToUse:this.state.teamIdsHold})
-  // }
-  // componentWillReceiveProps(nextProps) {
-  //   this.setState({teamIdsToUse:this.state.teamIdsHold})
-  // }
-
   addItem = (team) =>
   {
     this.props.onAddQueue(team)
@@ -73,7 +35,7 @@ class TeamDisplay extends React.Component {
   }
 
   render() {
-    const { classes, draft,teams } = this.props
+    const {  draft,teams } = this.props
     const availableTeams = draft.availableTeams
     const queue = draft.queue
     let teamsToShow = []
@@ -99,6 +61,7 @@ class TeamDisplay extends React.Component {
 
     return (
       <div>
+        <TeamsDialog />
         <DerbyTableContainer
           passUpFilterInfo={this.passUpFilterInfo}
           usePagination={true}
@@ -146,10 +109,6 @@ class TeamDisplay extends React.Component {
   }
 }
 
-TeamDisplay.propTypes = {
-  classes: PropTypes.object.isRequired,
-}
-
 export default connect(
   state =>
     ({
@@ -162,4 +121,4 @@ export default connect(
     ({onFilterTab(teamIds) {
       dispatch(
         handleFilterTab(teamIds))
-    },}))(withStyles(styles)(TeamDisplay))
+    },}))(TeamDisplay)

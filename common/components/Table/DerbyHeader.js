@@ -18,7 +18,8 @@ const styles = theme => ({
   },
   deepAlign :
   {
-    textAlign: 'center'
+    textAlign: 'center',
+    padding: '5px 5px 5px 20px'
   },
   deepheader : {
     color:'white',
@@ -50,7 +51,7 @@ class DerbyHeader extends React.Component {
                   <TableCell 
                     key={i}
                     numeric={column.numeric}
-                    padding={column.disablePadding ? 'none' : 'default'}
+                    padding={!column.disablePadding && column.label === 'Pick' ? 'default' : 'none'  }
                     sortDirection={orderBy === column.id ? order : false}
                     classes={{root: classes.deepAlign}}
                   >
