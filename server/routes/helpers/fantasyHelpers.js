@@ -318,6 +318,7 @@ module.exports = {
   updateFantasy,
   updatePoints,
   getDayCountStr,
+  getDayCount,
   formatAMPM,
   formatGameDate
 }
