@@ -7,17 +7,13 @@ import TeamsDialog from '../TeamsDialog/TeamsDialog'
 
 
 class TeamDisplay extends React.Component {
-  constructor(props, context) {
-    super(props, context)
-
-    this.state = {
-      teamIdsHold : [],
-      teamIdsToUse : []
-    }
-  }
   addItem = (team) =>
   {
     this.props.onAddQueue(team)
+  }
+
+  componentWillMount() {
+    this.props.onFilterTab({}) 
   }
 
   passUpFilterInfo = (filterInfo) =>
@@ -70,7 +66,8 @@ class TeamDisplay extends React.Component {
             {type:'tab', 
               values :this.props.sportLeagues.map(x => x.sport),
               column:'sport',
-              tabColors:{background:'#E2E2E2', foreground:'white', text:'#229246'}
+              allInd:true,
+              tabStyles:{background:'#E2E2E2', foreground:'white', text:'#229246'}
             },
             {type:'dropdown',
               values:confs,
@@ -118,7 +115,7 @@ export default connect(
       teams:state.teams
     }),
   dispatch =>
-    ({onFilterTab(teamIds) {
+    ({onFilterTab(filterInfo) {
       dispatch(
-        handleFilterTab(teamIds))
+        handleFilterTab(filterInfo))
     },}))(TeamDisplay)

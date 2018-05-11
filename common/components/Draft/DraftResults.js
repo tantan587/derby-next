@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import DerbyTableContainer from '../Table/DerbyTableContainer'
 import { connect } from 'react-redux'
+import TeamsDialog from '../TeamsDialog/TeamsDialog'
 
 class DraftResults extends React.Component {
   constructor(props, context) {
@@ -47,6 +48,7 @@ class DraftResults extends React.Component {
     
     return (
       <div>
+        <TeamsDialog />
         <DerbyTableContainer
           usePagination={true}
           myRows={draftResults}

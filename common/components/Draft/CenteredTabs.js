@@ -6,6 +6,7 @@ import Tabs, { Tab } from 'material-ui/Tabs'
 import Typography from 'material-ui/Typography'
 import TeamDisplay from './TeamDisplay'
 import DraftResults from './DraftResults'
+import Roster from './Roster'
 
 function TabContainer(props) {
   return (
@@ -39,7 +40,7 @@ const styles = theme => ({
 
 class CenteredTabs extends React.Component {
   state = {
-    value: 3
+    value: 0
   };
 
   handleChange = (event, value) => {
@@ -75,7 +76,7 @@ class CenteredTabs extends React.Component {
             classes={{label: classes.deeptext}}
             className={ value === 3 ? classes.tabSelected : classes.tab} />
         </Tabs>
-        {value === 0 && <TabContainer>One</TabContainer>}
+        {value === 0 && <Roster/>}
         {value === 1 && <TeamDisplay onAddQueue={this.props.onAddQueue}/>}
         {value === 2 && <TabContainer>Three</TabContainer>}
         {value === 3 && <DraftResults/>}
