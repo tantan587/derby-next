@@ -48,4 +48,42 @@ var leagues = {
     107: {sport_name: 'EPL', elo_adjust:'TBD', MOVmod: EPL_margin_mod, home_advantage: 'TBD'}
     }
 
-module.exports = {leagues}
+
+
+const simulateGame = (home, away, sport_id) => 
+{   //need to add adjustment in this function for playoffs, neutral games
+    let elo_difference = home.elo - away.elo + leagues[sport_id].home_advantage
+    let home_win_percentage = 1/(Math.pow(10,(-1*elo_difference/400))+1)
+    let random_number = Math.random()
+    let home_win_value = random_number < home_win_percentage ? 1:0
+    /*if reg == True:
+        home.adjRWins(homeWin)
+        away.adjRWins(awayWin)
+    else:
+        home.adjPWins(homeWin)
+        away.adjPWins(awayWin)*/
+    home.adjustEloWins(home_win_value, home_win_percentage, leagues[sport_id].elo_adjust)
+    away.adjustEloWins(Math.abs(1-home_win_value), 1 - home_win_percentage, leagues[sport_id].elo_adjust)
+    let results = home_win_value === 1 ?[home, away]:[away,home]
+    return results
+    
+    //return [home_win_value, Math.abs(1-home_win_value)]
+}
+
+/* const updateProjections = (knex, teams) => {
+    let rows = teams.map(team => {
+
+        const playoff_wins = team.average_playoff_wins => team.average_playoff_wins.reduce((a,b) => a + b, 0)
+        return {team_id: team.team_id, wins: team.average_wins,
+             losses: team.average_losses, ties: 0, day_count: 1, 
+             playoff: {wins: playoff_wins, }}
+
+
+
+    })
+    return knex
+        .withSchema('analysis')
+        .table('record_projections')
+
+} */
+module.exports = {leagues, simulateGame}

@@ -138,7 +138,7 @@ class Game{
     play_game(all_teams_list){
     //need to add adjustment in this function for playoffs, neutral games
     let results = game_simulate(this.home_id, this.away_id, this.sport_id, all_teams_list)
-    if(results[0]===1){
+    if(results[0]===this.home_id){
         this.all_simulate_results.home.wins += 1
         this.all_simulate_results.away.losses += 1
     }else{
@@ -239,7 +239,10 @@ const game_simulate = (home_id, away_id, sport_id, all_teams) =>
         away.adjPWins(awayWin)*/
     all_teams[home_id].adjust_elo_and_wins(home_win_value, home_win_percentage, eloHelpers.leagues[sport_id].elo_adjust)
     all_teams[away_id].adjust_elo_and_wins(Math.abs(1-home_win_value), 1 - home_win_percentage, eloHelpers.leagues[sport_id].elo_adjust)
-    return [home_win_value, Math.abs(1-home_win_value)]
+    let results = home_win_value === 1 ?[home_id, away_id]:[away_id,home_id]
+    return results
+    
+    //return [home_win_value, Math.abs(1-home_win_value)]
 }
 
 
