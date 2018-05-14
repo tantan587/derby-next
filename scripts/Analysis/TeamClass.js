@@ -1,12 +1,13 @@
 const eloHelpers = require('./elo_helpers.js')
  
 class Team {
-    constructor(name, league_id, elo, wins, losses, division, conference, sport_id){
+    constructor(name, league_id, elo, wins, losses, division, conference, sport_id, team_id){
         //preceding letter indicates use:
         //o means original, for resetting (also use default for that)
         //t means total, to keep track over time
         //a means average, for using to calculate average points and average values
         //p means playoffs, without p stands for regular season
+        this.team_id = team_id
         this.name = name
         this.league_id = league_id
         this.elo = Number(elo)

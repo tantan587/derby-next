@@ -84,7 +84,7 @@ async function createTeams() {
             //console.log(teams)
             teams.forEach(team => {
                 //console.log(team.team_id)
-                all_teams[team.sport_id][team.team_id]= new Team(team.name, team.sport_id, team.elo, team.wins, team.losses, team.division, team.conference_id, team.sport_id)
+                all_teams[team.sport_id][team.team_id]= new Team(team.name, team.sport_id, team.elo, team.wins, team.losses, team.division, team.conference_id, team.sport_id, team.team_id)
             })
         //all_teams[103111].add_wins(5)
         //console.log(all_teams[103103].elo)
@@ -144,8 +144,8 @@ const simulateMLB = (all_games_list, teams) => {
         console.log(`${team.name}: ${team.average_wins}/${team.average_losses}`)
     })
     //console.log(mlb_teams)
-    //return mlb_teams
-    process.exit()
+    return mlb_teams
+    //process.exit()
     }
 
 async function work()
@@ -155,7 +155,9 @@ async function work()
     //console.log(all_teams[103103])
     return createGamesArray(all_teams)
         .then(games => {
-            simulateMLB(games, all_teams)
+            let mlb_teams = simulateMLB(games, all_teams)
+            eloHelpers.updateProjections(knex,mlb_teams)
+            .then(a => {process.exit()})
             })
             
 }
@@ -179,14 +181,14 @@ const create_wildcards = (potential_wildcards, all_teams, sport_id) => {
 
 
 //Function to simulate an entire series - round is what round of the playoffs this is (1,2,3, etc.)
-const Series = (home, away, games, sport_id, round) => {
-    round --
+const Series = (home, away, games, sport_id, round, neutral=false) => {
+    round--
     let clinch = Math.ceil(games/2)
     let homeGames = [0,1,4,6]
     let roadGames = [2,3,5]
     let x = 0
     while(home.playoff_wins[round] < clinch && away.playoff_wins[round] < clinch){
-        let results = homeGames.includes(x) ? eloHelpers.simulateGame(home, away, sport_id):eloHelpers.simulateGame(away, home, sport_id)
+        let results = homeGames.includes(x) ? eloHelpers.simulateGame(home, away, sport_id, neutral):eloHelpers.simulateGame(away, home, sport_id, neutral)
         results[0].playoff_wins[round]++
         x++
     }
@@ -217,6 +219,58 @@ const simulateAndFindWSTeams = (conference_teams) => {
     return Series(conference_finalists[0], conference_finalists[1], 7, '103', 3)
 }
 
+//function simulates up until super bowl, and returns super bowl participant from either AFC
+const simulateAndFindSBTeams = (conference_teams) => {
+    let playoffs = []
+    let one_seed = conference_teams.shift()
+    let two_seed = conference_teams.find(team => {return team.division != one_seed.division})
+    let three_seed = conference_teams.find(team => {return team.division != one_seed.division && team.division != two_seed.division})
+    let four_seed = conference_teams.find(team => {return team.division != one_seed.division && team.division != two_seed.division && team.division != three_seed.division})
+    playoffs.push(one_seed, two_seed, three_seed, four_seed)
+    one_seed.playoff_wins[0]++
+    two_seed.playoff_wins[0]++
+    let wildcard_eligible = conference_teams.filter(team => {return playoffs.includes(team) === false})
+    playoffs.push(wildcard_eligible[0], wildcard_eligible[1])
+    playoffs.forEach(team => {team.playoff_appearances++})
+    //playoffs.forEach(team => {console.log(`${team.name}`)})
+    let wildcard_winner_1 = Series(playoffs[3], playoffs[4], 1, '102', 1)
+    let wildcard_winner_2 = Series(playoffs[2], playoffs[5], 1, '102', 1)
+    let wildcard_winners = moreWins(wildcard_winner_1, wildcard_winner_2)
+    let conference_finalist_one = Series(playoffs[0],wildcard_winners[1], 1, '102', 2)
+    let conference_finalist_two = Series(playoffs[1],wildcard_winners[0], 1, '102', 2)
+    //this below figures out who should have homefield advantage in conference finalists by checking if wildcard team won
+    let conference_finalists = moreWins(conference_finalist_one, conference_finalist_two)
+    return Series(conference_finalists[0], conference_finalists[1], 1, '102', 3)
+}
+
+
+//simulate NFL season - should combine this and nba function, almost the exact same
+const simulateNFL = (all_games_list, team) => {
+    var simulations = 1
+    const nfl_teams = individualSportTeams(teams, "102")
+    for(var x=0; x<simulations; x++){
+        all_games_list['102'].forEach(game => {game.play_game()})
+        nfl_teams.sort(function(a,b){return b.wins-a.wins})
+        //find both NBA finalists
+        let NFC_Champ = simulateAndFindSBTeams(nfl_teams.filter(team => team.conference === '10202'))
+        let AFC_Champ = simulateAndFindSBTeams(nfl_teams.filter(team => team.conference === '10201'))
+        //let NFL_finalists = moreWins(NFC_Champ, AFC_Champ) - not needed since no home field advantage
+        let NFL_Champ = Series(NFC_Champ, AFC_Champ, 1, '102', 4, neutral = true)
+        NFL_Champ.champions++
+        //console.log(NL_one)
+        nfl_teams.forEach(team => {
+            team.reset()})}
+        //console.log(`${teams[team].name}: ${teams[team].wins}/${teams[team].losses}, defaultElo: ${teams[team].defaultElo}, finalElo: ${teams[team].elo}`)})
+    nfl_teams.forEach(team => {
+        team.averages(simulations)
+        console.log(team.average_playoff_wins)
+        console.log(`${team.name}: ${team.average_wins}/${team.average_losses}`)
+    })
+    return nfl_teams
+    //process.exit()
+    }
+
+
 //simulate NBA Season, reset, repeat, over multiple simulations
 const simulateNBA = (all_games_list, teams) => {
     var simulations = 1
@@ -243,6 +297,7 @@ const simulateNBA = (all_games_list, teams) => {
     process.exit()
     }
 
+//formula for NBA - if there will be tweaks, will add later - NHL playoffs work differently, with division winners having more importance
 const simulateConferencePlayoffs = (conference) => {
     let playoffs = conference.slice(0,8)
     playoffs.forEach(team => {team.playoff_appearances++})
@@ -279,6 +334,7 @@ async function testFunctionsWithPastGames()
     return createPastGamesArray(all_teams)
         .then(games => {
             simulateNBA(games, all_teams)
+
 })
 }
 

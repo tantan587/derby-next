@@ -1,3 +1,6 @@
+const fantasyHelpers = require('../../server/routes/helpers/fantasyHelpers')
+const playoffFunctions = require('./playoffFunctions.js')
+
 const MLB_margin_mod = (margin, elo_difference) =>
 {
     var a = Math.pow(elo_difference,3)*(5.46554876)*Math.pow(10,-8)
@@ -15,7 +18,7 @@ const NFL_margin_mod = (margin, elo_difference) =>
 
 const NBA_margin_mod = (margin, elo_difference) =>
 {
-    return (pow((margin+3),0.8))/(7.5+0.006*elo_difference)
+    return (Math.pow((margin+3),0.8))/(7.5+0.006*elo_difference)
 }
 
 const NHL_margin_mod = (margin, elo_difference) =>
@@ -39,20 +42,22 @@ const EPL_margin_mod = (margin, elo_difference) =>
 }
 
 var leagues = {
-    101: {sport_name: 'NBA', elo_adjust: 20, MOVmod: NBA_margin_mod, home_advantage: 100},
-    102: {sport_name: 'NFL', elo_adjust: 20, MOVmod: NFL_margin_mod, home_advantage: 65},
-    103: {sport_name: 'MLB', elo_adjust: 4, MOVmod: MLB_margin_mod, home_advantage: 24},
-    104: {sport_name: 'NHL', elo_adjust: 8, MOVmod: NHL_margin_mod, home_advantage: 35},
-    105: {sport_name: 'CFB', elo_adjust: 30, MOVmod: CFB_margin_mod, home_advantage: 85},
-    106: {sport_name: 'CBB', elo_adjust: 35, MOVmod: CBB_margin_mod, home_advantage: 50},
-    107: {sport_name: 'EPL', elo_adjust:'TBD', MOVmod: EPL_margin_mod, home_advantage: 'TBD'}
+    101: {sport_name: 'NBA', elo_adjust: 20, MOVmod: NBA_margin_mod, home_advantage: 100, playoffFunction: playoffFunctions.simulateNBAConferencePlayoffs, conferences: ['10101', '10102']},
+    102: {sport_name: 'NFL', elo_adjust: 20, MOVmod: NFL_margin_mod, home_advantage: 65, playoffFunction: playoffFunctions.simulateAndFindSBTeams, conferences: ['10201', '10202']},
+    103: {sport_name: 'MLB', elo_adjust: 4, MOVmod: MLB_margin_mod, home_advantage: 24, playoffFunction: playoffFunctions.simulateAndFindWSTeams, conferences: ['10301', '10302']},
+    104: {sport_name: 'NHL', elo_adjust: 8, MOVmod: NHL_margin_mod, home_advantage: 35, pplayoffFunction: 'TBD'},
+    105: {sport_name: 'CFB', elo_adjust: 30, MOVmod: CFB_margin_mod, home_advantage: 85, playoffFunction: 'TBD'},
+    106: {sport_name: 'CBB', elo_adjust: 35, MOVmod: CBB_margin_mod, home_advantage: 50, playoffFunction: 'TBD'},
+    107: {sport_name: 'EPL', elo_adjust:'TBD', MOVmod: EPL_margin_mod, home_advantage: 'TBD', playoffFunction: 'TBD'}
     }
 
+    playoffFunctions.simulateAndFindWSTeams
 
 
-const simulateGame = (home, away, sport_id) => 
+const simulateGame = (home, away, sport_id, neutral = false) => 
 {   //need to add adjustment in this function for playoffs, neutral games
-    let elo_difference = home.elo - away.elo + leagues[sport_id].home_advantage
+    let home_advantage = neutral === false ? leagues[sport_id].home_advantage:0
+    let elo_difference = home.elo - away.elo + home_advantage
     let home_win_percentage = 1/(Math.pow(10,(-1*elo_difference/400))+1)
     let random_number = Math.random()
     let home_win_value = random_number < home_win_percentage ? 1:0
@@ -70,20 +75,37 @@ const simulateGame = (home, away, sport_id) =>
     //return [home_win_value, Math.abs(1-home_win_value)]
 }
 
-/* const updateProjections = (knex, teams) => {
-    let rows = teams.map(team => {
+const arraySum = arr => arr.reduce((a,b) => a+b,0)
 
-        const playoff_wins = team.average_playoff_wins => team.average_playoff_wins.reduce((a,b) => a + b, 0)
+
+const updateProjections = (knex, teams) => {
+    let rows = teams.map(team => {
+        playoff_wins = arraySum(team.average_playoff_wins)
         return {team_id: team.team_id, wins: team.average_wins,
              losses: team.average_losses, ties: 0, day_count: 1, 
-             playoff: {wins: playoff_wins, }}
-
-
-
+             playoff: {wins: playoff_wins, playoffs: team.average_playoff_appearances, finalists: team.average_finalists, champions: team.average_champions}}
     })
     return knex
         .withSchema('analysis')
         .table('record_projections')
+        .insert(rows)
+}
 
-} */
-module.exports = {leagues, simulateGame}
+
+const dayCount = (day) => {
+    var dd = day.getDate();
+    var mm = day.getMonth()+1; //January is 0!
+    var yyyy = day.getFullYear();
+
+    if(dd<10) {
+        dd = '0'+dd
+    } 
+
+    if(mm<10) {
+        mm = '0'+mm
+    } 
+    return fantasyHelpers.getDayCount(yyyy, mm, dd)
+
+}
+
+module.exports = {leagues, simulateGame, updateProjections}
