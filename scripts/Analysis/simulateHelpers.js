@@ -1,5 +1,5 @@
 const fantasyHelpers = require('../../server/routes/helpers/fantasyHelpers')
-const leagues = require('./elo_helpers.js')
+const Leagues = require('./leagues.js')
 
 //Function to simulate an entire series - round is what round of the playoffs this is (1,2,3, etc.)
 const Series = (home, away, games, sport_id, round, neutral=false) => {
@@ -8,6 +8,7 @@ const Series = (home, away, games, sport_id, round, neutral=false) => {
     let homeGames = [0,1,4,6]
     let roadGames = [2,3,5]
     let x = 0
+    console.log(round)
     while(home.playoff_wins[round] < clinch && away.playoff_wins[round] < clinch){
         let results = homeGames.includes(x) ? simulateGame(home, away, sport_id, neutral):simulateGame(away, home, sport_id, neutral)
         results[0].playoff_wins[round]++
@@ -27,10 +28,7 @@ const moreWins = (team_a, team_b) => {
 
 const simulateGame = (home, away, sport_id, neutral = false) => 
 {   //need to add adjustment in this function for playoffs, neutral games
-    console.log(leagues)
-    console.log(neutral)
-    console.log(sport_id)
-    let home_adv = neutral === false ? leagues[sport_id].home_advantage:0
+    let home_adv = neutral === false ? Leagues[sport_id].home_advantage:0
     let elo_difference = home.elo - away.elo + home_adv
     let home_win_percentage = 1/(Math.pow(10,(-1*elo_difference/400))+1)
     let random_number = Math.random()
@@ -41,8 +39,8 @@ const simulateGame = (home, away, sport_id, neutral = false) =>
     else:
         home.adjPWins(homeWin)
         away.adjPWins(awayWin)*/
-    home.adjustEloWins(home_win_value, home_win_percentage, eloHelpers.leagues[sport_id].elo_adjust)
-    away.adjustEloWins(Math.abs(1-home_win_value), 1 - home_win_percentage, eloHelpers.leagues[sport_id].elo_adjust)
+    home.adjustEloWins(home_win_value, home_win_percentage, Leagues[sport_id].elo_adjust)
+    away.adjustEloWins(Math.abs(1-home_win_value), 1 - home_win_percentage, Leagues[sport_id].elo_adjust)
     let results = home_win_value === 1 ?[home, away]:[away,home]
     return results
     

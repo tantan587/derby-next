@@ -17,7 +17,7 @@ const simulateAndFindWSTeams = (conference_teams) => {
     let conference_finalist_two = simulateHelpers.Series(playoffs[1],playoffs[2], 5, '103', 2)
     //this below figures out who should have homefield advantage in conference finalists by checking if wildcard team won
     let conference_finalists = conference_finalist_one === wildcard_winner ? [conference_finalist_two, conference_finalist_one]:[conference_finalist_one, conference_finalist_two]
-    return Series(conference_finalists[0], conference_finalists[1], 7, '103', 3)
+    return simulateHelpers.Series(conference_finalists[0], conference_finalists[1], 7, '103', 3)
 }
 
 //function simulates up until super bowl, and returns super bowl participant from either AFC

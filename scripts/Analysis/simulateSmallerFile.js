@@ -100,16 +100,14 @@ const simulateProfessionalLeague = (all_games_list, teams, sport_id, simulations
     //console.log(mlb_teams)
     //console.log(mlb_games)
     for(var x=0; x<simulations; x++){
-        console.log(leagues)
+        //console.log(leagues)
         all_games_list[sport_id].forEach(game => {game.play_game()})
         //console.log(teams_div_conf)
         sport_teams.sort(function(a,b){return b.wins-a.wins})
-        //find both world series participants
-        console.log(leagues)
-        let conf1 = sport_teams.filter(team => team.conference === eloHelpers.leagues[sport_id].conferences[0])
-        let finalist_1 = eloHelpers.leagues[sport_id].playoffFunction(conf1)
-        console.log('works')
-        let finalist_2 = eloHelpers.leagues[sport_id].playoffFunction(sport_teams.filter(team => team.conference === eloHelpers.leagues[sport_id].conferences[1]))
+        //find both finalists
+        let finalist_1 = leagues[sport_id].playoffFunction(sport_teams.filter(team => team.conference === leagues[sport_id].conferences[0]))
+        //console.log('works')
+        let finalist_2 = leagues[sport_id].playoffFunction(sport_teams.filter(team => team.conference === leagues[sport_id].conferences[1]))
         let finalists = simulateHelpers.moreWins(finalist_1, finalist_2)
         finalists.forEach(team=>{team.finalist++})
         let champion = sport_id === '102' ? simulateHelpers.Series(finalists[0], finalists,1, sport_id, 4,neutral = true):simulateHelpers.Series(finalists[0], finalists,7, sport_id, 4)
