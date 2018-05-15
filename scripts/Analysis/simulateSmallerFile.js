@@ -5,7 +5,7 @@ const Game = require('./GameClass.js')
 const Team = require('./TeamClass.js')
 const simulateHelpers = require('./simulateHelpers.js')
 
-
+//function to pull the past games, to use if we want to update elos, or to test simulation for other sports
 const pullPastGames = (knex) =>
 {
     var today = new Date(); 
@@ -21,6 +21,7 @@ const pullPastGames = (knex) =>
             return game})
 }
 
+//this would be the normal simulate function, used to pull the future games 
 const pullFutureGames = (knex) =>
 {
     var today = new Date()
@@ -37,6 +38,7 @@ const pullFutureGames = (knex) =>
             return game})
 }
 
+//pulls the teams info from knex, merging elo and the standings
 const getTeamInfo = (knex) => 
 {
     return knex('sports.team_info')
@@ -44,18 +46,16 @@ const getTeamInfo = (knex) =>
         .innerJoin('analysis.current_elo','analysis.current_elo.team_id', 'sports.team_info.team_id')
         .select('*')
         .then(teams => {
-            //console.log('working')
             return teams})
 
 }
 
+//uses the team info to create all the Teams in a class. Places it into an object, which it returns, containing all instances of the class
 async function createTeams() {
     var all_teams = {101:{}, 102:{},103:{},104:{},105:{},106:{},107:{}}
     return getTeamInfo(knex)
         .then(teams => {
-            //console.log(teams)
             teams.forEach(team => {
-                //console.log(team.team_id)
                 all_teams[team.sport_id][team.team_id]= new Team(team.name, team.sport_id, team.elo, team.wins, team.losses, team.division, team.conference_id, team.sport_id, team.team_id)
             })
         return all_teams
@@ -73,7 +73,7 @@ const createGamesArray = (all_teams) => {
     return all_games
     })}
 
-//creates an array of unplayed games by sport, with each game a member of the class Game
+//creates an array of played games by sport, with the past games, to use either for updating elos or testing simulate functions
 const createPastGamesArray = (all_teams) => {
     all_games = {101:[], 102:[],103:[],104:[],105:[],106:[],107:[]}
     return pullPastGames(knex)
@@ -86,26 +86,17 @@ const createPastGamesArray = (all_teams) => {
 
 //function which simulates NBA, NFL, NHL, MLB - default set to 10 for now to modify later
 const simulateProfessionalLeague = (all_games_list, teams, sport_id, simulations = 10) => {
-    //var simulations = 10
     const sport_teams = individualSportTeams(teams, sport_id)
-    //console.log(mlb_teams)
-    //console.log(mlb_games)
     for(var x=0; x<simulations; x++){
-        //console.log(leagues)
         all_games_list[sport_id].forEach(game => {game.play_game()})
-        //console.log(teams_div_conf)
         sport_teams.sort(function(a,b){return b.wins-a.wins})
         //find both finalists
         let finalist_1 = leagues[sport_id].playoffFunction(sport_teams.filter(team => team.conference === leagues[sport_id].conferences[0]))
-        //console.log('works')
         let finalist_2 = leagues[sport_id].playoffFunction(sport_teams.filter(team => team.conference === leagues[sport_id].conferences[1]))
         let finalists = simulateHelpers.moreWins(finalist_1, finalist_2)
         finalists.forEach(team=>{team.finalist++})
         let champion = sport_id === '102' ? simulateHelpers.Series(finalists[0], finalists[1],1, sport_id, 4,neutral = true):SeriesAgain(finalists[0], finalists[1],7, sport_id, 4)
         champion.champions++
-        //console.log(WS_teams)
-        //console.log("Champ: ", WS_Winner.name)
-        //console.log(NL_one)
         sport_teams.forEach(team => {
             team.reset()})}
         //console.log(`${teams[team].name}: ${teams[team].wins}/${teams[team].losses}, defaultElo: ${teams[team].defaultElo}, finalElo: ${teams[team].elo}`)})
@@ -114,16 +105,45 @@ const simulateProfessionalLeague = (all_games_list, teams, sport_id, simulations
         console.log(team.average_playoff_wins)
         console.log(`${team.name}: ${team.average_wins}/${team.average_losses}`)
     })
-    //console.log(mlb_teams)
     return sport_teams
     //process.exit()
     }
 
+//function to simulate CFB - also figures out most likely playoff teams using formula
+const simulateCFB = (all_games_list, teams, simulations = 10) => {
+    const cfb_teams = individualSportTeams(teams, '105')
+    for(var x=0; x<simulations; x++){
+        all_games_list['105'].forEach(game => {game.play_game()})
+        cfb_teams.sort(function(a,b){return b.wins-a.wins})
+        //play the conference championship games, add winners to array conference champions
+        const conference_ids = [10501, 10502, 10503, 10504, 10505]
+        let conference_champions = conference_ids.map(id => {return leagues[105].playoffFunction(cfb_teams.filter(team => team.conference_id === id))})
+        //calculate there CFB playoff value, sort them from highest to lowest, and put the four highest teams into playoffs
+        cfb_teams.forEach(team => {
+            champ_boost = conference_champions.include(team) ? 1:0
+            team.calculateCFBValue(champ_boost)})
+        cfb_teams.sort(function(a,b){return b.cfb_value - a.cfb_value})
+        let playoffs = cfb_teams.slice(0,4)
+        playoffs.forEach(team=>{team.playoffs++})
+        //find finalists, add finalist value, play championship, add champ value
+        let finalist_1 = simulateHelpers.Series(playoffs[0],playoffs[3],1,'105',1,neutral=true)
+        let finalist_2 = simulateHelpers.Series(playoffs[1],playoffs[2],1,'105',1,neutral=true)
+        finalist_1.finalist++
+        finalist_2.finalist++
+        let champion = simulateHelpers.Series(finalist_1, finalist_2,1,'105', 2,neutral=true)
+        champion.champions++
+        cfb_teams.forEach(team =>{team.reset})
+    }
+    cfb_teams.forEach(team => {
+        team.averages(simulations)
+    })
+    return cfb_teams        
+    }
+
+
 async function work()
 {
     let all_teams = await createTeams()
-    //console.log(all_teams)
-    //console.log(all_teams[103103])
     return createGamesArray(all_teams)
         .then(games => {
             let mlb_teams = simulateProfessionalLeague(games, all_teams, '103')
@@ -154,22 +174,3 @@ async function testFunctionsWithPastGames()
 
 work()
 
-const SeriesAgain = (home, away, games, sport_id, round, neutral=false) => {
-    round--
-    let clinch = Math.ceil(games/2)
-    let homeGames = [0,1,4,6]
-    let roadGames = [2,3,5]
-    let x = 0
-    console.log(round)
-    console.log(away)
-    while(home.playoff_wins[round] < clinch && away.playoff_wins[round] < clinch){
-        let results = homeGames.includes(x) ? simulateHelpers.simulateGame(home, away, sport_id, neutral):simulateHelpers.simulateGame(away, home, sport_id, neutral)
-        results[0].playoff_wins[round]++
-        x++
-    }
-    if(home.playoff_wins[round] === clinch){
-        return home
-    } else{
-        return away
-    }
-}
