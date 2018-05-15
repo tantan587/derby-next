@@ -1,6 +1,6 @@
 const knex = require('../../server/db/connection')
-const fantasyHelpers = require('../../server/routes/helpers/fantasyHelpers')
-const leagues = require('./elo_helpers.js')
+//const fantasyHelpers = require('../../server/routes/helpers/fantasyHelpers')
+const leagues = require('./leagues.js')
 const Game = require('./GameClass.js')
 const Team = require('./TeamClass.js')
 const simulateHelpers = require('./simulateHelpers.js')
@@ -110,7 +110,7 @@ const simulateProfessionalLeague = (all_games_list, teams, sport_id, simulations
         let finalist_2 = leagues[sport_id].playoffFunction(sport_teams.filter(team => team.conference === leagues[sport_id].conferences[1]))
         let finalists = simulateHelpers.moreWins(finalist_1, finalist_2)
         finalists.forEach(team=>{team.finalist++})
-        let champion = sport_id === '102' ? simulateHelpers.Series(finalists[0], finalists,1, sport_id, 4,neutral = true):simulateHelpers.Series(finalists[0], finalists,7, sport_id, 4)
+        let champion = sport_id === '102' ? simulateHelpers.Series(finalists[0], finalists[1],1, sport_id, 4,neutral = true):SeriesAgain(finalists[0], finalists[1],7, sport_id, 4)
         champion.champions++
         //console.log(WS_teams)
         //console.log("Champ: ", WS_Winner.name)
@@ -162,3 +162,23 @@ async function testFunctionsWithPastGames()
 //testFunctionsWithPastGames()
 
 work()
+
+const SeriesAgain = (home, away, games, sport_id, round, neutral=false) => {
+    round--
+    let clinch = Math.ceil(games/2)
+    let homeGames = [0,1,4,6]
+    let roadGames = [2,3,5]
+    let x = 0
+    console.log(round)
+    console.log(away)
+    while(home.playoff_wins[round] < clinch && away.playoff_wins[round] < clinch){
+        let results = homeGames.includes(x) ? simulateHelpers.simulateGame(home, away, sport_id, neutral):simulateHelpers.simulateGame(away, home, sport_id, neutral)
+        results[0].playoff_wins[round]++
+        x++
+    }
+    if(home.playoff_wins[round] === clinch){
+        return home
+    } else{
+        return away
+    }
+}
