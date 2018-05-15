@@ -13,9 +13,6 @@ const pullPastGames = (knex) =>
     return knex('sports.schedule')
         .where('sports.schedule.day_count', "<", dayCount) //need to test if want to go past today, or include this day count
         .innerJoin('sports.results','sports.results.global_game_id','sports.schedule.global_game_id')
-        //.innerJoin('analysis.elo as a', 'sports.schedule.home_team_id', 'a.team_id')
-        //.leftJoin('analysis.elo as b', 'sports.schedule.away_team_id', 'b.team_id')
-        //.innerJoin('analysis.elo', 'sports.schedule.away_team_id', 'analysis.elo.team_id')
         .select('sports.results.global_game_id', 'sports.schedule.home_team_id', 
         'sports.results.home_team_score','sports.schedule.away_team_id', 'sports.results.away_team_score',
         'sports.results.winner','sports.schedule.sport_id')
@@ -32,9 +29,6 @@ const pullFutureGames = (knex) =>
     return knex('sports.schedule')
         .where('sports.schedule.day_count', ">", dayCount) //need to test if want to go past today, or include this day count
         .innerJoin('sports.results','sports.results.global_game_id','sports.schedule.global_game_id')
-        //.innerJoin('analysis.elo as a', 'sports.schedule.home_team_id', 'a.team_id')
-        //.leftJoin('analysis.elo as b', 'sports.schedule.away_team_id', 'b.team_id')
-        //.innerJoin('analysis.elo', 'sports.schedule.away_team_id', 'analysis.elo.team_id')
         .select('sports.results.global_game_id', 'sports.schedule.home_team_id', 
         'sports.results.home_team_score','sports.schedule.away_team_id', 'sports.results.away_team_score',
         'sports.results.winner','sports.schedule.sport_id')
@@ -64,9 +58,6 @@ async function createTeams() {
                 //console.log(team.team_id)
                 all_teams[team.sport_id][team.team_id]= new Team(team.name, team.sport_id, team.elo, team.wins, team.losses, team.division, team.conference_id, team.sport_id, team.team_id)
             })
-        //all_teams[103111].add_wins(5)
-        //console.log(all_teams[103103].elo)
-        //console.log(all_teams)
         return all_teams
     })
 }
