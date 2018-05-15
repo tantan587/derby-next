@@ -1,4 +1,3 @@
-const fantasyHelpers = require('../../server/routes/helpers/fantasyHelpers')
 const playoffFunctions = require('./playoffFunctions.js')
 
 const MLB_margin_mod = (margin, elo_difference) =>
@@ -18,7 +17,7 @@ const NFL_margin_mod = (margin, elo_difference) =>
 
 const NBA_margin_mod = (margin, elo_difference) =>
 {
-    return (Math.pow((margin+3),0.8))/(7.5+0.006*elo_difference)
+    return (pow((margin+3),0.8))/(7.5+0.006*elo_difference)
 }
 
 const NHL_margin_mod = (margin, elo_difference) =>
@@ -45,34 +44,25 @@ var leagues = {
     101: {sport_name: 'NBA', elo_adjust: 20, MOVmod: NBA_margin_mod, home_advantage: 100, playoffFunction: playoffFunctions.simulateNBAConferencePlayoffs, conferences: ['10101', '10102']},
     102: {sport_name: 'NFL', elo_adjust: 20, MOVmod: NFL_margin_mod, home_advantage: 65, playoffFunction: playoffFunctions.simulateAndFindSBTeams, conferences: ['10201', '10202']},
     103: {sport_name: 'MLB', elo_adjust: 4, MOVmod: MLB_margin_mod, home_advantage: 24, playoffFunction: playoffFunctions.simulateAndFindWSTeams, conferences: ['10301', '10302']},
-    104: {sport_name: 'NHL', elo_adjust: 8, MOVmod: NHL_margin_mod, home_advantage: 35, pplayoffFunction: 'TBD'},
-    105: {sport_name: 'CFB', elo_adjust: 30, MOVmod: CFB_margin_mod, home_advantage: 85, playoffFunction: 'TBD'},
-    106: {sport_name: 'CBB', elo_adjust: 35, MOVmod: CBB_margin_mod, home_advantage: 50, playoffFunction: 'TBD'},
-    107: {sport_name: 'EPL', elo_adjust:'TBD', MOVmod: EPL_margin_mod, home_advantage: 'TBD', playoffFunction: 'TBD'}
+    104: {sport_name: 'NHL', elo_adjust: 8, MOVmod: NHL_margin_mod, home_advantage: 35, playoffFunction: playoffFunctions.simulateNHLconf},
+    105: {sport_name: 'CFB', elo_adjust: 30, MOVmod: CFB_margin_mod, home_advantage: 85, playoffFunction: playoffFunctions.simulateCFBconf},
+    106: {sport_name: 'CBB', elo_adjust: 35, MOVmod: CBB_margin_mod, home_advantage: 50, playoffFunction: playoffFunctions.simulateCBBconf},
+    107: {sport_name: 'EPL', elo_adjust:'TBD', MOVmod: EPL_margin_mod, home_advantage: 'TBD', playoffFunction: playoffFunctions.simulateEPLconf}
     }
 
-    playoffFunctions.simulateAndFindWSTeams
 
-
-const simulateGame = (home, away, sport_id, neutral = false) => 
+/* const simulateGame = (home, away, sport_id, neutral = false) => 
 {   //need to add adjustment in this function for playoffs, neutral games
     let home_advantage = neutral === false ? leagues[sport_id].home_advantage:0
     let elo_difference = home.elo - away.elo + home_advantage
     let home_win_percentage = 1/(Math.pow(10,(-1*elo_difference/400))+1)
     let random_number = Math.random()
     let home_win_value = random_number < home_win_percentage ? 1:0
-    /*if reg == True:
-        home.adjRWins(homeWin)
-        away.adjRWins(awayWin)
-    else:
-        home.adjPWins(homeWin)
-        away.adjPWins(awayWin)*/
     home.adjustEloWins(home_win_value, home_win_percentage, leagues[sport_id].elo_adjust)
     away.adjustEloWins(Math.abs(1-home_win_value), 1 - home_win_percentage, leagues[sport_id].elo_adjust)
     let results = home_win_value === 1 ?[home, away]:[away,home]
     return results
     
-    //return [home_win_value, Math.abs(1-home_win_value)]
 }
 
 const arraySum = arr => arr.reduce((a,b) => a+b,0)
@@ -107,5 +97,5 @@ const dayCount = (day) => {
     return fantasyHelpers.getDayCount(yyyy, mm, dd)
 
 }
-
-module.exports = {leagues, simulateGame, updateProjections}
+*/
+module.exports = leagues

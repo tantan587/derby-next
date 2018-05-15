@@ -1,4 +1,5 @@
-const eloHelpers = require('./elo_helpers.js')
+//const eloHelpers = require('./elo_helpers.js')
+const simulateHelpers = require('./simulateHelpers.js')
 
 class Game{
     constructor(global_game_id, home, away, sport_id){
@@ -14,7 +15,7 @@ class Game{
     
     play_game(){
     //need to add adjustment in this function for playoffs, neutral games
-    let results = eloHelpers.simulateGame(this.home, this.away, this.sport_id)
+    let results = simulateHelpers.simulateGame(this.home, this.away, this.sport_id)
     if(results[0]===this.home){
         this.all_simulate_results.home.wins += 1
         this.all_simulate_results.away.losses += 1
