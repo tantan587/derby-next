@@ -11,24 +11,32 @@ const styles = () => ({
     fontFamily:'HorsebackSlab',
     marginLeft:'3%'
   },
+  subheading: {
+    marginLeft: 8,
+    fontSize: 16,
+    fontFamily: '"Roboto", sans-serif',
+  },
   appBar : {
-    height:'55px', 
+    height:'55px',
     boxShadow: ['none']}
 })
 
 class Title extends React.Component {
 
   render() {
-    const {backgroundColor, title, color, classes} = this.props
+    const {backgroundColor, title, subheading, color, classes} = this.props
     return (
-      <AppBar position="static" 
+      <AppBar position="static"
         className={classes.appBar}
         style={{backgroundColor:backgroundColor, color:color}}>
         <Toolbar>
-          <Typography className={classes.title} variant="display1">{title}</Typography>
-      
+          <Typography className={classes.title} variant="display1">
+            {title}
+            <span className={classes.subheading}>{subheading}</span>
+          </Typography>
+
         </Toolbar>
-      </AppBar> 
+      </AppBar>
     )
   }
 }

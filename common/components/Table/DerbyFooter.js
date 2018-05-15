@@ -1,17 +1,20 @@
 import React from 'react'
 import  {
+  TableFooter,
   TableRow,
   TablePagination,
-  TableFooter,
 }  from 'material-ui/Table'
 
 class DerbyFooter extends React.Component {
 
   render() {
+    const { styleProps } = this.props
+
     return (
-      <TableFooter>
-        <TableRow>
+      <TableFooter style={styleProps && styleProps.TableFooter}>
+        <TableRow style={styleProps && styleProps.TableRow}>
           <TablePagination
+            style={styleProps && styleProps.TablePagination}
             count={this.props.count}
             rowsPerPage={this.props.rowsPerPage}
             page={this.props.page}
@@ -19,7 +22,7 @@ class DerbyFooter extends React.Component {
             onChangeRowsPerPage={this.props.handleChangeRowsPerPage}
             rowsPerPageOptions={[5,10,20,40,80]}
           />
-        </TableRow> 
+        </TableRow>
       </TableFooter>
     )
   }
