@@ -1,4 +1,3 @@
-//const eloHelpers = require('./elo_helpers.js')
 const simulateHelpers = require('./simulateHelpers.js')
 
 class Game{
@@ -11,6 +10,8 @@ class Game{
         this.sport_id = sport_id
         //this.day = day
         this.all_simulate_results = {home: {wins: 0, losses: 0, ties: 0},  away: {wins: 0, losses: 0, ties: 0}}
+        this.last_result = {home: {wins: 0, losses: 0, ties: 0},  away: {wins: 0, losses: 0, ties: 0}}
+        this.home_EOS = {regular: {wins: 0, losses: 0, ties: 0}, } //this is not done - need to figure out impact in this
     }
     
     play_game(){
@@ -19,9 +20,13 @@ class Game{
     if(results[0]===this.home){
         this.all_simulate_results.home.wins += 1
         this.all_simulate_results.away.losses += 1
+        this.last_result.home.wins++
+        this.last_result.away.losses++
     }else{
         this.all_simulate_results.home.losses += 1
         this.all_simulate_results.away.wins += 1
+        this.last_result.away.wins++
+        this.last_result.home.losses++
     }
     }
 

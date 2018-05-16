@@ -44,6 +44,8 @@ class Team {
         this.totalChamp = 0
         this.totalFin = 0
         this.cfb_value = 0
+        this.cbb_value = 0
+        this.cbb_game_quality = {top_25_wins: 0, top_50_wins: 0, top_100_wins: 0, bottom_200_losses: 0}
     }
         
     get string (){
@@ -57,9 +59,14 @@ class Team {
     }
 
     calculateCFBValue(conf_champ_boost){
-        let elo = Number(this.elo)/100
+        let alt_elo = Number(this.elo)/100
         let conf_boost = this.conference === '105' ? 1:0
-        this.cfb_value = elo + conf_boost + conf_champ_boost + this.wins - (this.losses * 3)
+        this.cfb_value = alt_elo + conf_boost + conf_champ_boost + this.wins - (this.losses * 3)
+    }
+
+    calculateCBBValue(){
+        let alt_elo = Number(this.elo)/100
+
     }
 /*     def adjRWins(this,winVal): #formula to adjust regular season wins by win Value: 1 is 1, 0 is loss
         lVal = abs(winVal - 1)

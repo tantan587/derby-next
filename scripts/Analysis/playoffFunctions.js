@@ -1,4 +1,4 @@
-const simulateHelpers = require('./simulateHelpers.js').default.default.default
+const simulateHelpers = require('./simulateHelpers.js')
 
 //function simulates up until the world series, and returns the world series participant from either AL/NL
 const simulateAndFindWSTeams = (conference_teams) => {
@@ -91,6 +91,7 @@ const simulateNHLconf = (conference) => {
     return conference_champ
 }
 const simulateEPLconf =(conference) => {return 1}
+
 const simulateCFBconf =(conference) => {
     if (conference[0].conference_id != '10502'){
         let division_1 = conference[0].division //this is one of the two divisions
@@ -103,9 +104,29 @@ const simulateCFBconf =(conference) => {
     }
     return conf_champ}
     
-const simulateCBBconf =(conference) => {return 1}
-
-const conf_champ_game = (conference) 
+const simulateCBBconf = (conference) => {
+    let total_teams = conference.length
+    let rounds = total_teams === 8 ? 3: total_teams < 12 ? 4:5
+    let tournament_teams_left = conference
+    let teams_left,non_byes = 0
+    let this_round_teams, next_round_teams = []
+    for(let x = 0; x<rounds; x++){
+        teams_left = tournament_teams_left.length
+        non_byes = teams_left > 12 ? (teams_left-12)*2: teams_left>8 ? (teams_left-8)*2:0
+        this_round_teams = tournament_teams_left.slice(non_byes,teams_left)
+        next_round_teams = non_byes === 0 ? []:tournament_teams_left.slice(0, non_byes)
+        for(let y = 0; y<(non_byes/2); y++){
+            let team_1 = this_round_teams.shift()
+            let team_2 = this_round_teams.pop()
+            let winner = simulateHelpers.simulateGame(team_1,team_2,'106',neutral=true)
+            next_round_teams.push(winner[0])
+        }
+        tournament_teams_left.length = 0
+        tournament_teams_left.push(...next_round_teams)
+        next_round_teams.length = 0
+        this_round_teams.length = 0
+    }
+    return tournament_teams_left[0]}
 
 const simulate_NHL_bracket = (bracket) => {
     team_1 = simulateHelpers.Series(bracket[0], bracket[3], 7,'104',1)

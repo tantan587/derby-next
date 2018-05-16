@@ -87,15 +87,18 @@ const createPastGamesArray = (all_teams) => {
 //function which simulates NBA, NFL, NHL, MLB - default set to 10 for now to modify later
 const simulateProfessionalLeague = (all_games_list, teams, sport_id, simulations = 10) => {
     const sport_teams = individualSportTeams(teams, sport_id)
+    //console.log(leagues)
     for(var x=0; x<simulations; x++){
-        all_games_list[sport_id].forEach(game => {game.play_game()})
+        all_games_list[sport_id].forEach(game => {
+            //console.log(game)
+            game.play_game()})
         sport_teams.sort(function(a,b){return b.wins-a.wins})
         //find both finalists
-        let finalist_1 = leagues[sport_id].playoffFunction(sport_teams.filter(team => team.conference === leagues[sport_id].conferences[0]))
-        let finalist_2 = leagues[sport_id].playoffFunction(sport_teams.filter(team => team.conference === leagues[sport_id].conferences[1]))
+        let finalist_1 = leagues.leagues[sport_id].playoffFunction(sport_teams.filter(team => team.conference === leagues.leagues[sport_id].conferences[0]))
+        let finalist_2 = leagues.leagues[sport_id].playoffFunction(sport_teams.filter(team => team.conference === leagues.leagues[sport_id].conferences[1]))
         let finalists = simulateHelpers.moreWins(finalist_1, finalist_2)
         finalists.forEach(team=>{team.finalist++})
-        let champion = sport_id === '102' ? simulateHelpers.Series(finalists[0], finalists[1],1, sport_id, 4,neutral = true):SeriesAgain(finalists[0], finalists[1],7, sport_id, 4)
+        let champion = sport_id === '102' ? simulateHelpers.Series(finalists[0], finalists[1],1, sport_id, 4,neutral = true):simulateHelpers.Series(finalists[0], finalists[1],7, sport_id, 4)
         champion.champions++
         sport_teams.forEach(team => {
             team.reset()})}
@@ -140,6 +143,37 @@ const simulateCFB = (all_games_list, teams, simulations = 10) => {
     return cfb_teams        
     }
 
+//function to simulate CBB - also figures out most likely march madness teams using formula
+const simulateCBB = (all_games_list, teams, simulations = 10) => {
+    const cbb_teams = individualSportTeams(teams, '106')
+    for(var x=0; x<simulations; x++){
+        all_games_list['106'].forEach(game => {game.play_game()})
+        cbb_teams.sort(function(a,b){return b.wins-a.wins})
+        //play the conference championship games, add winners to array conference champions
+        const conference_ids = [10601, 10602, 10603, 10604, 10605, 10606, 10607]
+        let conference_champions = conference_ids.map(id => {return leagues[106].playoffFunction(cbb_teams.filter(team => team.conference_id === id))})
+        //calculate there CFB playoff value, sort them from highest to lowest, and put the four highest teams into playoffs
+        cbb_teams.sort(function(a,b){return b.elo-a.elo})
+        cbb_teams.forEach(team => {
+            champ_boost = conference_champions.include(team) ? 1:0
+            team.calculateCFBValue(champ_boost)})
+        cfb_teams.sort(function(a,b){return b.cfb_value - a.cfb_value})
+        let playoffs = cfb_teams.slice(0,4)
+        playoffs.forEach(team=>{team.playoffs++})
+        //find finalists, add finalist value, play championship, add champ value
+        let finalist_1 = simulateHelpers.Series(playoffs[0],playoffs[3],1,'105',1,neutral=true)
+        let finalist_2 = simulateHelpers.Series(playoffs[1],playoffs[2],1,'105',1,neutral=true)
+        finalist_1.finalist++
+        finalist_2.finalist++
+        let champion = simulateHelpers.Series(finalist_1, finalist_2,1,'105', 2,neutral=true)
+        champion.champions++
+        cfb_teams.forEach(team =>{team.reset})
+    }
+    cfb_teams.forEach(team => {
+        team.averages(simulations)
+    })
+    return cfb_teams        
+    }
 
 async function work()
 {
