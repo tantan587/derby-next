@@ -30,6 +30,42 @@ class Game{
     }
     }
 
+    play_CBB_game(){
+        //need to add adjustment in this function for playoffs, neutral games
+        let results = simulateHelpers.simulateGame(this.home, this.away, this.sport_id)
+        if(results[0]===this.home){
+            this.all_simulate_results.home.wins += 1
+            this.all_simulate_results.away.losses += 1
+            this.last_result.home.wins++
+            this.last_result.away.losses++
+            this.home.cbb_rpi_WL.wins += .6
+            this.away.cbb_rpi_WL.losses += .6
+            this.home.cbb_teams_played.home_wins.push(away)
+            this.away.cbb_teams_played.away_losses.push(home)
+        }else{
+            this.all_simulate_results.home.losses += 1
+            this.all_simulate_results.away.wins += 1
+            this.last_result.away.wins++
+            this.last_result.home.losses++
+            this.home.cbb_rpi_WL.losses += 1.4
+            this.away.cbb_rpi_WL.wins += 1.4
+            this.home.cbb_teams_played.home_losses.push(away)
+            this.away.cbb_teams_played.away_wins.push(home)
+        }
+        this.home.cbb_all_teams_played.push(away)
+        this.away.cbb_all_teams_played.push(home)
+        }
+    
+
+    cbb_add_to_elo_array(){
+        if(last_result.home.wins === 1){
+            home.cbb_elo_wins.push(away.elo)
+            away.cbb_elo_losses.push(home.elo)
+        }else{
+            home.cbb_elo_losses.push(away.elo)
+            away.cbb_elo_wins.push(home.elo)
+        }
+    }
 
     /*this.homeWinPoints = []
         this.awayWinPoints = []

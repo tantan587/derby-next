@@ -45,7 +45,15 @@ class Team {
         this.totalFin = 0
         this.cfb_value = 0
         this.cbb_value = 0
-        this.cbb_game_quality = {top_25_wins: 0, top_50_wins: 0, top_100_wins: 0, bottom_200_losses: 0}
+        this.cbb_elo_wins = []
+        this.cbb_elo_losses = []
+        this.cbb_rpi_WL = {win: 0, loss: 0}
+        this.cbb_rpi_WP = 0 //this is winning percentage for RPI calculation
+        this.cbb_opponent_rpi_WP = 0 //this is the opponents in percentage
+        this.cbb_rpi_value = 0
+        this.cbb_rpi_rank = 0
+        this.cbb_all_teams_played = []
+        this.cbb_teams_played = {home_wins: [], away_wins: [], home_losses: [], away_losses: [], neutral_wins: [], neutral_losses: []}
     }
         
     get string (){
@@ -67,6 +75,20 @@ class Team {
     calculateCBBValue(){
         let alt_elo = Number(this.elo)/100
 
+    }
+
+    calculateRPIWinPercentage(){
+        this.cbb_rpi_WP = this.cbb_rpi_WL/(this.cbb_rpi_WL.win + this.cbb_rpi_WL.loss)
+    }
+
+    calculateOpponentWinPercentage(){
+        this.cbb_all_teams_played.forEach(team=>{this.cbb_opponent_rpi_WP += team.cbb_rpi_WP})
+    }
+
+    calculateRPI(){
+        let opponent_opponent_WP = 0
+        this.cbb_all_teams_played.forEach(team => {opponent_opponent_WP += cbb_opponent_rpi_WP})
+        this.cbb_rpi_value = this.cbb_rpi_WP/4 + this.cbb_opponent_rpi_WP/2 + opponent_opponent_WP/4
     }
 /*     def adjRWins(this,winVal): #formula to adjust regular season wins by win Value: 1 is 1, 0 is loss
         lVal = abs(winVal - 1)

@@ -147,17 +147,28 @@ const simulateCFB = (all_games_list, teams, simulations = 10) => {
 const simulateCBB = (all_games_list, teams, simulations = 10) => {
     const cbb_teams = individualSportTeams(teams, '106')
     for(var x=0; x<simulations; x++){
-        all_games_list['106'].forEach(game => {game.play_game()})
+        all_games_list['106'].forEach(game => {game.play_CBB_game()})
+        //below needs to calculate conference wins, not overall wins
         cbb_teams.sort(function(a,b){return b.wins-a.wins})
         //play the conference championship games, add winners to array conference champions
         const conference_ids = [10601, 10602, 10603, 10604, 10605, 10606, 10607]
         let conference_champions = conference_ids.map(id => {return leagues[106].playoffFunction(cbb_teams.filter(team => team.conference_id === id))})
-        //calculate there CFB playoff value, sort them from highest to lowest, and put the four highest teams into playoffs
-        cbb_teams.sort(function(a,b){return b.elo-a.elo})
-        cbb_teams.forEach(team => {
-            champ_boost = conference_champions.include(team) ? 1:0
-            team.calculateCFBValue(champ_boost)})
-        cfb_teams.sort(function(a,b){return b.cfb_value - a.cfb_value})
+        //calculate RPI
+        cbb_teams.forEach(team => {team.calculateRPIWinPercentage()})
+        cbb_teams.forEach(team => {team.calculateOpponentWinPercentage()})
+        cbb_teams.forEach(team => {team.calculateRPI()})
+        //sort by RPI, add in the rank of the RPI for each team
+        cbb_teams.sort(function(a,b){return b.cbb_rpi_value - a.cbb_rpi_value})
+        let rank = 1
+        cbb_teams.forEach(team =>{
+            team.cbb_rpi_rank = rank
+            rank++
+        })
+        let rpi_thresholds = [cbb_teams.cbb_rpi_value[30], cbb_teams.cbb_rpi_value[50],
+                        cbb_teams.cbb_rpi_value[75], cbb_teams.cbb_rpi_value[100],
+                        cbb_teams.cbb_rpi_value[135], cbb_teams.cbb_rpi_value[160],
+                        cbb_teams.cbb_rpi_value[200], cbb_teams.cbb_rpi_value[240]]
+        
         let playoffs = cfb_teams.slice(0,4)
         playoffs.forEach(team=>{team.playoffs++})
         //find finalists, add finalist value, play championship, add champ value
