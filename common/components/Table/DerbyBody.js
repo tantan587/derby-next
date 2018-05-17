@@ -49,8 +49,8 @@ class DerbyBody extends React.Component {
             classes={{root: classes.deepAlign}}
             padding={header.disablePadding ? 'none' : 'default'}
             numeric={header.numeric}>
-            {header.id == 'logo_url' && n['logo_url'] !== 'none' && n['logo_url']
-              ?  <img src={n['logo_url']} width="40" height="40"/>
+            {header.imageInd === true && n[header.id] && n[header.id] !== 'none' 
+              ?  <img src={n[header.id]} width="40" height="40"/>
               : header.button 
                 ? <Button
                   key={i} 

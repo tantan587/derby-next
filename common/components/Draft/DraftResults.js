@@ -56,7 +56,7 @@ class DraftResults extends React.Component {
           myHeaders = {[
             {label: 'Pick', key: 'overallPick'},
             {label: 'Owner Name', key: 'owner_name'},
-            {key: 'logo_url', sortId:'team_name'},
+            {key: 'logo_url', sortId:'team_name', imageInd:true},
             {label: 'Team Name', key: 'team_name'},
             {label: 'Conference', key: 'conference'},
             {label: 'Sport League', key: 'sport'},

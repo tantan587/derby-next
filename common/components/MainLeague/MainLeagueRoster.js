@@ -35,7 +35,7 @@ class MainLeagueRoster extends React.Component {
       owners={this.props.activeLeague.owners}
       myOwnerId={this.props.activeLeague.owners.filter(x => x.user_id === this.props.user.id)[0].owner_id}
       myHeaders = {[
-        {label: 'Logo', key: 'logo_url', sortId:'team_name'},
+        {label: 'Logo', key: 'logo_url', sortId:'team_name', imageInd:true},
         {label: 'Team Name', key: 'team_name'},
         {label: 'Sport League', key: 'sport'},
         {label: 'Conference', key: 'conference'},

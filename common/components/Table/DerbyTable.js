@@ -59,7 +59,8 @@ class DerbyTable extends React.Component {
       numeric: false,//localRows.length > 0 && !header.button ? !isNaN(localRows[0][header.key]) : false, 
       disablePadding: true,
       label: header.label,
-      button:header.button
+      button:header.button,
+      imageInd:header.imageInd
     }))
   
     const sliceStart = usePagination ?  page * rowsPerPage : 0

@@ -27,11 +27,15 @@ class Roster extends React.Component {
 
     if (draft.filterInfo['tab'] && draft.filterInfo['tab'].value)
     {
-      ownerId = activeLeague.owners.filter(x => x['owner_name'] === draft.filterInfo['tab'].value)[0].owner_id
-
-      draftedTeams = draft.owners[ownerId].map((x,i) => {
-        return {pick:(i+1)+' ('+(x.pick+1)+')', ...teams[x.teamId]}
-      })
+      const owner = activeLeague.owners.filter(x => x['owner_name'] === draft.filterInfo['tab'].value)
+      
+      if (owner[0])
+      {
+        ownerId = owner[0].owner_id
+        draftedTeams = draft.owners[ownerId].map((x,i) => {
+          return {pick:(i+1)+' ('+(x.pick+1)+')', ...teams[x.teamId]}
+        })
+      }
     }
 
     return (
@@ -50,7 +54,7 @@ class Roster extends React.Component {
           ]}
           myHeaders = {[
             {label: 'Pick', key: 'pick'},
-            {key: 'logo_url', sortId:'team_name'},
+            {key: 'logo_url', sortId:'team_name', imageInd:true},
             {key: 'team_name', sortId:'team_name'},
             {label: 'Sport League', key: 'sport'},
             {label: 'Conference', key: 'conference'},

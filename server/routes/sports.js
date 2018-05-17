@@ -62,7 +62,7 @@ const getStandings = (league_id, res, type) =>{
 
   var str = `select x.*, y.owner_id, y.owner_name from
   (select a.team_id, a.key, a.city, a.name, a.logo_url,
-    c.conference_id, c.display_name, d.sport_name, b.wins,
+    c.conference_id, c.display_name, d.sport_name, d.sport_id, b.wins,
      b.losses, b.ties, e.reg_points from
   sports.team_info a, sports.standings b, sports.conferences c,
   sports.leagues d, fantasy.team_points e
@@ -90,6 +90,7 @@ const getStandings = (league_id, res, type) =>{
             team_id:team.team_id,
             team_name:team.sport_name !== 'EPL' ? team.city + ' ' + team.name : team.name,
             sport:team.sport_name,
+            sport_id:team.sport_id,
             conference:team.display_name,
             conference_id:team.conference_id,
             wins: team.wins,

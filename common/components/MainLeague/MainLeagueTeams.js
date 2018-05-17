@@ -50,7 +50,7 @@ class MainLeagueTeams extends React.Component {
           ]}
         orderInd={true}
           myHeaders = {[
-            {label: 'Logo', key: 'logo_url', sortId:'team_name'},
+            {label: 'Logo', key: 'logo_url', sortId:'team_name', imageInd:true},
             {label: 'Team Name', key: 'team_name'},
             {label: 'Owner Name', key: 'owner_name'},
             {label: 'Sport League', key: 'sport'},

@@ -79,7 +79,7 @@ class TeamDisplay extends React.Component {
             },
           ]}
           myHeaders = {[
-            {key: 'logo_url', sortId:'team_name'},
+            {key: 'logo_url', sortId:'team_name',imageInd:true},
             {label: 'Team Name', key: 'team_name'},
             {key: 'team_id', 
               button:{
