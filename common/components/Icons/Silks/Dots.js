@@ -4,6 +4,7 @@ const Dots = ({ st0, st1 }) => {
   // const st1 = '#FFFFFF'
 
   return (
+    <td style={{ height: 50, width: 50, borderBottom: '1px solid white' }}>
       <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 91.7 91.3">
         {/* <style type="text/css">
       	.st0{fill:#CCCCCC;}
@@ -46,6 +47,7 @@ const Dots = ({ st0, st1 }) => {
           <path fill={st1 || '#231F20'} d="M60.8,84.8c-1.2-1.4-3-2.2-4.8-2.2l0,0c-3.4,0-6.2,2.7-6.4,6.1h10.7L60.8,84.8z"/>
           </g>
         </svg>
+      </td>
   )
 }
 

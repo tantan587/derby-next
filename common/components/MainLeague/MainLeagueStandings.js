@@ -26,6 +26,9 @@ const styleProps = {
     backgroundImage: 'url("https://wallpapertag.com/wallpaper/full/3/a/b/270875-chalkboard-background-2400x1943-samsung-galaxy.jpg")',
   },
   Header: {
+    TableHead: {
+      backgroundColor: 'transparent'
+    },
     TableCell: {
       borderRight: '1px solid white',
       borderLeft: '1px solid white',

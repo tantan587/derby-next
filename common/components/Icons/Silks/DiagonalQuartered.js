@@ -4,6 +4,7 @@ const DiagonalQuartered = ({ st0, st1 }) => {
   // const st1 = '#FFFFFF'
 
   return (
+    <td style={{ height: 50, width: 50, borderBottom: '1px solid white' }}>
       <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 91.7 91.3">
         {/* <style type="text/css">
       	.st0{fill:#CCCCCC;}
@@ -29,9 +30,10 @@ const DiagonalQuartered = ({ st0, st1 }) => {
         </g>
         <g id="pattern">
         	<polygon fill={st1 || '#231F20'} points="31.8,18.1 16.6,27.1 42.9,53.4 43.1,53.2 43.2,53.4 69.5,27.1 54.3,18.1 	"/>
-        	<polygon class="st1" points="43.1,53.2 42.9,53.4 23.7,72.6 25.9,88.6 60.3,88.6 62.4,72.6 43.2,53.4 	"/>
+        	<polygon fill={st1 || '#231F20'} points="43.1,53.2 42.9,53.4 23.7,72.6 25.9,88.6 60.3,88.6 62.4,72.6 43.2,53.4 	"/>
         </g>
       </svg>
+    </td>
   )
 }
 

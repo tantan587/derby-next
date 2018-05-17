@@ -4,6 +4,7 @@ const Chevrons = ({ st0, st1 }) => {
   // const st1 = '#FFFFFF'
 
   return (
+    <td style={{ height: 50, width: 50, borderBottom: '1px solid white' }}>
       <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 91.7 91.3">
         {/* <style type="text/css">
       	.st0{fill:#CCCCCC;}
@@ -33,6 +34,7 @@ const Chevrons = ({ st0, st1 }) => {
           <polygon fill={st1 || '#231F20'} points="21.4,55.7 22.1,61.2 43,51.6 64,61.3 64.7,55.8 43,45.7 	"/>
         </g>
       </svg>
+    </td>
   )
 }
 

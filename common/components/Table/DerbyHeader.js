@@ -9,7 +9,7 @@ import { withStyles } from 'material-ui/styles'
 
 const styles = theme => ({
   header:{
-    // backgroundColor:'#48311A',
+    backgroundColor:'#48311A',
     color:'white',
   },
   deeppadding :
@@ -47,7 +47,7 @@ class DerbyHeader extends React.Component {
 
     render() {
       const { order, orderBy, orderByDisplay, columnData, orderInd, classes, styleProps } = this.props
-
+      console.log('HELLO', styleProps && styleProps.TableHead)
       return (
         <TableHead className={classes.header} style={styleProps && styleProps.TableHead}>
           <TableRow style={{overflow: 'auto'}} style={styleProps && styleProps.TableRow}>
@@ -69,8 +69,8 @@ class DerbyHeader extends React.Component {
                       enterDelay={300}
                     >
                       <TableSortLabel
-                        // classes={{root: classes.deepheader, icon: orderByDisplay !== column.id && classes.icon}}
-                        classes={{root: classes.deepheader}}
+                        classes={{root: classes.deepheader, icon: orderByDisplay !== column.id && classes.icon}}
+                        // classes={{root: classes.deepheader}}
                         style={styleProps && styleProps.TableSortLabel}
                         active={orderByDisplay === column.id}
                         direction={order}

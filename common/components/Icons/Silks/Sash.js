@@ -4,6 +4,7 @@ const Sash = ({ st0, st1 }) => {
   // const st1 = '#FFFFFF'
 
   return (
+    <td style={{ height: 50, width: 50, borderBottom: '1px solid white' }}>
       <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 91.7 91.3">
         {/* <style type="text/css">
       	.st0{fill:#CCCCCC;}
@@ -31,6 +32,7 @@ const Sash = ({ st0, st1 }) => {
         	<polygon fill={st1 || '#231F20'} points="13,29.2 60.3,88.1 62.5,72.8 22.8,23.4 	"/>
         </g>
       </svg>
+    </td>
   )
 }
 
