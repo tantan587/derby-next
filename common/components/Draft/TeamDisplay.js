@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { withStyles } from 'material-ui'
 import DerbyTableContainer from '../Table/DerbyTableContainer'
 import { connect } from 'react-redux'
 import {handleFilterTab} from '../../actions/draft-actions'
