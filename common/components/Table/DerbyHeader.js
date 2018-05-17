@@ -69,7 +69,8 @@ class DerbyHeader extends React.Component {
                       enterDelay={300}
                     >
                       <TableSortLabel
-                        classes={{root: classes.deepheader, icon: orderByDisplay !== column.id && classes.icon}}
+                        // classes={{root: classes.deepheader, icon: orderByDisplay !== column.id && classes.icon}}
+                        classes={{root: classes.deepheader}}
                         style={styleProps && styleProps.TableSortLabel}
                         active={orderByDisplay === column.id}
                         direction={order}
