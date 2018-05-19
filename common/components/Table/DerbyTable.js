@@ -37,7 +37,7 @@ class DerbyTable extends React.Component {
     this.setState({ rowsPerPage: event.target.value })
   };
   render() {
-    const { usePagination, rows, headers, openDialog, orderInd, extraTableRow, styleProps } = this.props
+    const { usePagination, rows, headers,orderInd, extraTableRow, styleProps } = this.props
     const {order, orderBy, orderByDisplay, rowsPerPage, page} = this.state
 
     let localRows = orderBy === '' ? rows : rows.sort((a, b) =>
@@ -60,7 +60,8 @@ class DerbyTable extends React.Component {
       disablePadding: true,
       label: header.label,
       button:header.button,
-      imageInd:header.imageInd
+      imageInd:header.imageInd,
+      disableSort:header.disableSort
     }))
 
     const sliceStart = usePagination ?  page * rowsPerPage : 0

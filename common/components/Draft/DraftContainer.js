@@ -165,7 +165,6 @@ class DraftContainer extends React.Component {
   }
 
   handleDraftTick = (counter) => {
-
     this.setState({countdownTime: counter})
       
   }
@@ -174,14 +173,14 @@ class DraftContainer extends React.Component {
   }
 
 
-  onDraftButton = () => {
+  onDraftButton = (teamId) => {
     const {activeLeague, draft} = this.props
     const myTurn = this.state.myDraftPosition ===
       activeLeague.draftOrder[draft.pick].ownerIndex
     if(this.props.draft.mode ==='live' && 
-    this.props.draft.queue.length > 0 && myTurn)
+    (this.props.draft.queue.length > 0 || teamId) && myTurn)
       this.socket.emit('draft', 
-        {teamId: draft.queue[0],
+        {teamId: teamId ? teamId : draft.queue[0],
           clientTs:new Date()
         })
   }
@@ -218,7 +217,6 @@ class DraftContainer extends React.Component {
   }
 
   handleAddQueueResponse = (payload) =>{
-    console.log(payload)
     if(payload.ownerId === this.props.activeLeague.my_owner_id)
     {
       if(payload.success)
@@ -258,8 +256,13 @@ class DraftContainer extends React.Component {
     }))
   }
 
-  onStartTimeChange = event => {
-    this.socket.emit('startTime',event.target.value)
+  onTimeToDraftChange = event => {
+    if(event.target.value > 0)
+      this.socket.emit('timeToDraft',event.target.value)
+  }
+
+  onRestartDraft = () => {
+    this.socket.emit('restartDraft')
   }
 
   onTimeout = () => {
@@ -291,11 +294,14 @@ class DraftContainer extends React.Component {
     const { classes, activeLeague ,draft, teams } = this.props
     const { preDraft, countdownTime, startTime,
       snackbarOpen,snackbarMessage, ownerMap} = this.state
-
+    
+    
     const currDraftPick = draft.pick ? draft.pick : 0
 
-    const myTurn = this.state.myDraftPosition ===
+    const myTurn = activeLeague.draftOrder[currDraftPick] && this.state.myDraftPosition ===
       activeLeague.draftOrder[currDraftPick].ownerIndex
+
+    const allowDraft = draft.mode==='live' && myTurn 
 
     return (
 
@@ -338,7 +344,9 @@ class DraftContainer extends React.Component {
                     <Grid container direction={'column'}>
                       <Grid item xs={12}>
                         <CenteredTabs
-                          onAddQueue={this.onAddQueue}/>
+                          onAddQueue={this.onAddQueue}
+                          onDraftButton={this.onDraftButton}
+                          allowDraft={allowDraft}/>
                       </Grid>
                       <Grid item xs={12} style={{backgroundColor:'white'}} >
                         <DraftHeader 
@@ -353,11 +361,14 @@ class DraftContainer extends React.Component {
                           this.onTimeout : null}>
                         {draft.mode === 'timeout' ? 'Continue' : 'Pause'}
                       </Button>
+                      <Button onClick={this.onRestartDraft}>
+                        {'Restart Draft'}
+                      </Button>
                       <form  noValidate>
                         <TextField
                           id="number"
-                          label="Start Time (secs)"
-                          onChange={this.onStartTimeChange}
+                          label="Draft Time (secs)"
+                          onChange={this.onTimeToDraftChange}
                           type="number"
                           defaultValue="5"
                           InputLabelProps={{
@@ -384,22 +395,27 @@ class DraftContainer extends React.Component {
                         <DraftQueue  items={draft.queue} teams={teams} updateOrder={this.onUpdateQueue}/>
                       </Grid>
                       <Grid item xs={12} style={{marginBottom:5}}>
-                        <Button style={{fontSize:14, backgroundColor:'#EBAB38',
-                          marginTop:10, marginLeft:-5, color:'white', width:'90%'}} 
-                        onClick={() => this.onDraftButton()}>
+                        <Button
+                          disabled={!allowDraft} 
+                          style={{fontSize:14, 
+                            backgroundColor:allowDraft ? '#EBAB38' : '#b2b2b2',
+                            fontStyle:allowDraft ? 'normal' : 'italic',
+                            marginTop:10, marginLeft:'-5%', color:'white', width:'90%'}} 
+                          onClick={() => this.onDraftButton()}>
                           DRAFT #1 TEAM
                         </Button>
                       </Grid>
                       <Divider style={{backgroundColor:'white'}}/>
                       <Grid item xs={12}>
                         <div style={{height:300, maxHeight:300}}>
-                          <div style={{color:'white', display:'inline-block'}}>
-                            <ChatIcon/>
+                          <div style={{color:'white'}}>
+                            
                             {/* //viewBox="0 -10 24 34" style={{width:24,height:34}}/> */}
                           </div>
+                          <img src={'/static/icons/Derby_Chat_Bubble.svg'} viewBox="0 -10 24 64" style={{marginTop:5, width:24,height:20}}/>
                           <Typography key={'head'} variant='subheading' 
-                            style={{fontFamily:'HorsebackSlab', color:'white',
-                              paddingTop:15, paddingBottom:15, marginLeft:10,display:'inline-block'}}>
+                            style={{fontFamily:'HorsebackSlab', color:'white',marginTop:-0,
+                              paddingTop:0, paddingBottom:0, marginLeft:10,display:'inline-block'}}>
                               Chat
                           </Typography>
                         </div>

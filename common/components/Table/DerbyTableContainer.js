@@ -35,7 +35,6 @@ class DerbyTableContainer extends React.Component {
   render() {
     const { usePagination, myHeaders, filters, openDialog, passUpFilterInfo, orderInd, extraTableRow, styleProps } = this.props
     const {myRows, allRows} = this.state
-
     return (
       <div>
         {this.props.title

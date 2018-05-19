@@ -1,6 +1,5 @@
 const knex = require('../../db/connection')
 const C = require('../../../common/constants')
-const draftHelpers = require('./draftHelpers')
 
 function handleReduxResponse(res, code, action){
   res.status(code).json(action)
@@ -42,7 +41,7 @@ const getLeague = (league_id, user_id, res, type) =>{
               draft_position: draft_position.indexOf(owner.owner_id)
             })
         })
-        const draftOrder = draftHelpers.GetDraftOrder(total_teams,owners.length)
+        const draftOrder = GetDraftOrder(total_teams,owners.length)
         return handleReduxResponse(res,200, {
           type: type,
           league_name : league_name,
@@ -63,6 +62,21 @@ const getLeague = (league_id, user_id, res, type) =>{
     })
 
 
+}
+
+const GetDraftOrder = (totalTeams, totalOwners) =>
+{
+  let draftOrder = []
+  for(let round = 0; round < totalTeams; round++)
+  {
+    let ownerIndex = round % 2 === 0 
+      ? Array.apply(null, {length: totalOwners}).map(Number.call, Number)
+      : Array.apply(null, {length: totalOwners}).map(Number.call, Number).reverse()
+
+    ownerIndex.map((ownerIndex,pick) => draftOrder.push({pick:pick + round*totalOwners, ownerIndex:ownerIndex}))
+
+  }
+  return draftOrder
 }
 
 const updateTeamPointsTable = (newTeamPoints) =>
@@ -309,8 +323,6 @@ const formatGameDate = (date) => {
   return `${month}/${day}/${year}`
 }
 
-//const getSports
-
 module.exports = {
   getLeague,
   updateTeamPoints,
@@ -319,5 +331,6 @@ module.exports = {
   updatePoints,
   getDayCountStr,
   formatAMPM,
-  formatGameDate
+  formatGameDate,
+  GetDraftOrder
 }

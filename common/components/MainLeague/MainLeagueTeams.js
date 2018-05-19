@@ -19,50 +19,6 @@ const styles = {
   }
 }
 
-// const myObject = {
-//   Table: {
-//     backgroundColor: 'blue'
-//   },
-//   Header: {
-//     TableHead: {
-//       backgroundColor: 'purple'
-//     },
-//     TableCell: {
-//       fontSize: 8
-//     },
-//     TableRow: {
-//       fontSize: 8
-//     },
-//     TableSortLabel: {
-//       fontSize: 8
-//     },
-//   },
-//   Body: {
-//     TableBody: {
-//       backgroundColor: 'purple'
-//     },
-//     TableCell: i => ({
-//       fontSize: 14,
-//       fontWeight: i === 2 && 700
-//     }),
-//     TableRow: {
-//       fontSize: 8
-//     },
-//     striped: '#abedfc'
-//   },
-//   Footer: {
-//     TableFooter: {
-//       backgroundColor: 'red'
-//     },
-//     TableRow: {
-//       color: 'blue'
-//     },
-//     TablePagination: {
-//       backgroundColor: 'red'
-//     },
-//   }
-// }
-
 class MainLeagueTeams extends React.Component {
 
 

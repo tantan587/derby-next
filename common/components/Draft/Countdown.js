@@ -50,10 +50,6 @@ class Countdown extends React.Component {
   }
 }
 
-Countdown.propTypes = {
-  countdownTime: PropTypes.number,
-}
-
 Countdown.defaultProps = {
   countdownTime: 20,
 }

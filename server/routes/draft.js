@@ -15,6 +15,12 @@ router.post('/enterdraft', (req, res, next)  => {
       handleResponse(res, 500, err)})
 })
 
+router.post('/savedraft', authHelpers.loginRequired, (req, res, next)  => {
+  return draftHelpers.enterDraftToDb(req.body.allTeams, req.body.league_id, res)
+    .catch((err) => {
+      handleResponse(res, 500, err) })
+})
+
 const getDraft = async (room_id, owner_id) =>
 {
   const strTeams = `select b.team_id from draft.settings a, fantasy.team_points b

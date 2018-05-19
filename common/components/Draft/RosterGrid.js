@@ -3,6 +3,28 @@ import DerbyTableContainer from '../Table/DerbyTableContainer'
 import { connect } from 'react-redux'
 import TeamsDialog from '../TeamsDialog/TeamsDialog'
 
+const styleProps = {
+  Header: {
+    TableCell: {
+      borderLeft: '0.1em solid #b2b2b2',
+      borderRight: '0.1em solid #b2b2b2'
+    }
+  },
+  Body: {
+    striped:'#d3d3d3',
+    TableBody: {
+      //backgroundColor: 'green'
+    },
+    TableCell: (i, n) => ({
+      width: i === 0 ? 100: 40,
+      color: 'black',
+      borderLeft: '0.1em solid #b2b2b2',
+      borderRight: '0.1em solid #b2b2b2'
+    }),
+  }
+}
+
+
 class RosterGrid extends React.Component {
   
   render() {
@@ -14,14 +36,13 @@ class RosterGrid extends React.Component {
       if(sport.conf_strict && sport.num === sport.conferences.length)
       {
         sport.conferences.forEach(conf => headers.push( 
-          {label: sport.sport + '-' + conf.conference, key: conf.conference_id, imageInd:true}))
+          {label: sport.sport + '-' + conf.conference, key: conf.conference_id, imageInd:true, disableSort:true}))
       }
       else{
         let arr = Array.apply(null, {length: sport.num}).map(Number.call, Number)
-        console.log(arr)
         arr.forEach(i => {
           headers.push( 
-            {label: sport.sport + '-' + (i+1), key: sport.sport_id + '-'+(i+1),  imageInd:true})
+            {label: sport.sport + '-' + (i+1), key: sport.sport_id + '-'+(i+1),  imageInd:true,disableSort:true})
           nonStrictLeagueCount[sport.sport_id] = 1
         }
         )
@@ -46,8 +67,6 @@ class RosterGrid extends React.Component {
       rows.push(row)
       Object.keys(nonStrictLeagueCount).map(x => {nonStrictLeagueCount[x] = 1})
     })
-    console.log(rows, headers, nonStrictLeagueCount)
-
     return (
       <div>
         <TeamsDialog />
@@ -55,7 +74,8 @@ class RosterGrid extends React.Component {
           passUpFilterInfo={this.passUpFilterInfo}
           usePagination={false}
           myRows={rows}
-          myHeaders = {headers}/>
+          myHeaders = {headers}
+          styleProps={styleProps}/>
       </div>
     )
   }

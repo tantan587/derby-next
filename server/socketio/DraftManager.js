@@ -1,20 +1,23 @@
 const draftHelpers = require('../routes/helpers/draftHelpers')
+const fantasyHelpers = require('../routes/helpers/fantasyHelpers')
 const socketIoHelpers = require('./socketioHelpers')
 const Owners = require('./Draft/Owners')
 
 function DraftManager(io, roomId) {
   
   var that = this
-  const timeToDraft = 5
+  let timeToDraft = 5
   var draftIsUp = false
  
   this.Create = async () =>
   {
     const resp = await socketIoHelpers.GetDraftInfo(roomId)
     that.draftPosition = resp.draft_position
-    that.draftOrder =  draftHelpers.GetDraftOrder(resp.total_teams,resp.draft_position.length)
+    that.draftOrder =  fantasyHelpers.GetDraftOrder(resp.total_teams,resp.draft_position.length)
     that.allTeams = Array.from(resp.teams)
     that.time = new Date(resp.start_time)- new Date()
+    that.totalPicks = resp.totalPicks
+    that.leagueId = resp.league_id
     that.owners = new Owners()
     that.owners.CreateOwners(resp.owners, resp.queueByOwner, roomId, resp.teams)
     that.counter = 0
@@ -50,28 +53,43 @@ function DraftManager(io, roomId) {
       {state:'left', owner_id:ownerId})
 
     //for now, start again when everyone leaves
-    if(!io.sockets.adapter.rooms[roomId])
-    {
-      socketIoHelpers.InsertDraftAction(roomId, 'server', 'STATE', {'mode':'pre'})
-      this.Start()
-    }
+    // if(!io.sockets.adapter.rooms[roomId])
+    // {
+    //   socketIoHelpers.InsertDraftAction(roomId, 'server', 'STATE', {'mode':'pre'})
+    //   this.StartAgain()
+    // }
   }
 
-  this.StartAgain = async (time) =>
+  this.EndDraft = () =>
+  {
+    socketIoHelpers.InsertDraftAction(roomId, 'server', 'STATE', {'mode':'post'})
+    emitModeChange('post')
+    console.log('saving Teams')
+    draftHelpers.enterDraftToDb(that.owners.AssembleTeams(), that.leagueId)
+    draftIsUp = false
+
+  }
+
+  this.StartAgain = async () =>
   {
     draftIsUp = false
     await socketIoHelpers.RestartDraft(roomId)
     that.pick = 0
-    that.time = time
+    that.time = 5000
     that.owners.ResetEligible()
-    let date = new Date(new Date().getTime() + time)
+    let date = new Date(new Date().getTime() + that.time)
     io.in(roomId).emit('reset', {draftStartTime: date.toJSON()})
     waitToStartDraft()
   }
 
+  this.SetTimeToDraft = async (inpTimeToDraft) =>
+  {
+    timeToDraft = inpTimeToDraft
+  }
+
   this.DraftedTeam = (socketId, data) => { 
     const ownerId = that.owners.GetOwnerIdFromSocketId(socketId)
-    let resp = that.owners.TryDraft(ownerId,data.teamId)
+    let resp = that.owners.TryDraft(ownerId,data.teamId, that.pick)
     if (resp) 
       draftTeam(ownerId, data.teamId, resp, data.clientTs)
   }
@@ -133,25 +151,31 @@ function DraftManager(io, roomId) {
   }
 
   const waitToAutoDraft = (timeOnClock) => {
-    that.counter = timeOnClock
-    clearTimers()
-    emitDraftTick()
-  
-    that.timer = setInterval(() => {
-      if(that.counter === 0){
-        clearInterval(that.timer)
-        const ownerId = getCurrentOwnerId()
-        const teamId = getAutoDraftTeam(ownerId)
-        let draftResult = that.owners.TryDraft(ownerId,teamId)
-
-        draftTeam(ownerId,teamId, draftResult)
-        return
-      }
-      that.counter -= 1
+    if(that.pick >= that.totalPicks)
+    {
+      this.EndDraft()
+    }
+    else{
+      that.counter = timeOnClock
+      clearTimers()
       emitDraftTick()
-      console.log('counting in autodraft')
-      
-    }, 1000)
+    
+      that.timer = setInterval(() => {
+        if(that.counter === 0){
+          clearInterval(that.timer)
+          const ownerId = getCurrentOwnerId()
+          const teamId = getAutoDraftTeam(ownerId)
+          let draftResult = that.owners.TryDraft(ownerId,teamId, that.pick)
+
+          draftTeam(ownerId,teamId, draftResult)
+          return
+        }
+        that.counter -= 1
+        emitDraftTick()
+        console.log('counting in autodraft')
+        
+      }, 1000)
+    }
   }
 
   //the team id needs to be verified before this function is hit.

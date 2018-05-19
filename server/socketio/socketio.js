@@ -60,11 +60,19 @@ const draftRoom = (io, socket) =>
     io.in(roomId).emit('message', data)
   })
 
-  socket.in(roomId).on('startTime', async startTime => {
+  socket.in(roomId).on('restartDraft', async () => {
     
     if(draftIsGood())
     {
-      draftManagers[roomId].StartAgain(startTime*1000)
+      draftManagers[roomId].StartAgain()
+    }
+  })
+
+  socket.in(roomId).on('timeToDraft', async startTime => {
+    
+    if(draftIsGood())
+    {
+      draftManagers[roomId].SetTimeToDraft(startTime)
     }
   })
 

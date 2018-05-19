@@ -29,32 +29,12 @@ router.post('/oneteam',  (req, res, next)  => {
       handleResponse(res, 500, err)})
 })
 
-router.post('/savedraft', authHelpers.loginRequired, (req, res, next)  => {
-  return enterDraftToDb(req, res)
-    .then(() => {
-      return fantasyHelpers.updateFantasy(req.body.league_id, res)
-    })
-    .catch((err) => {
-      handleResponse(res, 500, err) })
-})
-
 function handleReduxResponse(res, code, action){
   res.status(code).json(action)
 }
 
 function handleResponse(res, code, statusMsg) {
   res.status(code).json({status: statusMsg})
-}
-
-const enterDraftToDb = (req, res) =>
-{
-  const dataToInput = req.body.allTeams.map(team => {team.league_id = req.body.league_id; return team})
-  return knex.withSchema('fantasy').table('rosters')
-    .where('league_id', req.body.league_id).del()
-    .then(() =>
-    {
-      return knex.withSchema('fantasy').table('rosters').insert(dataToInput)
-    })
 }
 
 const getStandings = (league_id, res, type) =>{

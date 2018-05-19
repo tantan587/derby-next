@@ -40,14 +40,20 @@ function Owners() {
     return owners[ownerId].GetNextTeam()
   }
 
-  this.TryDraft = (ownerId, teamId) =>
+  this.TryDraft = (ownerId, teamId, pick) =>
   {
-    return owners[ownerId].TryDraft(teamId)
+    return owners[ownerId].TryDraft(teamId,pick)
   }
 
   this.RemoveTeam = (teamId) =>
   {
     Object.values(owners).map(x => x.RemoveTeam(teamId))
+  }
+
+  this.AssembleTeams = () =>{
+    return Object.keys(owners).map(x => {
+      return owners[x].AssembleTeams().map(team => {
+        return {...team, owner_id:x}})}).reduce((x,y) => {return x.concat(y)})
   }
 
   this.WhoIsInDraft = () =>

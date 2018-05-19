@@ -1,40 +1,18 @@
 import React from 'react'
-import PropTypes from 'prop-types'
-import { withStyles } from 'material-ui'
 import DerbyTableContainer from '../Table/DerbyTableContainer'
 import { connect } from 'react-redux'
 import {handleFilterTab} from '../../actions/draft-actions'
 import TeamsDialog from '../TeamsDialog/TeamsDialog'
 
-const styles = theme => ({
-  greenFullCircle: {
-    width: '15px',
-    height: '15px',
-    borderRadius: '50%',
-    backgroundColor:'green',
-  },
-  greenOutlineCircle: {
-    width: '11px',
-    height: '11px',
-    borderRadius: '50%',
-    borderColor : 'green',
-    borderWidth:2,
-    border:'solid'
-  },
-  button : {
-    backgroundColor: theme.palette.secondary.A700,
-    color: theme.palette.secondary.A100,
-  },
-  banner : {
-    color: theme.palette.secondary[100],
-    backgroundColor: theme.palette.primary[500],
-  }
-})
-
 class TeamDisplay extends React.Component {
   addItem = (team) =>
   {
     this.props.onAddQueue(team)
+  }
+
+  draftTeam = (team) =>
+  {
+    this.props.onDraftButton(team)
   }
 
   componentWillMount() {
@@ -50,19 +28,21 @@ class TeamDisplay extends React.Component {
     if (filterInfo.type === 'tab')
       newFilterInfo['dropdown'] = null
 
-    console.log(newFilterInfo)
-
     this.props.onFilterTab(newFilterInfo)
   }
 
   render() {
-    const {  draft,teams } = this.props
+    const {  draft,teams, allowDraft} = this.props
     const availableTeams = draft.availableTeams
     const queue = draft.queue
     let teamsToShow = []
     availableTeams.map(teamId => {
-      if(queue.indexOf(teamId) === -1)
+      if(!draft.eligibleTeams.includes(teamId))
+        teamsToShow.push({...teams[teamId],disableQueue:true, labelOverride:'Not eligible' })
+      else if(queue.indexOf(teamId) === -1)
         teamsToShow.push(teams[teamId])
+      else
+        teamsToShow.push({...teams[teamId],disableQueue:true, labelOverride:'added' })
     })
     if (draft.filterInfo['tab'])
       teamsToShow = draft.filterInfo['tab'].value ?
@@ -79,6 +59,21 @@ class TeamDisplay extends React.Component {
     if (draft.filterInfo['search'] && draft.filterInfo['search'].value)
       teamsToShow = teamsToShow.filter(x =>
         x[draft.filterInfo['search'].key].toLowerCase().includes(draft.filterInfo['search'].value.toLowerCase()))
+
+
+    if (teamsToShow && !allowDraft)
+    {
+      teamsToShow = teamsToShow.map(team => {return {...team,disableDraft:true }})
+    }
+    else{
+      teamsToShow = teamsToShow.map(team => {
+        if (!draft.eligibleTeams.includes(team.team_id))
+          return {...team,disableDraft:true }
+        else
+          return team
+      })
+    }
+
 
     return (
       <div>
@@ -108,6 +103,9 @@ class TeamDisplay extends React.Component {
             {label: 'Team Name', key: 'team_name'},
             {key: 'team_id',
               button:{
+                disabledBackgroundColor:'#d3d3d3',
+                disabled:'disableQueue',
+                labelOverride:'true',
                 onClick:this.addItem,
                 label:'Add to Queue',
                 color:'white',
@@ -115,7 +113,9 @@ class TeamDisplay extends React.Component {
               }},
             {key: 'team_id',
               button:{
-                onClick:this.addItem,
+                disabledBackgroundColor:'#d3d3d3',
+                disabled:'disableDraft',
+                onClick:this.draftTeam,
                 label:'Draft Team',
                 color:'white',
                 backgroundColor: '#EBAB38',
@@ -142,5 +142,5 @@ export default connect(
   dispatch =>
     ({onFilterTab(filterInfo) {
       dispatch(
-        handleFilterTab(teamIds))
-    },}))(withStyles(styles)(TeamDisplay))
+        handleFilterTab(filterInfo))
+    },}))(TeamDisplay)

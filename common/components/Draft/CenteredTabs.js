@@ -41,7 +41,7 @@ const styles = theme => ({
 
 class CenteredTabs extends React.Component {
   state = {
-    value: 2
+    value: 1
   };
 
   handleChange = (event, value) => {
@@ -78,7 +78,10 @@ class CenteredTabs extends React.Component {
             className={ value === 3 ? classes.tabSelected : classes.tab} />
         </Tabs>
         {value === 0 && <Roster/>}
-        {value === 1 && <TeamDisplay onAddQueue={this.props.onAddQueue}/>}
+        {value === 1 && <TeamDisplay
+          onAddQueue={this.props.onAddQueue} 
+          onDraftButton={this.props.onDraftButton}
+          allowDraft={this.props.allowDraft}/>}
         {value === 2 && <RosterGrid/>}
         {value === 3 && <DraftResults/>}
       </div>
