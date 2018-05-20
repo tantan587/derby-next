@@ -66,7 +66,7 @@ function DraftManager(io, roomId) {
     emitModeChange('post')
     console.log('saving Teams')
     draftHelpers.enterDraftToDb(that.owners.AssembleTeams(), that.leagueId)
-    draftIsUp = false
+    //draftIsUp = false
 
   }
 

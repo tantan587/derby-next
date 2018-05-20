@@ -21,7 +21,7 @@ import {clickedEnterDraft,
   handleUpdateQueue} from '../../actions/draft-actions'
 import { connect } from 'react-redux'
 import Divider from 'material-ui/Divider'
-import ChatIcon from 'material-ui-icons/Chat'
+import Chat from './Chat'
 
 const styles = theme => ({
   container: {
@@ -418,6 +418,7 @@ class DraftContainer extends React.Component {
                               paddingTop:0, paddingBottom:0, marginLeft:10,display:'inline-block'}}>
                               Chat
                           </Typography>
+                          <Chat/>
                         </div>
                       </Grid>
                       <Grid item xs={12} style={{backgroundColor:'white'}}>
