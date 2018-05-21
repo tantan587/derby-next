@@ -1,68 +1,47 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Typography from 'material-ui/Typography'
-import {GetCountdownTimeStr, myTimeout} from '../../lib/time'
+import {GetCountdownTimeStr} from '../../lib/time'
 
 
 class DraftHeader extends React.Component {
 
   render()
   {
-    const {startTime, league_name, mode, myTurn} = this.props
+    const {startTime, mode, myTurn} = this.props
+    console.log(myTurn)
+    let color = '#269349'
     
+    let title = ''  
     if (mode === 'pre')
     {
-      return (
-        <div>
-          <Typography variant='headline'> {league_name}</Typography>
-          <br/>
-          <Typography variant='title'>{'Time until draft: ' + GetCountdownTimeStr(startTime)}</Typography>
-        </div>
-      ) 
+
+      title = 'Time until draft: ' + GetCountdownTimeStr(startTime)
+
     }
 
     if (mode === 'wait')
     {
-      return (
-        <div>
-          <Typography variant='headline'> {league_name}</Typography>
-          <Typography variant='title'> Waiting for draft to start</Typography>
-        </div>
-      )
+      title = 'Waiting for draft to start'
     }
 
     if (mode === 'live')
     {
-      return (
-        <div>
-          <Typography variant='headline'> {league_name}</Typography>
-          <Typography variant='headline'> Draft is Live!</Typography>
-          {myTurn
-            ? <Typography variant='title'> Your Turn!</Typography>
-            : <div/>
-          }
-        </div>
-      )
+      title = 'Draft is Live '
+      title += myTurn ? 'Your Turn!' : ''
+      color = myTurn ? color :'#707070'
+      
     }
     if (mode === 'timeout')
     {
-      return (
-        <div>
-          <Typography variant='headline'> {league_name}</Typography>
-          <Typography variant='headline'>Timeout</Typography>
-        </div>
-      )
+      title = 'Draft Is Paused'
     }
 
     if (mode === 'post')
     {
-      return (
-        <div>
-          <Typography variant='headline'> {league_name}</Typography>
-          <Typography variant='headline'> Draft is Over</Typography>
-        </div>
-      )
+      title =  'Draft Is Over'
     }
+    return <Typography variant='headline' style={{paddingTop:10, paddingBottom:10, backgroundColor: color}}>{title}</Typography>
   }
 
 

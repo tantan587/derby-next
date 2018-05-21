@@ -300,7 +300,7 @@ class DraftContainer extends React.Component {
         </form>
         :
         <div className={classes.root}>
-          <Title backgroundColor='#EBAB38' color='white' title='Live Draft'/>
+          <Title backgroundColor='#EBAB38' color='white' title={'Live Draft - ' + activeLeague.league_name }/>
           <Grid container spacing={24} >
             <Grid item xs={12}>
               <Paper className={classes.paper}>
@@ -327,17 +327,17 @@ class DraftContainer extends React.Component {
                   <Grid item xs={12} sm={8} style={{backgroundColor:'white'}}>
                     <Grid container direction={'column'}>
                       <Grid item xs={12}>
+                        <Grid item xs={12}>
+                          {/* <DraftHeader 
+                            startTime={startTime} 
+                            mode={draft.mode}
+                            myTurn={myTurn}/>
+                          <Divider style={{backgroundColor:'white'}}/> */}
+                        </Grid>
                         <CenteredTabs
                           onAddQueue={this.onAddQueue}
                           onDraftButton={this.onDraftButton}
                           allowDraft={allowDraft}/>
-                      </Grid>
-                      <Grid item xs={12} style={{backgroundColor:'white'}} >
-                        <DraftHeader 
-                          startTime={startTime} 
-                          league_name={activeLeague.league_name} 
-                          mode={draft.mode}
-                          myTurn={myTurn}/>
                       </Grid>
                       <Button onClick={draft.mode === 'timeout' ? 
                         this.onTimeIn : 
