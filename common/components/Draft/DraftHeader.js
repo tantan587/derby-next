@@ -9,7 +9,6 @@ class DraftHeader extends React.Component {
   render()
   {
     const {startTime, mode, myTurn} = this.props
-    console.log(myTurn)
     let color = '#269349'
     
     let title = ''  
