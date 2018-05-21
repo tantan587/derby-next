@@ -68,7 +68,7 @@ class RosterGrid extends React.Component {
       Object.keys(nonStrictLeagueCount).map(x => {nonStrictLeagueCount[x] = 1})
     })
     return (
-      <div>
+      <div style={{height:730, minHeight:730, maxHeight:730}}>
         <TeamsDialog />
         <DerbyTableContainer
           passUpFilterInfo={this.passUpFilterInfo}

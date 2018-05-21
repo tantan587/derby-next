@@ -115,14 +115,14 @@ class DraftOrder extends React.Component {
           </div> : <div/>}
         <Divider style={{backgroundColor:'white'}}/>  
         <List style={{maxHeight: 700, overflow: 'auto', paddingTop:0}}>
-          <Scrollbars autoHide style={{ height: 600 }}>
+          <Scrollbars autoHide style={showOnTheClock? { height:510 } : { height:580 } }>
             {/*renderView={this.renderView} onUpdate={this.handleUpdate}> */}
             {showOnTheClock || ownerList.length === 0  ? <div/> :
               <div>
                 <Typography key='first2' className={classes.round} variant='subheading'>
                   {lastRound !== ownerList[0].round ? 'ROUND ' + (ownerList[0].round) : 'DRAFT OVER'}
                 </Typography>
-                <Divider/>
+                <Divider style={{backgroundColor:'white'}}/>
               </div>
             }
             {ownerList.filter((x,i) => showOnTheClock || mode === 'post' ? i !== 0 : i > -1).map( owner => 
@@ -146,14 +146,14 @@ class DraftOrder extends React.Component {
                 {owner.pick % owners.length === 0 && owner.round < draftOrder.length
                   ?
                   <div>
-                    <Divider />
+                    <Divider style={{backgroundColor:'white'}} />
                     <Typography key={owner.round} className={classes.round} variant='subheading'>
                       {lastRound !== owner.round ? 'ROUND ' + (owner.round+1) : 'DRAFT OVER'}
                     </Typography>
-                    <Divider />
+                    <Divider style={{backgroundColor:'white'}}/>
                   </div>
                   :
-                  <Divider />
+                  <Divider style={{backgroundColor:'white'}}/>
                 }
               </div>
             )}

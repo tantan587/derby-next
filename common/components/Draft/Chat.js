@@ -12,6 +12,7 @@ import IconButton from 'material-ui/IconButton'
 import SendIcon from 'material-ui-icons/Send'
 import { Scrollbars } from 'react-custom-scrollbars'
 import Grid from 'material-ui/Grid'
+import { connect } from 'react-redux'
 
 const styles = theme => ({
   message : {
@@ -21,19 +22,57 @@ const styles = theme => ({
 })
 
 class Chat extends React.Component {
+
+  constructor(props) {
+    super(props)
+    this.state = {
+      field: '',
+    }
+  }
+
+  scrollToBottom = () => {
+    this.messagesEnd1.scrollToBottom()//{ behavior: 'smooth' })
+
+  }
+
+  componentDidUpdate() {
+    this.scrollToBottom(false)
+    console.log('componentDidChange')
+  }
+  
+  componentDidMount() {
+    this.scrollToBottom()
+    console.log('componentDidMount')
+  }
+  
+  onTextChange = event => {
+    this.setState({ field: event.target.value })
+  }
+
+  keypress(e) {
+    if (e.key === 'Enter') { 
+      this.onPressSubmit()
+    }
+  }
+
+  onPressSubmit = () =>{
+    this.props.onMessageSubmit(this.state.field)
+    this.setState({ field: '' })
+  }
   
   render() {
-    const {classes} = this.props
-    const messages = [{messageId:0, ownerName:'Tom',message:'helloe'},
-      {messageId:1, ownerName:'Yoni',message:'helldo'}, 
-      {messageId:2, ownerName:'Jamie',message:'helsdlo f asdf sdflk asdfhuawe asdifhasd sicas sdfasd sdfhiaf wief asdfsfkjasyo asdraskdf;iq iasdcwncaid acidsnfawneina cewnasdc hfhkf ifs dfiasd fadfhs iy fifaiwj ashd nafuwe cfiawe'}, 
-      {messageId:3, ownerName:'Cat',message:'hedsllo'}]
+    const {classes, messages, owners} = this.props
+
+    let localOwners = {}
+    owners.forEach(x => localOwners[x.owner_id] = x.owner_name)
+
+    let localField = this.state.field === '\n' ? '' : this.state.field
     return (
       <div >
         <List style={{maxHeight: 300, overflow: 'auto', paddingTop:0}}>
-          <Scrollbars autoHide style={{ height: 200 }}>
-            {messages.map( message => 
-              <div key={message.messageId}>
+          <Scrollbars autoHide style={{ height: 250 }} ref={(el) => { this.messagesEnd1 = el}}>
+            {messages.map( (message,i) => 
+              <div key={i}>
                 <ListItem className={classes.message} key={message.messageId}>
                   {/* <Avatar>
                     <ImageIcon />
@@ -41,7 +80,7 @@ class Chat extends React.Component {
                   <ListItemText disableTypography 
                     primary=
                       {<Typography variant="body1" style={{ color: '#FFFFFF', fontWeight : 'bold' }}>
-                        {message.ownerName}
+                        {localOwners[message.ownerId]}
                       </Typography>}
                     secondary={<Typography variant="body1" style={{ color: '#EEEEEE' }}>
                       {message.message}
@@ -50,7 +89,7 @@ class Chat extends React.Component {
                 }
               </div>
             )}
-          </Scrollbars>
+          </Scrollbars >
         </List>
         <Grid container spacing={24} >
           <Grid item xs={12}>
@@ -60,18 +99,23 @@ class Chat extends React.Component {
                   style={{backgroundColor:'white', }}>
                   <Paper style={{overflowY: 'auto',  width:'100%'}}>
                     <Scrollbars autoHide  style={{ height:50, width:'100%'  }}>
-                      <TextField
-                        id="input1"
-                        multiline
-                        style={{width:'80%',overflowX:'hidden', marginTop:10}}
-                        InputProps={{ disableUnderline: true}}
-                      />
+                      <form onKeyPress={(event) => this.keypress(event)}>
+                        <TextField
+                          id="input1"
+                          multiline
+                          style={{width:'80%',overflowX:'hidden', marginTop:10}}
+                          InputProps={{ disableUnderline: true}}
+                          onChange={this.onTextChange}
+                          placeholder="Say something"
+                          value={localField}
+                        />
+                      </form>
                     </Scrollbars> 
                   </Paper>
                 </Grid>
                 <Grid item xs={2} sm={2} 
                   style={{backgroundColor:'white'}}>
-                  <IconButton style={{ }}>
+                  <IconButton style={{ }} onClick={this.onPressSubmit}>
                     <SendIcon/>
                   </IconButton>
                 </Grid>
@@ -85,4 +129,9 @@ class Chat extends React.Component {
   }
 }
 
-export default withStyles(styles)(Chat)
+export default connect(
+  state =>
+    ({
+      owners : state.activeLeague.owners,
+      messages : state.draft.messages,
+    }),null)(withStyles(styles)(Chat))

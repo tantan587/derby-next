@@ -18,7 +18,8 @@ import {clickedEnterDraft,
   handleStartDraft,
   handleSetDraftMode,
   handleDraftPick,
-  handleUpdateQueue} from '../../actions/draft-actions'
+  handleUpdateQueue,
+  handleRecieveMessage} from '../../actions/draft-actions'
 import { connect } from 'react-redux'
 import Divider from 'material-ui/Divider'
 import Chat from './Chat'
@@ -36,7 +37,7 @@ const styles = theme => ({
     padding: 0,
     textAlign: 'center',
     color: theme.palette.text.secondary,
-    minHeight:600
+    minHeight:600,
   },
   button : {
     backgroundColor: theme.palette.secondary.A700,
@@ -48,9 +49,7 @@ class DraftContainer extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      field: '',
       preDraft:true,
-      messages:[],
       countdownTime:0,
       startTime:Math.round((new Date(this.props.activeLeague.draft_start_time)-new Date())/1000),
       snackbarOpen:false,
@@ -134,8 +133,7 @@ class DraftContainer extends React.Component {
 
   // add messages from server to the state
   handleMessage = (message) => {
-    message.c2id = (new Date()).getTime()
-    this.setState(state => ({ messages: state.messages.concat(message) }))
+    this.props.onRecieveMessage(message)
   }
 
   handleReset = (data) => {
@@ -168,10 +166,6 @@ class DraftContainer extends React.Component {
     this.setState({countdownTime: counter})
       
   }
-  onTextChange = event => {
-    this.setState({ field: event.target.value })
-  }
-
 
   onDraftButton = (teamId) => {
     const {activeLeague, draft} = this.props
@@ -237,23 +231,12 @@ class DraftContainer extends React.Component {
   }
 
   // send messages to server and add them to the state
-  onSubmit = event => {
-    event.preventDefault()
-
-    // create message object
-    const message = {
-      cid: (new Date()).getTime(),
-      value: this.state.field,
+  onMessageSubmit = message => {
+    const payload = {
+      clientTs: (new Date()).toJSON(),
+      message: message,
     }
-
-    // send object to WS server
-    this.socket.emit('message', message)
-
-    // add it to state and clean current input value
-    this.setState(state => ({
-      field: '',
-      //messages: state.messages.concat(message)
-    }))
+    this.socket.emit('message', payload)
   }
 
   onTimeToDraftChange = event => {
@@ -321,9 +304,9 @@ class DraftContainer extends React.Component {
           <Grid container spacing={24} >
             <Grid item xs={12}>
               <Paper className={classes.paper}>
-                <Grid container alignItems={'stretch'} direction='row'>
+                <Grid container alignItems={'stretch'} direction='row' style={{height:'100%'}}>
                   <Grid item xs={12} sm={2} 
-                    style={{backgroundColor:'white'}}>
+                    style={{backgroundColor:'black'}}>
                     <Grid container direction={'column'}>
                       <Grid item xs={12} style={{backgroundColor:'black'}}>
                         <Countdown 
@@ -337,6 +320,7 @@ class DraftContainer extends React.Component {
                           currPick={draft.pick}
                           mode={draft.mode}/>
                       </Grid>
+                      <Divider style={{backgroundColor:'white'}}/>
                     </Grid>
 
                   </Grid>
@@ -381,8 +365,8 @@ class DraftContainer extends React.Component {
                       </Grid>
                     </Grid>
                   </Grid>
-                  <Grid item xs={12} sm={2} style={{backgroundColor:'black'}}>
-                    <Grid item xs={12}>
+                  <Grid item xs={12} sm={2}  style={{backgroundColor:'black'}}>
+                    <Grid item xs={12} style={{backgroundColor:'black'}}>
                       <Typography key={'head'} variant='subheading' 
                         style={{fontFamily:'HorsebackSlab', color:'white', 
                           paddingTop:15, paddingBottom:15}}>
@@ -390,7 +374,7 @@ class DraftContainer extends React.Component {
                       </Typography>
                       <Divider style={{backgroundColor:'white'}}/>
                     </Grid>
-                    <Grid container direction={'column'}>
+                    <Grid container direction={'column'} style={{backgroundColor:'black'}}>
                       <Grid item xs={12}>
                         <DraftQueue  items={draft.queue} teams={teams} updateOrder={this.onUpdateQueue}/>
                       </Grid>
@@ -407,7 +391,7 @@ class DraftContainer extends React.Component {
                       </Grid>
                       <Divider style={{backgroundColor:'white'}}/>
                       <Grid item xs={12}>
-                        <div style={{height:300, maxHeight:300}}>
+                        <div style={{height:350, maxHeight:350}}>
                           <div style={{color:'white'}}>
                             
                             {/* //viewBox="0 -10 24 34" style={{width:24,height:34}}/> */}
@@ -418,39 +402,16 @@ class DraftContainer extends React.Component {
                               paddingTop:0, paddingBottom:0, marginLeft:10,display:'inline-block'}}>
                               Chat
                           </Typography>
-                          <Chat/>
+                          <Chat onMessageSubmit={this.onMessageSubmit}/>
                         </div>
                       </Grid>
-                      <Grid item xs={12} style={{backgroundColor:'white'}}>
-                        <Typography key={'head'} variant='subheading' 
-                          style={{fontFamily:'HorsebackSlab', color:'white',
-                            paddingTop:15, paddingBottom:15, marginLeft:10,display:'inline-block'}}>
-                                Chat
-                        </Typography>
-                      </Grid>
+                      <Divider style={{backgroundColor:'white'}}/>
                     </Grid>
                   </Grid>
                 </Grid>
               </Paper>
             </Grid>
           </Grid>
-          <div>
-            <ul>
-              {this.state.messages.map(message =>
-                <li key={message.c2id}>{
-                  's-c: '+ (message.sid - message.cid).toString() + 
-                  ' c2-c: '+ (message.c2id - message.cid).toString() + ' ' + message.value}</li>
-              )}
-            </ul>
-            <form onSubmit={this.onSubmit}>
-              <input
-                onChange={this.onTextChange}
-                type="text"
-                placeholder="Hello world!"
-                value={this.state.field}/>
-              <button>Send</button>
-            </form>
-          </div>
           <SimpleSnackbar open={snackbarOpen} message={snackbarMessage} handleClose={this.onSnackbarClose}/>    
         </div>
     )
@@ -490,5 +451,9 @@ export default connect(
       onSetUpdateQueue(queue) {
         dispatch(
           handleUpdateQueue(queue))
+      },
+      onRecieveMessage(message) {
+        dispatch(
+          handleRecieveMessage(message))
       },
     }))(withStyles(styles)(DraftContainer))

@@ -8,7 +8,7 @@ import  {
 class DerbyFooter extends React.Component {
 
   render() {
-    const { styleProps } = this.props
+    const { styleProps, only10 } = this.props
 
     return (
       <TableFooter style={styleProps && styleProps.TableFooter}>
@@ -20,7 +20,7 @@ class DerbyFooter extends React.Component {
             page={this.props.page}
             onChangePage={this.props.handleChangePage}
             onChangeRowsPerPage={this.props.handleChangeRowsPerPage}
-            rowsPerPageOptions={[5,10,20,40,80]}
+            rowsPerPageOptions={only10 ? [10] : [5,10,20,40,80]}
           />
         </TableRow>
       </TableFooter>

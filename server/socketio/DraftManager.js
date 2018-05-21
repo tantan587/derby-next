@@ -111,6 +111,13 @@ function DraftManager(io, roomId) {
     that.owners.SetQueue(socketId, queue)
   }
 
+  this.ProcessMessage = (socketId, data) => {
+    data.ownerId = that.owners.GetOwnerIdFromSocketId(socketId)
+    socketIoHelpers.InsertDraftAction(
+      roomId, data.ownerId, 'MESSAGE', {message:data.message}, data.clientTs)
+    sendMessage(data)
+  }
+
   this.Timeout = (amountOfTime) =>
   {
     console.log('in timeout')
@@ -243,6 +250,10 @@ function DraftManager(io, roomId) {
 
   const addQueueResp = (payload) => {
     io.in(roomId).emit('addqueueresp', payload)
+  }
+
+  const sendMessage = (data) =>{
+    io.in(roomId).emit('message', data)
   }
 
   ////

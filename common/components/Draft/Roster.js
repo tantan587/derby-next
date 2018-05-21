@@ -39,7 +39,7 @@ class Roster extends React.Component {
     }
 
     return (
-      <div>
+      <div style={{height:730, minHeight:730, maxHeight:730}}>
         <TeamsDialog />
         <DerbyTableContainer
           passUpFilterInfo={this.passUpFilterInfo}

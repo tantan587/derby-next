@@ -47,7 +47,7 @@ class DraftResults extends React.Component {
     extraTableRow.key = 'round'
     
     return (
-      <div>
+      <div style={{height:730, minHeight:730, maxHeight:730}}>
         <TeamsDialog />
         <DerbyTableContainer
           usePagination={true}
