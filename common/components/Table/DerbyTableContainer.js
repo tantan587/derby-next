@@ -33,12 +33,11 @@ class DerbyTableContainer extends React.Component {
     this.setState({myRows:rows})
   }
   render() {
-    const { usePagination, myHeaders, filters, openDialog, passUpFilterInfo, orderInd } = this.props
+    const { usePagination, myHeaders, filters, openDialog, passUpFilterInfo, orderInd, extraTableRow, styleProps } = this.props
     const {myRows, allRows} = this.state
-
     return (
       <div>
-        {this.props.title 
+        {this.props.title
           ? <Title color='white' backgroundColor='black' title={this.props.title}/>
           : <div/>
         }
@@ -50,12 +49,15 @@ class DerbyTableContainer extends React.Component {
         <br/>
         <br/>
         <div style={{ width:'100%',overflowX:'auto', overflowY:'scroll', maxHeight:700}}>
-        <DerbyTable 
-          openDialog={openDialog}
+          <DerbyTable
+            openDialog={openDialog}
             usePagination={usePagination}
             rows={myRows}
             headers={myHeaders}
-            orderInd={orderInd}/>
+            orderInd={orderInd}
+            extraTableRow={extraTableRow}
+            styleProps={styleProps}
+          />
         </div>
         <br/>
         <br/>

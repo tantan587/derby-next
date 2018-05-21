@@ -24,7 +24,6 @@ function Owner(ownerId, draftRules, allTeams, teamMap) {
       queue.push(teamId)
       return true
     }
-    console.log(eligibleTeams.length, queue)
     return false
   }
 
@@ -58,16 +57,19 @@ function Owner(ownerId, draftRules, allTeams, teamMap) {
     }    
   }
 
-  this.TryDraft = (teamId) =>{
+  this.TryDraft = (teamId,pick) =>{
     let resp = draftHelpers.FilterDraftPick(teamId, teamMap, theDraftRules, eligibleTeams, queue)
     if(resp)
     {
-      teams.push(teamId)
+      teams.push({team_id:teamId, overall_pick:pick+1})
       eligibleTeams = resp.eligibleTeams
       queue = resp.queue
-      console.log(queue)
     }
     return resp
+  }
+
+  this.AssembleTeams = () =>{
+    return teams.map(x => {return x})
   }
 
   this.Joined = () =>

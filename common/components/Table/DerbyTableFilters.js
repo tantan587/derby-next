@@ -29,9 +29,9 @@ class DerbyTableFilters extends React.Component {
                 key={i} 
                 tabs={filter.values} 
                 rows={rows} 
-                allInd={true}
+                allInd={filter.allInd}
                 column={filter.column}
-                tabColors={filter.tabColors}/>
+                tabStyles={filter.tabStyles}/>
             }
             if (filter.type === 'search')
             {

@@ -15,6 +15,12 @@ router.post('/enterdraft', (req, res, next)  => {
       handleResponse(res, 500, err)})
 })
 
+router.post('/savedraft', authHelpers.loginRequired, (req, res, next)  => {
+  return draftHelpers.enterDraftToDb(req.body.allTeams, req.body.league_id, res)
+    .catch((err) => {
+      handleResponse(res, 500, err) })
+})
+
 const getDraft = async (room_id, owner_id) =>
 {
   const strTeams = `select b.team_id from draft.settings a, fantasy.team_points b
@@ -41,13 +47,13 @@ const handleResponse = (res, code, statusMsg) => {
   res.status(code).json({status: statusMsg})
 }
 
-const assembleDraft = (teams,owners, results, my_owner_id, rules, teamMap) =>
-{
+const assembleDraft = (teams,owners, results, my_owner_id, rules, teamMap) =>{
   let mode = 'pre'
   let pick = 0
   let ownersMap = {}
   let draftedTeams = []
   let queue = []
+  let messages = []
   owners.map(x => ownersMap[x.owner_id] = [])
   let allTeams = teams.map(x => x.team_id)
   let availableTeams = [].concat(allTeams)
@@ -67,12 +73,20 @@ const assembleDraft = (teams,owners, results, my_owner_id, rules, teamMap) =>
       const index = availableTeams.indexOf(element.action.teamId)
       availableTeams.splice(index, 1)
       draftedTeams.push(element.action.teamId)
-      return
+      break
     }
     case 'QUEUE':
     {
       if (my_owner_id === element.initiator)
         queue = element.action.queue ? element.action.queue : queue
+      break
+    }
+    case 'MESSAGE':
+    {
+      let message =element.action
+      message.ownerId = element.initiator
+      messages.push(message)
+      break
     }
     }
   })
@@ -83,7 +97,6 @@ const assembleDraft = (teams,owners, results, my_owner_id, rules, teamMap) =>
 
   ownersMap[my_owner_id].forEach(x => {
     let resp = draftHelpers.FilterDraftPick(x.teamId, teamMap, rules, eligibleTeams, queue)
-    console.log(resp)
     eligibleTeams = resp.eligibleTeams
     queue = resp.queue
   })
@@ -96,15 +109,16 @@ const assembleDraft = (teams,owners, results, my_owner_id, rules, teamMap) =>
 
   return {
     type:C.ENTERED_DRAFT,
-    mode:mode,
-    pick:pick,
-    availableTeams:availableTeams,
-    draftedTeams:draftedTeams,
-    allTeams:allTeams,
+    mode,
+    pick,
+    availableTeams,
+    draftedTeams,
+    allTeams,
     owners:ownersMap,
-    queue:queue,
-    rules:rules,
-    eligibleTeams:eligibleTeams}
+    queue,
+    rules,
+    messages,
+    eligibleTeams}
 }
 
 module.exports = router

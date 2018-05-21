@@ -50,8 +50,8 @@ class TeamsDialog extends Component {
     const { teamsDialog, handleCloseDialog, oneTeam, classes, teams } = this.props
     const { open } = teamsDialog
     const { lastFive, nextFive } = oneTeam
-
-    return ( open &&
+    return (
+      open && lastFive && nextFive ?
       <Dialog
         open={open}
         onClose={handleCloseDialog}
@@ -119,6 +119,8 @@ class TeamsDialog extends Component {
           </div>
         </div>
       </Dialog>
+      :
+      <div/>
     )
   }
 }

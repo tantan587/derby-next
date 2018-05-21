@@ -18,10 +18,11 @@ import {clickedEnterDraft,
   handleStartDraft,
   handleSetDraftMode,
   handleDraftPick,
-  handleUpdateQueue} from '../../actions/draft-actions'
+  handleUpdateQueue,
+  handleRecieveMessage} from '../../actions/draft-actions'
 import { connect } from 'react-redux'
 import Divider from 'material-ui/Divider'
-import ChatIcon from 'material-ui-icons/Chat'
+import Chat from './Chat'
 
 const styles = theme => ({
   container: {
@@ -36,7 +37,7 @@ const styles = theme => ({
     padding: 0,
     textAlign: 'center',
     color: theme.palette.text.secondary,
-    minHeight:600
+    minHeight:600,
   },
   button : {
     backgroundColor: theme.palette.secondary.A700,
@@ -48,9 +49,7 @@ class DraftContainer extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      field: '',
       preDraft:true,
-      messages:[],
       countdownTime:0,
       startTime:Math.round((new Date(this.props.activeLeague.draft_start_time)-new Date())/1000),
       snackbarOpen:false,
@@ -134,8 +133,7 @@ class DraftContainer extends React.Component {
 
   // add messages from server to the state
   handleMessage = (message) => {
-    message.c2id = (new Date()).getTime()
-    this.setState(state => ({ messages: state.messages.concat(message) }))
+    this.props.onRecieveMessage(message)
   }
 
   handleReset = (data) => {
@@ -165,23 +163,18 @@ class DraftContainer extends React.Component {
   }
 
   handleDraftTick = (counter) => {
-
     this.setState({countdownTime: counter})
       
   }
-  onTextChange = event => {
-    this.setState({ field: event.target.value })
-  }
 
-
-  onDraftButton = () => {
+  onDraftButton = (teamId) => {
     const {activeLeague, draft} = this.props
     const myTurn = this.state.myDraftPosition ===
       activeLeague.draftOrder[draft.pick].ownerIndex
     if(this.props.draft.mode ==='live' && 
-    this.props.draft.queue.length > 0 && myTurn)
+    (this.props.draft.queue.length > 0 || teamId) && myTurn)
       this.socket.emit('draft', 
-        {teamId: draft.queue[0],
+        {teamId: teamId ? teamId : draft.queue[0],
           clientTs:new Date()
         })
   }
@@ -218,7 +211,6 @@ class DraftContainer extends React.Component {
   }
 
   handleAddQueueResponse = (payload) =>{
-    console.log(payload)
     if(payload.ownerId === this.props.activeLeague.my_owner_id)
     {
       if(payload.success)
@@ -239,27 +231,21 @@ class DraftContainer extends React.Component {
   }
 
   // send messages to server and add them to the state
-  onSubmit = event => {
-    event.preventDefault()
-
-    // create message object
-    const message = {
-      cid: (new Date()).getTime(),
-      value: this.state.field,
+  onMessageSubmit = message => {
+    const payload = {
+      clientTs: (new Date()).toJSON(),
+      message: message,
     }
-
-    // send object to WS server
-    this.socket.emit('message', message)
-
-    // add it to state and clean current input value
-    this.setState(state => ({
-      field: '',
-      //messages: state.messages.concat(message)
-    }))
+    this.socket.emit('message', payload)
   }
 
-  onStartTimeChange = event => {
-    this.socket.emit('startTime',event.target.value)
+  onTimeToDraftChange = event => {
+    if(event.target.value > 0)
+      this.socket.emit('timeToDraft',event.target.value)
+  }
+
+  onRestartDraft = () => {
+    this.socket.emit('restartDraft')
   }
 
   onTimeout = () => {
@@ -291,11 +277,14 @@ class DraftContainer extends React.Component {
     const { classes, activeLeague ,draft, teams } = this.props
     const { preDraft, countdownTime, startTime,
       snackbarOpen,snackbarMessage, ownerMap} = this.state
-
+    
+    
     const currDraftPick = draft.pick ? draft.pick : 0
 
-    const myTurn = this.state.myDraftPosition ===
+    const myTurn = activeLeague.draftOrder[currDraftPick] && this.state.myDraftPosition ===
       activeLeague.draftOrder[currDraftPick].ownerIndex
+
+    const allowDraft = draft.mode==='live' && myTurn 
 
     return (
 
@@ -315,9 +304,9 @@ class DraftContainer extends React.Component {
           <Grid container spacing={24} >
             <Grid item xs={12}>
               <Paper className={classes.paper}>
-                <Grid container alignItems={'stretch'} direction='row'>
+                <Grid container alignItems={'stretch'} direction='row' style={{height:'100%'}}>
                   <Grid item xs={12} sm={2} 
-                    style={{backgroundColor:'white'}}>
+                    style={{backgroundColor:'black'}}>
                     <Grid container direction={'column'}>
                       <Grid item xs={12} style={{backgroundColor:'black'}}>
                         <Countdown 
@@ -331,6 +320,7 @@ class DraftContainer extends React.Component {
                           currPick={draft.pick}
                           mode={draft.mode}/>
                       </Grid>
+                      <Divider style={{backgroundColor:'white'}}/>
                     </Grid>
 
                   </Grid>
@@ -338,7 +328,9 @@ class DraftContainer extends React.Component {
                     <Grid container direction={'column'}>
                       <Grid item xs={12}>
                         <CenteredTabs
-                          onAddQueue={this.onAddQueue}/>
+                          onAddQueue={this.onAddQueue}
+                          onDraftButton={this.onDraftButton}
+                          allowDraft={allowDraft}/>
                       </Grid>
                       <Grid item xs={12} style={{backgroundColor:'white'}} >
                         <DraftHeader 
@@ -353,11 +345,14 @@ class DraftContainer extends React.Component {
                           this.onTimeout : null}>
                         {draft.mode === 'timeout' ? 'Continue' : 'Pause'}
                       </Button>
+                      <Button onClick={this.onRestartDraft}>
+                        {'Restart Draft'}
+                      </Button>
                       <form  noValidate>
                         <TextField
                           id="number"
-                          label="Start Time (secs)"
-                          onChange={this.onStartTimeChange}
+                          label="Draft Time (secs)"
+                          onChange={this.onTimeToDraftChange}
                           type="number"
                           defaultValue="5"
                           InputLabelProps={{
@@ -370,8 +365,8 @@ class DraftContainer extends React.Component {
                       </Grid>
                     </Grid>
                   </Grid>
-                  <Grid item xs={12} sm={2} style={{backgroundColor:'black'}}>
-                    <Grid item xs={12}>
+                  <Grid item xs={12} sm={2}  style={{backgroundColor:'black'}}>
+                    <Grid item xs={12} style={{backgroundColor:'black'}}>
                       <Typography key={'head'} variant='subheading' 
                         style={{fontFamily:'HorsebackSlab', color:'white', 
                           paddingTop:15, paddingBottom:15}}>
@@ -379,61 +374,44 @@ class DraftContainer extends React.Component {
                       </Typography>
                       <Divider style={{backgroundColor:'white'}}/>
                     </Grid>
-                    <Grid container direction={'column'}>
+                    <Grid container direction={'column'} style={{backgroundColor:'black'}}>
                       <Grid item xs={12}>
                         <DraftQueue  items={draft.queue} teams={teams} updateOrder={this.onUpdateQueue}/>
                       </Grid>
                       <Grid item xs={12} style={{marginBottom:5}}>
-                        <Button style={{fontSize:14, backgroundColor:'#EBAB38',
-                          marginTop:10, marginLeft:-5, color:'white', width:'90%'}} 
-                        onClick={() => this.onDraftButton()}>
+                        <Button
+                          disabled={!allowDraft} 
+                          style={{fontSize:14, 
+                            backgroundColor:allowDraft ? '#EBAB38' : '#b2b2b2',
+                            fontStyle:allowDraft ? 'normal' : 'italic',
+                            marginTop:10, marginLeft:'-5%', color:'white', width:'90%'}} 
+                          onClick={() => this.onDraftButton()}>
                           DRAFT #1 TEAM
                         </Button>
                       </Grid>
                       <Divider style={{backgroundColor:'white'}}/>
                       <Grid item xs={12}>
-                        <div style={{height:300, maxHeight:300}}>
-                          <div style={{color:'white', display:'inline-block'}}>
-                            <ChatIcon/>
+                        <div style={{height:350, maxHeight:350}}>
+                          <div style={{color:'white'}}>
+                            
                             {/* //viewBox="0 -10 24 34" style={{width:24,height:34}}/> */}
                           </div>
+                          <img src={'/static/icons/Derby_Chat_Bubble.svg'} viewBox="0 -10 24 64" style={{marginTop:5, width:24,height:20}}/>
                           <Typography key={'head'} variant='subheading' 
-                            style={{fontFamily:'HorsebackSlab', color:'white',
-                              paddingTop:15, paddingBottom:15, marginLeft:10,display:'inline-block'}}>
+                            style={{fontFamily:'HorsebackSlab', color:'white',marginTop:-0,
+                              paddingTop:0, paddingBottom:0, marginLeft:10,display:'inline-block'}}>
                               Chat
                           </Typography>
+                          <Chat onMessageSubmit={this.onMessageSubmit}/>
                         </div>
                       </Grid>
-                      <Grid item xs={12} style={{backgroundColor:'white'}}>
-                        <Typography key={'head'} variant='subheading' 
-                          style={{fontFamily:'HorsebackSlab', color:'white',
-                            paddingTop:15, paddingBottom:15, marginLeft:10,display:'inline-block'}}>
-                                Chat
-                        </Typography>
-                      </Grid>
+                      <Divider style={{backgroundColor:'white'}}/>
                     </Grid>
                   </Grid>
                 </Grid>
               </Paper>
             </Grid>
           </Grid>
-          <div>
-            <ul>
-              {this.state.messages.map(message =>
-                <li key={message.c2id}>{
-                  's-c: '+ (message.sid - message.cid).toString() + 
-                  ' c2-c: '+ (message.c2id - message.cid).toString() + ' ' + message.value}</li>
-              )}
-            </ul>
-            <form onSubmit={this.onSubmit}>
-              <input
-                onChange={this.onTextChange}
-                type="text"
-                placeholder="Hello world!"
-                value={this.state.field}/>
-              <button>Send</button>
-            </form>
-          </div>
           <SimpleSnackbar open={snackbarOpen} message={snackbarMessage} handleClose={this.onSnackbarClose}/>    
         </div>
     )
@@ -473,5 +451,9 @@ export default connect(
       onSetUpdateQueue(queue) {
         dispatch(
           handleUpdateQueue(queue))
+      },
+      onRecieveMessage(message) {
+        dispatch(
+          handleRecieveMessage(message))
       },
     }))(withStyles(styles)(DraftContainer))

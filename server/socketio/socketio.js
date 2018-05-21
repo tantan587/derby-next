@@ -40,7 +40,7 @@ const draftRoom = (io, socket) =>
     roomId = roomInfo.roomId
     socket.join(roomId)
     // eslint-disable-next-line no-console
-    console.log(roomId, io.sockets.adapter.rooms[roomId])
+    //console.log(roomId, io.sockets.adapter.rooms[roomId])
     if(draftIsGood())
     {
       draftManagers[roomId].OwnerJoined(socket.id, roomInfo.owner_id)
@@ -55,16 +55,19 @@ const draftRoom = (io, socket) =>
     }
   })
 
-  socket.in(roomId).on('message', (data) => {
-    data.sid = (new Date()).getTime()
-    io.in(roomId).emit('message', data)
-  })
-
-  socket.in(roomId).on('startTime', async startTime => {
+  socket.in(roomId).on('restartDraft', async () => {
     
     if(draftIsGood())
     {
-      draftManagers[roomId].StartAgain(startTime*1000)
+      draftManagers[roomId].StartAgain()
+    }
+  })
+
+  socket.in(roomId).on('timeToDraft', async startTime => {
+    
+    if(draftIsGood())
+    {
+      draftManagers[roomId].SetTimeToDraft(startTime)
     }
   })
 
@@ -92,6 +95,14 @@ const draftRoom = (io, socket) =>
     socketIoHelpers.InsertDraftAction(
       roomId, data.ownerId, 'QUEUE', {queue:data.queue})
   
+  })
+
+  socket.in(roomId).on('message', (message) => {
+    if(draftIsGood())
+    {
+      draftManagers[roomId].ProcessMessage(socket.id, message)
+    }
+    
   })
 
   socket.in(roomId).on('addqueue', (data) => {

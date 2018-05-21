@@ -1,19 +1,5 @@
 const knex = require('../../db/connection')
-
-const GetDraftOrder = (totalTeams, totalOwners) =>
-{
-  let draftOrder = []
-  for(let round = 0; round < totalTeams; round++)
-  {
-    let ownerIndex = round % 2 === 0 
-      ? Array.apply(null, {length: totalOwners}).map(Number.call, Number)
-      : Array.apply(null, {length: totalOwners}).map(Number.call, Number).reverse()
-
-    ownerIndex.map((ownerIndex,pick) => draftOrder.push({pick:pick + round*totalOwners, ownerIndex:ownerIndex}))
-
-  }
-  return draftOrder
-}
+const fantasyHelpers = require('./fantasyHelpers')
 
 const GetDraftRules = async (roomId) => {
 
@@ -101,6 +87,25 @@ const FilterDraftPick = (teamId, teamMap, draftRules, eligibleTeams, queue) =>{
   return false
 }
 
+const enterDraftToDb = (allTeams,league_id, res) =>
+{
+  const dataToInput = allTeams.map(team => {team.league_id = league_id; return team})
+  return knex.withSchema('fantasy').table('rosters')
+    .where('league_id', league_id).del()
+    .then(() =>
+    {
+      return knex.withSchema('fantasy').table('rosters').insert(dataToInput)
+        .then(() => {
+          if(res)
+            return fantasyHelpers.updateFantasy(league_id, res)
+          else
+          {
+            return fantasyHelpers.updateLeaguePoints(league_id)
+          }
+        })
+    })
+}
+
 const filterByArr = (arrToBeFiltered, filterByArr) =>
 {
   return arrToBeFiltered.filter(team => {
@@ -108,4 +113,4 @@ const filterByArr = (arrToBeFiltered, filterByArr) =>
   })
 }
 
-module.exports = {GetDraftOrder, GetDraftRules, GetTeamMap, FilterDraftPick}
+module.exports = { GetDraftRules, GetTeamMap, FilterDraftPick, enterDraftToDb}
