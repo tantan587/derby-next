@@ -11,7 +11,7 @@ const pullPastGames = (knex) =>
     var today = new Date(); 
     var dayCount = simulateHelpers.dayCount(today)
     return knex('sports.schedule')
-        .where('sports.schedule.day_count', "<", dayCount) //need to test if want to go past today, or include this day count
+        .where('sports.schedule.day_count', "<", dayCount) //need to test if want to go past today, or e this day count
         .innerJoin('sports.results','sports.results.global_game_id','sports.schedule.global_game_id')
         .select('sports.results.global_game_id', 'sports.schedule.home_team_id', 
         'sports.results.home_team_score','sports.schedule.away_team_id', 'sports.results.away_team_score',
@@ -100,6 +100,7 @@ const simulateProfessionalLeague = (all_games_list, teams, sport_id, simulations
         finalists.forEach(team=>{team.finalist++})
         let champion = sport_id === '102' ? simulateHelpers.Series(finalists[0], finalists[1],1, sport_id, 4,neutral = true):simulateHelpers.Series(finalists[0], finalists[1],7, sport_id, 4)
         champion.champions++
+        all_games_list[sport_id].forEach(game=>{game.adjustImpact()})
         sport_teams.forEach(team => {
             team.reset()})}
         //console.log(`${teams[team].name}: ${teams[team].wins}/${teams[team].losses}, defaultElo: ${teams[team].defaultElo}, finalElo: ${teams[team].elo}`)})
@@ -107,6 +108,13 @@ const simulateProfessionalLeague = (all_games_list, teams, sport_id, simulations
         team.averages(simulations)
         console.log(team.average_playoff_wins)
         console.log(`${team.name}: ${team.average_wins}/${team.average_losses}`)
+    })
+    all_games_list[sport_id].forEach(game=>{
+        console.log(`Home: ${game.home.name}, Away: ${game.away.name}`)
+        console.log(game.EOS_results.home.win.regular)
+        console.log(game.all_simulate_results.home)
+        console.log(game.EOS_results.home.loss.regular)
+        console.log(game.last_result.home)
     })
     return sport_teams
     //process.exit()
@@ -135,12 +143,12 @@ const simulateCFB = (all_games_list, teams, simulations = 10) => {
         finalist_2.finalist++
         let champion = simulateHelpers.Series(finalist_1, finalist_2,1,'105', 2,neutral=true)
         champion.champions++
-        cfb_teams.forEach(team =>{team.reset})
+        cfb_teams.forEach(team =>{team.reset()})
     }
     cfb_teams.forEach(team => {
         team.averages(simulations)
     })
-    return cfb_teams        
+    return cfb_teams
     }
 
 //function to simulate CBB - also figures out most likely march madness teams using formula
@@ -153,6 +161,7 @@ const simulateCBB = (all_games_list, teams, simulations = 10) => {
         //play the conference championship games, add winners to array conference champions
         const conference_ids = [10601, 10602, 10603, 10604, 10605, 10606, 10607]
         let conference_champions = conference_ids.map(id => {return leagues[106].playoffFunction(cbb_teams.filter(team => team.conference_id === id))})
+        conference_champions.forEach(team=>{team.playoff_appearences++})
         //calculate RPI
         cbb_teams.forEach(team => {team.calculateRPIWinPercentage()})
         cbb_teams.forEach(team => {team.calculateOpponentWinPercentage()})
@@ -164,26 +173,49 @@ const simulateCBB = (all_games_list, teams, simulations = 10) => {
             team.cbb_rpi_rank = rank
             rank++
         })
-        let rpi_thresholds = [cbb_teams.cbb_rpi_value[30], cbb_teams.cbb_rpi_value[50],
-                        cbb_teams.cbb_rpi_value[75], cbb_teams.cbb_rpi_value[100],
-                        cbb_teams.cbb_rpi_value[135], cbb_teams.cbb_rpi_value[160],
-                        cbb_teams.cbb_rpi_value[200], cbb_teams.cbb_rpi_value[240]]
-        
-        let playoffs = cfb_teams.slice(0,4)
-        playoffs.forEach(team=>{team.playoffs++})
-        //find finalists, add finalist value, play championship, add champ value
-        let finalist_1 = simulateHelpers.Series(playoffs[0],playoffs[3],1,'105',1,neutral=true)
-        let finalist_2 = simulateHelpers.Series(playoffs[1],playoffs[2],1,'105',1,neutral=true)
-        finalist_1.finalist++
-        finalist_2.finalist++
-        let champion = simulateHelpers.Series(finalist_1, finalist_2,1,'105', 2,neutral=true)
-        champion.champions++
-        cfb_teams.forEach(team =>{team.reset})
+        cbb_teams.forEach(team=>{team.calculateCBBValue()})
+        cbb_teams.sort(function(a,b){return b.cbb_value - a.cbb_value})
+        let non_conf_champs = cbb_teams.filter(team => conference_champions.include(team) === false)
+        let at_large = non_conf_champs.slice(0,32)
+        let last_four = non_conf_champs.slice(32,36)
+        let last_four_conference_champions = []
+        for(x=0;x<4;x++){last_four_conference_champions.unshift(conference_champions.pop())}
+        conference_champions.forEach(team => {team.playoff_wins[0]++})
+        at_large.forEach(team=>{
+            team.playoff_wins[0]++
+            team.playoff_appearences++
+        })
+        last_four.forEach(team=>{team.playoff_appearences++})
+        let last_four_winner_1 = Series(last_four[0],last_four[3],1,'106',1,neutral=true)
+        let last_four_winner_2 = Series(last_four[1],last_four[2],1,'106',1,neutral=true)
+        let last_conference_champ_winner_1 = Series(last_four_conference_champions[0],last_four_conference_champions[3],1,'106',1,neutral=true)
+        let last_conference_champ_winner_2 = Series(last_four_conference_champions[1],last_four_conference_champions[2],1,'106',1,neutral=true)
+        let march_madness = [...conference_champions, ...at_large, last_four_winner_1, last_four_winner_2,last_conference_champ_winner_1, last_conference_champ_winner_2]
+        march_madness.sort(function(a,b){return b.cbb_value - a.cbb_value})
+        let next_round = []
+        for(let round = 2; round <8; round++){
+            if(round === 6){
+                march_madness.forEach(team => {team.finalist++})
+            }
+            while(march_madness.length != 0){
+                let team_1 = march_madness.shift()
+                let team_2 = march_madness.pop()
+                let winner = Series(team_1, team_2, 1, '106', round, neutral = true)
+                next_round.push(winner)
+            }
+            march_madness.push(...next_round)
+            next_round.length = 0
+        }
+        march_madness[0].champions++
+        cbb_teams.forEach(team =>{
+            team.reset()
+            team.cbb_reset()
+        })
     }
-    cfb_teams.forEach(team => {
+    cbb_teams.forEach(team => {
         team.averages(simulations)
     })
-    return cfb_teams        
+    return cbb_teams
     }
 
 async function work()

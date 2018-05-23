@@ -24,10 +24,10 @@ class Team {
         this.original_losses = losses
         this.total_wins = 0
         this.total_losses = 0
-        this.total_playoff_wins = [0, 0, 0, 0, 0]
-        this.total_playoff_losses = [0, 0, 0, 0, 0]
-        this.playoff_wins = [0, 0, 0, 0, 0] //this is wins in each round of playoffs
-        this.playoff_losses = [0, 0, 0, 0, 0] //this is losses in each round of playoffs
+        this.total_playoff_wins = [0, 0, 0, 0, 0, 0, 0]
+        this.total_playoff_losses = [0, 0, 0, 0, 0, 0, 0]
+        this.playoff_wins = [0, 0, 0, 0, 0, 0, 0] //this is wins in each round of playoffs
+        this.playoff_losses = [0, 0, 0, 0, 0, 0, 0] //this is losses in each round of playoffs
         this.playoff_appearances = 0
         this.finalist = 0
         this.champions = 0
@@ -40,9 +40,9 @@ class Team {
         this.cTWins = 0
         this.aLosses = 0
         this.wOnePoints = 0 //Derby Points accrued in a single season
-        this.totalPApp = 0
-        this.totalChamp = 0
-        this.totalFin = 0
+        this.total_playoff_appearances = 0
+        this.total_championships = 0
+        this.total_finalists = 0
         this.cfb_value = 0
         this.cbb_value = 0
         this.cbb_elo_wins = []
@@ -67,18 +67,50 @@ class Team {
     }
 
     calculateCFBValue(conf_champ_boost){
-        let alt_elo = Number(this.elo)/100
+        let adj_elo = Number(this.elo)/100
         let conf_boost = this.conference === '105' ? 1:0
-        this.cfb_value = alt_elo + conf_boost + conf_champ_boost + this.wins - (this.losses * 3)
+        this.cfb_value = adj_elo + conf_boost + conf_champ_boost + this.wins - (this.losses * 3)
     }
 
+    //formula to calculate cbb_value to determine ncaa tournament value. 
+    //should this take into account meaningful away games? 
+    //other things not included: strength of schedule, other analytic measures (bpi, pom), conf strength, if won games away from home
+    //formula has not yet been tested with past seasons
     calculateCBBValue(){
-        let alt_elo = Number(this.elo)/100
-
+        let adj_elo = Number(this.elo)/100
+        let q1_wins = 0
+        let q2_wins = 0
+        let q3_wins = 0
+        let q4_wins = 0
+        let q1_losses = 0
+        let q2_losses = 0
+        let q3_losses = 0
+        let q4_losses = 0
+        this.cbb_all_teams_played.home_wins.forEach(team=>{
+            team.cbb_rpi_rank < 31 ? q1_wins++: team.cbb_rpi_rank < 76 ? q2_wins++:team.cbb_rpi_rank<161 ? q3_wins++:q4_wins++
+        })
+        this.cbb_all_teams_played.home_losses.forEach(team=>{
+            team.cbb_rpi_rank < 31 ? q1_losses++: team.cbb_rpi_rank < 76 ? q2_losses++:team.cbb_rpi_rank<161 ? q3_losses++:q4_losses++
+        })
+        this.cbb_all_teams_played.neutral_wins.forEach(team=>{
+            team.cbb_rpi_rank < 51 ? q1_wins++: team.cbb_rpi_rank < 101 ? q2_wins++:team.cbb_rpi_rank<201 ? q3_wins++:q4_wins++
+        })
+        this.cbb_all_teams_played.neutral_losses.forEach(team=>{
+            team.cbb_rpi_rank < 51 ? q1_losses++: team.cbb_rpi_rank < 101 ? q2_losses++:team.cbb_rpi_rank<201 ? q3_losses++:q4_losses++
+        })
+        this.cbb_all_teams_played.away_wins.forEach(team=>{
+            team.cbb_rpi_rank < 76 ? q1_wins++: team.cbb_rpi_rank < 136 ? q2_wins++:team.cbb_rpi_rank<241 ? q3_wins++:q4_wins++
+        })
+        this.cbb_all_teams_played.away_losses.forEach(team=>{
+            team.cbb_rpi_rank < 76 ? q1_losses++: team.cbb_rpi_rank < 136 ? q2_losses++:team.cbb_rpi_rank<241 ? q3_losses++:q4_losses++
+        })
+        //all adjustments here are guesses, and not finalized, but for now
+        this.cbb_value = this.cbb_rpi_value/3 + adj_elo + q1_wins*4 + q2_wins*2  - q3_losses - q4_losses*2 + this.wins - this.losses
+        
     }
 
     calculateRPIWinPercentage(){
-        this.cbb_rpi_WP = this.cbb_rpi_WL/(this.cbb_rpi_WL.win + this.cbb_rpi_WL.loss)
+        this.cbb_rpi_WP = this.cbb_rpi_WL.win/(this.cbb_rpi_WL.win + this.cbb_rpi_WL.loss)
     }
 
     calculateOpponentWinPercentage(){
@@ -105,17 +137,24 @@ class Team {
         //formula used to reset all values back to original, when resetting season
         this.total_wins += this.wins
         this.total_losses += this.losses
+        this.total_championships += this.champions
+        this.total_finalists += this.finalist
+        this.total_playoff_appearances += this.playoff_appearances
         //this.cTWins *= (2/3)
         //this.pWins += this.cTWins
-        for(var x=0; x<5; x++){
+        for(var x=0; x<8; x++){
             this.total_playoff_wins[x] += this.playoff_wins[x]
             this.total_playoff_losses[x] += this.playoff_losses[x]
         }
         this.wins = this.original_wins
         this.losses = this.original_losses
         this.elo = this.defaultElo
-        this.playoff_wins = [0, 0, 0, 0, 0]
-        this.playoff_losses = [0, 0, 0, 0, 0]
+        this.playoff_wins = [0, 0, 0, 0, 0, 0, 0]
+        this.playoff_losses = [0, 0, 0, 0, 0, 0, 0]
+        this.playoff_appearances = 0
+        this.finalist = 0
+        this.champions = 0
+        
         /*this.pWins = 0
         this.pLosses = 0
         this.cTWins = 0
@@ -127,45 +166,32 @@ class Team {
         this.totalFin = this.finalist*/
     }
     
+    cbb_reset(){
+        this.cbb_value = 0
+        this.cbb_elo_wins.length = 0
+        this.cbb_elo_losses.length = 0
+        this.cbb_rpi_WL.win = 0
+        this.cbb_rpi_WL.loss = 0
+        this.cbb_rpi_WP = 0 //this is winning percentage for RPI calculation
+        this.cbb_opponent_rpi_WP = 0 //this is the opponents in percentage
+        this.cbb_rpi_value = 0
+        this.cbb_rpi_rank = 0
+        this.cbb_all_teams_played.length=0
+        this.cbb_teams_played = {home_wins: [], away_wins: [], home_losses: [], away_losses: [], neutral_wins: [], neutral_losses: []}
+    }
     //Find Averages
     averages(sims){ //find the average of each important value, taking in the amount of sims
         this.average_wins = (this.total_wins / sims)
         //this.aPWins = (this.tpWins / sims)
         this.average_playoff_wins = this.total_playoff_wins.map(wins => wins/sims)
-        this.average_playoff_appearances = this.playoff_appearances / sims
-        this.average_finalists = (this.finalist / sims)
-        this.average_champions = (this.champions / sims)
+        this.average_playoff_appearances = this.total_playoff_appearances / sims
+        this.average_finalists = (this.total_finalist / sims)
+        this.average_champions = (this.total_champions / sims)
         //this.aTies = (this.tTies / sims)
         this.average_losses = (this.total_losses / sims)
+        this.average_ties = (this.total_ties / sims)
     }
-    /*
-    #formula to find the amount of points, using the averages, for writing to csv    
-    def points(this, regWinPoints, playoffWinPoints,  playoffAppPoints, finalPoints, champPoints): 
-        this.wPoints = ((this.aPWins * playoffWinPoints) +
-                (this.aPApp * playoffAppPoints) +
-                (this.aFin*finalPoints) +
-                (this.aCha*champPoints) +
-                (this.aWins*regWinPoints))
-    
-    #formula for figuring out how many points were scored in a single season.
-    def oneSPoints(this, regWinPoints, playoffWinPoints,  playoffAppPoints, finalPoints, champPoints):
-        pApp1 = this.pApp - this.totalPApp #pApp, champ, and finalist are determined cumulatively, so this is to get the value of just what occured this season
-        Ch1 = this.champions - this.totalChamp
-        Fin1 = this.finalist - this.totalFin
-        this.wOnePoints = ((this.pWins * playoffWinPoints) +
-                (pApp1 * playoffAppPoints) +
-                (Fin1*finalPoints) +
-                (Ch1*champPoints) +
-                (this.wins*regWinPoints))
-    
-    #the points for MLB, taking into account the different values for x games and the remaining games
-    def MLBpoints(this, regWinPFirst, regWinPSecond, gamesFirst2Second, playoffWinPoints,  playoffAppPoints, finalPoints, champPoints):
-        this.wPoints = ((this.aPWins * playoffWinPoints) +
-                (this.aPApp * playoffAppPoints) +
-                (this.aFin*finalPoints) +
-                (this.aCha*champPoints) +
-                (gamesFirst2Second*regWinPFirst) +
-                ((this.aWins - gamesFirst2Second) * regWinPSecond)) */
+   
 }
 
 module.exports = Team

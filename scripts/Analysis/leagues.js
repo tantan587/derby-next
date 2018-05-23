@@ -50,6 +50,4 @@ exports.leagues = {
     107: {sport_name: 'EPL', elo_adjust:'TBD', MOVmod: EPL_margin_mod, home_advantage: 'TBD', playoffFunction: playoffFunctions.simulateEPLconf}
     }
 
-const d = 1
-
 //module.exports = {leagues}
