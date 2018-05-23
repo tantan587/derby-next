@@ -50,3 +50,4 @@ node_modules
 .env
 .next
 *.dump
+server/routes/helpers/fantasyHelpers.js
