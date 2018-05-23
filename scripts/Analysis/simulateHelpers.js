@@ -21,6 +21,7 @@ const Series = (home, away, games, sport_id, round, neutral=false) => {
     }
 }
 
+//tells you which team has more Wins between two, returns them as array
 const moreWins = (team_a, team_b) => {
     let teams = team_a.wins > team_b.wins ? [team_a,team_b]:[team_b,team_a]
     return teams
@@ -90,20 +91,4 @@ const updateProjections = (knex, teams) => {
 }
 
 
-const dayCount = (day) => {
-    var dd = day.getDate();
-    var mm = day.getMonth()+1; //January is 0!
-    var yyyy = day.getFullYear();
-
-    if(dd<10) {
-        dd = '0'+dd
-    } 
-
-    if(mm<10) {
-        mm = '0'+mm
-    } 
-    return fantasyHelpers.getDayCount(yyyy, mm, dd)
-
-}
-
-module.exports = {Series, moreWins, simulateGame, updateProjections, dayCount}
+module.exports = {Series, moreWins, simulateGame, updateProjections, simulateNHLGame}

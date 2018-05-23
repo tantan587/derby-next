@@ -40,14 +40,15 @@ const EPL_margin_mod = (margin, elo_difference) =>
     return 1 //tbd - not done yet
 }
 
-exports.leagues = {
-    101: {sport_name: 'NBA', elo_adjust: 20, MOVmod: NBA_margin_mod, home_advantage: 100, playoffFunction: playoffFunctions.simulateNBAConferencePlayoffs, conferences: ['10101', '10102']},
-    102: {sport_name: 'NFL', elo_adjust: 20, MOVmod: NFL_margin_mod, home_advantage: 65, playoffFunction: playoffFunctions.simulateAndFindSBTeams, conferences: ['10201', '10202']},
-    103: {sport_name: 'MLB', elo_adjust: 4, MOVmod: MLB_margin_mod, home_advantage: 24, playoffFunction: playoffFunctions.simulateAndFindWSTeams, conferences: ['10301', '10302']},
-    104: {sport_name: 'NHL', elo_adjust: 8, MOVmod: NHL_margin_mod, home_advantage: 35, playoffFunction: playoffFunctions.simulateNHLconf},
-    105: {sport_name: 'CFB', elo_adjust: 30, MOVmod: CFB_margin_mod, home_advantage: 85, playoffFunction: playoffFunctions.simulateCFBconf},
-    106: {sport_name: 'CBB', elo_adjust: 35, MOVmod: CBB_margin_mod, home_advantage: 50, playoffFunction: playoffFunctions.simulateCBBconf},
-    107: {sport_name: 'EPL', elo_adjust:'TBD', MOVmod: EPL_margin_mod, home_advantage: 'TBD', playoffFunction: playoffFunctions.simulateEPLconf}
+//need NHL functions
+const leagues = {
+    101: {sport_name: 'NBA', elo_adjust: 20, MOVmod: NBA_margin_mod, home_advantage: 100, conferences: ['10101', '10102']},
+    102: {sport_name: 'NFL', elo_adjust: 20, MOVmod: NFL_margin_mod, home_advantage: 65, conferences: ['10201', '10202']},
+    103: {sport_name: 'MLB', elo_adjust: 4, MOVmod: MLB_margin_mod, home_advantage: 24, conferences: ['10301', '10302']},
+    104: {sport_name: 'NHL', elo_adjust: 8, MOVmod: NHL_margin_mod, home_advantage: 35, conference: []},
+    105: {sport_name: 'CFB', elo_adjust: 30, MOVmod: CFB_margin_mod, home_advantage: 85},
+    106: {sport_name: 'CBB', elo_adjust: 35, MOVmod: CBB_margin_mod, home_advantage: 50},
+    107: {sport_name: 'EPL', elo_adjust:'TBD', MOVmod: EPL_margin_mod, home_advantage: 'TBD'}
     }
 
-//module.exports = {leagues}
+module.exports = leagues

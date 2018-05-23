@@ -135,4 +135,15 @@ const simulate_NHL_bracket = (bracket) => {
     return simulateHelpers.Series(teams[0],teams[1],7,'104',2)
 
 }
-module.exports = {simulateNHLconf, simulateEPLconf, simulateCFBconf, simulateCBBconf, simulateAndFindSBTeams, simulateAndFindWSTeams, simulateNBAConferencePlayoffs}
+
+
+const playoffFunctions = {
+    101: simulateNBAConferencePlayoffs,
+    102: simulateAndFindSBTeams,
+    103: simulateAndFindWSTeams,
+    104: simulateNHLconf,
+    105: simulateCFBconf,
+    106: simulateCBBconf
+    }
+
+module.exports = playoffsFunctions
