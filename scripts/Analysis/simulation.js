@@ -26,7 +26,7 @@ const simulateProfessionalLeague = (all_games_list, teams, sport_id, simulations
     for(var x=0; x<simulations; x++){
         all_games_list[sport_id].forEach(game => {
             //console.log(game)
-            game.play_game()})
+            sport_id != '104' ? game.play_game(): game.play_NHL_game()})
         sport_teams.sort(function(a,b){return b.wins-a.wins})
         //find both finalists
         let finalist_1 = playoffFunctions[sport_id](sport_teams.filter(team => team.conference === leagues[sport_id].conferences[0]))
@@ -151,6 +151,42 @@ const simulateCBB = (all_games_list, teams, simulations = 10) => {
         team.averages(simulations)
     })
     return cbb_teams
+    }
+
+//function which simulates NBA, NFL, NHL, MLB - default set to 10 for now to modify later
+const simulateEPL = (all_games_list, teams, simulations = 10) => {
+    const epl_teams = individualSportTeams(teams, '107')
+    //console.log(leagues)
+    for(var x=0; x<simulations; x++){
+        all_games_list[sport_id].forEach(game => {
+            //console.log(game)
+           game.play_EPL_game()})
+        epl_teams.sort(function(a,b){return 2*b.wins+b.ties-2*a.wins-a.ties})
+        //find both finalists
+        let playoffs = epl_teams.slice(0,4)
+        let x = 0
+        playoffs.forEach(team => {
+            team.playoffs++
+            x === 0 ? (team.champions++, team.finalist++): 0
+        })
+        all_games_list[sport_id].forEach(game=>{game.adjustImpact()})
+        sport_teams.forEach(team => {
+            team.reset()})}
+        //console.log(`${teams[team].name}: ${teams[team].wins}/${teams[team].losses}, defaultElo: ${teams[team].defaultElo}, finalElo: ${teams[team].elo}`)})
+    sport_teams.forEach(team => {
+        team.averages(simulations)
+        console.log(team.average_playoff_wins)
+        console.log(`${team.name}: ${team.average_wins}/${team.average_losses}`)
+    })
+    all_games_list[sport_id].forEach(game=>{
+        console.log(`Home: ${game.home.name}, Away: ${game.away.name}`)
+        console.log(game.EOS_results.home.win.regular)
+        console.log(game.all_simulate_results.home)
+        console.log(game.EOS_results.home.loss.regular)
+        console.log(game.last_result.home)
+    })
+    return sport_teams
+    //process.exit()
     }
 
 

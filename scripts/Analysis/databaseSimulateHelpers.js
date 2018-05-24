@@ -54,7 +54,7 @@ async function createTeams() {
     return getTeamInfo(knex)
         .then(teams => {
             teams.forEach(team => {
-                all_teams[team.sport_id][team.team_id]= new Team(team.name, team.sport_id, team.elo, team.wins, team.losses, team.division, team.conference_id, team.sport_id, team.team_id)
+                all_teams[team.sport_id][team.team_id]= new Team(team.name, team.sport_id, team.elo, team.wins, team.losses, team.ties, team.division, team.conference_id, team.sport_id, team.team_id)
             })
         return all_teams
     })

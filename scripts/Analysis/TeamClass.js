@@ -1,7 +1,7 @@
 const eloHelpers = require('./elo_helpers.js')
  
 class Team {
-    constructor(name, league_id, elo, wins, losses, division, conference, sport_id, team_id){
+    constructor(name, league_id, elo, wins, losses, ties, division, conference, sport_id, team_id){
         //preceding letter indicates use:
         //o means original, for resetting (also use default for that)
         //t means total, to keep track over time
@@ -17,9 +17,9 @@ class Team {
         this.wins = wins
         this.losses = losses
         this.sport_id = sport_id
-        this.ties = 0
-        this.oTies = 0
-        this.tTies = 0
+        this.ties = ties
+        this.original_ties = ties
+        this.total_ties = 0
         this.original_wins = wins
         this.original_losses = losses
         this.total_wins = 0
@@ -39,7 +39,7 @@ class Team {
         this.average_champions = 0
         this.cTWins = 0
         this.aLosses = 0
-        this.wOnePoints = 0 //Derby Points accrued in a single season
+        //this.wOnePoints = 0 //Derby Points accrued in a single season
         this.total_playoff_appearances = 0
         this.total_championships = 0
         this.total_finalists = 0
@@ -137,6 +137,7 @@ class Team {
         //formula used to reset all values back to original, when resetting season
         this.total_wins += this.wins
         this.total_losses += this.losses
+        this.total_ties += this.ties
         this.total_championships += this.champions
         this.total_finalists += this.finalist
         this.total_playoff_appearances += this.playoff_appearances
@@ -148,22 +149,13 @@ class Team {
         }
         this.wins = this.original_wins
         this.losses = this.original_losses
+        this.ties = this.original_ties
         this.elo = this.defaultElo
         this.playoff_wins = [0, 0, 0, 0, 0, 0, 0]
         this.playoff_losses = [0, 0, 0, 0, 0, 0, 0]
         this.playoff_appearances = 0
         this.finalist = 0
         this.champions = 0
-        
-        /*this.pWins = 0
-        this.pLosses = 0
-        this.cTWins = 0
-        this.wOnePoints = 0
-        this.tTies += this.ties
-        this.ties = this.oTies
-        this.totalPApp = this.pApp
-        this.totalChamp = this.champions
-        this.totalFin = this.finalist*/
     }
     
     cbb_reset(){
