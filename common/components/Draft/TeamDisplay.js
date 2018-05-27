@@ -10,6 +10,14 @@ class TeamDisplay extends React.Component {
     this.props.onAddQueue(team)
   }
 
+  removeItem = (item) =>
+  {
+    const result = Array.from(this.props.draft.queue)
+    const index = result.indexOf(item)
+    result.splice(index, 1)
+    this.props.onUpdateQueue(result)
+  }
+
   draftTeam = (team) =>
   {
     this.props.onDraftButton(team)
@@ -42,7 +50,7 @@ class TeamDisplay extends React.Component {
       else if(queue.indexOf(teamId) === -1)
         teamsToShow.push(teams[teamId])
       else
-        teamsToShow.push({...teams[teamId],disableQueue:true, labelOverride:'added' })
+        teamsToShow.push({...teams[teamId], labelOverride:'Remove',onClickOverride:this.removeItem })
     })
     if (draft.filterInfo['tab'])
       teamsToShow = draft.filterInfo['tab'].value ?
@@ -106,6 +114,7 @@ class TeamDisplay extends React.Component {
                 disabledBackgroundColor:'#d3d3d3',
                 disabled:'disableQueue',
                 labelOverride:'true',
+                onClickOverride:'true',
                 onClick:this.addItem,
                 label:'Add to Queue',
                 color:'white',

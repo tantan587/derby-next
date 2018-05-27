@@ -79,7 +79,8 @@ class CenteredTabs extends React.Component {
         </Tabs>
         {value === 0 && <Roster/>}
         {value === 1 && <TeamDisplay
-          onAddQueue={this.props.onAddQueue} 
+          onAddQueue={this.props.onAddQueue}
+          onUpdateQueue={this.props.onUpdateQueue} 
           onDraftButton={this.props.onDraftButton}
           allowDraft={this.props.allowDraft}/>}
         {value === 2 && <RosterGrid/>}

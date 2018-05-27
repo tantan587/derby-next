@@ -67,7 +67,7 @@ class DerbyBody extends React.Component {
                     backgroundColor:  header.button.disabled && n[header.button.disabled] ? header.button.disabledBackgroundColor : header.button.backgroundColor,
                     fontStyle: header.button.disabled && n[header.button.disabled] ? 'italic' :'normal',
                     fontSize:10, height:22, width:100}}
-                  onClick={() => header.button.onClick(n[header.id])}>
+                  onClick={() => header.button.onClickOverride && n['onClickOverride'] ? n['onClickOverride'](n[header.id]) : header.button.onClick(n[header.id])}>
                   {header.button.labelOverride && n['labelOverride'] ? n['labelOverride'] : header.button.label}
                 </Button>
                 : header.id == 'team_name' && n['team_name'] !== 'none' ?

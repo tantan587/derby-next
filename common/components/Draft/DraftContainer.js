@@ -310,7 +310,9 @@ class DraftContainer extends React.Component {
                     <Grid container direction={'column'}>
                       <Grid item xs={12} style={{backgroundColor:'black'}}>
                         <Countdown 
-                          countdownTime={countdownTime}/>
+                          countdownTime={countdownTime}
+                          startTime={startTime}
+                          mode={draft.mode}/>
                       </Grid>
                       <Grid item xs={12}>
                         <DraftOrder 
@@ -331,10 +333,11 @@ class DraftContainer extends React.Component {
                           {/* <DraftHeader 
                             startTime={startTime} 
                             mode={draft.mode}
-                            myTurn={myTurn}/>
-                          <Divider style={{backgroundColor:'white'}}/> */}
+                            myTurn={myTurn}/> */}
+                          <Divider style={{backgroundColor:'white'}}/>
                         </Grid>
                         <CenteredTabs
+                          onUpdateQueue={this.onUpdateQueue}
                           onAddQueue={this.onAddQueue}
                           onDraftButton={this.onDraftButton}
                           allowDraft={allowDraft}/>

@@ -115,7 +115,7 @@ class DraftOrder extends React.Component {
           </div> : <div/>}
         <Divider style={{backgroundColor:'white'}}/>  
         <List style={{maxHeight: 700, overflow: 'auto', paddingTop:0}}>
-          <Scrollbars autoHide style={showOnTheClock? { height:510 } : { height:580 } }>
+          <Scrollbars autoHide style={showOnTheClock? { height:510 } : { height:585 } }>
             {/*renderView={this.renderView} onUpdate={this.handleUpdate}> */}
             {showOnTheClock || ownerList.length === 0  ? <div/> :
               <div>
