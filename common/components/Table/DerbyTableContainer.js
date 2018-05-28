@@ -48,7 +48,7 @@ class DerbyTableContainer extends React.Component {
           filters={filters ? filters : []}/>
         <br/>
         <br/>
-        <div style={{ width:'100%',overflowX:'auto', overflowY:'scroll', maxHeight:700}}>
+        <div style={Object.assign({width:'100%',overflowX:'auto', overflowY:'scroll'}, styleProps && styleProps.Container)}>
           <DerbyTable
             openDialog={openDialog}
             usePagination={usePagination}

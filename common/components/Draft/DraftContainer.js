@@ -195,9 +195,10 @@ class DraftContainer extends React.Component {
       }
     }
     const teamName =  this.props.teams[data.teamId].team_name
+    const sport = this.props.teams[data.teamId].sport
     const snackbarMessage = thisIsMe
-      ? 'You just drafted the ' + teamName
-      : this.state.ownerMap[data.ownerId].owner_name + ' just drafted the ' + teamName
+      ? 'You just drafted the ' + teamName + ' (' + sport+ ')'
+      : this.state.ownerMap[data.ownerId].owner_name + ' just drafted the ' + teamName + ' (' + sport+ ')'
 
     this.setState({snackbarMessage:snackbarMessage, snackbarOpen:true})
     data['thisIsMe'] = thisIsMe

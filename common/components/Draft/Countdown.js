@@ -69,7 +69,7 @@ class Countdown extends React.Component {
             <Typography className={classes.countdownBase} style={{marginLeft:-5}}>:</Typography>
             <Typography className={classes.countdownBase}style={{marginLeft:-5}}>88</Typography>
           </div>
-          : mode === 'live' ?
+          : mode === 'live' || mode==='timeout' ?
             <div>
               <Typography className={classes.title} variant="subheading">{'DRAFT CLOCK'}</Typography>
               <Typography className={classes.countdownBase}>88</Typography>
