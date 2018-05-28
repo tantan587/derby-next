@@ -53,4 +53,4 @@ class SimpleMenu extends React.Component {
   }
 }
 
-export default SimpleMenu;
+export default SimpleMenu

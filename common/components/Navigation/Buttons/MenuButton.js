@@ -2,18 +2,18 @@ import React from 'react'
 import Button from 'material-ui/Button'
 import Link from 'next/link'
 
-class ParticipateButton extends React.Component {
+class MenuButton extends React.Component {
   render() {
-    const { color, backgroundColor } = this.props
+    const { color, backgroundColor, link, name } = this.props
     return (
       <Button style={{backgroundColor:backgroundColor, color: color}}>     
-        <Link href="/participate">
+        <Link href={link}>
           <div>
-          Create/Join League
+            {name}
           </div>
         </Link>
       </Button>
     )
   }
 }
-export default ParticipateButton
+export default MenuButton

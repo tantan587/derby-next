@@ -4,6 +4,7 @@ import Button from 'material-ui/Button'
 import Link from 'next/link'
 import Typography from 'material-ui/Typography'
 import { withStyles } from 'material-ui/styles'
+import ExpandMoreIcon from 'material-ui-icons/ExpandMore'
 import withRoot from '../common/components/withRoot'
 import withRedux from 'next-redux-wrapper'
 import '../styles/style.css'
@@ -14,6 +15,8 @@ import HowToPlayIconText from '../common/components/Icons/HowToPlayIconText'
 import TitleCopyButton from '../common/components/CopyFields/TitleCopyButton'
 import HomeTitle from '../common/components/CopyFields/HomeTitle'
 import BottomNav from '../common/components/Navigation/BottomNav'
+import HomePageTable from '../common/components/Table/HomePageTable'
+
 
 //https://github.com/zeit/next.js/tree/master/examples/with-global-stylesheet
 
@@ -25,7 +28,7 @@ const styles = {
     paddingTop: 100,
     //backgroundColor:'#48311A',
     color:'white',
-    backgroundImage: 'url("/static/images/derbyhome1.jpg")',
+    backgroundImage: 'url("/static/images/derbyhome2.svg")',
     backgroundRepeat: 'no-repeat',
     //backgroundAttachment: 'fixed',
     backgroundPosition: 'center',
@@ -41,6 +44,10 @@ const styles = {
   section3: {
     textAlign: 'center',
     paddingTop: 50,
+    color:'white'},
+  section4: {
+    textAlign: 'center',
+    paddingTop: 50,
     color:'#229246'}
 }
 
@@ -51,10 +58,10 @@ class Index extends React.Component {
     const {classes} = this.props
     const sports = [
       {name:'NFL', link:'/static/icons/SportIcons/sport_icon_football.svg'},
-      {name:'NCAA', link:'/static/icons/SportIcons/sport_icon_football.svg'},
+      {name:'NCAA', link:'/static/icons/SportIcons/sport_icon_ncaa_football.svg'},
       {name:'MLB', link:'/static/icons/SportIcons/sport_icon_baseball.svg'},
       {name:'NBA', link:'/static/icons/SportIcons/sport_icon_basketball.svg'},
-      {name:'NCAAM', link:'/static/icons/SportIcons/sport_icon_basketball.svg'},
+      {name:'NCAAM', link:'/static/icons/SportIcons/sport_icon_ncaa_basketball.svg'},
       {name:'NHL', link:'/static/icons/SportIcons/sport_icon_hockey.svg'},
       {name:'EPL', link:'/static/icons/SportIcons/sport_icon_soccer.svg'}
     ]
@@ -73,32 +80,22 @@ class Index extends React.Component {
         <div className={classes.section1}>
           <Typography 
             variant="display3" style={{color:'white'}}>
-            <div style={{ fontFamily:'HorsebackSlab', display: 'inline'}}>
-              {'Draft '}
-            </div>
-            <div style={{fontFamily:'museo-slab', display: 'inline'}}>
-            Teams
+            <div style={{ fontFamily:'museo-slab-bold', display: 'inline'}}>
+            A New Way to Play Fantasy Sports
             </div>
             <br/>
-            <div style={{ fontFamily:'HorsebackSlab', display: 'inline'}}>
-              {'Watch '}
-            </div>
             <div style={{fontFamily:'museo-slab', display: 'inline'}}>
-            Sports
-            </div>
-            <br/>
-            <div style={{ fontFamily:'HorsebackSlab', display: 'inline'}}>
-              {'Win '}
-            </div>
-            <div style={{fontFamily:'museo-slab', display: 'inline'}}>
-            The Race
+            Multi-Sport. Team Points. Playoff Bonuses
             </div>
           </Typography>
-          <Typography variant='headline'style={{color:'white',width:'60%', marginLeft:'20%'}}>
-            Derby Fantasy Wins League is a new way to 
-            play fantasy sports. Instead of drafting players,
-            friends compete by drafting entire teams from multiple sports.
+          <br/>
+          <Typography variant='headline'style={{color:'white',width:'60%', marginLeft:'20%', lineHeight:1.6}}>
+            Derby is the first of a new fantasy sports game: the multi-sport fantasy wins league.
+            Instead of drafting individual players in a single sport, friends compete by drafting
+            entire teams across multiple sports and earn points as the teams win games all the way to
+            the championship!
           </Typography>
+          <br/>
           <br/>
           {
             sports.map((x,i) => { 
@@ -115,6 +112,11 @@ class Index extends React.Component {
           </Button>
           <br/>
           <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <ExpandMoreIcon style={{color:'white', fontSize: 50}}/>
         </div>
         <div className={classes.section2}>
           <HomeTitle title='Why Derby Is Great' color='white'/>
@@ -144,6 +146,38 @@ class Index extends React.Component {
           <br/>
         </div>
         <div className={classes.section3}>
+          <div  style={{display:'inline-block'}}>
+            <img src={'/static/icons/Pennant_Icon.svg'} style={{height:100, width:'auto'}} />
+          </div>
+          <div style={{display:'inline-block', marginLeft:-150}}>
+            <HomeTitle title='Root For Teams' color='#229246'/>
+            <Typography variant='headline'style={{color:'#229246', lineHeight:1.6,  width:'60%',marginLeft:'20%', fontWeight:'bold'}}>
+            Derby Focuses on Team Performance - Wins and Losses - Rather than Individual Play Performance
+            </Typography>
+          </div>
+          <div  style={{display:'inline-block', marginLeft:-70, marginRight:70}}>
+            <img src={'/static/icons/Foam_Finger_Icon.svg'} style={{height:100, width:'auto'}} />
+          </div>
+          <br/>
+          <br/>
+          <Typography variant='headline'style={{color:'#229246', width:'60%',marginLeft:'20%',lineHeight:1.6}}>
+              (Who doesn't hate losing a fantasy matchup because of the quarterback who chalks up a garbage-time passing yards
+              late in the 4th quarter, or the shooting guard chucking up hero-ball 3s when the game is already out of reach?)
+          </Typography>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+        </div>
+        <div className={classes.section2}>
+          <HomeTitle title='The Derby Difference' color='white'/>
+          <br/>
+          <br/>
+          <HomePageTable/>
+          <br/>
+          <br/>
+        </div>
+        <div className={classes.section4}>
           <HomeTitle title='How To Play' color='#229246'/>
           <br/>
           {

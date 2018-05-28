@@ -5,7 +5,7 @@ import Toolbar from 'material-ui/Toolbar'
 import { connect } from 'react-redux'
 import LogoutButton from './Buttons/LogoutButton'
 import LoginButton from './Buttons/LoginButton'
-import ParticipateButton from './Buttons/ParticipateButton'
+import MenuButton from './Buttons/MenuButton'
 import LeaguesButton from './Buttons/LeaguesButton'
 
 const styles = () => ({
@@ -48,7 +48,9 @@ class TopNavHome extends React.Component {
           <Toolbar>
             <div  className={classes.flex}>
               <LeaguesButton color='#229246' backgroundColor='#ffffff'/>
-              <ParticipateButton color='#229246' backgroundColor='#ffffff'/>
+              <MenuButton color='#229246' backgroundColor='#ffffff' link='/participate' name='Create/Join League'/>
+              <MenuButton color='#229246' backgroundColor='#ffffff' link='' name='Rules'/>
+              <MenuButton color='#229246' backgroundColor='#ffffff' link='' name='FAQ'/>
             </div>
           </Toolbar>
         </AppBar>
