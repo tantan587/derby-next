@@ -40,8 +40,8 @@ class HomePageTable extends React.Component {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map( row=> {
-            return <TableRow>
+          {rows.map( (row, j) => {
+            return <TableRow key={j}>
               {row.map((column,i) => {
                 return (
                   i == 0 ?

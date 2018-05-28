@@ -6,11 +6,17 @@ import Link from 'next/link'
 class SimpleMenu extends React.Component {
   state = {
     anchorEl: null,
+    hoverIndex:-1
   };
 
   handleClick = event => {
     this.setState({ anchorEl: event.currentTarget })
   };
+
+  setHover = (hoverIndex) =>
+  {
+    this.setState({hoverIndex:hoverIndex})
+  }
 
   handleClose = (id) => {
     const {handleClick} = this.props
@@ -20,7 +26,7 @@ class SimpleMenu extends React.Component {
   };
 
   render() {
-    const { anchorEl } = this.state
+    const { anchorEl, hoverIndex } = this.state
     const {items, title, backgroundColor, color} = this.props
     return (
       <div style={{display:'inline'}}>
@@ -42,7 +48,10 @@ class SimpleMenu extends React.Component {
           {items.map((item, i) => { 
             return <MenuItem key={i} onClick={() => this.handleClose(item.id)}>
               <Link href={item.link}>
-                <div>{item.text}</div>                
+                <div
+                  onMouseEnter={() => this.setHover(i)} 
+                  onMouseLeave={() => this.setHover(-1)} 
+                  style={{fontWeight:'bold',fontSize:14, color:hoverIndex===i?'#269349':'#555555'}}>{item.text}</div>                
               </Link>
             </MenuItem>
           })

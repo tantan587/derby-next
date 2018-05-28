@@ -28,7 +28,7 @@ class TopNavHome extends React.Component {
  
 
   render() {
-    const {classes} = this.props
+    const {classes, user} = this.props
     
     return (
       <div className={classes.root}>
@@ -47,7 +47,7 @@ class TopNavHome extends React.Component {
           </Toolbar>
           <Toolbar>
             <div  className={classes.flex}>
-              <LeaguesButton color='#229246' backgroundColor='#ffffff'/>
+              {user.loggedIn ? <LeaguesButton color='#229246' backgroundColor='#ffffff'/> : <div/>}
               <MenuButton color='#229246' backgroundColor='#ffffff' link='/participate' name='Create/Join League'/>
               <MenuButton color='#229246' backgroundColor='#ffffff' link='' name='Rules'/>
               <MenuButton color='#229246' backgroundColor='#ffffff' link='' name='FAQ'/>
