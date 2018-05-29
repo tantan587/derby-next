@@ -1,10 +1,12 @@
 import React from 'react'
-import { withStyles } from 'material-ui/styles'
-import AppBar from 'material-ui/AppBar'
-import Toolbar from 'material-ui/Toolbar'
+import { withStyles } from '@material-ui/core/styles'
+import AppBar from '@material-ui/core/AppBar'
+import Toolbar from '@material-ui/core/Toolbar'
+import Button from '@material-ui/core/Button'
 import { connect } from 'react-redux'
 import MenuButton from './Buttons/MenuButton'
 import LeaguesButton from './Buttons/LeaguesButton'
+import HomeLogoIconSmall from '../Icons/HomeLogoIconSmall'
 
 const styles = () => ({
   root: {
@@ -26,7 +28,31 @@ const styles = () => ({
 })
 class TopNavUser extends React.Component {
   
+  state = {
+    hoverIndex:-1
+  };
+
+
+  setHover = (hoverIndex) =>
+  {
+    this.setState({hoverIndex:hoverIndex})
+  }
  
+  setHoverToButton = (buttonType, index, loggedIn, link, name) =>
+  {
+    let hoverColor = this.state.hoverIndex===index?'#EBAB38':'white'
+    return <div
+      onMouseEnter={() => this.setHover(index)} 
+      onMouseLeave={() => this.setHover(-1)} 
+      style={{display:'inline-flex'}}>
+      {buttonType == 'league'  
+        ? loggedIn ? <LeaguesButton color={hoverColor} /> : <div/> 
+        : buttonType == 'home' 
+          ? <MenuButton color={hoverColor} link={link} name={name} isHomeLogo={true}/>
+          : <MenuButton color={hoverColor} link={link} name={name}/>
+      }
+    </div> 
+  }
 
   render() {
     const {classes, user} = this.props
@@ -36,19 +62,19 @@ class TopNavUser extends React.Component {
         <AppBar position="static" style={{backgroundColor:'229246', color:'white'}}>
           <div style={{backgroundColor:'#00642C', height:30}}/>
           <Toolbar>
-            <img src='/static/icons/derby_home_logo_small.svg' style={{height:50}}/>
+            {this.setHoverToButton('home', 0, user.loggedIn, '/')} 
             <div  className={classes.flex}>
-              {user.loggedIn ? <LeaguesButton color='white'/> : <div/>}
-              <MenuButton color='white' link='/participate' name='Create/Join League'/>
-              <MenuButton color='white'  link='' name='Rules'/>
-              <MenuButton color='white'  link='' name='FAQ'/>
+              {this.setHoverToButton('league', 1, user.loggedIn)}  
+              {this.setHoverToButton('default', 2, user.loggedIn, '/participate', 'Create/Join League')}
+              {this.setHoverToButton('default', 3, user.loggedIn, '', 'Rules')}
+              {this.setHoverToButton('default', 4, user.loggedIn, '', 'FAQ')}
               <div style={{float:'right'}}>
                 {user.loggedIn ?
-                  <MenuButton color='white'  link='/logout' name='Logout'/>
+                  this.setHoverToButton('default', 5, user.loggedIn, '/logout', 'Logout')
                   :
                   <div>
-                    <MenuButton color='white'  link='/login' name='Login'/>
-                    <MenuButton color='white'  link='/signup' name='Signup'/>
+                    {this.setHoverToButton('default', 5, user.loggedIn, '/login', 'Login')}
+                    {this.setHoverToButton('default', 6, user.loggedIn, '/signup', 'Sign Up')}
                   </div>
                 }
               </div>

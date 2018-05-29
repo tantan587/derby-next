@@ -25,7 +25,29 @@ const styles = () => ({
 })
 class TopNavHome extends React.Component {
   
- 
+  state = {
+    hoverIndex:-1
+  };
+
+
+  setHover = (hoverIndex) =>
+  {
+    this.setState({hoverIndex:hoverIndex})
+  }
+
+  setHoverToButton = (buttonType, index, loggedIn, link, name) =>
+  {
+    let hoverColor = this.state.hoverIndex===index?'#EBAB38':'#269349'
+    return <div
+      onMouseEnter={() => this.setHover(index)} 
+      onMouseLeave={() => this.setHover(-1)} 
+      style={{display:'inline-flex'}}>
+      {buttonType == 'league'  
+        ? loggedIn ? <LeaguesButton color={hoverColor} backgroundColor='white'/> : <div/> 
+        : <MenuButton color={hoverColor} backgroundColor='#ffffff' link={link} name={name}/>
+      }
+    </div> 
+  }
 
   render() {
     const {classes, user} = this.props
@@ -46,11 +68,11 @@ class TopNavHome extends React.Component {
             
           </Toolbar>
           <Toolbar>
-            <div  className={classes.flex}>
-              {user.loggedIn ? <LeaguesButton color='#229246' backgroundColor='#ffffff'/> : <div/>}
-              <MenuButton color='#229246' backgroundColor='#ffffff' link='/participate' name='Create/Join League'/>
-              <MenuButton color='#229246' backgroundColor='#ffffff' link='' name='Rules'/>
-              <MenuButton color='#229246' backgroundColor='#ffffff' link='' name='FAQ'/>
+            <div  className={classes.flex}>                         
+              {this.setHoverToButton('league', 0, user.loggedIn)}  
+              {this.setHoverToButton('default', 1, user.loggedIn, '/participate', 'Create/Join League')}
+              {this.setHoverToButton('default', 2, user.loggedIn, '', 'Rules')}
+              {this.setHoverToButton('default', 3, user.loggedIn, '', 'FAQ')}
             </div>
           </Toolbar>
         </AppBar>
