@@ -1,11 +1,10 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import {
-  TableCell,
-  TableRow,
-  TableBody} from 'material-ui/Table'
-import Button from 'material-ui/Button'
-import { withStyles } from 'material-ui/styles'
+import TableBody from '@material-ui/core/TableBody'
+import TableCell from '@material-ui/core/TableCell'
+import TableRow from '@material-ui/core/TableRow'
+import Button from '@material-ui/core/Button'
+import { withStyles } from '@material-ui/core/styles'
 import { handleOpenDialog } from '../../actions/dialog-actions.js'
 import { clickedOneTeam } from '../../actions/sport-actions.js'
 

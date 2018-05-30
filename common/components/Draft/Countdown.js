@@ -1,7 +1,6 @@
 import React from 'react'
-import { withStyles } from 'material-ui/styles'
-import PropTypes from 'prop-types'
-import Typography from 'material-ui/Typography'
+import { withStyles } from '@material-ui/core/styles'
+import Typography from '@material-ui/core/Typography'
 import {GetCountdownTimeObj} from '../../lib/time'
 
 

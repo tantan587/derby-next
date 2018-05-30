@@ -1,5 +1,5 @@
 import React from 'react'
-import Table from 'material-ui/Table'
+import Table from '@material-ui/core/Table'
 import DerbyHeader from './DerbyHeader'
 import DerbyBody from './DerbyBody'
 import DerbyFooter from './DerbyFooter'

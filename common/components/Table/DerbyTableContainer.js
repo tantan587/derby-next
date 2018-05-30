@@ -1,5 +1,5 @@
 import React from 'react'
-import { withStyles } from 'material-ui/styles'
+import { withStyles } from '@material-ui/core/styles'
 import DerbyTable from './DerbyTable'
 import Title from '../Navigation/Title'
 import DerbyTableFilters from './DerbyTableFilters'

@@ -1,10 +1,6 @@
 import React from 'react'
-import { withStyles } from 'material-ui/styles'
-import AppBar from 'material-ui/AppBar'
-import Toolbar from 'material-ui/Toolbar'
-import Typography from 'material-ui/Typography'
-import Button from 'material-ui/Button'
-import SearchBar from 'material-ui-search-bar'
+import { withStyles } from '@material-ui/core/styles'
+//import SearchBar from 'material-ui-search-bar'
 
 
 
@@ -63,24 +59,25 @@ class SearchFilter extends React.Component {
   render() {
     const {classes} = this.props
     return(
-      <SearchBar
-        onChange={this.filterRows}
-        onRequestSearch={() => console.log('onRequestSearch')}
-        value={this.state.value}
-        placeholder='Search Teams'
-        style={{
-          marginTop:15,
-          marginBottom:5,
-          marginRight:'3.1%',
-          float:'right',
-          width:300,
-          boxShadow: 'none',
-          borderBottom: '1px solid #A0A0A0',
-          height:37,
-          color:'black'
-        }}
-        classes={{root: classes.searchIcon}}
-      />
+      <div/>
+      // <SearchBar
+      //   onChange={this.filterRows}
+      //   onRequestSearch={() => console.log('onRequestSearch')}
+      //   value={this.state.value}
+      //   placeholder='Search Teams'
+      //   style={{
+      //     marginTop:15,
+      //     marginBottom:5,
+      //     marginRight:'3.1%',
+      //     float:'right',
+      //     width:300,
+      //     boxShadow: 'none',
+      //     borderBottom: '1px solid #A0A0A0',
+      //     height:37,
+      //     color:'black'
+      //   }}
+      //   classes={{root: classes.searchIcon}}
+      // />
     )
   }
 }

@@ -1,6 +1,6 @@
 import React from 'react'
-import Typography from 'material-ui/Typography'
-import Button from 'material-ui/Button'
+import Typography from '@material-ui/core/Typography'
+import Button from '@material-ui/core/Button'
 class TitleCopyButton extends React.Component {
 
   render() {

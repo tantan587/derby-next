@@ -1,11 +1,10 @@
-import Table from 'material-ui/Table'
 import React from 'react'
-import {
-  TableCell,
-  TableHead,
-  TableBody,
-  TableRow} from 'material-ui/Table'
-import CheckIcon from 'material-ui-icons/Check'
+import Table from '@material-ui/core/Table'
+import TableBody from '@material-ui/core/TableBody'
+import TableCell from '@material-ui/core/TableCell'
+import TableHead from '@material-ui/core/TableHead'
+import TableRow from '@material-ui/core/TableRow'
+import CheckIcon from '@material-ui/icons/Check'
 
 
 const headers = ['Leagues', 'Team Based', 'Draft Format',

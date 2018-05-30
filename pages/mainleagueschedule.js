@@ -1,5 +1,5 @@
 import React from 'react'
-import Layout from '../common/components/Layout'
+import LayoutUser from '../common/components/LayoutUser'
 import MainLeagueLayout from '../common/components/MainLeague/MainLeagueLayout'
 import RouteProtector from '../common/components/RouteProtector'
 import withRoot from '../common/components/withRoot'
@@ -13,14 +13,14 @@ class Schedule extends React.Component {
   render() {
     return (
       <div>
-        <Layout >
+        <LayoutUser >
           <RouteProtector 
             ProtectedRoute={() => 
               <MainLeagueLayout value={1}>
                 <MainLeagueSchedule/>
               </MainLeagueLayout>}
             previousPage={'mainleagueschedule'}/>
-        </Layout>
+        </LayoutUser>
       </div>
     )
   }

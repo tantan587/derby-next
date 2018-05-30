@@ -1,15 +1,7 @@
 import React from 'react'
-import { withStyles } from 'material-ui/styles'
-import { Manager, Target, Popper } from 'react-popper'
-import Button from 'material-ui/Button'
-import ClickAwayListener from 'material-ui/utils/ClickAwayListener'
-import Collapse from 'material-ui/transitions/Collapse'
-import Grow from 'material-ui/transitions/Grow'
-import Paper from 'material-ui/Paper'
-import Portal from 'material-ui/Portal'
-import  Menu, { MenuItem, MenuList } from 'material-ui/Menu'
-import classNames from 'classnames'
-import TextField from 'material-ui/TextField'
+import { withStyles } from '@material-ui/core/styles'
+import  MenuItem from '@material-ui/core/MenuItem'
+import TextField from '@material-ui/core/TextField'
 
 
 const styles = theme => ({
