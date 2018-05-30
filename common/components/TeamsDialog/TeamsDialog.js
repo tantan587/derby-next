@@ -7,9 +7,11 @@ import { withStyles } from '@material-ui/core/styles'
 
 import { handleCloseDialog } from '../../actions/dialog-actions'
 import { clickedOneTeam } from '../../actions/sport-actions'
+import { organizeData } from './tableData'
 
 import DialogHead from './DialogHead'
 import DialogInfo from './DialogInfo'
+import DialogTable from './DialogTable/DialogTable'
 import DialogLastFive from './DialogTable/DialogLastFive'
 import DialogNextFive from './DialogTable/DialogNextFive'
 
@@ -47,77 +49,94 @@ class TeamsDialog extends Component {
     const { teamsDialog, handleCloseDialog, oneTeam, classes, teams } = this.props
     const { open } = teamsDialog
     const { lastFive, nextFive } = oneTeam
-    return (
-      open && lastFive && nextFive ?
-        <Dialog
-          open={open}
-          onClose={handleCloseDialog}
-          maxWidth={false}
-          classes={{ root: classes.dialog_styles }}
+
+    // organizeData({ oneTeam, lastFive, nextFive, teams })
+
+    return (open && lastFive && nextFive ?
+      <Dialog
+        open={open}
+        onClose={handleCloseDialog}
+        maxWidth={false}
+        classes={{ root: classes.dialog_styles }}
+      >
+        <div
+          onClick={handleCloseDialog}
+          style={{
+            position: 'absolute',
+            top: 15,
+            right: 15,
+            cursor: 'pointer',
+          }}
         >
-          <div style={{ width: 750, height: 500 }}>
-            <div>
-              <DialogHead
-                oneTeam={oneTeam}
-                currTeam={teamsDialog.currTeam}
-              />
-            </div>
-            <div>
-              <Tabs
-                value={value}
-                onChange={this.handleChange}
-                style={{ height: 20, marginLeft: 40 }}
-                classes={{ root: classes.root, indicator: classes.indicator }}
-              >
-                <Tab
-                  classes={{ root: classes.green }}
-                  style={{
-                    color: value === 0 ? 'orange' : 'grey',
-                    backgroundColor: value != 0 && 'white',
-                  }}
-                  label="LAST FIVE GAMES" />
-                <Tab
-                  classes={{ root: classes.green }}
-                  style={{
-                    color: value === 1 ? 'orange' : 'grey',
-                    backgroundColor: value != 1 && 'white',
-                  }}
-                  label="NEXT FIVE GAMES" />
-                <Tab
-                  classes={{ root: classes.green }}
-                  style={{
-                    color: value === 2 ? 'orange' : 'grey',
-                    backgroundColor: value != 2 && 'white',
-                  }}
-                  label="ADDITIONAL INFO" />
-              </Tabs>
-              {console.log('val is', this.state.value)}
-              {/* {
-                [0, 1].includes(this.state.value) ?
-                  <DialogLastFive
-                    lastFive={lastFive}
-                    teams={teams}
-                  /> :
-                  <DialogInfo />
-              } */}
+          x
+        </div>
+        <div style={{ width: 775, height: 650 }}>
+          <div style={{ height: '30%' }}>
+            <DialogHead
+              oneTeam={oneTeam}
+              currTeam={teamsDialog.currTeam}
+            />
+          </div>
+          <div style={{ height: '60%' }}>
+            <Tabs
+              value={value}
+              onChange={this.handleChange}
+              style={{ height: 20, marginLeft: 40 }}
+              classes={{ root: classes.root, indicator: classes.indicator }}
+            >
+              <Tab
+                classes={{ root: classes.green }}
+                style={{
+                  color: value === 0 ? 'orange' : 'grey',
+                  backgroundColor: value != 0 && 'white',
+                }}
+                label="LAST FIVE GAMES" />
+              <Tab
+                classes={{ root: classes.green }}
+                style={{
+                  color: value === 1 ? 'orange' : 'grey',
+                  backgroundColor: value != 1 && 'white',
+                }}
+                label="NEXT FIVE GAMES" />
+              <Tab
+                classes={{ root: classes.green }}
+                style={{
+                  color: value === 2 ? 'orange' : 'grey',
+                  backgroundColor: value != 2 && 'white',
+                }}
+                label="ADDITIONAL INFO" />
+            </Tabs>
+            {console.log('val is', this.state.value)}
+            {/* {
+              [0, 1].includes(this.state.value) ?
+                <DialogLastFive
+                  lastFive={lastFive}
+                  teams={teams}
+                /> :
+                <DialogInfo />
+            } */}
+            <div style={{ height: '89%', }}> { /* scrolling div */ }
               {{
                 0: <DialogLastFive
                   oneTeam={oneTeam}
                   lastFive={lastFive}
                   teams={teams}
+                  tableData={lastFive.map(game => organizeData({ teams, game, oneTeam }))}
                 />,
                 1: <DialogNextFive
                   oneTeam={oneTeam}
                   nextFive={nextFive}
                   teams={teams}
+                  tableData={nextFive.map(game => organizeData({ teams, game, oneTeam }))}
                 />,
                 2: <DialogInfo />
               }[this.state.value]}
             </div>
           </div>
-        </Dialog>
-        :
-        <div/>
+        </div>
+      </Dialog>
+      :
+      <div/>
     )
   }
 }

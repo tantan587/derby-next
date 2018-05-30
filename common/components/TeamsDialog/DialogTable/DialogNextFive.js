@@ -5,21 +5,21 @@ import TableCell from '@material-ui/core/TableCell'
 import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 
-const DialogNextFive = ({ data, teams, nextFive, oneTeam }) =>
+const DialogNextFive = ({ tableData, teams, nextFive, oneTeam }) =>
   <Table>
     <TableHead style={{ backgroundColor: '#229246' }}>
       <TableRow>
         <TableCell style={{ color: 'white' }}>Date</TableCell>
         <TableCell style={{ color: 'white' }}>Opponent</TableCell>
-        <TableCell style={{ color: 'white' }}>Result</TableCell>
-        <TableCell style={{ color: 'white' }}>Score</TableCell>
+        {/* <TableCell style={{ color: 'white' }}>Result</TableCell> */}
+        {/* <TableCell style={{ color: 'white' }}>Score</TableCell> */}
         <TableCell style={{ color: 'white' }}>Location</TableCell>
         <TableCell style={{ color: 'white' }}>Derby Points</TableCell>
       </TableRow>
     </TableHead>
     <TableBody>
       {
-        nextFive.map(game => {
+        nextFive.map((game, idx) => {
           let opponent
           let current
 
@@ -46,20 +46,20 @@ const DialogNextFive = ({ data, teams, nextFive, oneTeam }) =>
 
           return <TableRow key={game.game_id}>
             <TableCell>{game.date_time|| '4/322/18'}</TableCell>
-            <TableCell>{opponent.name || 'Rockies'}</TableCell>
-            <TableCell>
+            <TableCell>{tableData[idx].opponent || 'Rockies'}</TableCell>
+            {/* <TableCell>
               {
                 (current.score > opponent.score ? 'W' : 'L')
                 || 'L'
               }
-            </TableCell>
-            <TableCell>
+            </TableCell> */}
+            {/* <TableCell>
               {
                 `${current.score}-${opponent.score}` || '5-2'
               }
-            </TableCell>
-            <TableCell>{data && data.location || 'Boston Celtics Stadium'}</TableCell>
-            <TableCell>{data && data.derby_points || '0'}</TableCell>
+            </TableCell> */}
+            <TableCell>{tableData && tableData.location || 'Boston Celtics Stadium'}</TableCell>
+            <TableCell>{tableData && tableData.derby_points || '0'}</TableCell>
           </TableRow>
         }
         )

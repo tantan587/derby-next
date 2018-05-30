@@ -8,22 +8,25 @@ import { withStyles } from '@material-ui/core/styles'
 import { handleOpenDialog } from '../../actions/dialog-actions.js'
 import { clickedOneTeam } from '../../actions/sport-actions.js'
 
-const styles = {
-  deeppadding :
-  {
+const styles = theme => ({
+  deeppadding: {
     padding: '5px 20px 5px 5px'
   },
-  deepAlign :
-  {
+  deepAlign: {
     textAlign: 'center'
   },
-  deepbutton :
-  {
+  deepbutton: {
     minHeight: 3,
     minWidth: 3,
     padding: '5px 10px'
   },
-}
+  teamName: {
+    '&:hover': {
+      textDecoration: 'underline',
+      cursor: 'pointer',
+    },
+  },
+})
 
 class DerbyBody extends React.Component {
 
@@ -54,7 +57,7 @@ class DerbyBody extends React.Component {
               (styleProps && styleProps.TableCellComponent && styleProps.TableCellComponent(i, n)) ?
                 styleProps.TableCellComponent.bind(null, i, n) : ''
             }
-          >
+            >
             {header.imageInd === true && n[header.id] && n[header.id] !== 'none' 
               ?  <img src={n[header.id]} preserveAspectRatio='true'  style={{maxWidth:'40px', maxHeight:'40px'}}/>
               : header.button
@@ -71,6 +74,7 @@ class DerbyBody extends React.Component {
                 </Button>
                 : header.id == 'team_name' && n['team_name'] !== 'none' ?
                   <div
+                    className={classes.teamName}
                     onClick={() => {
                       handleOpenDialog(n)
                       clickedOneTeam(n.team_id, activeLeague.league_id)
