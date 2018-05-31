@@ -37,3 +37,9 @@ export const handleDraftPick = (data) =>
     data
   })
 
+export const handleRecieveMessage = (message) =>
+  ({
+    type: C.RECIEVED_DRAFT_MESSAGE,
+    message
+  })
+

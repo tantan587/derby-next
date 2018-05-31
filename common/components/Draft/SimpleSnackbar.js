@@ -34,7 +34,7 @@ class SimpleSnackbar extends React.Component {
           open={open}
           autoHideDuration={3000}
           onClose={handleClose}
-          SnackbarContentProps={{
+          ContentProps={{
             'aria-describedby': 'message-id',
             classes: {
               root: classes.banner

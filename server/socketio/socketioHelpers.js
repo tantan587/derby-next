@@ -11,6 +11,10 @@ const GetActiveDrafts = async () =>
 }
 
 const GetDraftInfo = async (room_id) =>{
+
+  const knexStr0 = `select league_id from draft.settings
+   where room_id = '` + room_id + '\''
+
   const knexStr1 = 'select (select sum(b.number_teams) from draft.settings a, fantasy.sports b where room_id = \'' + room_id +
    '\' and a.league_id = b.league_id group by a.league_id) as total_teams, * from  draft.settings where room_id = \'' + room_id + '\''
 
@@ -23,22 +27,30 @@ const GetDraftInfo = async (room_id) =>{
   const knexStr4 = `select * from draft.results 
     where action_type ='QUEUE' order by server_ts`
 
+  const knexStr5 = `select sum(number_teams) from fantasy.sports a, 
+    draft.settings b where a.league_id = b.league_id and b.room_id = '` + room_id + '\''
+
+  const leagueId = await knex.raw(knexStr0)
   const settings = await knex.raw(knexStr1)
   const teams = await knex.raw(knexStr2)
   const owners = await knex.raw(knexStr3)
   const allQueues = await knex.raw(knexStr4)
-
+  const numberOfPicks = await knex.raw(knexStr5)
 
   const queueByOwner = {}
   allQueues.rows.map(x => {
     queueByOwner[x.initiator] = x.action.queue
   })
 
+  const rtnOwners = owners.rows.map(x =>x.owner_id)
+
   return {
     ...settings.rows[0],
+    leagueId:leagueId.rows[0].league_id,
     teams:teams.rows.map(x =>x.team_id),
-    owners:owners.rows.map(x =>x.owner_id),
-    queueByOwner:queueByOwner
+    owners:rtnOwners,
+    queueByOwner:queueByOwner,
+    totalPicks:parseInt(numberOfPicks.rows[0].sum) * rtnOwners.length
   }
 }
 

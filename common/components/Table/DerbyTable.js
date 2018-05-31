@@ -37,7 +37,7 @@ class DerbyTable extends React.Component {
     this.setState({ rowsPerPage: event.target.value })
   };
   render() {
-    const { usePagination, rows, headers, openDialog, orderInd } = this.props
+    const { usePagination, rows, headers,orderInd, extraTableRow, styleProps } = this.props
     const {order, orderBy, orderByDisplay, rowsPerPage, page} = this.state
 
     let localRows = orderBy === '' ? rows : rows.sort((a, b) =>
@@ -52,35 +52,51 @@ class DerbyTable extends React.Component {
     localRows = localRows ? localRows : []
 
     const myHeaders = headers
-    const localColumns = 
-    myHeaders.map(header => ({
-      id: header.key, 
+
+    const localColumns = myHeaders.map(header => ({
+      id: header.key,
       sortId: header.sortId ? header.sortId : header.key,
-      numeric: false,//localRows.length > 0 && !header.button ? !isNaN(localRows[0][header.key]) : false, 
+      numeric: false,//localRows.length > 0 && !header.button ? !isNaN(localRows[0][header.key]) : false,
       disablePadding: true,
       label: header.label,
-      button:header.button
+      button:header.button,
+      imageInd:header.imageInd,
+      disableSort:header.disableSort
     }))
-  
+
     const sliceStart = usePagination ?  page * rowsPerPage : 0
     const sliceEnd = usePagination ? sliceStart + rowsPerPage : localRows.length
+
     return (
-      //maxWidth: 1000, 
-      <Table style={{minWidth: 600,width:'94%', marginLeft:'3%'}}>
+      //maxWidth: 1000,
+      <Table style={Object.assign({
+        minWidth: 600,
+        width:'94%',
+        marginLeft:'3%',
+        // backgroundColor: 'black'
+      }, styleProps && styleProps.Table)}>
         <DerbyHeader
           order={order}
           orderBy={orderBy}
           orderByDisplay={orderByDisplay}
           onRequestSort={this.handleRequestSort}
           columnData={localColumns}
-          orderInd={orderInd}/>
+          orderInd={orderInd}
+          styleProps={styleProps && styleProps.Header}
+        />
         <DerbyBody
           orderInd={orderInd}
           rows={localRows.slice(sliceStart,sliceEnd)}
-          columns={localColumns}/>
+          columns={localColumns}
+          styleProps={styleProps && styleProps.Body}
+          extraTableRow={extraTableRow}
+        />
         {[1].map((x) => {if (usePagination)
         {
-          return <DerbyFooter key={x}
+          return <DerbyFooter
+            key={x}
+            only10={true}
+            styleProps={styleProps && styleProps.Footer}
             count={localRows.length}
             rowsPerPage={rowsPerPage}
             page={page}

@@ -12,6 +12,7 @@ export default (state = {}, action={ type: null }) => {
       owners:action.owners,
       queue:action.queue,
       rules:action.rules,
+      messages:action.messages,
       filterInfo:{},
       eligibleTeams:action.eligibleTeams
     }
@@ -30,6 +31,11 @@ export default (state = {}, action={ type: null }) => {
       ...state, filterInfo : action.filterInfo 
     }
 
+  case C.RECIEVED_DRAFT_MESSAGE:
+    return {
+      ...state, messages : state.messages.concat(action.message) 
+    }
+
   case C.START_DRAFT:
   {
     const newOwners = {}
@@ -43,7 +49,8 @@ export default (state = {}, action={ type: null }) => {
       eligibleTeams:[].concat(state.allTeams),
       mode : 'live',
       pick : 0,
-      owners: newOwners
+      owners: newOwners,
+      messages:[]
     }
   }
   case C.DRAFT_PICK:

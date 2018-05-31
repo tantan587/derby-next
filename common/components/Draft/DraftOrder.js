@@ -77,7 +77,6 @@ class DraftOrder extends React.Component {
 
     const ownerDraftOrder = []
     owners.map(x => ownerDraftOrder[x.draft_position]  = x)
-
     const ownerList = []
     draftOrder.map(x => {
       if(x.pick >= currPick)
@@ -101,6 +100,10 @@ class DraftOrder extends React.Component {
         {showOnTheClock
           ?
           <div style={{paddingBottom:5, backgroundColor:'#229246'}}>
+            <Typography className={classes.round} key={'first1'} variant='subheading'>
+              {'ROUND ' + (ownerList[0].round) + ' - PICK ' + ownerList[0].pick}
+            </Typography>
+            <Divider style={{backgroundColor:'white'}}/> 
             <Typography variant='body2' 
               className={classes.onTheClock}>
             ON THE CLOCK:
@@ -111,16 +114,20 @@ class DraftOrder extends React.Component {
             </Typography>
           </div> : <div/>}
         <Divider style={{backgroundColor:'white'}}/>  
-        <List style={{maxHeight: 600, overflow: 'auto', paddingTop:0}}>
-          <Scrollbars autoHide style={{ height: 500 }}>
+        <List style={{maxHeight: 700, overflow: 'auto', paddingTop:0}}>
+          <Scrollbars autoHide style={showOnTheClock? { height:510 } : { height:580 } }>
             {/*renderView={this.renderView} onUpdate={this.handleUpdate}> */}
-            <Typography className={classes.round} key={'first'} variant='subheading'>
-              {ownerList.length > 1 ? 'ROUND ' + (ownerList[1].round) : 'DRAFT OVER'}
-            </Typography>
-            <Divider />
-
-            {ownerList.filter((x,i) => showOnTheClock ? i !== 0 : i > -1).map( owner => 
+            {showOnTheClock || ownerList.length === 0  ? <div/> :
+              <div>
+                <Typography key='first2' className={classes.round} variant='subheading'>
+                  {lastRound !== ownerList[0].round ? 'ROUND ' + (ownerList[0].round) : 'DRAFT OVER'}
+                </Typography>
+                <Divider style={{backgroundColor:'white'}}/>
+              </div>
+            }
+            {ownerList.filter((x,i) => showOnTheClock || mode === 'post' ? i !== 0 : i > -1).map( owner => 
               <div key={owner.overallPick}>
+                
                 <ListItem className={classes.owner} key={owner.overallPick}>
                   {/* <Avatar>
                     <ImageIcon />
@@ -139,14 +146,14 @@ class DraftOrder extends React.Component {
                 {owner.pick % owners.length === 0 && owner.round < draftOrder.length
                   ?
                   <div>
-                    <Divider />
+                    <Divider style={{backgroundColor:'white'}} />
                     <Typography key={owner.round} className={classes.round} variant='subheading'>
                       {lastRound !== owner.round ? 'ROUND ' + (owner.round+1) : 'DRAFT OVER'}
                     </Typography>
-                    <Divider />
+                    <Divider style={{backgroundColor:'white'}}/>
                   </div>
                   :
-                  <Divider />
+                  <Divider style={{backgroundColor:'white'}}/>
                 }
               </div>
             )}
