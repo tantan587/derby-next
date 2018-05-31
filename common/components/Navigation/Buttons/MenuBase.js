@@ -47,9 +47,50 @@ class MenuListComposition extends React.Component {
     this.setState({hoverIndex:hoverIndex})
   }
 
+  getMenuList = (items, n, hoverIndex) =>
+  {
+    return <MenuList role="menu" style={{display: 'inline-block' }}>
+      {items.map((item, i) => { 
+        return <MenuItem key={i} disabled={item.disabled} onClick={() => this.handleClose(item.id)}>
+          <Link href={item.link ? item.link : 'nolink'}>
+            <div
+              onMouseEnter={() => this.setHover(i+n)} 
+              onMouseLeave={() => this.setHover(-1)} 
+              style={{fontWeight:'bold',fontSize:16, height:17, color:hoverIndex===i+n?'#269349':'#555555'}}>
+              {item.text}</div>                
+          </Link>
+        </MenuItem>
+      })
+      }
+  </MenuList>
+  }
+
   render() {
-    const { classes, items, title, backgroundColor, color } = this.props
+    const { classes, items, items2, title, backgroundColor, color } = this.props
     const { open, hoverIndex } = this.state
+
+    //this whole code is in order to make the two lists show up top aligned rather than bottome aligned
+    if(items2)
+    {
+      if (items.length > items2.length)
+      {
+        let i 
+        for(i = 0; i < items.length - items2.length; i++)
+        {
+          items2.push({disabled:true})
+        }
+
+      }
+      else if (items.length < items2.length)
+      {
+        let i 
+        for(i = 0; i < items2.length - items.length; i++)
+        {
+          items.push({disabled:true})
+        }
+
+      }
+    }
 
     return (
       <div>
@@ -71,6 +112,7 @@ class MenuListComposition extends React.Component {
             </div>
           </Target>
           <Popper
+            style={{zIndex:9999}}
             placement="bottom-start"
             eventsEnabled={open}
             className={classNames({ [classes.popperClose]: !open })}
@@ -78,19 +120,15 @@ class MenuListComposition extends React.Component {
             <ClickAwayListener onClickAway={this.handleClose}>
               <Grow in={open} id="menu-list-grow" style={{ transformOrigin: '0 0 0' }}>
                 <Paper>
-                  <MenuList role="menu">
-                    {items.map((item, i) => { 
-                      return <MenuItem key={i} onClick={() => this.handleClose(item.id)}>
-                        <Link href={item.link}>
-                          <div
-                            onMouseEnter={() => this.setHover(i)} 
-                            onMouseLeave={() => this.setHover(-1)} 
-                            style={{fontWeight:'bold',fontSize:14, color:hoverIndex===i?'#269349':'#555555'}}>{item.text}</div>                
-                        </Link>
-                      </MenuItem>
-                    })
-                    }
-                  </MenuList>
+                  {items2 ?
+                    <div>
+                      {this.getMenuList(items2,0, hoverIndex, true)}
+                      <div style={{borderRight:'1px solid grey', display: 'inline-block', height:'240px'}}/>
+                      {this.getMenuList(items,items2.length, hoverIndex)}
+                    </div>
+                    : 
+                    this.getMenuList(items,0, hoverIndex)
+                  }
                 </Paper>
               </Grow>
             </ClickAwayListener>

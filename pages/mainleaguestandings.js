@@ -1,6 +1,5 @@
 import React from 'react'
-import LayoutUser from '../common/components/LayoutUser'
-import MainLeagueLayout from '../common/components/MainLeague/MainLeagueLayout'
+import LayoutLeague from '../common/components/LayoutLeague'
 import withRoot from '../common/components/withRoot'
 import withRedux from 'next-redux-wrapper'
 import storeFactory from '../common/store'
@@ -13,14 +12,12 @@ class Standings extends React.Component {
   render() {
     return (
       <div>
-        <LayoutUser >
+        <LayoutLeague >
           <RouteProtector 
             ProtectedRoute={() => 
-              <MainLeagueLayout value={0}>
-                <MainLeagueStandings />
-              </MainLeagueLayout>}
+              <MainLeagueStandings />}
             previousPage={'mainleaguestandings'}/>
-        </LayoutUser>
+        </LayoutLeague>
       </div>
     )
   }

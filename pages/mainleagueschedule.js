@@ -1,6 +1,5 @@
 import React from 'react'
-import LayoutUser from '../common/components/LayoutUser'
-import MainLeagueLayout from '../common/components/MainLeague/MainLeagueLayout'
+import LayoutLeague from '../common/components/LayoutLeague'
 import RouteProtector from '../common/components/RouteProtector'
 import withRoot from '../common/components/withRoot'
 import withRedux from 'next-redux-wrapper'
@@ -13,14 +12,12 @@ class Schedule extends React.Component {
   render() {
     return (
       <div>
-        <LayoutUser >
+        <LayoutLeague >
           <RouteProtector 
             ProtectedRoute={() => 
-              <MainLeagueLayout value={1}>
-                <MainLeagueSchedule/>
-              </MainLeagueLayout>}
+              <MainLeagueSchedule/>}
             previousPage={'mainleagueschedule'}/>
-        </LayoutUser>
+        </LayoutLeague>
       </div>
     )
   }

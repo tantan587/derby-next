@@ -1,26 +1,25 @@
 import React from 'react'
-import LayoutLeague from '../common/components/LayoutUser'
+import LayoutLeague from '../common/components/LayoutLeague'
 import withRoot from '../common/components/withRoot'
 import withRedux from 'next-redux-wrapper'
 import storeFactory from '../common/store'
+import MainLeagueHome from '../common/components/MainLeague/MainLeagueHome'
 import RouteProtector from '../common/components/RouteProtector'
-import MainLeagueRoster from '../common/components/MainLeague/MainLeagueRoster'
 
 
-class Roster extends React.Component {
+class LeagueHome extends React.Component {
 
-  
   render() {
     return (
       <div>
-        <LayoutLeague >
+        <LayoutLeague>
           <RouteProtector 
             ProtectedRoute={() => 
-              <MainLeagueRoster/>}
-            previousPage={'mainleagueroster'}/>
+              <MainLeagueHome />}
+            previousPage={'mainleaguehome'}/>
         </LayoutLeague>
       </div>
     )
   }
 }
-export default withRedux(storeFactory)(withRoot(Roster))
+export default withRedux(storeFactory)(withRoot(LeagueHome))
