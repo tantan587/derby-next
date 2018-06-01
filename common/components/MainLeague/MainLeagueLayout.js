@@ -3,7 +3,7 @@ import Typography from 'material-ui/Typography'
 
 
 const layoutStyle = {
-  margin: -5,
+  // margin: -5,
   padding: 0,
   //border: "1px solid #DDD"
 }

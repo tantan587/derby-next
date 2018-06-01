@@ -3,10 +3,10 @@ import PropTypes from 'prop-types'
 import { withStyles } from 'material-ui/styles'
 import { connect } from 'react-redux'
 
-import EnhancedTable from '../EnhancedTable'
 import DerbyTableContainer from '../Table/DerbyTableContainer'
-import Sash from '../Icons/Silks/Sash'
 import Title from '../Navigation/Title'
+import StandingsSeasons from '../Standings/StandingsSeasons'
+import StandingsRace from '../Standings/StandingsRace'
 import silksAndColors from '../../../data/silksAndColors'
 import chooseSilk from '../Icons/Silks/silkUtil'
 
@@ -58,16 +58,30 @@ class MainLeagueStandings extends React.Component {
     const ownersWithColors = this.props.activeLeague.owners
       .map((owner, i) => ({ ...owner, ...silksAndColors[i] }))
 
+    const dates = {
+      season_start: new Date(Date.UTC(2017, 7, 1, 0, 0, 0)).getTime(),
+      season_end: new Date(Date.UTC(2018, 9, 30, 0, 0, 0)).getTime(),
+      current_time: Date.now()
+    }
+    console.log('DATES', dates)
+
     return(
       <div>
-        <Title
-          backgroundColor="#EBAB38"
-          color="white"
-          title="STANDINGS"
-          subheading="League Name"
-        />
+        <div style={{ width: '92.7%', marginLeft: '3%' }}>
+          <Title
+            backgroundColor="#EBAB38"
+            color="white"
+            title="STANDINGS"
+            subheading="League Name"
+          />
+          <StandingsSeasons />
+          <StandingsRace
+            owners={ownersWithColors}
+            dates={dates}
+          />
+        </div>
         <DerbyTableContainer
-          title='League Standings'
+          noBreak
           usePagination={false}
           styleProps={styleProps}
           myRows={ownersWithColors}

@@ -35,7 +35,7 @@ export default (state = {}, action={ type: null }) => {
       username: '',
       loggedIn: false,
       error: new ErrorText()
-    
+
     }
   case C.CREATE_LEAGUE_FAIL:
   case C.JOIN_LEAGUE_FAIL:
@@ -66,10 +66,6 @@ export default (state = {}, action={ type: null }) => {
     }
   }
   default :
-    return state    
+    return state
   }
-
-  
 }
-
-
