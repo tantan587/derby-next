@@ -6,11 +6,10 @@ import TeamsDialog from '../TeamsDialog/TeamsDialog'
 
 
 const styleProps = {
-  Container: {
-    height:600,
-    minHeight:600,
-    maxHeight:600,
-  },
+  Container:{
+    overflowY:'scroll',
+    maxHeight:700
+},
 }
 
 class TeamDisplay extends React.Component {

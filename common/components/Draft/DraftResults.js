@@ -3,6 +3,13 @@ import DerbyTableContainer from '../Table/DerbyTableContainer'
 import { connect } from 'react-redux'
 import TeamsDialog from '../TeamsDialog/TeamsDialog'
 
+const styleProps = {
+  Container:{
+    overflowY:'scroll',
+    maxHeight:700
+},
+}
+
 class DraftResults extends React.Component {
   constructor(props, context) {
     super(props, context)
@@ -52,6 +59,7 @@ class DraftResults extends React.Component {
           usePagination={true}
           myRows={draftResults}
           extraTableRow={extraTableRow}
+          styleProps={styleProps}
           myHeaders = {[
             {label: 'Pick', key: 'overallPick'},
             {label: 'Owner Name', key: 'owner_name'},

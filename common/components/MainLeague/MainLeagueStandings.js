@@ -22,6 +22,9 @@ const styles = {
 }
 
 const styleProps = {
+  Container:{
+       overflowY:'hidden'
+  },
   Table: {
     backgroundImage: 'url("/static/images/chalkboard.jpg")',
   },
@@ -67,7 +70,7 @@ class MainLeagueStandings extends React.Component {
 
     return(
       <div>
-        <div style={{ width: '92.7%', marginLeft: '3%' }}>
+        <div style={{ width: '94%', marginLeft: '3%' }}>
           <Title
             backgroundColor="#EBAB38"
             color="white"

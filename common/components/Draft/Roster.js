@@ -5,6 +5,13 @@ import TeamsDialog from '../TeamsDialog/TeamsDialog'
 import {handleFilterTab} from '../../actions/draft-actions'
 
 
+const styleProps = {
+  Container:{
+    overflowY:'scroll',
+    maxHeight:700
+},
+}
+
 class Roster extends React.Component {
   
   componentWillMount() {
@@ -45,6 +52,7 @@ class Roster extends React.Component {
           passUpFilterInfo={this.passUpFilterInfo}
           usePagination={true}
           myRows={draftedTeams}
+          styleProps={styleProps}
           filters={[
             {type:'tab', 
               values :this.props.activeLeague.owners.map(x => x.owner_name),
