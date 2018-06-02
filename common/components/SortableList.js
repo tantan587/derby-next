@@ -1,6 +1,8 @@
-import  { Component } from 'react';
+import  { Component } from 'react'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
-import List, { ListItem, ListItemText } from 'material-ui/List'
+import List from '@material-ui/core/List'
+import ListItem from '@material-ui/core/ListItem'
+import ListItemText from '@material-ui/core/ListItemText'
 
 //TODO:
 //https://github.com/atlassian/react-beautiful-dnd/issues/219

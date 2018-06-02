@@ -4,10 +4,27 @@ import { connect } from 'react-redux'
 import {handleFilterTab} from '../../actions/draft-actions'
 import TeamsDialog from '../TeamsDialog/TeamsDialog'
 
+
+const styleProps = {
+  Container: {
+    height:600,
+    minHeight:600,
+    maxHeight:600,
+  },
+}
+
 class TeamDisplay extends React.Component {
   addItem = (team) =>
   {
     this.props.onAddQueue(team)
+  }
+
+  removeItem = (item) =>
+  {
+    const result = Array.from(this.props.draft.queue)
+    const index = result.indexOf(item)
+    result.splice(index, 1)
+    this.props.onUpdateQueue(result)
   }
 
   draftTeam = (team) =>
@@ -38,11 +55,11 @@ class TeamDisplay extends React.Component {
     let teamsToShow = []
     availableTeams.map(teamId => {
       if(!draft.eligibleTeams.includes(teamId))
-        teamsToShow.push({...teams[teamId],disableQueue:true, labelOverride:'Not eligible' })
+        teamsToShow.push({...teams[teamId],disableQueue:true, labelOverride:'Not eligible', eligible:false })
       else if(queue.indexOf(teamId) === -1)
-        teamsToShow.push(teams[teamId])
+        teamsToShow.push({...teams[teamId], eligible:true})
       else
-        teamsToShow.push({...teams[teamId],disableQueue:true, labelOverride:'added' })
+        teamsToShow.push({...teams[teamId], labelOverride:'Remove',onClickOverride:this.removeItem, eligible:true })
     })
     if (draft.filterInfo['tab'])
       teamsToShow = draft.filterInfo['tab'].value ?
@@ -76,12 +93,13 @@ class TeamDisplay extends React.Component {
 
 
     return (
-      <div style={{height:730, minHeight:730, maxHeight:730}}>
+      <div >
         <TeamsDialog />
         <DerbyTableContainer
           passUpFilterInfo={this.passUpFilterInfo}
           usePagination={true}
           myRows={teamsToShow}
+          styleProps={styleProps}
           filters={[
             {type:'tab',
               values :this.props.sportLeagues.map(x => x.sport),
@@ -101,11 +119,12 @@ class TeamDisplay extends React.Component {
           myHeaders = {[
             {key: 'logo_url', sortId:'team_name',imageInd:true},
             {label: 'Team Name', key: 'team_name'},
-            {key: 'team_id',
+            {key: 'team_id', sortId:'eligible', label:'Eligible Teams',
               button:{
                 disabledBackgroundColor:'#d3d3d3',
                 disabled:'disableQueue',
                 labelOverride:'true',
+                onClickOverride:'true',
                 onClick:this.addItem,
                 label:'Add to Queue',
                 color:'white',

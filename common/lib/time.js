@@ -62,16 +62,24 @@ export const GetFullDateStr = (date) =>
 
 export const GetCountdownTimeStr = (num) =>
 {
+  let obj = GetCountdownTimeObj(num)
+  let str =  obj.days + ' Days ' + obj.hours + ' Hours ' + obj.minutes + ' Minutes ' + obj.seconds + ' Seconds '
+  return str
+}
+
+export const GetCountdownTimeObj = (num) =>
+{
   const sec = 1
   const min = sec * 60
   const hour = min * 60
   const day = hour * 24
-  let daysRemaining = Math.floor(num / day)
-  let hourRemaining = Math.floor((num- daysRemaining *day) / hour) 
-  let minRemaining = Math.floor((num- daysRemaining *day - hourRemaining*hour) / min)
-  let secRemaining = Math.floor((num- daysRemaining *day- hourRemaining*hour- minRemaining*min) / sec)
-  let str =  daysRemaining + ' Days ' + hourRemaining + ' Hours ' + minRemaining + ' Minutes ' + secRemaining + ' Seconds '
-  return str
+  let obj = {}
+  obj.days = Math.floor(num / day)
+  obj.hours = Math.floor((num- obj.days *day) / hour) 
+  obj.minutes = Math.floor((num- obj.days *day - obj.hours*hour) / min)
+  obj.seconds = Math.floor((num- obj.days *day- obj.hours*hour- obj.minutes*min) / sec)
+  
+  return obj
 }
 
 export const GetNextDay = (inputDay, forward) =>

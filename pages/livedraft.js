@@ -1,6 +1,5 @@
 import React from 'react'
-import Layout from '../common/components/Layout'
-import MainLeagueLayout from '../common/components/MainLeague/MainLeagueLayout'
+import LayoutLeague from '../common/components/LayoutLeague'
 import withRoot from '../common/components/withRoot'
 import withRedux from 'next-redux-wrapper'
 import storeFactory from '../common/store'
@@ -14,14 +13,12 @@ class LiveDraft extends React.Component {
   render() {
     return (
       <div>
-        <Layout >
+        <LayoutLeague >
           <RouteProtector 
             ProtectedRoute={() => 
-              <MainLeagueLayout value={8}>
-                <DraftContainer/>
-              </MainLeagueLayout>}
+              <DraftContainer/>}
             previousPage={'livedraft'}/>
-        </Layout>
+        </LayoutLeague>
       </div>
     )
   }

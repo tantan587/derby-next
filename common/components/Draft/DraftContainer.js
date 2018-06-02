@@ -1,14 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { withStyles } from 'material-ui/styles'
+import { withStyles } from '@material-ui/core/styles'
 import io from 'socket.io-client'
-import Paper from 'material-ui/Paper'
-import Typography from 'material-ui/Typography'
-import Button from 'material-ui/Button'
-import TextField from 'material-ui/TextField'
-import Grid from 'material-ui/Grid'
+import Paper from '@material-ui/core/Paper'
+import Typography from '@material-ui/core/Typography'
+import Button from '@material-ui/core/Button'
+import TextField from '@material-ui/core/TextField'
+import Grid from '@material-ui/core/Grid'
 import Countdown from './Countdown'
-import DraftHeader from './DraftHeader'
 import SimpleSnackbar from './SimpleSnackbar'
 import DraftOrder from './DraftOrder'
 import DraftQueue from './DraftQueue'
@@ -21,7 +20,7 @@ import {clickedEnterDraft,
   handleUpdateQueue,
   handleRecieveMessage} from '../../actions/draft-actions'
 import { connect } from 'react-redux'
-import Divider from 'material-ui/Divider'
+import Divider from '@material-ui/core/Divider'
 import Chat from './Chat'
 
 const styles = theme => ({
@@ -195,9 +194,10 @@ class DraftContainer extends React.Component {
       }
     }
     const teamName =  this.props.teams[data.teamId].team_name
+    const sport = this.props.teams[data.teamId].sport
     const snackbarMessage = thisIsMe
-      ? 'You just drafted the ' + teamName
-      : this.state.ownerMap[data.ownerId].owner_name + ' just drafted the ' + teamName
+      ? 'You just drafted the ' + teamName + ' (' + sport+ ')'
+      : this.state.ownerMap[data.ownerId].owner_name + ' just drafted the ' + teamName + ' (' + sport+ ')'
 
     this.setState({snackbarMessage:snackbarMessage, snackbarOpen:true})
     data['thisIsMe'] = thisIsMe
@@ -310,7 +310,9 @@ class DraftContainer extends React.Component {
                     <Grid container direction={'column'}>
                       <Grid item xs={12} style={{backgroundColor:'black'}}>
                         <Countdown 
-                          countdownTime={countdownTime}/>
+                          countdownTime={countdownTime}
+                          startTime={startTime}
+                          mode={draft.mode}/>
                       </Grid>
                       <Grid item xs={12}>
                         <DraftOrder 
@@ -331,10 +333,11 @@ class DraftContainer extends React.Component {
                           {/* <DraftHeader 
                             startTime={startTime} 
                             mode={draft.mode}
-                            myTurn={myTurn}/>
-                          <Divider style={{backgroundColor:'white'}}/> */}
+                            myTurn={myTurn}/> */}
+                          <Divider style={{backgroundColor:'white'}}/>
                         </Grid>
                         <CenteredTabs
+                          onUpdateQueue={this.onUpdateQueue}
                           onAddQueue={this.onAddQueue}
                           onDraftButton={this.onDraftButton}
                           allowDraft={allowDraft}/>

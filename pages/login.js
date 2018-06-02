@@ -1,5 +1,5 @@
 import React from 'react'
-import Layout from '../common/components/Layout'
+import LayoutUser from '../common/components/LayoutUser'
 import LoginForm from '../common/components/LoginForm'
 import withRoot from '../common/components/withRoot'
 import withRedux from 'next-redux-wrapper'
@@ -11,11 +11,11 @@ class Login extends React.Component {
   render() {
     return (
       <div>
-        <Layout >
+        <LayoutUser >
           <ReloadProtector 
             ProtectedRoute={() => 
               <LoginForm redirectInd={false}/>}/>
-        </Layout>
+        </LayoutUser>
       </div>
     )
   }

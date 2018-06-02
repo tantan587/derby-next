@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { withStyles } from 'material-ui/styles'
+import { withStyles } from '@material-ui/core/styles'
 import { handleOpenDialog } from '../../actions/dialog-actions'
 
 import DerbyTableContainer from '../Table/DerbyTableContainer'

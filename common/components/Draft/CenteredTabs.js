@@ -1,23 +1,14 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { withStyles } from 'material-ui/styles'
-//import AppBar from 'material-ui/AppBar'
-import Tabs, { Tab } from 'material-ui/Tabs'
-import Typography from 'material-ui/Typography'
+import { withStyles } from '@material-ui/core/styles'
+import Tabs from '@material-ui/core/Tabs'
+import Tab from '@material-ui/core/Tab'
 import TeamDisplay from './TeamDisplay'
 import DraftResults from './DraftResults'
 import Roster from './Roster'
 import RosterGrid from './RosterGrid'
 
-function TabContainer(props) {
-  return (
-    <Typography component="div" style={{ padding: 8 * 3 }}>
-      {props.children}
-    </Typography>
-  )
-}
-
-const styles = theme => ({
+const styles = () => ({
   root: {
     flexGrow: 1
   },
@@ -79,7 +70,8 @@ class CenteredTabs extends React.Component {
         </Tabs>
         {value === 0 && <Roster/>}
         {value === 1 && <TeamDisplay
-          onAddQueue={this.props.onAddQueue} 
+          onAddQueue={this.props.onAddQueue}
+          onUpdateQueue={this.props.onUpdateQueue} 
           onDraftButton={this.props.onDraftButton}
           allowDraft={this.props.allowDraft}/>}
         {value === 2 && <RosterGrid/>}
@@ -91,7 +83,7 @@ class CenteredTabs extends React.Component {
 
 CenteredTabs.propTypes = {
   classes: PropTypes.object.isRequired,
-};
+}
 
 export default withStyles(styles)(CenteredTabs)
 

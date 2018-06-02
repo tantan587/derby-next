@@ -1,9 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { withStyles } from 'material-ui/styles'
+import { withStyles } from '@material-ui/core/styles'
 import { connect } from 'react-redux'
 
-import EnhancedTable from '../EnhancedTable'
 import DerbyTableContainer from '../Table/DerbyTableContainer'
 import Sash from '../Icons/Silks/Sash'
 import Title from '../Navigation/Title'

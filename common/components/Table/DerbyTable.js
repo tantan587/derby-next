@@ -1,5 +1,5 @@
 import React from 'react'
-import Table from 'material-ui/Table'
+import Table from '@material-ui/core/Table'
 import DerbyHeader from './DerbyHeader'
 import DerbyBody from './DerbyBody'
 import DerbyFooter from './DerbyFooter'
@@ -95,7 +95,7 @@ class DerbyTable extends React.Component {
         {
           return <DerbyFooter
             key={x}
-            only10={true}
+            only10={false}
             styleProps={styleProps && styleProps.Footer}
             count={localRows.length}
             rowsPerPage={rowsPerPage}

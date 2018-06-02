@@ -1,14 +1,13 @@
 import  { Component } from 'react'
-import MenuItem from 'material-ui/Menu/MenuItem'
-import TextField from 'material-ui/TextField'
-import Table, {
-  TableBody,
-  TableCell,
-  TableRow,
-} from 'material-ui/Table'
-import Typography from 'material-ui/Typography'
-import Button from 'material-ui/Button'
-import { withStyles } from 'material-ui/styles'
+import MenuItem from '@material-ui/core/MenuItem'
+import TextField from '@material-ui/core/TextField'
+import Table from '@material-ui/core/Table'
+import TableBody from '@material-ui/core/TableBody'
+import TableCell from '@material-ui/core/TableCell'
+import TableRow from '@material-ui/core/TableRow'
+import Typography from '@material-ui/core/Typography'
+import Button from '@material-ui/core/Button'
+import { withStyles } from '@material-ui/core/styles'
 
 const styles = theme => ({
   text: {color:'black',

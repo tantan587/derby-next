@@ -1,5 +1,5 @@
 import React from 'react'
-import Layout from '../common/components/Layout'
+import LayoutUser from '../common/components/LayoutUser'
 import RouteProtector from '../common/components/RouteProtector'
 import LogoutForm from '../common/components/LogoutForm'
 import withRoot from '../common/components/withRoot'
@@ -11,11 +11,11 @@ class Logout extends React.Component {
   render() {
     return (
       <div>
-        <Layout >
+        <LayoutUser >
           <RouteProtector 
             ProtectedRoute={() => <LogoutForm/>}
             previousPage={'logout'}/>
-        </Layout>
+        </LayoutUser>
       </div>
     )
   }

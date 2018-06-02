@@ -1,30 +1,32 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import {
-  TableCell,
-  TableRow,
-  TableBody} from 'material-ui/Table'
-import Button from 'material-ui/Button'
-import { withStyles } from 'material-ui/styles'
+import TableBody from '@material-ui/core/TableBody'
+import TableCell from '@material-ui/core/TableCell'
+import TableRow from '@material-ui/core/TableRow'
+import Button from '@material-ui/core/Button'
+import { withStyles } from '@material-ui/core/styles'
 import { handleOpenDialog } from '../../actions/dialog-actions.js'
 import { clickedOneTeam } from '../../actions/sport-actions.js'
 
-const styles = {
-  deeppadding :
-  {
+const styles = theme => ({
+  deeppadding: {
     padding: '5px 20px 5px 5px'
   },
-  deepAlign :
-  {
+  deepAlign: {
     textAlign: 'center'
   },
-  deepbutton :
-  {
+  deepbutton: {
     minHeight: 3,
     minWidth: 3,
     padding: '5px 10px'
   },
-}
+  teamName: {
+    '&:hover': {
+      textDecoration: 'underline',
+      cursor: 'pointer',
+    },
+  },
+})
 
 class DerbyBody extends React.Component {
 
@@ -55,7 +57,7 @@ class DerbyBody extends React.Component {
               (styleProps && styleProps.TableCellComponent && styleProps.TableCellComponent(i, n)) ?
                 styleProps.TableCellComponent.bind(null, i, n) : ''
             }
-          >
+            >
             {header.imageInd === true && n[header.id] && n[header.id] !== 'none' 
               ?  <img src={n[header.id]} preserveAspectRatio='true'  style={{maxWidth:'40px', maxHeight:'40px'}}/>
               : header.button
@@ -67,11 +69,12 @@ class DerbyBody extends React.Component {
                     backgroundColor:  header.button.disabled && n[header.button.disabled] ? header.button.disabledBackgroundColor : header.button.backgroundColor,
                     fontStyle: header.button.disabled && n[header.button.disabled] ? 'italic' :'normal',
                     fontSize:10, height:22, width:100}}
-                  onClick={() => header.button.onClick(n[header.id])}>
+                  onClick={() => header.button.onClickOverride && n['onClickOverride'] ? n['onClickOverride'](n[header.id]) : header.button.onClick(n[header.id])}>
                   {header.button.labelOverride && n['labelOverride'] ? n['labelOverride'] : header.button.label}
                 </Button>
                 : header.id == 'team_name' && n['team_name'] !== 'none' ?
                   <div
+                    className={classes.teamName}
                     onClick={() => {
                       handleOpenDialog(n)
                       clickedOneTeam(n.team_id, activeLeague.league_id)

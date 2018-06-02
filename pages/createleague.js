@@ -1,5 +1,5 @@
 import React from 'react'
-import Layout from '../common/components/Layout'
+import LayoutUser from '../common/components/LayoutUser'
 import CreateLeagueForm from '../common/components/CreateLeagueForm'
 import RouteProtector from '../common/components/RouteProtector'
 import withRoot from '../common/components/withRoot'
@@ -11,11 +11,11 @@ class CreateLeague extends React.Component {
   render() {
     return (
       <div>
-        <Layout >
+        <LayoutUser >
           <RouteProtector 
             ProtectedRoute={() => <CreateLeagueForm/>}
             previousPage={'createleague'}/>
-        </Layout>
+        </LayoutUser>
       </div>
     )
   }

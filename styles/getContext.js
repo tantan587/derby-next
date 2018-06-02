@@ -2,9 +2,8 @@
 
 import { create, SheetsRegistry } from 'jss'
 import preset from 'jss-preset-default'
-import { createMuiTheme } from 'material-ui/styles'
-import { brown, yellow } from 'material-ui/colors'
-import createGenerateClassName from 'material-ui/styles/createGenerateClassName'
+import { createMuiTheme } from '@material-ui/core/styles'
+import createGenerateClassName from '@material-ui/core/styles/createGenerateClassName'
 import materialpalette from 'material-palette'
 import hsl from 'hsl-to-hex'
 
@@ -16,6 +15,7 @@ import hsl from 'hsl-to-hex'
 
 //#269349
 //'#EBAB38',
+//#392007
 const hslDerbyGreen = materialpalette({ h: 139, s: 59, l: 36 })
 let derbyGreen = {}
 for (const key of Object.keys(hslDerbyGreen)) {
@@ -23,11 +23,25 @@ for (const key of Object.keys(hslDerbyGreen)) {
 }
 derbyGreen['contrastDefaultColor']= 'dark'
 
+const hslDerbyBrown = materialpalette({ h: 30, s: 78, l: 13 })
+let derbyBrown = {}
+for (const key of Object.keys(hslDerbyBrown)) {
+  derbyBrown[key] = hsl(hslDerbyBrown[key].h, hslDerbyBrown[key].s, hslDerbyBrown[key].l)
+}
+derbyGreen['contrastDefaultColor']= 'dark'
+
+const hslDerbyYellow = materialpalette({ h: 39, s: 82, l: 57 })
+let derbyYellow = {}
+for (const key of Object.keys(hslDerbyYellow)) {
+  derbyYellow[key] = hsl(hslDerbyYellow[key].h, hslDerbyYellow[key].s, hslDerbyYellow[key].l)
+}
+derbyGreen['contrastDefaultColor']= 'dark'
+
 const theme = createMuiTheme({
   palette: {
     primary: derbyGreen,
-    secondary: brown,
-    tertiary : yellow
+    secondary: derbyBrown,
+    tertiary : derbyYellow
   },
 })
 

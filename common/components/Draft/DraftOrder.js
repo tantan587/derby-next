@@ -1,11 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { withStyles } from 'material-ui/styles'
-import List, { ListItem, ListItemText } from 'material-ui/List'
-// import Avatar from 'material-ui/Avatar'
-// import ImageIcon from 'material-ui-icons/Image'
-import Divider from 'material-ui/Divider'
-import Typography from 'material-ui/Typography'
+import { withStyles } from '@material-ui/core/styles'
+import List from '@material-ui/core/List'
+import ListItem from '@material-ui/core/ListItem'
+import ListItemText from '@material-ui/core/ListItemText'
+// import Avatar from '@material-ui/core/Avatar'
+// import ImageIcon from '@material-ui/icons/Image'
+import Divider from '@material-ui/core/Divider'
+import Typography from '@material-ui/core/Typography'
 import { Scrollbars } from 'react-custom-scrollbars'
 
 const styles = theme => ({
@@ -115,7 +117,7 @@ class DraftOrder extends React.Component {
           </div> : <div/>}
         <Divider style={{backgroundColor:'white'}}/>  
         <List style={{maxHeight: 700, overflow: 'auto', paddingTop:0}}>
-          <Scrollbars autoHide style={showOnTheClock? { height:510 } : { height:580 } }>
+          <Scrollbars autoHide style={showOnTheClock? { height:510 } : { height:585 } }>
             {/*renderView={this.renderView} onUpdate={this.handleUpdate}> */}
             {showOnTheClock || ownerList.length === 0  ? <div/> :
               <div>

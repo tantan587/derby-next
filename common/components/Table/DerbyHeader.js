@@ -1,11 +1,10 @@
 import React from 'react'
-import {
-  TableCell,
-  TableHead,
-  TableRow,
-  TableSortLabel} from 'material-ui/Table'
-import Tooltip from 'material-ui/Tooltip'
-import { withStyles } from 'material-ui/styles'
+import TableCell from '@material-ui/core/TableCell'
+import TableHead from '@material-ui/core/TableHead'
+import TableRow from '@material-ui/core/TableRow'
+import TableSortLabel from '@material-ui/core/TableSortLabel'
+import Tooltip from '@material-ui/core/Tooltip'
+import { withStyles } from '@material-ui/core/styles'
 
 const styles = theme => ({
   header:{

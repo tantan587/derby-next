@@ -1,5 +1,4 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import DerbyTableContainer from '../Table/DerbyTableContainer'
 import { connect } from 'react-redux'
 import TeamsDialog from '../TeamsDialog/TeamsDialog'

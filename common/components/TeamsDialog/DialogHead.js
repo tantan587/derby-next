@@ -1,10 +1,11 @@
 import React from 'react'
-import { withStyles } from 'material-ui/styles'
+import { withStyles } from '@material-ui/core/styles'
 
 const styles = {
   value: {
     fontWeight: 600,
     fontSize: 18,
+    margin: '5px 0px'
   },
   key: {
     fontWeight: 500,
@@ -14,7 +15,7 @@ const styles = {
 }
 
 const DialogHead = ({ currTeam, data, oneTeam, classes }) =>
-  <div style={{ display: 'flex', width: 550, margin: '35px 0px 35px 35px', justifyContent: 'space-around' }}>
+  <div style={{ display: 'flex', width: 575, margin: '35px 10px 35px 35px', justifyContent: 'space-around' }}>
     <img
       style={{ height: 100, width: 100 }}
       src={currTeam.logo_url || 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Chicago_Cubs_logo.svg/99px-Chicago_Cubs_logo.svg.png'}
@@ -28,7 +29,7 @@ const DialogHead = ({ currTeam, data, oneTeam, classes }) =>
       }}>
         {oneTeam.team_name || 'Chicago Cubs'}
       </div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', width: 350 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 10, width: 375 }}>
         <div>
           <div className={classes.value}>
             {oneTeam.owner || 'XXX'} <span className={classes.key}>Owner</span>

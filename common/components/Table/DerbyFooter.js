@@ -1,9 +1,7 @@
 import React from 'react'
-import  {
-  TableFooter,
-  TableRow,
-  TablePagination,
-}  from 'material-ui/Table'
+import  TableFooter from '@material-ui/core/TableFooter'
+import  TableRow from '@material-ui/core/TableRow'
+import  TablePagination   from '@material-ui/core/TablePagination'
 
 class DerbyFooter extends React.Component {
 

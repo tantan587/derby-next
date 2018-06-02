@@ -1,5 +1,4 @@
 import MainLeagueBar from './MainLeagueBar'
-import Typography from 'material-ui/Typography'
 
 
 const layoutStyle = {
