@@ -33,7 +33,7 @@ class DerbyTableContainer extends React.Component {
     this.setState({myRows:rows})
   }
   render() {
-    const { usePagination, myHeaders, filters, openDialog, passUpFilterInfo, orderInd, extraTableRow, styleProps } = this.props
+    const { usePagination, myHeaders, filters, openDialog, passUpFilterInfo, orderInd, extraTableRow, styleProps, noBreak } = this.props
     const {myRows, allRows} = this.state
     return (
       <div>
@@ -46,9 +46,8 @@ class DerbyTableContainer extends React.Component {
           updateMyRows={this.updateMyRows}
           rows={allRows}
           filters={filters ? filters : []}/>
-        <br/>
-        <br/>
-        <div style={Object.assign({width:'100%',overflowX:'auto', overflowY:'scroll'}, styleProps && styleProps.Container)}>
+        { noBreak || <div> <br/> <br/></div> }
+        <div style={{ width:'100%',overflowX:'auto', overflowY:'scroll', maxHeight:700}}>
           <DerbyTable
             openDialog={openDialog}
             usePagination={usePagination}

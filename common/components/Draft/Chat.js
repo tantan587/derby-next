@@ -39,18 +39,18 @@ class Chat extends React.Component {
     this.scrollToBottom(false)
     console.log('componentDidChange')
   }
-  
+
   componentDidMount() {
     this.scrollToBottom()
     console.log('componentDidMount')
   }
-  
+
   onTextChange = event => {
     this.setState({ field: event.target.value })
   }
 
   keypress(e) {
-    if (e.key === 'Enter') { 
+    if (e.key === 'Enter') {
       this.onPressSubmit()
     }
   }
@@ -59,7 +59,7 @@ class Chat extends React.Component {
     this.props.onMessageSubmit(this.state.field)
     this.setState({ field: '' })
   }
-  
+
   render() {
     const {classes, messages, owners} = this.props
 
@@ -71,13 +71,13 @@ class Chat extends React.Component {
       <div >
         <List style={{maxHeight: 300, overflow: 'auto', paddingTop:0}}>
           <Scrollbars autoHide style={{ height: 250 }} ref={(el) => { this.messagesEnd1 = el}}>
-            {messages.map( (message,i) => 
+            {messages.map( (message,i) =>
               <div key={i}>
                 <ListItem className={classes.message} key={message.messageId}>
                   {/* <Avatar>
                     <ImageIcon />
                   </Avatar> */}
-                  <ListItemText disableTypography 
+                  <ListItemText disableTypography
                     primary=
                       {<Typography variant="body1" style={{ color: '#FFFFFF', fontWeight : 'bold' }}>
                         {localOwners[message.ownerId]}
@@ -95,7 +95,7 @@ class Chat extends React.Component {
           <Grid item xs={12}>
             <Paper style={{width:'90%', marginLeft:'4%', height:50, maxHeight:50}}>
               <Grid container alignItems='flex-end' direction='row'>
-                <Grid item xs={10} sm={10} 
+                <Grid item xs={10} sm={10}
                   style={{backgroundColor:'white', }}>
                   <Paper style={{overflowY: 'auto',  width:'100%'}}>
                     <Scrollbars autoHide  style={{ height:50, width:'100%'  }}>
@@ -110,10 +110,10 @@ class Chat extends React.Component {
                           value={localField}
                         />
                       </form>
-                    </Scrollbars> 
+                    </Scrollbars>
                   </Paper>
                 </Grid>
-                <Grid item xs={2} sm={2} 
+                <Grid item xs={2} sm={2}
                   style={{backgroundColor:'white'}}>
                   <IconButton style={{ }} onClick={this.onPressSubmit}>
                     <SendIcon/>
