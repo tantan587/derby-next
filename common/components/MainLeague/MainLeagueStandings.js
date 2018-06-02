@@ -23,7 +23,7 @@ const styles = {
 
 const styleProps = {
   Table: {
-    backgroundImage: 'url("https://wallpapertag.com/wallpaper/full/3/a/b/270875-chalkboard-background-2400x1943-samsung-galaxy.jpg")',
+    backgroundImage: 'url("/static/images/chalkboard.jpg")',
   },
   Header: {
     TableHead: {
@@ -72,7 +72,7 @@ class MainLeagueStandings extends React.Component {
             backgroundColor="#EBAB38"
             color="white"
             title="STANDINGS"
-            subheading="League Name"
+            subheading={this.props.activeLeague.league_name}
           />
           <StandingsSeasons />
           <StandingsRace

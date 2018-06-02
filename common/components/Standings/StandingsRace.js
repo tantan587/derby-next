@@ -1,5 +1,5 @@
 import React from 'react'
-import { withStyles } from 'material-ui'
+import { withStyles } from '@material-ui/core/styles'
 
 import chooseHorse from '../Icons/Horses/horseUtil'
 
@@ -13,6 +13,13 @@ import { findMostPoints } from './standingsUtil'
 const styles = {
   root: {
     fontFamily: '\'Roboto\', sans-serif'
+  },
+  arrowRight: {
+    width: 0, 
+    height: 0,
+    borderTop: '10px solid #EBAB38',
+    borderBottom: '10px solid #EBAB38',
+    borderLeft: '20px solid #392007',
   }
 }
 
@@ -58,13 +65,13 @@ class StandingsRace extends React.Component {
         <MonthIndicator />
         <div style={{ display: 'flex', height: 20 }}>
           <div style={{
-            backgroundColor: '#47311C',
+            backgroundColor: '#392007',
             width: `${currentDifference * 100}%`,
             color: 'white',
             textTransform: 'uppercase'
           }}>
-            <span style={{ fontWeight: 600, position: 'relative' }}>
-              Derby Fantasy Football League
+            <span style={{ fontWeight: 600, position: 'relative', marginLeft:10 }}>
+              Derby Fantasy League
             </span>
               &nbsp; &nbsp; Season Progress
             {/* <div
@@ -79,10 +86,12 @@ class StandingsRace extends React.Component {
                 borderColor: 'transparent transparent transparent black',
                 borderStyle: 'solid',
                 borderWidth: '10px',
+                
               }}
             /> */}
           </div>
-          <div style={{ backgroundColor: '#E9AA45', width: `${restDifference * 100}%` }} />
+          <div className={classes.arrowRight}></div>
+          <div style={{ backgroundColor: '#EBAB38', width: `${restDifference * 100}%` }} />
         </div>
         <SeasonsIndicator
           start={season_start}
