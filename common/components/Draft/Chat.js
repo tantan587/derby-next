@@ -73,7 +73,9 @@ class Chat extends React.Component {
           <Scrollbars autoHide style={{ height: 200 }} ref={(el) => { this.messagesEnd1 = el}}>
             {messages.map( (message,i) =>
               <div key={i}>
-                <ListItem className={classes.message} key={message.messageId}>
+                <ListItem className={classes.message} key={i}
+                //key={message.messageId}
+                >
                   {/* <Avatar>
                     <ImageIcon />
                   </Avatar> */}

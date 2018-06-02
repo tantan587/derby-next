@@ -56,11 +56,11 @@ class DraftContainer extends React.Component {
       myDraftPosition:-1,
       ownerMap:{},
       sockets:['whoshere', 'people','message','start','reset',
-        'startTick','draftTick', 'draftInfo', 'modechange', 'addqueueresp'],
+        'startTick','draftTick', 'draftTeam', 'modechange', 'queue'],
       functions : [this.handleWhosHere, this.handlePeople,this.handleMessage,
         this.handleStart, this.handleReset,
-        this.handleStartTick, this.handleDraftTick, this.handleDraftInfo,
-        this.handleModeChange, this.handleAddQueueResponse]
+        this.handleStartTick, this.handleDraftTick, this.handleDraftTeam,
+        this.handleModeChange, this.handleQueue]
     }
   }
 
@@ -131,8 +131,8 @@ class DraftContainer extends React.Component {
   }
 
   // add messages from server to the state
-  handleMessage = (message) => {
-    this.props.onRecieveMessage(message)
+  handleMessage = (data) => {
+    this.props.onRecieveMessage(data.message)
   }
 
   handleReset = (data) => {
@@ -178,7 +178,8 @@ class DraftContainer extends React.Component {
         })
   }
 
-  handleDraftInfo = (data) => {
+  handleDraftTeam = (data) => {
+    console.log(data)
     const myOwnerId = this.props.activeLeague.my_owner_id
     const thisIsMe = myOwnerId === data.ownerId
     if(data)
@@ -210,7 +211,7 @@ class DraftContainer extends React.Component {
     this.props.onSetUpdateQueue(newQueue)
   }
 
-  handleAddQueueResponse = (payload) =>{
+  handleQueue = (payload) =>{
     if(payload.ownerId === this.props.activeLeague.my_owner_id)
     {
       if(payload.success)
@@ -342,7 +343,7 @@ class DraftContainer extends React.Component {
                           onDraftButton={this.onDraftButton}
                           allowDraft={allowDraft}/>
                       </Grid>
-                      {/* <Button onClick={draft.mode === 'timeout' ? 
+                      <Button onClick={draft.mode === 'timeout' ? 
                         this.onTimeIn : 
                         draft.mode ==='live' ? 
                           this.onTimeout : null}>
@@ -362,7 +363,7 @@ class DraftContainer extends React.Component {
                             shrink: true,
                           }}
                         />
-                      </form> */}
+                      </form>
                       
                       <Grid item xs={12} style={{backgroundColor:'white'}} >
                       </Grid>
