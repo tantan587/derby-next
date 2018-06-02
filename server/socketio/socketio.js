@@ -1,6 +1,6 @@
 
 const socketIoHelpers = require('./socketioHelpers')
-const DraftManager = require('./DraftManager')
+const DraftManager = require('./Draft/DraftManager')
 const draftManagers = {}
 
 const checkForActiveDrafts = async (io) => {
@@ -39,8 +39,7 @@ const draftRoom = (io, socket) =>
   {
     roomId = roomInfo.roomId
     socket.join(roomId)
-    // eslint-disable-next-line no-console
-    //console.log(roomId, io.sockets.adapter.rooms[roomId])
+    
     if(draftIsGood())
     {
       draftManagers[roomId].OwnerJoined(socket.id, roomInfo.owner_id)
@@ -108,7 +107,7 @@ const draftRoom = (io, socket) =>
   socket.in(roomId).on('addqueue', (data) => {
     if(draftIsGood())
     {
-      draftManagers[roomId].TryUpdateQueue( data)
+      draftManagers[roomId].TryUpdateQueue(data)
     }
     else{
       const distinctQueue = [...new Set(data.queue.concat([data.teamId]))]
