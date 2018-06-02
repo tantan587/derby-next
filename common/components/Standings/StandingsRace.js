@@ -40,8 +40,8 @@ class StandingsRace extends React.Component {
         <div style={{ display: 'flex' }}>
           <div style={{ width: '100%' }}>
             {
-              owners.map(owner =>
-                <div style={{ display: 'flex' }}>
+              owners.map((owner,i) =>
+                <div key={i} style={{ display: 'flex' }}>
                   <div id={owner.owner_name} style={{
                     position: 'relative',
                     width: '100%',

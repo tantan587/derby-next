@@ -8,7 +8,7 @@ import TeamsDialog from '../TeamsDialog/TeamsDialog'
 const styleProps = {
   Container:{
     overflowY:'scroll',
-    maxHeight:700
+    maxHeight:540
 },
 }
 

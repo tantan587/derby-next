@@ -69,8 +69,8 @@ class Chat extends React.Component {
     let localField = this.state.field === '\n' ? '' : this.state.field
     return (
       <div >
-        <List style={{maxHeight: 300, overflow: 'auto', paddingTop:0}}>
-          <Scrollbars autoHide style={{ height: 250 }} ref={(el) => { this.messagesEnd1 = el}}>
+        <List style={{maxHeight: 250, overflow: 'auto', paddingTop:0}}>
+          <Scrollbars autoHide style={{ height: 200 }} ref={(el) => { this.messagesEnd1 = el}}>
             {messages.map( (message,i) =>
               <div key={i}>
                 <ListItem className={classes.message} key={message.messageId}>

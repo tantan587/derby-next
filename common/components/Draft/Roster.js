@@ -8,7 +8,7 @@ import {handleFilterTab} from '../../actions/draft-actions'
 const styleProps = {
   Container:{
     overflowY:'scroll',
-    maxHeight:700
+    maxHeight:600
 },
 }
 
