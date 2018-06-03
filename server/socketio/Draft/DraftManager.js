@@ -1,15 +1,13 @@
 const draftHelpers = require('../../routes/helpers/draftHelpers')
 const fantasyHelpers = require('../../routes/helpers/fantasyHelpers')
 const socketIoHelpers = require('../socketioHelpers')
-const DraftEmitter = require('./DraftEmitter')
 const Owners = require('./Owners')
 
-function DraftManager(io, roomId) {
+function DraftManager(roomId, draftEmitter) {
   
   var that = this
   let timeToDraft = 5
   var draftIsUp = false
-  var draftEmitter = new DraftEmitter(io,roomId)
  
   this.Create = async () =>
   {
@@ -21,7 +19,7 @@ function DraftManager(io, roomId) {
     that.totalPicks = resp.totalPicks
     that.leagueId = resp.league_id
     that.owners = new Owners()
-    that.owners.CreateOwners(resp.owners, resp.queueByOwner, roomId, resp.teams)
+    await that.owners.CreateOwners(resp.owners, resp.queueByOwner, roomId, resp.teams)
     that.counter = 0
   }
 
@@ -33,7 +31,6 @@ function DraftManager(io, roomId) {
   {
     that.pick = 0
     console.log(roomId, 'is online')
-    console.log(io.sockets.adapter.rooms)
     draftEmitter.EmitWhosHere()
     waitToStartDraft()
   }
@@ -144,7 +141,7 @@ function DraftManager(io, roomId) {
 
       //console.log('counting in start draft', that.time, counter)
 
-      draftEmitter.EmitStartTick(roomId)
+      draftEmitter.EmitStartTick()
     }, 1000)
   }
 

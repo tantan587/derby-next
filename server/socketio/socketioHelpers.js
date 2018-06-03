@@ -3,8 +3,17 @@ const knex = require('../db/connection')
 
 const GetActiveDrafts = async () =>
 {
-  const str1 = `SELECT room_id from draft.settings WHERE start_time >
-   NOW() AND start_time < NOW() + INTERVAL '100 days'`
+  const str1 = `SELECT room_id from draft.settings WHERE start_time  >
+   NOW() - INTERVAL '1 days' AND start_time < NOW() + INTERVAL '100 days'`
+
+  const resp = await knex.raw(str1)
+  return resp.rows.map(x =>x.room_id)
+}
+
+const GetFutureDrafts = async () =>
+{
+  const str1 = `SELECT room_id from draft.settings WHERE start_time 
+   > NOW() - INTERVAL '1 days'`
 
   const resp = await knex.raw(str1)
   return resp.rows.map(x =>x.room_id)
@@ -25,7 +34,7 @@ const GetDraftInfo = async (room_id) =>{
    draft.settings b where a.league_id = b.league_id and b.room_id = '` + room_id + '\' order by 1'
  
   const knexStr4 = `select * from draft.results 
-    where action_type ='QUEUE' order by server_ts`
+    where action_type ='QUEUE' and room_id = '` + room_id + '\' order by server_ts'
 
   const knexStr5 = `select sum(number_teams) from fantasy.sports a, 
     draft.settings b where a.league_id = b.league_id and b.room_id = '` + room_id + '\''
@@ -87,6 +96,7 @@ const RestartDraft = (roomId) =>{
 
 module.exports = {
   GetActiveDrafts,
+  GetFutureDrafts,
   GetDraftInfo,
   InsertDraftAction,
   RestartDraft,

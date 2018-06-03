@@ -16,9 +16,10 @@ const checkPayload = (payload, dataType) => {
 
 
 class Emitter {
-  constructor(socektIoEmitter, command, dataType)
+  constructor(io, roomId, command, dataType)
   {
-    this.emitter = socektIoEmitter.Emitter
+    this.io = io
+    this.roomId = roomId
     this.command = command
     this.dataType = dataType
   }
@@ -26,10 +27,11 @@ class Emitter {
   Emit(payload) {
     if(typeof payload === 'undefined')
     {
-      this.emitter.emit(this.command)
+      console.log(this.roomId, this.command )
+      this.io.in(this.roomId).emit(this.command)
     }
     else if(checkPayload(payload, this.datatype))
-      this.emitter.emit(this.command, payload)
+      this.io.in(this.roomId).emit(this.command, payload)
     else
     {
       console.log('emitterType: ', this,

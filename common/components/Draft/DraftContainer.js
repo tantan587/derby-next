@@ -56,11 +56,11 @@ class DraftContainer extends React.Component {
       myDraftPosition:-1,
       ownerMap:{},
       sockets:['whoshere', 'people','message','start','reset',
-        'startTick','draftTick', 'draftTeam', 'modechange', 'queue'],
+        'startTick','draftTick', 'draftTeam', 'modechange', 'queueResp'],
       functions : [this.handleWhosHere, this.handlePeople,this.handleMessage,
         this.handleStart, this.handleReset,
         this.handleStartTick, this.handleDraftTick, this.handleDraftTeam,
-        this.handleModeChange, this.handleQueue]
+        this.handleModeChange, this.handleQueueResp]
     }
   }
 
@@ -70,13 +70,15 @@ class DraftContainer extends React.Component {
   }
   // connect to WS server and listen event
   componentDidMount() {
-    this.socket = io()
+    this.socket = io('/draft')
+    console.log('hello', this.socket)
     this.socket.on('connect', () => {
       // Connected, let's sign-up for to receive messages for this room
       this.socket.emit('join', 
         {roomId: this.props.activeLeague.room_id, 
           owner_id:this.props.activeLeague.my_owner_id })
     })
+    console.log(this.socket.on())
     this.state.sockets.map((socket,i) => 
       this.socket.on(socket, this.state.functions[i]))
     let myDraftPosition =-1
@@ -211,7 +213,7 @@ class DraftContainer extends React.Component {
     this.props.onSetUpdateQueue(newQueue)
   }
 
-  handleQueue = (payload) =>{
+  handleQueueResp = (payload) =>{
     if(payload.ownerId === this.props.activeLeague.my_owner_id)
     {
       if(payload.success)

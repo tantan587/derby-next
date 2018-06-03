@@ -1,12 +1,11 @@
 
-const SocketIoEmitter = require('../SocketIoEmitter')
-const Emitters = require('../Emitters')
+const DraftEmitters = require('./DraftEmitters')
 
 class DraftEmitter {
 
   constructor(draftIo,roomId)
   {
-    this.draftEmitters =  Emitters.Emitters(new SocketIoEmitter(draftIo,roomId)).DRAFT
+    this.draftEmitters =  DraftEmitters.Emitters(draftIo,roomId)
   }
 
   EmitJoined(owners, ownerId) {
