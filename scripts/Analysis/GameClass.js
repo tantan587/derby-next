@@ -21,6 +21,9 @@ class Game{
                         playoff_appearence: 0, finalist: 0, champions: 0}},loss: {regular: {wins: 0, losses: 0, ties: 0}, 
                         playoffs: {wins: [0, 0, 0, 0, 0, 0, 0], losses: [0, 0, 0, 0, 0, 0, 0], 
                         playoff_appearence: 0, finalist: 0, champions: 0}}}} //this is not done - need to figure out impact in this
+        this.raw_impact = {home: {regular: {wins: 0, losses: 0, ties: 0}, playoffs: {wins: [0, 0, 0, 0, 0, 0, 0], losses: [0, 0, 0, 0, 0, 0, 0], playoff_appearence: 0, finalist: 0, champions: 0}},
+                        away: {regular: {wins: 0, losses: 0, ties: 0}, playoffs: {wins: [0, 0, 0, 0, 0, 0, 0], losses: [0, 0, 0, 0, 0, 0, 0], playoff_appearence: 0, finalist: 0, champions: 0}}}
+        
         
     }
     
@@ -130,24 +133,59 @@ class Game{
         this.EOS_results[team][result].regular.losses += team_affected.losses
         this.EOS_results[team][result].regular.ties += team_affected.ties
         let x = 0
-        this.EOS_results[team][result].playoffs.wins.forEach(number => {
+        let playoff_wins = this.EOS_results[team][result].playoffs.wins.map(number => {
             number += team_affected.playoff_wins[x]
             x++
-        })
+            return number}
+        )
         x=0
-        this.EOS_results[team][result].playoffs.losses.forEach(number => {
+        let playoff_losses = this.EOS_results[team][result].playoffs.losses.map(number => {
             number += team_affected.playoff_wins[x]
             x++
+            return number
         })
+        this.EOS_results[team][result].playoffs.losses = playoff_losses
+        this.EOS_results[team][result].playoffs.wins = playoffs_wins
         this.EOS_results[team][result].playoffs.playoff_appearence += team_affected.wins
         this.EOS_results[team][result].playoffs.finalist += team_affected.finalist
         this.EOS_results[team][result].playoffs.champions += team_affected.champions
     }
 
-    adjustImpactWithAllSims(simulations){
-        this.EOS_results.home.win.regular.wins/this.all_simulate_results.home.wins
+    adjustImpactWithAllSims(){
+        let total_home_wins = this.all_simulate_results.home.wins
+        let total_home_losses = this.all_simulate_results.home.losses
+        let total_away_wins = this.all_simulate_results.away.wins
+        let total_away_losses = this.all_simulate_results.away.losses
+        this.adjustImpactPartial('home', 'win', total_home_wins)
+        this.adjustImpactPartial('home', 'loss',total_home_losses)
+        this.adjustImpactPartial('away', 'win', total_away_wins)
+        this.adjustImpactPartial('away', 'loss', total_away_losses)
+
+    }
+
+    adjustImpactPartial(team, result, divisor) {
+        this.EOS_results[team][result].regular.wins /= divisor
+        this.EOS_results[team][result].regular.losses /= divisor
+        this.EOS_results[team][result].regular.ties /= divisor
+        let m = this.EOS_results[team][result].playoffs.wins.map(number => number / divisor)
+        this.EOS_results[team][result].playoffs.wins = m
+        let n = this.EOS_results[team][result].playoffs.losses.map(number => number / divisor)
+        this.EOS_results[team][result].playoffs.losses = n
+        this.EOS_results[team][result].playoffs.playoff_appearence /= divisor
+        this.EOS_results[team][result].playoffs.finalist /= divisor
+        this.EOS_results[team][result].playoffs.champions /= divisor
+    }
+
+    calculateRawImpactTeam(team){
+        let regular_impact = Object.keys(this.EOS_results[team]['wins'].regular).map(result => {
+            this.EOS_results[team]['wins'].regular[result] - this.EOS_results[team]['losses'].regular[result]
+        })
+        
+        this.EOS_results[team]['wins'].regular.wins - this.EOS_results[team]['loss'].regular.wins
     }
 }
+
+
 
 
 module.exports = Game
