@@ -17,6 +17,7 @@ export default (state = {}, action={ type: null }) => {
       room_id : action.room_id,
       my_owner_id:action.my_owner_id,
       draftOrder:action.draftOrder,
+      teams:action.teams
     }
   case C.UPDATE_DRAFT_ORDER:
     return {...state, owners : owners(state.owners, action) }

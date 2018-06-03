@@ -27,7 +27,6 @@ class Emitter {
   Emit(payload) {
     if(typeof payload === 'undefined')
     {
-      console.log(this.roomId, this.command )
       this.io.in(this.roomId).emit(this.command)
     }
     else if(checkPayload(payload, this.datatype))

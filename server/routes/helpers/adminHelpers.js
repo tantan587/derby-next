@@ -3,20 +3,13 @@ const knex = require('../../db/connection')
 
 const admin1 = () =>
 {
-  return knex.withSchema('fantasy').table('owners')
+  return knex.withSchema('fantasy').table('leagues')
     .then((resp) =>
     {
-      const leagueMap = {}
-      resp.map(x => {
-        if(!leagueMap[x.league_id])
-          leagueMap[x.league_id] = []
-        leagueMap[x.league_id].push(x.owner_id)
-      })
       let updateList = []
-      Object.keys(leagueMap).map((league_id) => 
+      resp.forEach(x  => 
       {
-        console.log(leagueMap[league_id])
-        updateList.push(Promise.resolve(updateOneRow(league_id, leagueMap[league_id])))
+        updateList.push(Promise.resolve(updateOneRow({league_id: x.league_id,team_id: 106441, reg_points:0.00, bonus_points:0.00})))
       })
       return Promise.all(updateList)
         .then(()=> {return true})
@@ -33,16 +26,15 @@ const admin1 = () =>
 //             return updateList.length
         
 
-const updateOneRow = (league_id,owner_ids ) =>
+const updateOneRow = (data ) =>
 {
   return knex
-    .withSchema('draft')
-    .table('settings')
-    .where('league_id',league_id)
-    .update('draft_position', JSON.stringify(owner_ids))
+    .withSchema('fantasy')
+    .table('team_points')
+    .insert(data)
     .then(() =>
     {
-      console.log(league_id, ' updated!')
+      console.log(data.league_id, ' updated!')
     })
 }
 

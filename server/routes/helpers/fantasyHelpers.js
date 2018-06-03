@@ -5,63 +5,79 @@ function handleReduxResponse(res, code, action){
   res.status(code).json(action)
 }
 
-const getLeague = (league_id, user_id, res, type) =>{
-  var str = `select a.*, b.username, c.league_name, c.max_owners, c.league_id, d.total_points, d.rank, e.room_id, e.start_time, e.draft_position, f.total_teams from
-  fantasy.owners a, users.users b, fantasy.leagues c, fantasy.points d, draft.settings e,
-   (select league_id, sum(number_teams) as total_teams from fantasy.sports where league_id = '` + league_id + '\' group by league_id) f' +
-  ' where a.league_id = e.league_id and a.league_id = f.league_id and a.user_id = b.user_id and a.league_id = c.league_id and a.owner_id = d.owner_id'
-  return knex.raw(str)
-    .then(result =>
-    {
-      if (result.rows.length > 0)
-      {
-        var league_name = result.rows[0].league_name
-        var max_owners = result.rows[0].max_owners
-        var league_id = result.rows[0].league_id
-        var total_teams = result.rows[0].total_teams
-        var room_id = result.rows[0].room_id
-        var start_time = result.rows[0].start_time
-        var draft_position = result.rows[0].draft_position
-        var my_owner_id = ''
-        var owners = []
+const getLeague = async (league_id, user_id, res, type) =>{
 
-        result.rows.map((owner) => {
-          if(owner.user_id === user_id)
-          {
-            my_owner_id = owner.owner_id
-          }
-          owners.push(
-            {
-              owner_name:owner.owner_name,
-              owner_id:owner.owner_id,
-              total_points:parseFloat(owner.total_points),
-              rank:owner.rank,
-              username:owner.username,
-              user_id: owner.user_id,
-              draft_position: draft_position.indexOf(owner.owner_id)
-            })
-        })
-        const draftOrder = GetDraftOrder(total_teams,owners.length)
-        return handleReduxResponse(res,200, {
-          type: type,
-          league_name : league_name,
-          max_owners : max_owners,
-          total_teams:total_teams,
-          league_id : league_id,
-          owners : owners,
-          room_id: room_id,
-          draft_start_time:start_time,
-          my_owner_id:my_owner_id,
-          draftOrder:draftOrder
-        })
-      }
-      else
+  var leagueInfoStr = `select a.league_name, a.max_owners, a.league_id, b.room_id, b.start_time, b.draft_position, c.total_teams 
+  from fantasy.leagues a, draft.settings b, (
+    select league_id, sum(number_teams) as total_teams from fantasy.sports where league_id = '` + league_id + `' group by league_id) c
+  where a.league_id = b.league_id and a.league_id = c.league_id`
+
+  var ownerInfoStr = `select a.*, b.username, c.total_points, c.rank from
+  fantasy.owners a, users.users b, fantasy.points c
+  where a.user_id = b.user_id and a.owner_id = c.owner_id and a.league_id = '` + league_id + '\''
+
+  var teamInfoStr = `select b.owner_id, a.team_id, a.reg_points as points
+   from fantasy.team_points a 
+   left outer join fantasy.rosters b on a.team_id = b.team_id 
+   where a.league_id = '` + league_id + '\''
+
+  const leagueInfo = await knex.raw(leagueInfoStr)
+  const ownerInfo = await knex.raw(ownerInfoStr)
+  const teamInfo = await knex.raw(teamInfoStr)
+
+  if (leagueInfo.rows.length === 1)
+  {
+
+    var league_name = leagueInfo.rows[0].league_name
+    var max_owners = leagueInfo.rows[0].max_owners
+    var total_teams = leagueInfo.rows[0].total_teams
+    var room_id = leagueInfo.rows[0].room_id
+    var start_time = leagueInfo.rows[0].start_time
+    var draft_position = leagueInfo.rows[0].draft_position
+    var my_owner_id = ''
+    var owners = []
+    var teams = {}
+
+    ownerInfo.rows.forEach((owner) => {
+      if(owner.user_id === user_id)
       {
-        return handleReduxResponse(res,400, {})
+        my_owner_id = owner.owner_id
       }
+      owners.push(
+        {
+          owner_name:owner.owner_name,
+          owner_id:owner.owner_id,
+          total_points:parseFloat(owner.total_points),
+          rank:owner.rank,
+          username:owner.username,
+          user_id: owner.user_id,
+          draft_position: draft_position.indexOf(owner.owner_id)
+        })
     })
 
+    teamInfo.rows.forEach(teamRow => {
+      teams[teamRow.team_id] = {owner_id:teamRow.owner_id, points:parseFloat(teamRow.points)}
+    })
 
+    const draftOrder = GetDraftOrder(total_teams,owners.length)
+    return handleReduxResponse(res,200, {
+      type: type,
+      league_name : league_name,
+      max_owners : max_owners,
+      total_teams:total_teams,
+      league_id : league_id,
+      owners : owners,
+      room_id: room_id,
+      draft_start_time:start_time,
+      my_owner_id:my_owner_id,
+      draftOrder:draftOrder,
+      teams:teams
+    })
+  }
+  else
+  {
+    return handleReduxResponse(res,400, {})
+  }
 }
 
 const GetDraftOrder = (totalTeams, totalOwners) =>
