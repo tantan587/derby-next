@@ -16,11 +16,9 @@ class LoginButton extends React.Component {
       <Button 
         style={{float:'right', color: color, backgroundColor:backgroundColor}}
         onClick={() => {this.pressedUpdate()}}>         
-        <Link href="/login">
-          <div>
-            Update
-          </div>
-        </Link>
+        <div>
+          Update
+        </div>
         <PermIdentity />
       </Button>
     )

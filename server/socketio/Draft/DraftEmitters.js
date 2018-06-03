@@ -21,7 +21,9 @@ const Emitters = (io,roomId) =>
     QUEUE_FAIL : new Emitter(io, roomId,'queueResp', 
       {ownerId:'string', teamId:'string', success:'boolean'}),
     MESSAGE : new Emitter(io, roomId,'message', 
-      {data:'object'}),
+      {clientTs:'string',
+        message:'string',
+        ownerId:'string'}),
     DRAFT_TEAM : new Emitter(io, roomId,'draftTeam', 
       {ownerId:'string', teamId: 'string', queue: 'object', eligibleTeams: 'object'})
   }
