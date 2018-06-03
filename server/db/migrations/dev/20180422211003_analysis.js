@@ -7,7 +7,7 @@ exports.up = function(knex, Promise) {
       table.date('date').notNullable()
     }),
     knex.schema.withSchema('analysis').createTable('record_projections', (table) => {
-      table.decimal('team_id',6,0).notNullable().unique()
+      table.decimal('team_id',6,0).notNullable().unique() //FOR PROD MAKE NOT UNIQUE
       table.decimal('wins',5,2).notNullable()
       table.decimal('losses',5,2).notNullable()
       table.decimal('ties',5,2).notNullable()

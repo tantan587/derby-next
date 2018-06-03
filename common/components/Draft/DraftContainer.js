@@ -134,7 +134,7 @@ class DraftContainer extends React.Component {
 
   // add messages from server to the state
   handleMessage = (data) => {
-    this.props.onRecieveMessage(data.message)
+    this.props.onRecieveMessage(data)
   }
 
   handleReset = (data) => {

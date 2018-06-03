@@ -65,7 +65,10 @@ class DraftEmitter {
   }
 
   EmitMessage(data) {
-    this.draftEmitters.MESSAGE.Emit({data:data})
+    this.draftEmitters.MESSAGE.Emit(
+      {clientTs:data.clientTs,
+        message:data.message,
+        ownerId:data.ownerId})
   }
 
   EmitDraftTeam(teamId, ownerId, queue, eligibleTeams) {

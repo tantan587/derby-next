@@ -1,5 +1,5 @@
 import React from 'react'
-import LayoutLeague from '../common/components/LayoutUser'
+import LayoutLeague from '../common/components/LayoutLeague'
 import withRoot from '../common/components/withRoot'
 import withRedux from 'next-redux-wrapper'
 import storeFactory from '../common/store'
