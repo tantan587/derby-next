@@ -78,7 +78,8 @@ const getStandings = (league_id, res, type) =>{
         teams.map(team => rtnTeams[team.team_id] = team)
         return handleReduxResponse(res,200, {
           type: type,
-          teams : rtnTeams
+          teams : rtnTeams,
+          updateTime:(new Date()).toJSON()
         })
       }
       else

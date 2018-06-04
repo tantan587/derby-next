@@ -10,6 +10,7 @@ import userReducer from './userReducer'
 import draftReducer from './draftReducer'
 import dialogReducer from './dialogReducer'
 import oneTeamReducer from './oneTeamReducer'
+import updateTimeReducer from './updateTimeReducer'
 
 export default combineReducers({
   activeLeague: activeLeagueReducer,
@@ -22,5 +23,6 @@ export default combineReducers({
   user: userReducer,
   draft: draftReducer,
   teamsDialog: dialogReducer,
-  oneTeam : oneTeamReducer
+  oneTeam : oneTeamReducer,
+  updateTime : updateTimeReducer,
 })
