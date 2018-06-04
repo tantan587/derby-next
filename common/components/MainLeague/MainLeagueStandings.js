@@ -61,7 +61,7 @@ class MainLeagueStandings extends React.Component {
     const dates = {
       season_start: new Date(Date.UTC(2017, 7, 1, 0, 0, 0)).getTime(),
       season_end: new Date(Date.UTC(2018, 9, 30, 0, 0, 0)).getTime(),
-      current_time: Date.now()
+      current_time: new Date(Date.UTC(2017, 8, 20, 0, 0, 0)).getTime()
     }
     console.log('DATES', dates)
 

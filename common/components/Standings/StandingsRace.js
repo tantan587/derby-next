@@ -65,24 +65,12 @@ class StandingsRace extends React.Component {
             color: 'white',
             textTransform: 'uppercase'
           }}>
-            <span style={{ fontWeight: 600, position: 'relative' }}>
-              Derby Fantasy Football League
-            </span>
+            <div style={{ position: 'relative', width: 500, top: 0, left: 0 }}>
+              <span style={{ fontWeight: 600, position: 'relative' }}>
+                &nbsp; &nbsp; Derby Fantasy Football League
+              </span>
               &nbsp; &nbsp; Season Progress
-            {/* <div
-              style={{
-                content:'',
-                display:'block',
-                position:'absolute',
-                top:'10px',
-                left:'100%',
-                width:0,
-                height:10,
-                borderColor: 'transparent transparent transparent black',
-                borderStyle: 'solid',
-                borderWidth: '10px',
-              }}
-            /> */}
+            </div>
           </div>
           <div style={{ backgroundColor: '#E9AA45', width: `${restDifference * 100}%` }} />
         </div>
