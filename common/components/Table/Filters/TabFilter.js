@@ -2,7 +2,7 @@ import React from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
-import Button from '@material-ui/core//Button'
+import Button from '@material-ui/core/Button'
 import { Scrollbars } from 'react-custom-scrollbars'
 
 
@@ -13,7 +13,7 @@ const styles = theme => ({
     borderRadius: '0px',
   },
   appBar : {
-    height:'50px', 
+    height:'50px',
     boxShadow: ['none']}
 })
 
@@ -55,27 +55,27 @@ class TabFilter extends React.Component {
     const {tabs, allInd, classes, tabStyles} = this.props
     const {index} = this.state
     let localTabs = allInd ? tabs.concat('All') : tabs
-    
+
     return (
       <div style={{width: '96%'}}>
-        <AppBar position="static" 
+        <AppBar position="static"
           className={classes.appBar}
           style={{backgroundColor:tabStyles.background, marginLeft:'2%'}} >
           <Scrollbars autoHide autoHeight style={{ width: '100%'}}>
             <Toolbar>
-              {localTabs.map((x,i) => 
+              {localTabs.map((x,i) =>
                 i === index ?
-                  <Button key={i} 
-                    className={classes.button} 
-                    style={{backgroundColor:tabStyles.foreground, 
+                  <Button key={i}
+                    className={classes.button}
+                    style={{backgroundColor:tabStyles.foreground,
                       color:tabStyles.text, fontSize:tabStyles.fontSize}}
                     onClick={this.handleTabClick(i)}
                   >{x}</Button> :
                   <Button key={i}
-                    style={{fontSize:tabStyles.fontSize}} 
-                    className={classes.button} 
+                    style={{fontSize:tabStyles.fontSize}}
+                    className={classes.button}
                     onClick={this.handleTabClick(i)}
-                  >{x}</Button> 
+                  >{x}</Button>
               )}
             </Toolbar>
           </Scrollbars>
