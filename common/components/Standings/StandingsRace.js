@@ -26,7 +26,8 @@ class StandingsRace extends React.Component {
     const restDifference = (season_end - current_time) / fullDifference
 
     const mostPoints = findMostPoints(owners)
-    const horseWidth = owner => (owner.total_points / mostPoints) * (currentDifference * 100)
+    const horseWidth = owner => (owner.total_points / mostPoints) * 100
+    owners[0].total_points = 0
 
     return (
       <div className={classes.root}>
@@ -35,8 +36,8 @@ class StandingsRace extends React.Component {
             {
               owners.map(owner =>
                 <div style={{ display: 'flex' }}>
+                  {console.log(owner.owner_name, (owner.total_points / mostPoints), 'curr * 100 is', (currentDifference * 100))}
                   <div id={owner.owner_name} style={{
-                    position: 'relative',
                     width: '100%',
                     height: 20,
                     lineHeight: '20px',
@@ -46,14 +47,15 @@ class StandingsRace extends React.Component {
                     color: '#B1744D'
                   }}>
                     <span style={{ color: 'grey' }}> ▮ </span> {owner.owner_name}
-                    {/* <Blocks style={{ position: 'absolute', left: `calc(${horseWidth(owner)}% - 53px)` }} /> */}
-                    { chooseHorse(owner, { position: 'absolute', left: `calc(${horseWidth(owner)}% - 53px)` }) }
+                    <div style={{ position: 'relative', top: -20, height: 20, width: `calc(${currentDifference * 100}% - 53px)`}}>
+                      { chooseHorse(owner, { position: 'absolute', left: `calc(${horseWidth(owner)}%)` }) }
+                    </div>
                   </div>
                 </div>
               )
             }
           </div>
-          <FinishLine />
+          <FinishLine height={owners.length} />
         </div>
         <MonthIndicator />
         <div style={{ display: 'flex', height: 20 }}>

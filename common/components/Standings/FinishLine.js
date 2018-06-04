@@ -1,5 +1,5 @@
-const FinishLine = () => {
-  const BOX_COUNT = 16
+const FinishLine = ({ height }) => {
+  const BOX_COUNT = height * 2
   const boxPairs = []
 
   for (let i = 0; i < BOX_COUNT; i++) {
