@@ -1,6 +1,5 @@
 import React from 'react'
-import LayoutUser from '../common/components/LayoutUser'
-import MainLeagueLayout from '../common/components/MainLeague/MainLeagueLayout'
+import LayoutLeague from '../common/components/LayoutLeague'
 import withRoot from '../common/components/withRoot'
 import withRedux from 'next-redux-wrapper'
 import storeFactory from '../common/store'
@@ -13,14 +12,12 @@ class AddDraft extends React.Component {
   render() {
     return (
       <div>
-        <LayoutUser >
+        <LayoutLeague >
           <RouteProtector 
             ProtectedRoute={() => 
-              <MainLeagueLayout value={7}>
-                <AddOfflineDraftForm/>
-              </MainLeagueLayout>}
+              <AddOfflineDraftForm />}
             previousPage={'add-draft'}/>
-        </LayoutUser>
+        </LayoutLeague>
       </div>
     )
   }

@@ -7,13 +7,13 @@ class MenuButton extends React.Component {
   render() {
     const { color, backgroundColor, link, name, isHomeLogo } = this.props
     return (
-      <Button style={{backgroundColor:backgroundColor, color: color}}>     
-        <Link href={link}>
+      <Link href={link}>
+        <Button style={{backgroundColor:backgroundColor, color: color}}>     
           <div>
             {isHomeLogo ? <HomeLogoIconSmall color={color}/> : name}
           </div>
-        </Link>
-      </Button>
+        </Button>
+      </Link>
     )
   }
 }

@@ -33,8 +33,8 @@ class StandingsRace extends React.Component {
     const restDifference = (season_end - current_time) / fullDifference
 
     const mostPoints = findMostPoints(owners)
-    const horseWidth = owner => (owner.total_points / mostPoints) * (currentDifference * 100)
-
+    const horseWidth = owner => (owner.total_points / mostPoints) * 100
+    
     return (
       <div className={classes.root}>
         <div style={{ display: 'flex' }}>
@@ -43,7 +43,6 @@ class StandingsRace extends React.Component {
               owners.map((owner,i) =>
                 <div key={i} style={{ display: 'flex' }}>
                   <div id={owner.owner_name} style={{
-                    position: 'relative',
                     width: '100%',
                     height: 20,
                     lineHeight: '20px',
@@ -53,14 +52,15 @@ class StandingsRace extends React.Component {
                     color: '#B1744D'
                   }}>
                     <span style={{ color: 'grey' }}> ▮ </span> {owner.owner_name}
-                    {/* <Blocks style={{ position: 'absolute', left: `calc(${horseWidth(owner)}% - 53px)` }} /> */}
-                    { chooseHorse(owner, { position: 'absolute', left: `calc(${horseWidth(owner)}% - 53px)` }) }
+                    <div style={{ position: 'relative', top: -20, height: 20, width: `calc(${currentDifference * 100}% - 53px)`}}>
+                      { chooseHorse(owner, { position: 'absolute', left: `calc(${horseWidth(owner)}%)` }) }
+                    </div>
                   </div>
                 </div>
               )
             }
           </div>
-          <FinishLine />
+          <FinishLine height={owners.length} />
         </div>
         <MonthIndicator />
         <div style={{ display: 'flex', height: 20 }}>
@@ -70,25 +70,13 @@ class StandingsRace extends React.Component {
             color: 'white',
             textTransform: 'uppercase'
           }}>
-            <span style={{ fontWeight: 600, position: 'relative', marginLeft:10 }}>
+            <div style={{ position: 'relative', width: 500, top: 0, left: 0 }}>
+              <span style={{ fontWeight: 600, position: 'relative', marginLeft:10 }}>
               Derby Fantasy League
-            </span>
+              </span>
               &nbsp; &nbsp; Season Progress
-            {/* <div
-              style={{
-                content:'',
-                display:'block',
-                position:'absolute',
-                top:'10px',
-                left:'100%',
-                width:0,
-                height:10,
-                borderColor: 'transparent transparent transparent black',
-                borderStyle: 'solid',
-                borderWidth: '10px',
+            </div>
                 
-              }}
-            /> */}
           </div>
           <div className={classes.arrowRight}></div>
           <div style={{ backgroundColor: '#EBAB38', width: `${restDifference * 100}%` }} />
