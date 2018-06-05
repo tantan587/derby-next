@@ -5,11 +5,11 @@ const FinishLine = ({ height }) => {
   for (let i = 0; i < BOX_COUNT; i++) {
     boxPairs.push(
       [
-        <div style={{
+        <div key={i+1} style={{
           backgroundColor: i % 2 === 0 ? 'black' : 'white',
           width: 10,
         }} />,
-        <div style={{
+        <div key={-i} style={{
           backgroundColor: i % 2 === 0 ? 'white' : 'black',
           width: 10,
         }} />

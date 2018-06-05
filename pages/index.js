@@ -103,13 +103,14 @@ class Index extends React.Component {
           }
           <br/>
           <br/>
-          <Button style={{color:'white', backgroundColor:'#ebab38',height:50, width:125}}>
-            <Link href="/signup">
+          <Link href="/signup">
+            <Button style={{color:'white', backgroundColor:'#ebab38',height:50, width:125}}>
+            
               <div>
                 signup
               </div>
-            </Link>
-          </Button>
+            </Button>
+          </Link>
           <br/>
           <br/>
           <br/>

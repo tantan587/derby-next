@@ -4,17 +4,18 @@ import Link from 'next/link'
 import PermIdentity from '@material-ui/icons/PermIdentity'
 
 class LogoutButton extends React.Component {
+
   render() {
     const { color, backgroundColor } = this.props
     return (
-      <Button style={{float:'right', color: color, backgroundColor:backgroundColor}}>
-        <Link href="/logout">
+      <Link href="/logout">
+        <Button style={{float:'right', color: color, backgroundColor:backgroundColor}}>
           <div>
             logout
           </div>
-        </Link>
-        <PermIdentity />
-      </Button>
+          <PermIdentity />
+        </Button>
+      </Link>
     )
   }
 }

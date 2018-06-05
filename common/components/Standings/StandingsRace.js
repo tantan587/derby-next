@@ -34,8 +34,7 @@ class StandingsRace extends React.Component {
 
     const mostPoints = findMostPoints(owners)
     const horseWidth = owner => (owner.total_points / mostPoints) * 100
-    owners[0].total_points = 0
-
+    
     return (
       <div className={classes.root}>
         <div style={{ display: 'flex' }}>
@@ -72,7 +71,7 @@ class StandingsRace extends React.Component {
             textTransform: 'uppercase'
           }}>
             <div style={{ position: 'relative', width: 500, top: 0, left: 0 }}>
-            <span style={{ fontWeight: 600, position: 'relative', marginLeft:10 }}>
+              <span style={{ fontWeight: 600, position: 'relative', marginLeft:10 }}>
               Derby Fantasy League
               </span>
               &nbsp; &nbsp; Season Progress

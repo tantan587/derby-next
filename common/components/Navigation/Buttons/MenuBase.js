@@ -30,14 +30,16 @@ class MenuListComposition extends React.Component {
     this.setState({ open: !this.state.open })
   };
 
-
-  handleClose = (id) => {
-    const {handleClick} = this.props
-    if (id && handleClick && typeof id === 'string')
-      handleClick(id)
+  handleClose = event => {
     if (this.target1.contains(event.target)) {
       return
     }
+  }
+
+  handleCloseWithId = (id) => {
+    const {handleClick} = this.props
+    if (id && handleClick && typeof id === 'string')
+      handleClick(id)
 
     this.setState({ open: false })
   };
@@ -51,7 +53,7 @@ class MenuListComposition extends React.Component {
   {
     return <MenuList role="menu" style={{display: 'inline-block' }}>
       {items.map((item, i) => { 
-        return <MenuItem key={i} disabled={item.disabled} onClick={() => this.handleClose(item.id)}>
+        return <MenuItem key={i} disabled={item.disabled} onClick={() => this.handleCloseWithId(item.id)}>
           <Link href={item.link ? item.link : 'nolink'}>
             <div
               onMouseEnter={() => this.setHover(i+n)} 
@@ -62,7 +64,7 @@ class MenuListComposition extends React.Component {
         </MenuItem>
       })
       }
-  </MenuList>
+    </MenuList>
   }
 
   render() {
