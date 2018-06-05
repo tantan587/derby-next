@@ -24,8 +24,8 @@ class Team {
         this.original_losses = losses
         this.total_wins = 0
         this.total_losses = 0
-        this.total_playoff_wins = [0, 0, 0, 0, 0, 0, 0]
-        this.total_playoff_losses = [0, 0, 0, 0, 0, 0, 0]
+        this.total_playoff_wins = 0
+        this.total_playoff_losses = 0
         this.playoff_wins = [0, 0, 0, 0, 0, 0, 0] //this is wins in each round of playoffs
         this.playoff_losses = [0, 0, 0, 0, 0, 0, 0] //this is losses in each round of playoffs
         this.playoff_appearances = 0
@@ -141,12 +141,8 @@ class Team {
         this.total_championships += this.champions
         this.total_finalists += this.finalist
         this.total_playoff_appearances += this.playoff_appearances
-        //this.cTWins *= (2/3)
-        //this.pWins += this.cTWins
-        for(var x=0; x<8; x++){
-            this.total_playoff_wins[x] += this.playoff_wins[x]
-            this.total_playoff_losses[x] += this.playoff_losses[x]
-        }
+        this.total_playoff_losses += this.playoff_losses.reduce((a,b)=>a+b)
+        this.total_playoff_wins += this.playoff_wins.reduce((a,b)=>a+b)
         this.wins = this.original_wins
         this.losses = this.original_losses
         this.ties = this.original_ties
@@ -174,12 +170,10 @@ class Team {
     //Find Averages
     averages(sims){ //find the average of each important value, taking in the amount of sims
         this.average_wins = (this.total_wins / sims)
-        //this.aPWins = (this.tpWins / sims)
-        this.average_playoff_wins = this.total_playoff_wins.map(wins => wins/sims)
+        this.average_playoff_wins = this.total_playoff_wins/sims
         this.average_playoff_appearances = this.total_playoff_appearances / sims
         this.average_finalists = (this.total_finalist / sims)
         this.average_champions = (this.total_champions / sims)
-        //this.aTies = (this.tTies / sims)
         this.average_losses = (this.total_losses / sims)
         this.average_ties = (this.total_ties / sims)
     }

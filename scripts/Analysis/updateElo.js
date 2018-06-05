@@ -1,12 +1,12 @@
 const knex = require('../server/db/connection')
-const fantasyHelpers = require('../server/routes/helpers/fantasyHelpers')
-const eloHelpers = require('./elo_helpers.js')
+const leagues = require('./leagues.js')
+const getDayCount = require('./dayCount.js')
 
 const updateOneElo = (knex, team_id, team_elo) =>
 {
     return knex
         .withSchema('analysis')
-        .table('elo')
+        .table('current_elo')
         .where('team_id', team_id)    
         .update('elo',team_elo)
         .then(() => {
@@ -20,20 +20,8 @@ const updateOneElo = (knex, team_id, team_elo) =>
 
 const getTodaysGames = (knex) =>
 {
-    var today = new Date();
-    var dd = today.getDate();
-    var mm = today.getMonth()+1; //January is 0!
-    var yyyy = today.getFullYear();
-
-    if(dd<10) {
-        dd = '0'+dd
-    } 
-
-    if(mm<10) {
-        mm = '0'+mm
-    } 
-    var dayCount = fantasyHelpers.getDayCount(yyyy, mm, dd)
-    console.log(dayCount)
+    const today = new Date()
+    let dayCount = getDayCount(today)
     return knex('sports.schedule')
         .where('sports.schedule.day_count', dayCount)
         .innerJoin('sports.results','sports.results.global_game_id','sports.schedule.global_game_id')
@@ -54,17 +42,14 @@ async function calculate_new_elos()
     .then(x => {
         let new_elos = []
         x.map(game => {
-            let home_court = eloHelpers.leagues[game.sport_id].home_advantage //this needs to be adjusted for neutral court games later
+            let home_court = leagues[game.sport_id].home_advantage //this needs to be adjusted for neutral court games later
             let elo_difference = game.home_team_elo - game.away_team_elo + home_court
             let home_win_value = game.winner === 'H' ? 1:0
             let margin = game.home_team_score - game.away_team_score
-            let elo_adjust = eloHelpers.leagues[game.sport_id].elo_adjust //needs to be adjusted for playoffs, with different elo-adjust. 
-            /*if (game.sport_id = 103){ //what is the best way to do this for multiple sports?
-                elo_adjust = 4
-            }*/
+            let elo_adjust = leagues[game.sport_id].elo_adjust //needs to be adjusted for playoffs, with different elo-adjust. 
             let home_win_chance = 1/(Math.pow(10,(-1*elo_difference/400))+1)
-            console.log('work')
-            let margin_adjust = eloHelpers.leagues[game.sport_id].MOVmod(margin, elo_difference)
+
+            let margin_adjust = leagues[game.sport_id].MOVmod(margin, elo_difference)
             console.log(margin_adjust)
             let home_new_elo = Number(game.home_team_elo) + elo_adjust*(home_win_value-home_win_chance)*margin_adjust
             let away_new_elo = Number(game.away_team_elo) + elo_adjust*(home_win_chance-home_win_value)*margin_adjust //Same thing as awayVal-awayWin: math follows: 1-winVal - (1-winChance) = 1 - winVal - 1 + winChance = winChance-winVal
