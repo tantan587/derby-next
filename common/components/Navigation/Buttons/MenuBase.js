@@ -30,10 +30,8 @@ class MenuListComposition extends React.Component {
     this.setState({ open: !this.state.open })
   };
 
-  handleClose = event => {
-    if (this.target1.contains(event.target)) {
-      return
-    }
+  handleClose = () => {
+    this.setState({ open: false })
   }
 
   handleCloseWithId = (id) => {
@@ -41,7 +39,7 @@ class MenuListComposition extends React.Component {
     if (id && handleClick && typeof id === 'string')
       handleClick(id)
 
-    this.setState({ open: false })
+    this.handleClose()
   };
 
   setHover = (hoverIndex) =>

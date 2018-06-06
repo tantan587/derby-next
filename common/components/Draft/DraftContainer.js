@@ -342,7 +342,7 @@ class DraftContainer extends React.Component {
                           onDraftButton={this.onDraftButton}
                           allowDraft={allowDraft}/>
                       </Grid>
-                      {/* <Button onClick={draft.mode === 'timeout' ? 
+                      <Button onClick={draft.mode === 'timeout' ? 
                         this.onTimeIn : 
                         draft.mode ==='live' ? 
                           this.onTimeout : null}>
@@ -362,7 +362,7 @@ class DraftContainer extends React.Component {
                             shrink: true,
                           }}
                         />
-                      </form> */}
+                      </form>
                       
                       <Grid item xs={12} style={{backgroundColor:'white'}} >
                       </Grid>
