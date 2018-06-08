@@ -6,15 +6,27 @@ const Team = require('./TeamClass.js')
 const simulateHelpers = require('./simulateHelpers.js')
 const playoffFunctions = require('./playoffFunctions.js')
 const dbSimulateHelpers = require('./databaseSimulateHelpers.js')
+const rpiHelpers = require('./cbbRPItracker')
 
 async function simulate()
 {
     let all_teams = await dbSimulateHelpers.createTeams()
+    rpiHelpers.addRpiToTeamClass(knex,all_teams)
     return dbSimulateHelpers.createGamesArray(all_teams)
         .then(games => {
-            let mlb_teams = simulateProfessionalLeague(games, all_teams, '103')
+            const mlb_teams = simulateProfessionalLeague(games, all_teams, '103')
+            //code below to be added in once all simulations tested, ready to go
+/*             const nba_teams = simulateProfessionalLeague(games, all_teams, '101')
+            const nfl_teams = simulateProfessionalLeague(games, all_teams, '102')
+            const nhl_teams = simulateProfessionalLeague(games, all_teams, '104')
+            const cfb_teams = simulateCFB(games, all_teams)
+            const cbb_teams = simulateCBB(games, all_teams)
+            const epl_teams = simulateEPL(games, all_teams)
+            let projection_team_list = [...nba_teams, ...nfl_teams, ...mlb_teams, ...nhl_teams, ...cbb_teams, ...cfb_teams, ...epl_teams]
+            simulateHelpers.updateProjections(knex,projection_team_list) */
             simulateHelpers.updateProjections(knex,mlb_teams)
-            .then(a => {process.exit()})
+            
+            .then(() => {process.exit()})
             })
             
 }
@@ -51,6 +63,7 @@ const simulateProfessionalLeague = (all_games_list, teams, sport_id, simulations
         console.log(game.EOS_results.home.loss.regular)
         console.log(game.last_result.home)
     })
+
     return sport_teams
     //process.exit()
     }
@@ -184,6 +197,7 @@ const simulateEPL = (all_games_list, teams, simulations = 10) => {
         console.log(game.EOS_results.home.loss.regular)
         console.log(game.last_result.home)
     })
+    simulateHelpers.updateProjections(knex,sport_teams)
     return epl_teams
     //process.exit()
     }

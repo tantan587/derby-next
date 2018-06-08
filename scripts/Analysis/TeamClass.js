@@ -1,15 +1,10 @@
 const eloHelpers = require('./elo_helpers.js')
  
 class Team {
-    constructor(name, league_id, elo, wins, losses, ties, division, conference, sport_id, team_id){
-        //preceding letter indicates use:
-        //o means original, for resetting (also use default for that)
-        //t means total, to keep track over time
-        //a means average, for using to calculate average points and average values
-        //p means playoffs, without p stands for regular season
+    constructor(name, sport_id, elo, wins, losses, ties, division, conference, team_id){
         this.team_id = team_id
         this.name = name
-        this.league_id = league_id
+        //this.league_id = league_id
         this.elo = Number(elo)
         this.defaultElo = Number(elo)
         this.division = division
@@ -55,7 +50,11 @@ class Team {
         this.cbb_all_teams_played = []
         this.cbb_teams_played = {home_wins: [], away_wins: [], home_losses: [], away_losses: [], neutral_wins: [], neutral_losses: []}
     }
-        
+    
+    addInitialRpiWL(wins,losses){
+        this.cbb_rpi_WL = {win: wins, loss: losses}
+    }
+    
     get string (){
         return this.name}
 
