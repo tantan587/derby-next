@@ -1,4 +1,3 @@
-const playoffFunctions = require('./playoffFunctions.js')
 
 const MLB_margin_mod = (margin, elo_difference) =>
 {

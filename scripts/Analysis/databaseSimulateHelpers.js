@@ -1,4 +1,4 @@
-const knex = require('../../server/db/connection')
+
 const getDayCount = require('./dayCount.js')
 const Game = require('./GameClass.js')
 const Team = require('./TeamClass.js')
@@ -62,7 +62,7 @@ const getTeamInfo = (knex) =>
 }
 
 //uses the team info to create all the Teams in a class. Places it into an object, which it returns, containing all instances of the class
-async function createTeams() {
+async function createTeams(knex) {
     var all_teams = {101:{}, 102:{},103:{},104:{},105:{},106:{},107:{}}
     return getTeamInfo(knex)
         .then(teams => {
@@ -85,7 +85,7 @@ const createGamesArray = (all_teams) => {
     })}
 
 //creates an array of unplayed games by sport, with each game a member of the class Game
-const createGamesArrayWithDayCount = (all_teams, day) => {
+const createGamesArrayWithDayCount = async (knex, all_teams, day) => {
     all_games = {101:[], 102:[],103:[],104:[],105:[],106:[],107:[]}
     return pullFutureGamesWithDayCount(knex, day)
     .then(games => {
