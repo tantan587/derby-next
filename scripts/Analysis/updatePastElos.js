@@ -19,7 +19,7 @@ const updateOneElo = (knex, team_id, team_elo) =>
             .then(() => {console.log('done')})
 })}
 
-const getTodaysGames = (knex) =>
+const getPastGames = (knex) =>
 {
     const today = new Date()
     let dayCount = getDayCount(today)

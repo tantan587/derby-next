@@ -36,6 +36,19 @@ const pullFutureGames = (knex) =>
             return game})
 }
 
+const pullFutureGamesWithDayCount = (knex, day) =>
+{
+    return knex('sports.schedule')
+        .where('sports.schedule.day_count', ">", day) //need to test if want to go past today, or include this day count
+        .innerJoin('sports.results','sports.results.global_game_id','sports.schedule.global_game_id')
+        .select('sports.results.global_game_id', 'sports.schedule.home_team_id', 
+        'sports.results.home_team_score','sports.schedule.away_team_id', 'sports.results.away_team_score',
+        'sports.results.winner','sports.schedule.sport_id')
+        .then(game => {
+            //console.log(game)
+            return game})
+}
+
 //pulls the teams info from knex, merging elo and the standings
 const getTeamInfo = (knex) => 
 {
@@ -71,6 +84,17 @@ const createGamesArray = (all_teams) => {
     return all_games
     })}
 
+//creates an array of unplayed games by sport, with each game a member of the class Game
+const createGamesArrayWithDayCount = (all_teams, day) => {
+    all_games = {101:[], 102:[],103:[],104:[],105:[],106:[],107:[]}
+    return pullFutureGamesWithDayCount(knex, day)
+    .then(games => {
+        games.forEach(game => {
+            all_games[game.sport_id].push(new Game(game.global_game_id, all_teams[game.sport_id][game.home_team_id], all_teams[game.sport_id][game.away_team_id], game.sport_id))
+        })
+    return all_games
+    })}
+
 //creates an array of played games by sport, with the past games, to use either for updating elos or testing simulate functions
 const createPastGamesArray = (all_teams) => {
     all_games = {101:[], 102:[],103:[],104:[],105:[],106:[],107:[]}
@@ -82,4 +106,4 @@ const createPastGamesArray = (all_teams) => {
     return all_games
     })}
 
-module.exports = {createGamesArray, createPastGamesArray, createTeams}
+module.exports = {createGamesArray, createPastGamesArray, createTeams, createGamesArrayWithDayCount}

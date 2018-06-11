@@ -1,4 +1,4 @@
-const eloHelpers = require('./elo_helpers.js')
+//const leagues = require('./leagues.js')
  
 class Team {
     constructor(name, sport_id, elo, wins, losses, ties, division, conference, team_id){
@@ -28,7 +28,7 @@ class Team {
         this.champions = 0
         this.average_wins = 0
         this.average_losses = 0
-        //this.average_playoff_wins = []
+        this.average_playoff_wins = 0
         this.average_playoff_appearances = 0
         this.average_finalists = 0
         this.average_champions = 0
@@ -54,7 +54,7 @@ class Team {
     addInitialRpiWL(wins,losses){
         this.cbb_rpi_WL = {win: wins, loss: losses}
     }
-    
+
     get string (){
         return this.name}
 

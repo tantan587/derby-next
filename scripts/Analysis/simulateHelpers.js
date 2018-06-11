@@ -1,5 +1,6 @@
 const fantasyHelpers = require('../../server/routes/helpers/fantasyHelpers')
 const leagues = require('./leagues.js')
+//const league = require('./leagues.js')
 
 //Function to simulate an entire series - round is what round of the playoffs this is (1,2,3, etc.)
 const Series = (home, away, games, sport_id, round, neutral=false) => {
@@ -8,7 +9,7 @@ const Series = (home, away, games, sport_id, round, neutral=false) => {
     let homeGames = [0,1,4,6]
     let roadGames = [2,3,5]
     let x = 0
-    console.log(round)
+    //console.log(round)
     while(home.playoff_wins[round] < clinch && away.playoff_wins[round] < clinch){
         let results = homeGames.includes(x) ? simulateGame(home, away, sport_id, neutral):simulateGame(away, home, sport_id, neutral)
         results[0].playoff_wins[round]++
@@ -65,7 +66,7 @@ const simulateNHLGame = (home, away, neutral = false) =>
     let home_win_value_standings = home_win_value_ELO != .5 ? home_win_value_ELO : random_number < home_win_percentage ? 1:.5
     home.adjustEloWins(home_win_value_ELO, home_win_percentage, leagues['107'].elo_adjust)
     away.adjustEloWins(Math.abs(1-home_win_value_ELO), 1 - home_win_percentage, leagues['107'].elo_adjust)
-    return home_win_value
+    return home_win_value_ELO
     
     //return [home_win_value, Math.abs(1-home_win_value)]
 }
@@ -77,9 +78,9 @@ const simulateEPLGame = (home, away) =>
     let home_win_percentage_raw = 1/(Math.pow(10,(-1*elo_difference/400))+1)
     let random_number = Math.random()
     //EPL: teams just straight up tie.
-    let tie_percentage = .23  
-    let home_win_percentage = home_win_percentage_raw - tie_percentage/2
-    let tie_percentage = home_win_percentage_raw + tie_percentage/2
+    let tie_percent = .23  //how often teams in the EPL tie
+    let home_win_percentage = home_win_percentage_raw - tie_percent/2
+    let tie_percentage = home_win_percentage_raw + tie_percent/2
     //ELO assumes an overtime loss and overtime win is the same as a tie. 
     let home_win_value = random_number < home_win_percentage ? 1 : random_number < tie_percentage ? .5 : 0
     home.adjustEloWins(home_win_value, home_win_percentage_raw, leagues['107'].elo_adjust)
@@ -91,20 +92,24 @@ const simulateEPLGame = (home, away) =>
     //return [home_win_value, Math.abs(1-home_win_value)]
 }
 
-const arraySum = arr => arr.reduce((a,b) => a+b,0)
-
-
 const updateProjections = (knex, teams) => {
     let rows = teams.map(team => {
-        playoff_wins = arraySum(team.average_playoff_wins)
+        let playoff_json = JSON.stringify({wins: team.average_playoff_wins, playoffs: team.average_playoff_appearances, finalists: team.average_finalists, champions: team.average_champions})
+        console.log(playoff_json)
         return {team_id: team.team_id, wins: team.average_wins,
              losses: team.average_losses, ties: 0, day_count: 1, 
-             playoff: {wins: playoff_wins, playoffs: team.average_playoff_appearances, finalists: team.average_finalists, champions: team.average_champions}}
+             playoff: playoff_json}
     })
+    console.log(rows)
+    console.log(rows.length)
+    return rows
+    }
+
+const insertProjections = (knex, rows) => {
     return knex
-        .withSchema('analysis')
-        .table('record_projections')
-        .insert(rows)
+    .withSchema('analysis')
+    .table('record_projections')
+    .insert(rows)
 }
 
 

@@ -12,14 +12,14 @@ class Game{
         this.all_simulate_results = {home: {wins: 0, losses: 0, ties: 0},  away: {wins: 0, losses: 0, ties: 0}}
         this.last_result = {home: {wins: 0, losses: 0, ties: 0},  away: {wins: 0, losses: 0, ties: 0}}
         this.EOS_results = {home: {win: {regular: {wins: 0, losses: 0, ties: 0}, 
-                        playoffs: {wins: [0, 0, 0, 0, 0, 0, 0], losses: [0, 0, 0, 0, 0, 0, 0], 
+                        playoffs: {wins: 0, losses: 0, 
                         playoff_appearence: 0, finalist: 0, champions: 0}},loss: {regular: {wins: 0, losses: 0, ties: 0}, 
-                        playoffs: {wins: [0, 0, 0, 0, 0, 0, 0], losses: [0, 0, 0, 0, 0, 0, 0], 
+                        playoffs: {wins: 0, losses: 0, 
                         playoff_appearence: 0, finalist: 0, champions: 0}}},
                         away: {win: {regular: {wins: 0, losses: 0, ties: 0}, 
-                        playoffs: {wins: [0, 0, 0, 0, 0, 0, 0], losses: [0, 0, 0, 0, 0, 0, 0], 
+                        playoffs: {wins: 0, losses: 0, 
                         playoff_appearence: 0, finalist: 0, champions: 0}},loss: {regular: {wins: 0, losses: 0, ties: 0}, 
-                        playoffs: {wins: [0, 0, 0, 0, 0, 0, 0], losses: [0, 0, 0, 0, 0, 0, 0], 
+                        playoffs: {wins: 0, losses: 0, 
                         playoff_appearence: 0, finalist: 0, champions: 0}}}} //this is not done - need to figure out impact in this
         this.raw_impact = {home: [], away: []}
         
@@ -27,6 +27,7 @@ class Game{
     
     play_game(){
     //need to add adjustment in this function for playoffs, neutral games
+    //console.log("2:", simulateHelpers)
     let results = simulateHelpers.simulateGame(this.home, this.away, this.sport_id)
     if(results[0]===this.home){
         this.all_simulate_results.home.wins += 1
@@ -130,9 +131,9 @@ class Game{
         this.EOS_results[team][result].regular.wins += team_affected.wins
         this.EOS_results[team][result].regular.losses += team_affected.losses
         this.EOS_results[team][result].regular.ties += team_affected.ties
-        this.EOS_results[team][result].playoffs.losses = this.EOS_results[team][result].playoffs.losses.reduce((a,b) => a+b)
-        this.EOS_results[team][result].playoffs.wins = this.EOS_results[team][result].playoffs.wins.reduce((a,b)=>a+b)
-        this.EOS_results[team][result].playoffs.playoff_appearence += team_affected.wins
+        this.EOS_results[team][result].playoffs.losses = team_affected.playoff_wins.reduce((a,b)=> a+b)
+        this.EOS_results[team][result].playoffs.wins = team_affected.playoff_wins.reduce((a,b)=> a+b)
+        this.EOS_results[team][result].playoffs.playoff_appearence += team_affected.playoff_appearences
         this.EOS_results[team][result].playoffs.finalist += team_affected.finalist
         this.EOS_results[team][result].playoffs.champions += team_affected.champions
     }

@@ -1,33 +1,48 @@
 const knex = require('../../server/db/connection')
 //const fantasyHelpers = require('../../server/routes/helpers/fantasyHelpers')
-const leagues = require('./leagues.js')
+//const leagues = require('./leagues.js')
 const Game = require('./GameClass.js')
 const Team = require('./TeamClass.js')
 const simulateHelpers = require('./simulateHelpers.js')
 const playoffFunctions = require('./playoffFunctions.js')
 const dbSimulateHelpers = require('./databaseSimulateHelpers.js')
-const rpiHelpers = require('./cbbRPItracker')
+const rpiHelpers = require('./cbbRPItracker.js')
+const getDayCount = require('./dayCount.js')
+const db_helpers = require('../helpers.js').data
 
 async function simulate()
 {
     let all_teams = await dbSimulateHelpers.createTeams()
-    rpiHelpers.addRpiToTeamClass(knex,all_teams)
-    return dbSimulateHelpers.createGamesArray(all_teams)
+    /* this to be added back in later
+    rpiHelpers.addRpiToTeamClass(knex,all_teams) */
+    const starting_day_count = 1467
+    //actual function is one below. Second Function is to test with certain day count
+    //return dbSimulateHelpers.createGamesArray(all_teams)
+    return dbSimulateHelpers.createGamesArrayWithDayCount(all_teams,starting_day_count)
         .then(games => {
             const mlb_teams = simulateProfessionalLeague(games, all_teams, '103')
             //code below to be added in once all simulations tested, ready to go
-/*             const nba_teams = simulateProfessionalLeague(games, all_teams, '101')
+            const nba_teams = simulateProfessionalLeague(games, all_teams, '101')
             const nfl_teams = simulateProfessionalLeague(games, all_teams, '102')
             const nhl_teams = simulateProfessionalLeague(games, all_teams, '104')
-            const cfb_teams = simulateCFB(games, all_teams)
-            const cbb_teams = simulateCBB(games, all_teams)
-            const epl_teams = simulateEPL(games, all_teams)
+            const cfb_teams = [] //simulateCFB(games, all_teams)
+            const cbb_teams = [] //simulateCBB(games, all_teams)
+            const epl_teams = [] //simulateEPL(games, all_teams)
             let projection_team_list = [...nba_teams, ...nfl_teams, ...mlb_teams, ...nhl_teams, ...cbb_teams, ...cfb_teams, ...epl_teams]
-            simulateHelpers.updateProjections(knex,projection_team_list) */
-            simulateHelpers.updateProjections(knex,mlb_teams)
-            
-            .then(() => {process.exit()})
+            let projections = simulateHelpers.updateProjections(knex,projection_team_list)
+            console.log(projections)
+            return knex
+            .then(() => {
+                console.log('here')
+                db_helpers.insertIntoTable(knex, 'analysis', 'record_projections', projections)
+                .then(()=>{
+                    console.log('great!')
+                    process.exit()
+                })
             })
+        })
+            //simulateHelpers.updateProjections(knex,mlb_teams)
+            //.then(() => {process.exit()})
             
 }
 
@@ -41,8 +56,8 @@ const simulateProfessionalLeague = (all_games_list, teams, sport_id, simulations
             sport_id != '104' ? game.play_game(): game.play_NHL_game()})
         sport_teams.sort(function(a,b){return b.wins-a.wins})
         //find both finalists
-        let finalist_1 = playoffFunctions[sport_id](sport_teams.filter(team => team.conference === leagues[sport_id].conferences[0]))
-        let finalist_2 = playoffFunctions[sport_id](sport_teams.filter(team => team.conference === leagues[sport_id].conferences[1]))
+        let finalist_1 = playoffFunctions[sport_id](sport_teams.filter(team => team.conference === league_conference[sport_id][0]), simulateHelpers)
+        let finalist_2 = playoffFunctions[sport_id](sport_teams.filter(team => team.conference === league_conference[sport_id][1]), simulateHelpers)
         let finalists = simulateHelpers.moreWins(finalist_1, finalist_2)
         finalists.forEach(team=>{team.finalist++})
         let champion = sport_id === '102' ? simulateHelpers.Series(finalists[0], finalists[1],1, sport_id, 4,neutral = true):simulateHelpers.Series(finalists[0], finalists[1],7, sport_id, 4)
@@ -53,15 +68,16 @@ const simulateProfessionalLeague = (all_games_list, teams, sport_id, simulations
         //console.log(`${teams[team].name}: ${teams[team].wins}/${teams[team].losses}, defaultElo: ${teams[team].defaultElo}, finalElo: ${teams[team].elo}`)})
     sport_teams.forEach(team => {
         team.averages(simulations)
-        console.log(team.average_playoff_wins)
-        console.log(`${team.name}: ${team.average_wins}/${team.average_losses}`)
+        /* console.log(team.average_playoff_wins)
+        console.log(`${team.name}: ${team.average_wins}/${team.average_losses}`) */
     })
+    //shouldn't the below have the impact function? might need to be added in
     all_games_list[sport_id].forEach(game=>{
-        console.log(`Home: ${game.home.name}, Away: ${game.away.name}`)
+        /* console.log(`Home: ${game.home.name}, Away: ${game.away.name}`)
         console.log(game.EOS_results.home.win.regular)
         console.log(game.all_simulate_results.home)
         console.log(game.EOS_results.home.loss.regular)
-        console.log(game.last_result.home)
+        console.log(game.last_result.home) */0
     })
 
     return sport_teams
@@ -220,7 +236,16 @@ async function testFunctionsWithPastGames()
 })
 }
 
+const league_conference = {
+    101: ['10101', '10102'],
+    102: ['10201', '10202'],
+    103: ['10301', '10302'],
+    104: ['10401', '10402']
+}
 //testFunctionsWithPastGames()
 
 simulate()
+
+
+
 

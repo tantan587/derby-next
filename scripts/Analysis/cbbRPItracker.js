@@ -13,7 +13,7 @@ const createCbbRpis = (knex) => {
     })
 }
 
-//createCbbRpis(knex)
+createCbbRpis(knex)
 
 const cbbRpiUpdateRows = (team_ids, value, result) => {
         let column = result === 'win' ? 'rpi_wins':'rpi_losses'
@@ -37,12 +37,12 @@ const cbbUpdateAllRpi = (home_wins, away_wins, neutral_wins, home_losses, away_l
 const addRpiToTeamClass = (knex, team_list) => {
     return knex
         .withSchema('analysis')
-        .table('table')
+        .table('cbb_rpi')
         .select('*')
         .then(teams => {
             teams.forEach(team => {
-                all_teams['106'][team.team_id].addInitialRpiWL(team.rpi_wins, team.rpi_losses)
+                team_list['106'][team.team_id].addInitialRpiWL(team.rpi_wins, team.rpi_losses)
             })
         })
 }
-module.exports = {createCbbRpis, cbbRpiUpdateRows, cbbUpdateAllRpi}
+module.exports = {createCbbRpis, cbbRpiUpdateRows, cbbUpdateAllRpi, addRpiToTeamClass}
