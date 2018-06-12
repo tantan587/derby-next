@@ -6,7 +6,7 @@ const Team = require('./TeamClass.js')
 const simulateHelpers = require('./simulateHelpers.js')
 const playoffFunctions = require('./playoffFunctions.js')
 const dbSimulateHelpers = require('./databaseSimulateHelpers.js')
-//const rpiHelpers = require('./cbbRPItracker.js')
+const rpiHelpers = require('./cbbRPItracker.js')
 const getDayCount = require('./dayCount.js')
 const db_helpers = require('../helpers.js').data
 
