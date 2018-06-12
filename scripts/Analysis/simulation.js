@@ -6,7 +6,7 @@ const Team = require('./TeamClass.js')
 const simulateHelpers = require('./simulateHelpers.js')
 const playoffFunctions = require('./playoffFunctions.js')
 const dbSimulateHelpers = require('./databaseSimulateHelpers.js')
-const rpiHelpers = require('./cbbRPItracker.js')
+//const rpiHelpers = require('./cbbRPItracker.js')
 const getDayCount = require('./dayCount.js')
 const db_helpers = require('../helpers.js').data
 
@@ -25,7 +25,7 @@ async function simulate(knex)
         //.then(games => {
     const mlb_teams = simulateProfessionalLeague(games, all_teams, '103')
     //code below to be added in once all simulations tested, ready to go
-    const nba_teams = []//simulateProfessionalLeague(games, all_teams, '101')
+    const nba_teams = simulateProfessionalLeague(games, all_teams, '101')
     const nfl_teams = []//simulateProfessionalLeague(games, all_teams, '102')
     const nhl_teams = []//simulateProfessionalLeague(games, all_teams, '104')
     const cfb_teams = [] //simulateCFB(games, all_teams)
@@ -34,14 +34,18 @@ async function simulate(knex)
     const projection_team_list = [...nba_teams, ...nfl_teams, ...mlb_teams, ...nhl_teams, ...cbb_teams, ...cfb_teams, ...epl_teams]
     var list = []
     const projections = simulateHelpers.updateProjections(projection_team_list)
-    
-    console.log(projections[0])
+    const data = { team_id: '103104',
+    wins: 94.7,
+    losses: 67.3,
+    ties: 0,
+    day_count: 1,
+    playoff: { wins: 3.8, playoffs: 0.7, finalists: 0.2, champions: 0.1 } }
+    //console.log(projections[0])
     return db_helpers.insertIntoTable(knex,'analysis', 'record_projections', projections)
     .then(()=>{
         console.log('done')
         process.exit()
     })
-    console.log('this')
     
     // projections.map(team => {
     //         list.push(Promise.resolve(db_helpers.insertIntoTable(knex,'analysis', 'record_projections', team)))

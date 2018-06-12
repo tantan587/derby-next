@@ -13,7 +13,7 @@ const createCbbRpis = (knex) => {
     })
 }
 
-createCbbRpis(knex)
+//createCbbRpis(knex)
 
 const cbbRpiUpdateRows = (team_ids, value, result) => {
         let column = result === 'win' ? 'rpi_wins':'rpi_losses'
