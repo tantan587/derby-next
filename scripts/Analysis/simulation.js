@@ -12,6 +12,7 @@ const db_helpers = require('../helpers.js').data
 
 async function simulate(knex)
 {
+    console.log('im in')
     let all_teams = await dbSimulateHelpers.createTeams(knex)
     /* this to be added back in later
     rpiHelpers.addRpiToTeamClass(knex,all_teams) */
@@ -22,9 +23,9 @@ async function simulate(knex)
         //.then(games => {
     const mlb_teams = simulateProfessionalLeague(games, all_teams, '103')
     //code below to be added in once all simulations tested, ready to go
-    const nba_teams = simulateProfessionalLeague(games, all_teams, '101')
-    const nfl_teams = simulateProfessionalLeague(games, all_teams, '102')
-    const nhl_teams = simulateProfessionalLeague(games, all_teams, '104')
+    const nba_teams = []//simulateProfessionalLeague(games, all_teams, '101')
+    const nfl_teams = []//simulateProfessionalLeague(games, all_teams, '102')
+    const nhl_teams = []//simulateProfessionalLeague(games, all_teams, '104')
     const cfb_teams = [] //simulateCFB(games, all_teams)
     const cbb_teams = [] //simulateCBB(games, all_teams)
     const epl_teams = [] //simulateEPL(games, all_teams)
@@ -35,11 +36,14 @@ async function simulate(knex)
             list.push(Promise.resolve(db_helpers.insertIntoTable(knex,'analysis', 'record_projections', team)))
             console.log(team)
     })
-    return Promise.all(list).then(()=>{
-        console.log('done!')
-        return list.length
-    })
-    console.log(m)
+    console.log(list.length)
+    await Promise.all(list)
+    console.log(list.length)
+    return list.length
+    // .then(()=>{
+    //     console.log('done!')
+    //     return list.length
+    // })
     }
     /* console.log(projections[0])
     return Promise.all(projections.map(team => {
@@ -55,10 +59,16 @@ async function simulate(knex)
 const simulateProfessionalLeague = (all_games_list, teams, sport_id, simulations = 10) => {
     const sport_teams = individualSportTeams(teams, sport_id)
     //console.log(leagues)
+    let y = 1
     for(var x=0; x<simulations; x++){
         all_games_list[sport_id].forEach(game => {
             //console.log(game)
-            sport_id != '104' ? game.play_game(): game.play_NHL_game()})
+            sport_id != '104' ? game.play_game(): game.play_NHL_game()
+            if(game.away.team_id === '102101'){
+                console.log(y)
+                y++
+            }
+        })
         sport_teams.sort(function(a,b){return b.wins-a.wins})
         //find both finalists
         let finalist_1 = playoffFunctions[sport_id](sport_teams.filter(team => team.conference === league_conference[sport_id][0]), simulateHelpers)
@@ -256,5 +266,8 @@ db_helpers.insertIntoTable(knex,'analysis','record_projections',data)
 } */
 
 simulate(knex)
+.then(()=>{
+    console.log('done!')
+})
 
 
