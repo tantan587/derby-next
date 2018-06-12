@@ -1,15 +1,11 @@
-
-const getDayCount = require('./dayCount.js')
 const Game = require('./GameClass.js')
 const Team = require('./TeamClass.js')
 
 //function to pull the past games, to use if we want to update elos, or to test simulation for other sports
-const pullPastGames = (knex) =>
+const pullPastGames = (knex, day) =>
 {
-    var today = new Date(); 
-    var dayCount = getDayCount(today)
     return knex('sports.schedule')
-        .where('sports.schedule.day_count', "<", dayCount) //need to test if want to go past today, or e this day count
+        .where('sports.schedule.day_count', "<", day) //need to test if want to go past today, or e this day count
         .innerJoin('sports.results','sports.results.global_game_id','sports.schedule.global_game_id')
         .select('sports.results.global_game_id', 'sports.schedule.home_team_id', 
         'sports.results.home_team_score','sports.schedule.away_team_id', 'sports.results.away_team_score',
@@ -20,23 +16,7 @@ const pullPastGames = (knex) =>
 }
 
 //this would be the normal simulate function, used to pull the future games 
-const pullFutureGames = (knex) =>
-{
-    var today = new Date()
-    var dayCount = getDayCount(today)
-    console.log(dayCount)
-    return knex('sports.schedule')
-        .where('sports.schedule.day_count', ">", dayCount) //need to test if want to go past today, or include this day count
-        .innerJoin('sports.results','sports.results.global_game_id','sports.schedule.global_game_id')
-        .select('sports.results.global_game_id', 'sports.schedule.home_team_id', 
-        'sports.results.home_team_score','sports.schedule.away_team_id', 'sports.results.away_team_score',
-        'sports.results.winner','sports.schedule.sport_id')
-        .then(game => {
-            //console.log(game)
-            return game})
-}
-
-const pullFutureGamesWithDayCount = (knex, day) =>
+const pullFutureGames = (knex, day) =>
 {
     return knex('sports.schedule')
         .where('sports.schedule.day_count', ">", day) //need to test if want to go past today, or include this day count
@@ -74,9 +54,9 @@ async function createTeams(knex) {
 }
 
 //creates an array of unplayed games by sport, with each game a member of the class Game
-const createGamesArray = (all_teams) => {
+const createGamesArray = async (knex, all_teams, day) => {
     all_games = {101:[], 102:[],103:[],104:[],105:[],106:[],107:[]}
-    return pullFutureGames(knex)
+    return pullFutureGames(knex, day)
     .then(games => {
         games.forEach(game => {
             all_games[game.sport_id].push(new Game(game.global_game_id, all_teams[game.sport_id][game.home_team_id], all_teams[game.sport_id][game.away_team_id], game.sport_id))
@@ -84,21 +64,11 @@ const createGamesArray = (all_teams) => {
     return all_games
     })}
 
-//creates an array of unplayed games by sport, with each game a member of the class Game
-const createGamesArrayWithDayCount = async (knex, all_teams, day) => {
-    all_games = {101:[], 102:[],103:[],104:[],105:[],106:[],107:[]}
-    return pullFutureGamesWithDayCount(knex, day)
-    .then(games => {
-        games.forEach(game => {
-            all_games[game.sport_id].push(new Game(game.global_game_id, all_teams[game.sport_id][game.home_team_id], all_teams[game.sport_id][game.away_team_id], game.sport_id))
-        })
-    return all_games
-    })}
 
 //creates an array of played games by sport, with the past games, to use either for updating elos or testing simulate functions
-const createPastGamesArray = (all_teams) => {
+const createPastGamesArray = (all_teams, day) => {
     all_games = {101:[], 102:[],103:[],104:[],105:[],106:[],107:[]}
-    return pullPastGames(knex)
+    return pullPastGames(knex, day)
     .then(games => {
         games.forEach(game => {
             all_games[game.sport_id].push(new Game(game.global_game_id, all_teams[game.sport_id][game.home_team_id], all_teams[game.sport_id][game.away_team_id], game.sport_id))
@@ -106,4 +76,4 @@ const createPastGamesArray = (all_teams) => {
     return all_games
     })}
 
-module.exports = {createGamesArray, createPastGamesArray, createTeams, createGamesArrayWithDayCount}
+module.exports = {createGamesArray, createPastGamesArray, createTeams}

@@ -14,12 +14,14 @@ async function simulate(knex)
 {
     console.log('im in')
     let all_teams = await dbSimulateHelpers.createTeams(knex)
+    var today = new Date()
+    //this is the calculation of day count normally:
+    let day_count = getDayCount(today)
+    //this is the first day of the seasno
+    day_count = 1467
     /* this to be added back in later
     rpiHelpers.addRpiToTeamClass(knex,all_teams) */
-    const starting_day_count = 1467
-    //actual function is one below. Second Function is to test with certain day count
-    //return dbSimulateHelpers.createGamesArray(all_teams)
-    const games = await dbSimulateHelpers.createGamesArrayWithDayCount(knex, all_teams,starting_day_count)
+    const games = await dbSimulateHelpers.createGamesArray(knex, all_teams,day_count)
         //.then(games => {
     const mlb_teams = simulateProfessionalLeague(games, all_teams, '103')
     //code below to be added in once all simulations tested, ready to go
@@ -29,17 +31,28 @@ async function simulate(knex)
     const cfb_teams = [] //simulateCFB(games, all_teams)
     const cbb_teams = [] //simulateCBB(games, all_teams)
     const epl_teams = [] //simulateEPL(games, all_teams)
-    let projection_team_list = [...nba_teams, ...nfl_teams, ...mlb_teams, ...nhl_teams, ...cbb_teams, ...cfb_teams, ...epl_teams]
+    const projection_team_list = [...nba_teams, ...nfl_teams, ...mlb_teams, ...nhl_teams, ...cbb_teams, ...cfb_teams, ...epl_teams]
     var list = []
-    let projections = simulateHelpers.updateProjections(projection_team_list)
-    projections.map(team => {
-            list.push(Promise.resolve(db_helpers.insertIntoTable(knex,'analysis', 'record_projections', team)))
-            console.log(team)
+    const projections = simulateHelpers.updateProjections(projection_team_list)
+    
+    console.log(projections[0])
+    return db_helpers.insertIntoTable(knex,'analysis', 'record_projections', projections)
+    .then(()=>{
+        console.log('done')
+        process.exit()
     })
-    console.log(list.length)
-    await Promise.all(list)
-    console.log(list.length)
-    return list.length
+    console.log('this')
+    
+    // projections.map(team => {
+    //         list.push(Promise.resolve(db_helpers.insertIntoTable(knex,'analysis', 'record_projections', team)))
+    //         //console.log(team)
+    // })
+    // console.log(list.length)
+
+    // Promise.all(list)
+    // .catch((err)=> console.log(err))
+    // console.log(list.length)
+    // return list.length
     // .then(()=>{
     //     console.log('done!')
     //     return list.length
@@ -266,8 +279,8 @@ db_helpers.insertIntoTable(knex,'analysis','record_projections',data)
 } */
 
 simulate(knex)
-.then(()=>{
-    console.log('done!')
+.then((a)=>{
+    console.log(a + 'done!')
 })
 
 

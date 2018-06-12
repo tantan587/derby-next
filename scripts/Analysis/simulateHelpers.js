@@ -1,4 +1,3 @@
-const fantasyHelpers = require('../../server/routes/helpers/fantasyHelpers')
 const leagues = require('./leagues.js')
 //const league = require('./leagues.js')
 
@@ -11,7 +10,7 @@ const Series = (home, away, games, sport_id, round, neutral=false) => {
     let x = 0
     //console.log(round)
     while(home.playoff_wins[round] < clinch && away.playoff_wins[round] < clinch){
-        let results = homeGames.includes(x) ? simulateGame(home, away, sport_id, neutral):simulateGame(away, home, sport_id, neutral)
+        let results = homeGames.includes(x) ? simulateGame(home, away, sport_id, neutral, playoff_game=true):simulateGame(away, home, sport_id, neutral, playoff_game=true)
         results[0].playoff_wins[round]++
         x++
     }
@@ -29,7 +28,7 @@ const moreWins = (team_a, team_b) => {
 }
 
 //nhl tie percentage is .23
-const simulateGame = (home, away, sport_id, neutral = false) => 
+const simulateGame = (home, away, sport_id, neutral = false, playoff_game = false) => 
 {   //need to add adjustment in this function for playoffs, NHL
     let home_adv = neutral === false ? leagues[sport_id].home_advantage:0
     let elo_difference = home.elo - away.elo + home_adv
@@ -42,8 +41,8 @@ const simulateGame = (home, away, sport_id, neutral = false) =>
     else:
         home.adjPWins(homeWin)
         away.adjPWins(awayWin)*/
-    home.adjustEloWins(home_win_value, home_win_percentage, leagues[sport_id].elo_adjust)
-    away.adjustEloWins(Math.abs(1-home_win_value), 1 - home_win_percentage, leagues[sport_id].elo_adjust)
+    home.adjustEloWins(home_win_value, home_win_percentage, leagues[sport_id].elo_adjust, playoff_game)
+    away.adjustEloWins(Math.abs(1-home_win_value), 1 - home_win_percentage, leagues[sport_id].elo_adjust, playoff_game)
     let results = home_win_value === 1 ?[home, away]:[away,home]
     return results
     

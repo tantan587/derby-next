@@ -36,7 +36,7 @@ class Team {
         this.aLosses = 0
         //this.wOnePoints = 0 //Derby Points accrued in a single season
         this.total_playoff_appearances = 0
-        this.total_championships = 0
+        this.total_champions = 0
         this.total_finalists = 0
         this.cfb_value = 0
         this.cbb_value = 0
@@ -58,10 +58,12 @@ class Team {
     get string (){
         return this.name}
 
-    adjustEloWins(win_value, win_percentage, elo_adjust){
+    adjustEloWins(win_value, win_percentage, elo_adjust, playoff_game){
         this.elo += ((win_value-win_percentage)*elo_adjust)
-        this.wins += win_value
-        this.losses += Math.abs(1-win_value)
+        if(playoff_game === false){
+            this.wins += win_value
+            this.losses += Math.abs(1-win_value)
+        }
         
     }
 
@@ -137,7 +139,7 @@ class Team {
         this.total_wins += this.wins
         this.total_losses += this.losses
         this.total_ties += this.ties
-        this.total_championships += this.champions
+        this.total_champions += this.champions
         this.total_finalists += this.finalist
         this.total_playoff_appearances += this.playoff_appearances
         this.total_playoff_losses += this.playoff_losses.reduce((a,b)=>a+b)
@@ -171,7 +173,7 @@ class Team {
         this.average_wins = (this.total_wins / sims)
         this.average_playoff_wins = this.total_playoff_wins/sims
         this.average_playoff_appearances = this.total_playoff_appearances / sims
-        this.average_finalists = (this.total_finalist / sims)
+        this.average_finalists = (this.total_finalists / sims)
         this.average_champions = (this.total_champions / sims)
         this.average_losses = (this.total_losses / sims)
         this.average_ties = (this.total_ties / sims)
