@@ -1,5 +1,5 @@
-const socketIoHelpers = require('../socketioHelpers')
-//const SportsManager = require('./SportsManager')
+//const socketIoHelpers = require('../socketioHelpers')
+const SportsManager = require('./SportsManager')
 //const SportsEmitter = require('./SportsEmitter')
 
 class SportsLobby {
@@ -11,12 +11,12 @@ class SportsLobby {
 
   async Create() {
 
-    //this.sportRoom.Emitter = new SportsEmitter(this.sportsNSP)
-    //this.sportRoom.Manager = new SportsManager(this.sportRoom.Emitter)
+    this.sportRoom.Manager = new SportsManager(this.sportsNSP)
   }
 
   async Activate() {
 
+    this.sportRoom.Manager.Create()
     this.sportsNSP.on('connection', socket => 
     { 
       this.SportsListener(socket)
@@ -27,8 +27,12 @@ class SportsLobby {
 
     socket.on('updateTime', () =>
     {
-      console.log('i got it')
-      this.sportsNSP.to(socket.id).emit('serverDataFull', 'whatsup')
+      this.sportsNSP.to(socket.id).emit('serverUpdateTime', this.sportRoom.Manager.TeamInfoUpdateTime)
+    })
+
+    socket.on('allTeamData', () =>
+    {
+      this.sportsNSP.to(socket.id).emit('serverAllTeamData', this.sportRoom.Manager.TeamInfo)
     })
   }
 }

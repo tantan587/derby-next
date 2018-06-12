@@ -64,73 +64,87 @@ methods.getScheduleData = (knex, sportName, url) =>
     })
 }
 
-methods.getFantasyData = (knex, sportName, url, teamKeyField, confField, eplAreaIdInd = false) => 
+methods.getFantasyData = async (knex, sportName, url, teamKeyField, confField, eplAreaIdInd = false) => 
 {
-  return knex
+  console.log(sportName)
+  let league = await knex
     .withSchema('sports')
     .table('leagues')
     .where('sport_name', sportName)
-    .then((league)=> {
-      const sportId = league[0].sport_id
-      return methods.getTeamId(knex, sportId)
-        .then(teamIds => {
-          let teamIdMap = {}
-          teamIds.map(r => teamIdMap[r.fantasydata_id]= r.team_id)
-          const options = {
-            url: url,
-            headers: {
-              'User-Agent': 'request',
-              'Ocp-Apim-Subscription-Key':league[0].fantasy_data_key
-            },
-            json: true
-          }
-          return knex
-            .withSchema('sports')
-            .table('conferences')
-            .leftOuterJoin('conferences_link', 'conferences.conference_id', 'conferences_link.conference_id')
-            .where('sport_id',sportId)
-            .select('conferences.conference_id', 'conferences.name', 'display_name', 'fantasy_data_key')
-            .then((confs) => {
-              const filterConferencesInd = (confs[0].fantasy_data_key !== null)
-              let confMap = {}
-              filterConferencesInd
-                ? confs.map(conf => confMap[conf.fantasy_data_key] = conf.conference_id)
-                : confs.map(conf => confMap[conf.name] = conf.conference_id)
-              return rp(options)
-                .then((fdata) => {
-                  let teams = []
-                  filterConferencesInd 
-                    ?  fdata.filter(fd => fd.ConferenceID in confMap)
-                      .map(conf => 
-                        conf.Teams.map(team => 
-                          teams.push({...team, 
-                            sport_id:sportId,
-                            conference_id:confMap[conf[confField]], 
-                            team_id:teamIdMap[team[teamKeyField]]})))
-                    : eplAreaIdInd 
-                      ? fdata.filter(fd => fd.AreaId === 68 || fd.TeamId === 523)
-                        .map(team =>
-                        {
-                          if(teamIdMap[team[teamKeyField]])
-                          {
-                            teams.push({...team, 
-                              sport_id:sportId,
-                              conference_id: confMap[sportName], 
-                              team_id:teamIdMap[team[teamKeyField]]})
-                          }
-                        })
-                      : fdata
-                        .map(team =>
-                          teams.push({...team, 
-                            sport_id:sportId,
-                            conference_id: sportName === 'EPL' ? confMap[sportName] : confMap[team[confField]], 
-                            team_id:teamIdMap[team[teamKeyField]]}))
+  const sportId = league[0].sport_id
+  
+  let teamIdMap = {}
+  const teamIds = await methods.getTeamId(knex, sportId)
+         
+  teamIds.forEach(r => teamIdMap[r.fantasydata_id]= r.team_id)
 
-                  return teams
-                })
-            })
-        }) 
-    })
+  const options = {
+    url: url,
+    headers: {
+      'User-Agent': 'request',
+      'Ocp-Apim-Subscription-Key':league[0].fantasy_data_key
+    },
+    json: true
+  }
+
+  let confMap = {}
+  const conferences = await knex
+    .withSchema('sports')
+    .table('conferences')
+    .leftOuterJoin('conferences_link', 'conferences.conference_id', 'conferences_link.conference_id')
+    .where('sport_id',sportId)
+    .select('conferences.conference_id', 'conferences.name', 'display_name', 'fantasy_data_key')
+  
+  //checks to see if the conference has a fantasy data representation (used for college sports)
+  let filterConferencesInd = conferences[0].fantasy_data_key !== null
+  if(filterConferencesInd)
+  {
+    conferences.forEach(conf => confMap[conf.fantasy_data_key] = conf.conference_id)
+  }
+  else{
+    conferences.forEach(conf => confMap[conf.name] = conf.conference_id)
+  }
+
+  let fdata = await rp(options)
+  let teams = []
+
+  //filter out only the conferences we are using
+  //TODO: this needs to change as we need more info on all teams
+  if (filterConferencesInd) {
+    fdata.filter(fd => fd.ConferenceID in confMap)
+      .map(conf => 
+        conf.Teams.map(team => 
+          teams.push({...team, 
+            sport_id:sportId,
+            conference_id:confMap[conf[confField]], 
+            team_id:teamIdMap[team[teamKeyField]]})))
+  }
+  // used for creation of epl leagues
+  else if(eplAreaIdInd){
+
+    fdata.filter(fd => fd.AreaId === 68 || fd.TeamId === 523)
+      .map(team =>
+      {
+        if(teamIdMap[team[teamKeyField]])
+        {
+          teams.push({...team, 
+            sport_id:sportId,
+            conference_id: confMap[sportName], 
+            team_id:teamIdMap[team[teamKeyField]]})
+        }
+      })
+  } 
+  //used for everything else (nba, nhl, mlb, nfl and epl when not creating)   
+  else{
+    fdata
+      .map(team =>
+        teams.push({...team, 
+          sport_id:sportId,
+          conference_id: sportName === 'EPL' ? confMap[sportName] : confMap[team[confField]], 
+          team_id:teamIdMap[team[teamKeyField]]}))
+  }
+  return teams
+
 }
 
 methods.updateStandings = (knex,newStandings) =>

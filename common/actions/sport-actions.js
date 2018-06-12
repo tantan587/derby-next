@@ -40,6 +40,24 @@ export const clickedOneTeam = (team_id, league_id) => dispatch =>
     'POST',
     JSON.stringify({team_id,league_id})
   )
+
+export const handleTeamUpdateTime = updateTime =>
+  ({
+    type: C.UPDATE_TEAM_UPDATE_TIME,
+    updateTime
+  })
+
+export const handleTeamUpdate = teams =>
+  ({
+    type: C.UPDATE_TEAM,
+    teams
+  })
+
+export const handleTeamUpdateDiff = teamsDiff =>
+  ({
+    type: C.UPDATE_TEAM_DIFF,
+    teamsDiff
+  })
   
 export const handleUpdateDraftOrder = draftOrder =>
   ({

@@ -1,30 +1,44 @@
 import React from 'react'
 import io from 'socket.io-client'
-import {clickedEnterDraft} from '../../actions/draft-actions'
+import {handleTeamUpdateTime,
+  handleTeamUpdate, handleTeamUpdateDiff } from '../../actions/sport-actions'
 import { connect } from 'react-redux'
 
 
 class SportsSocket extends React.Component {
 
   componentWillMount() {
-    console.log('here')
-    // this.props.onEnterDraft(
-    //   this.props.activeLeague.room_id, this.props.activeLeague.my_owner_id)
   }
   // connect to WS server and listen event
   componentDidMount() {
     this.socket = io('/sports')
-    console.log('hello', this.socket)
     this.socket.on('connect', () => {
       this.socket.emit('updateTime')
     })
     this.socket.on('serverUpdateTime', this.checkUpdateTime)
-    this.socket.on('serverDataFull', this.getData)
-    this.socket.on('serverDataDiff', this.getData)
+    this.socket.on('serverAllTeamData', this.getTeams)
+    this.socket.on('serverDiffTeamData', this.getTeamsDiff)
   }
 
-  getData = (data) => {
+  getTeams = (data) => {
+    this.props.onTeamUpdate(data)
+    //fire off action to update data
+  }
+
+  getTeamsDiff = (data) => {
     console.log(data)
+    this.props.onTeamUpdateDiff(data.diff)
+    this.props.onTeamUpdateTime(data.updateTime)
+    //fire off action to update data
+  }
+
+  checkUpdateTime = (time) =>
+  {
+    if (new Date(time) > new Date(this.props.updateTime.teams))
+    {
+      this.socket.emit('allTeamData')
+      this.props.onTeamUpdateTime(time)   
+    }
   }
 
   componentWillUnmount() {
@@ -45,12 +59,21 @@ class SportsSocket extends React.Component {
 export default connect(
   state =>
     ({
-      teams:state.teams
+      teams:state.teams,
+      updateTime:state.updateTime
     }),
   dispatch =>
     ({
-      onEnterDraft(room_id, owner_id) {
+      onTeamUpdateTime(updateTime) {
         dispatch(
-          clickedEnterDraft(room_id, owner_id))
+          handleTeamUpdateTime(updateTime))
+      },
+      onTeamUpdate(teams) {
+        dispatch(
+          handleTeamUpdate(teams))
+      },
+      onTeamUpdateDiff(teamsDiff) {
+        dispatch(
+          handleTeamUpdateDiff(teamsDiff))
       },
     }))(SportsSocket)
