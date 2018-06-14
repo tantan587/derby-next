@@ -18,57 +18,33 @@ async function simulate(knex)
     //this is the calculation of day count normally:
     let day_count = getDayCount(today)
     //this is the first day of the seasno
-    day_count = 1467
+    //day_count = 1467
     /* this to be added back in later
     rpiHelpers.addRpiToTeamClass(knex,all_teams) */
     const games = await dbSimulateHelpers.createGamesArray(knex, all_teams,day_count)
-        //.then(games => {
+    //.then(games => {
     const mlb_teams = simulateProfessionalLeague(games, all_teams, '103')
     //code below to be added in once all simulations tested, ready to go
-    const nba_teams = simulateProfessionalLeague(games, all_teams, '101')
-    const nfl_teams = []//simulateProfessionalLeague(games, all_teams, '102')
-    const nhl_teams = []//simulateProfessionalLeague(games, all_teams, '104')
+    const nba_teams = [] //simulateProfessionalLeague(games, all_teams, '101')
+    const nfl_teams = [] //simulateProfessionalLeague(games, all_teams, '102')
+    const nhl_teams = [] //simulateProfessionalLeague(games, all_teams, '104')
     const cfb_teams = [] //simulateCFB(games, all_teams)
     const cbb_teams = [] //simulateCBB(games, all_teams)
     const epl_teams = [] //simulateEPL(games, all_teams)
-    const projection_team_list = [...nba_teams, ...nfl_teams, ...mlb_teams, ...nhl_teams, ...cbb_teams, ...cfb_teams, ...epl_teams]
+    const projection_team_list = [...nba_teams, ...nfl_teams, ...mlb_teams[0], ...nhl_teams, ...cbb_teams, ...cfb_teams, ...epl_teams]
     var list = []
     const projections = simulateHelpers.updateProjections(projection_team_list)
-    const data = { team_id: '103104',
-    wins: 94.7,
-    losses: 67.3,
-    ties: 0,
-    day_count: 1,
-    playoff: { wins: 3.8, playoffs: 0.7, finalists: 0.2, champions: 0.1 } }
     //console.log(projections[0])
     return db_helpers.insertIntoTable(knex,'analysis', 'record_projections', projections)
     .then(()=>{
-        console.log('done')
-        process.exit()
+        console.log('here')
+        return db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', mlb_teams[1])
+        .then(()=> {
+            console.log('done')
+            process.exit()
+        })
     })
-    
-    // projections.map(team => {
-    //         list.push(Promise.resolve(db_helpers.insertIntoTable(knex,'analysis', 'record_projections', team)))
-    //         //console.log(team)
-    // })
-    // console.log(list.length)
-
-    // Promise.all(list)
-    // .catch((err)=> console.log(err))
-    // console.log(list.length)
-    // return list.length
-    // .then(()=>{
-    //     console.log('done!')
-    //     return list.length
-    // })
-    }
-    /* console.log(projections[0])
-    return Promise.all(projections.map(team => {
-        return Promise.resolve(db_helpers.insertIntoTable(knex,'analysis', 'record_projections', team)) */
-
-            //})
-            //simulateHelpers.updateProjections(knex,mlb_teams)
-            //.then(() => {process.exit()})
+}
             
 
 
@@ -81,10 +57,6 @@ const simulateProfessionalLeague = (all_games_list, teams, sport_id, simulations
         all_games_list[sport_id].forEach(game => {
             //console.log(game)
             sport_id != '104' ? game.play_game(): game.play_NHL_game()
-            if(game.away.team_id === '102101'){
-                console.log(y)
-                y++
-            }
         })
         sport_teams.sort(function(a,b){return b.wins-a.wins})
         //find both finalists
@@ -94,7 +66,9 @@ const simulateProfessionalLeague = (all_games_list, teams, sport_id, simulations
         finalists.forEach(team=>{team.finalist++})
         let champion = sport_id === '102' ? simulateHelpers.Series(finalists[0], finalists[1],1, sport_id, 4,neutral = true):simulateHelpers.Series(finalists[0], finalists[1],7, sport_id, 4)
         champion.champions++
-        all_games_list[sport_id].forEach(game=>{game.adjustImpact()})
+        all_games_list[sport_id].forEach(game=>{
+            game.adjustImpact()
+        })
         sport_teams.forEach(team => {
             team.reset()})}
         //console.log(`${teams[team].name}: ${teams[team].wins}/${teams[team].losses}, defaultElo: ${teams[team].defaultElo}, finalElo: ${teams[team].elo}`)})
@@ -104,16 +78,23 @@ const simulateProfessionalLeague = (all_games_list, teams, sport_id, simulations
         console.log(`${team.name}: ${team.average_wins}/${team.average_losses}`) */
     })
     //shouldn't the below have the impact function? might need to be added in
+    let game_projections= []
     all_games_list[sport_id].forEach(game=>{
         /* console.log(`Home: ${game.home.name}, Away: ${game.away.name}`)
         console.log(game.EOS_results.home.win.regular)
         console.log(game.all_simulate_results.home)
         console.log(game.EOS_results.home.loss.regular)
-        console.log(game.last_result.home) */0
+        console.log(game.last_result.home) */
+        game.calculateRawImpact()
+        game_projections.push({team_id: game.home.team_id, global_game_id: game.global_game_id, win_percentage: game.home_win_percentage, impact: game.raw_impact['home']})
+        game_projections.push({team_id: game.away.team_id, global_game_id: game.global_game_id, win_percentage: game.away_win_percentage, impact: game.raw_impact['away']})
     })
-
-    return sport_teams
-    //process.exit()
+    /* return db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', game_projections)
+    .then(()=>{
+        console.log(sport_teams[0])
+        return sport_teams
+    }) */
+    return [sport_teams, game_projections]
     }
 
 //function to simulate CFB - also figures out most likely playoff teams using formula
@@ -286,5 +267,3 @@ simulate(knex)
 .then((a)=>{
     console.log(a + 'done!')
 })
-
-

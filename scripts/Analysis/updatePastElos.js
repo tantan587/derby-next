@@ -24,7 +24,7 @@ const getPastGames = (knex) =>
     const today = new Date()
     let dayCount = getDayCount(today)
     return knex('sports.schedule')
-        .where('sports.schedule.day_count', dayCount)
+        .where('sports.schedule.day_count', '<', dayCount)
         .innerJoin('sports.results','sports.results.global_game_id','sports.schedule.global_game_id')
         .innerJoin('analysis.current_elo as a', 'sports.schedule.home_team_id', 'a.team_id')
         .leftJoin('analysis.current_elo as b', 'sports.schedule.away_team_id', 'b.team_id')

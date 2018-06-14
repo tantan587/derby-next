@@ -13,15 +13,17 @@ class Game{
         this.last_result = {home: {wins: 0, losses: 0, ties: 0},  away: {wins: 0, losses: 0, ties: 0}}
         this.EOS_results = {home: {win: {regular: {wins: 0, losses: 0, ties: 0}, 
                         playoffs: {wins: 0, losses: 0, 
-                        playoff_appearence: 0, finalist: 0, champions: 0}},loss: {regular: {wins: 0, losses: 0, ties: 0}, 
+                        playoff_appearance: 0, finalist: 0, champions: 0}},loss: {regular: {wins: 0, losses: 0, ties: 0}, 
                         playoffs: {wins: 0, losses: 0, 
-                        playoff_appearence: 0, finalist: 0, champions: 0}}},
+                        playoff_appearance: 0, finalist: 0, champions: 0}}},
                         away: {win: {regular: {wins: 0, losses: 0, ties: 0}, 
                         playoffs: {wins: 0, losses: 0, 
-                        playoff_appearence: 0, finalist: 0, champions: 0}},loss: {regular: {wins: 0, losses: 0, ties: 0}, 
+                        playoff_appearance: 0, finalist: 0, champions: 0}},loss: {regular: {wins: 0, losses: 0, ties: 0}, 
                         playoffs: {wins: 0, losses: 0, 
-                        playoff_appearence: 0, finalist: 0, champions: 0}}}} //this is not done - need to figure out impact in this
+                        playoff_appearance: 0, finalist: 0, champions: 0}}}} //this is not done - need to figure out impact in this
         this.raw_impact = {home: [], away: []}
+        this.home_win_percentage = 0
+        this.away_win_percentage = 0
         
     }
     
@@ -133,7 +135,7 @@ class Game{
         this.EOS_results[team][result].regular.ties += team_affected.ties
         this.EOS_results[team][result].playoffs.losses = team_affected.playoff_wins.reduce((a,b)=> a+b)
         this.EOS_results[team][result].playoffs.wins = team_affected.playoff_wins.reduce((a,b)=> a+b)
-        this.EOS_results[team][result].playoffs.playoff_appearence += team_affected.playoff_appearences
+        this.EOS_results[team][result].playoffs.playoff_appearance += team_affected.playoff_appearances
         this.EOS_results[team][result].playoffs.finalist += team_affected.finalist
         this.EOS_results[team][result].playoffs.champions += team_affected.champions
     }
@@ -147,7 +149,10 @@ class Game{
         this.adjustImpactPartial('home', 'loss',total_home_losses)
         this.adjustImpactPartial('away', 'win', total_away_wins)
         this.adjustImpactPartial('away', 'loss', total_away_losses)
-
+        this.home_win_percentage = Math.round(total_home_wins/(total_home_losses+total_home_wins)*100)/100
+        this.away_win_percentage = Math.round(total_away_wins/(total_away_wins+total_away_losses)*100)/100
+        let x = 0
+        console.log(this.home_win_percentage)
     }
 
     adjustImpactPartial(team, result, divisor) {
@@ -156,25 +161,27 @@ class Game{
         this.EOS_results[team][result].regular.ties /= divisor
         this.EOS_results[team][result].playoffs.wins /= divisor
         this.EOS_results[team][result].playoffs.losses /= divisor
-        this.EOS_results[team][result].playoffs.playoff_appearence /= divisor
+        this.EOS_results[team][result].playoffs.playoff_appearance /= divisor
         this.EOS_results[team][result].playoffs.finalist /= divisor
         this.EOS_results[team][result].playoffs.champions /= divisor
     }
 
     calculateRawImpact(){
+        this.adjustImpactWithAllSims()
         this.calculateRawImpactTeam('home')
         this.calculateRawImpactTeam('away')
     }
 
     calculateRawImpactTeam(team){
         //these two below create two new arrays. One is an array of the difference between wins and losses for regular season: the other is the difference between wins and losses for postseason.
-        let regular_impact = Object.keys(this.EOS_results[team]['wins'].regular).map(result => {
-            this.EOS_results[team]['wins'].regular[result] - this.EOS_results[team]['losses'].regular[result]
-        })
-        let playoff_impact = Object.keys(this.EOS_results[team]['wins'].playoffs).map(result => {
-            this.EOS_results[team]['wins'].playoffs[result] - this.EOS_results[team]['losses'].playoffs[result]
-        })
-        this.raw_impact[team] = [...regular_impact, ...playoff_impact]
+        let regular_impact = Object.keys(this.EOS_results[team]['win'].regular).map(result => 
+            this.EOS_results[team]['win'].regular[result] - this.EOS_results[team]['loss'].regular[result]
+        )
+        let playoff_impact = Object.keys(this.EOS_results[team]['win'].playoffs).map(result => 
+            this.EOS_results[team]['win'].playoffs[result] - this.EOS_results[team]['loss'].playoffs[result]
+        )
+        let raw_impact_array = [...regular_impact, ...playoff_impact]
+        this.raw_impact[team] = JSON.stringify(this.raw_impact_array)
         //afterwards, above should be adjusted based upon point structure to get raw impact. For now, using a base calculation to approximate - may build in individual point values later, or just keep the two arrays, and have it adjusted when uploaded for each league
         //think it is better as concatenated arrays, and then to adjust for point values later
         //if Yoni thinks, will put it into an object from array

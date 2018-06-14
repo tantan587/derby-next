@@ -114,5 +114,7 @@ const insertProjections = (knex, rows) => {
     .insert(rows)
 }
 
-
+const infoForGameProjections = (game) => {
+    
+}
 module.exports = {Series, moreWins, simulateGame, updateProjections, simulateNHLGame}

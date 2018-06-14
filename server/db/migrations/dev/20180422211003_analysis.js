@@ -17,7 +17,7 @@ exports.up = function(knex, Promise) {
       table.decimal('team_id',6,0).notNullable()
       table.integer('global_game_id').notNullable()
       table.decimal('win_percentage',4,4).notNullable()
-      table.decimal('impact',5,2).notNullable()
+      table.decimal('impact',5,2).notNullable() //this should not be a decimal
     }),
     knex.schema.withSchema('fantasy').createTable('projections', (table) => {
       table.decimal('team_id',6,0).notNullable()
