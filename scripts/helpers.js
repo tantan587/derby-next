@@ -1,5 +1,6 @@
 var methods = {}
 const rp = require('request-promise')
+const fdClientModule = require('fantasydata-node-client');
 
 
 methods.insertIntoTable = function(knex, schema, table, data) {
@@ -64,7 +65,26 @@ methods.getScheduleData = (knex, sportName, url) =>
     })
 }
 
-methods.getFantasyData = async (knex, sportName, url, teamKeyField, confField, eplAreaIdInd = false) => 
+methods.getStadiumdata = async (knex, sportName,api, promiseToGet) =>
+{
+  let league = await knex
+  .withSchema('sports')
+  .table('leagues')
+  .where('sport_name', sportName)
+
+  const keys = {}
+  keys[api] = league[0].fantasy_data_key
+ /*  const keys = {
+      api:league[0].fantasy_data_key
+  }; */
+
+  console.log(keys)
+  const FantasyDataClient = new fdClientModule(keys);
+  //const fandata = FantasyDataClient.func()
+  return FantasyDataClient[api][promiseToGet]()
+}
+
+methods.getFantasyData = async (knex, sportName, func, teamKeyField, confField, eplAreaIdInd = false) => 
 {
   console.log(sportName)
   let league = await knex
@@ -77,21 +97,20 @@ methods.getFantasyData = async (knex, sportName, url, teamKeyField, confField, e
   const teamIds = await methods.getTeamId(knex, sportId)
          
   teamIds.forEach(r => teamIdMap[r.fantasydata_id]= r.team_id)
-
-  /* const fdClientModule = require('fantasydata-node-client');
+  
   const keys = {
       api:league[0].fantasy_data_key
   };
-  const FantasyDataClient = new fdClientModule(keys); */
-  
-  const options = {
-    url: url,
-    headers: {
-      'User-Agent': 'request',
-      'Ocp-Apim-Subscription-Key':league[0].fantasy_data_key
-    },
-    json: true
-  }
+  const FantasyDataClient = new fdClientModule(keys);
+  const fandata = FantasyDataClient.func
+  // const options = {
+  //   url: url,
+  //   headers: {
+  //     'User-Agent': 'request',
+  //     'Ocp-Apim-Subscription-Key':league[0].fantasy_data_key
+  //   },
+  //   json: true
+  // }
 
   let confMap = {}
   const conferences = await knex
@@ -117,7 +136,7 @@ methods.getFantasyData = async (knex, sportName, url, teamKeyField, confField, e
   //filter out only the conferences we are using
   //TODO: this needs to change as we need more info on all teams
   if (filterConferencesInd) {
-    fdata.filter(fd => fd.ConferenceID in confMap)
+    fandata.filter(fd => fd.ConferenceID in confMap)
       .map(conf => 
         conf.Teams.map(team => 
           teams.push({...team, 
@@ -128,7 +147,7 @@ methods.getFantasyData = async (knex, sportName, url, teamKeyField, confField, e
   // used for creation of epl leagues
   else if(eplAreaIdInd){
 
-    fdata.filter(fd => fd.AreaId === 68 || fd.TeamId === 523)
+    fandata.filter(fd => fd.AreaId === 68 || fd.TeamId === 523)
       .map(team =>
       {
         if(teamIdMap[team[teamKeyField]])
@@ -143,7 +162,7 @@ methods.getFantasyData = async (knex, sportName, url, teamKeyField, confField, e
   //used for everything else (nba, nhl, mlb, nfl and epl when not creating)   
   else{
 
-    fdata
+    fandata
       .map(team =>
         teams.push({...team, 
           sport_id:sportId,
