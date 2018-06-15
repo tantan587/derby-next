@@ -21,7 +21,7 @@ class Game{
                         playoff_appearance: 0, finalist: 0, champions: 0}},loss: {regular: {wins: 0, losses: 0, ties: 0}, 
                         playoffs: {wins: 0, losses: 0, 
                         playoff_appearance: 0, finalist: 0, champions: 0}}}} //this is not done - need to figure out impact in this
-        this.raw_impact = {home: [], away: []}
+        this.raw_impact = {home: {}, away: {}}
         this.home_win_percentage = 0
         this.away_win_percentage = 0
         
@@ -133,7 +133,7 @@ class Game{
         this.EOS_results[team][result].regular.wins += team_affected.wins
         this.EOS_results[team][result].regular.losses += team_affected.losses
         this.EOS_results[team][result].regular.ties += team_affected.ties
-        this.EOS_results[team][result].playoffs.losses = team_affected.playoff_wins.reduce((a,b)=> a+b)
+        this.EOS_results[team][result].playoffs.losses = team_affected.playoff_losses.reduce((a,b)=> a+b)
         this.EOS_results[team][result].playoffs.wins = team_affected.playoff_wins.reduce((a,b)=> a+b)
         this.EOS_results[team][result].playoffs.playoff_appearance += team_affected.playoff_appearances
         this.EOS_results[team][result].playoffs.finalist += team_affected.finalist
@@ -142,7 +142,9 @@ class Game{
 
     adjustImpactWithAllSims(){
         let total_home_wins = this.all_simulate_results.home.wins
+        //console.log(total_home_wins)
         let total_home_losses = this.all_simulate_results.home.losses
+        //console.log(total_home_losses)
         let total_away_wins = this.all_simulate_results.away.wins
         let total_away_losses = this.all_simulate_results.away.losses
         this.adjustImpactPartial('home', 'win', total_home_wins)
@@ -151,8 +153,6 @@ class Game{
         this.adjustImpactPartial('away', 'loss', total_away_losses)
         this.home_win_percentage = Math.round(total_home_wins/(total_home_losses+total_home_wins)*100)/100
         this.away_win_percentage = Math.round(total_away_wins/(total_away_wins+total_away_losses)*100)/100
-        let x = 0
-        console.log(this.home_win_percentage)
     }
 
     adjustImpactPartial(team, result, divisor) {
@@ -167,7 +167,9 @@ class Game{
     }
 
     calculateRawImpact(){
+        let camila = 0 
         this.adjustImpactWithAllSims()
+        //console.log(this.EOS_results.home.win.regular)
         this.calculateRawImpactTeam('home')
         this.calculateRawImpactTeam('away')
     }
@@ -181,7 +183,21 @@ class Game{
             this.EOS_results[team]['win'].playoffs[result] - this.EOS_results[team]['loss'].playoffs[result]
         )
         let raw_impact_array = [...regular_impact, ...playoff_impact]
-        this.raw_impact[team] = JSON.stringify(this.raw_impact_array)
+        let impact_keys = ["win", "losses", "tie", "playoff_wins", "playoff_losses", "playoff_appearences", "finalists", "champions"]
+        let index = 0
+        let impact_for_JSON = {
+            win: raw_impact_array[0],
+            loss: raw_impact_array[1],
+            tie: raw_impact_array[2],
+            playoff_wins: raw_impact_array[3],
+            playoff_losses: raw_impact_array[4],
+            playoff_appearences: raw_impact_array[5],
+            finalist: raw_impact_array[6],
+            champions: raw_impact_array[7]
+        }
+        this.raw_impact[team] = JSON.stringify(impact_for_JSON)
+        //console.log(this.raw_impact[team])
+        //JSON.stringify(this.raw_impact_array)
         //afterwards, above should be adjusted based upon point structure to get raw impact. For now, using a base calculation to approximate - may build in individual point values later, or just keep the two arrays, and have it adjusted when uploaded for each league
         //think it is better as concatenated arrays, and then to adjust for point values later
         //if Yoni thinks, will put it into an object from array

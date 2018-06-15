@@ -18,7 +18,7 @@ async function simulate(knex)
     //this is the calculation of day count normally:
     let day_count = getDayCount(today)
     //this is the first day of the seasno
-    //day_count = 1467
+    day_count = 1467
     /* this to be added back in later
     rpiHelpers.addRpiToTeamClass(knex,all_teams) */
     const games = await dbSimulateHelpers.createGamesArray(knex, all_teams,day_count)
@@ -66,6 +66,7 @@ const simulateProfessionalLeague = (all_games_list, teams, sport_id, simulations
         finalists.forEach(team=>{team.finalist++})
         let champion = sport_id === '102' ? simulateHelpers.Series(finalists[0], finalists[1],1, sport_id, 4,neutral = true):simulateHelpers.Series(finalists[0], finalists[1],7, sport_id, 4)
         champion.champions++
+        console.log(all_games_list[sport_id][0].home.wins)
         all_games_list[sport_id].forEach(game=>{
             game.adjustImpact()
         })
@@ -79,6 +80,9 @@ const simulateProfessionalLeague = (all_games_list, teams, sport_id, simulations
     })
     //shouldn't the below have the impact function? might need to be added in
     let game_projections= []
+    //all_games_list[sport_id][0].calculateRawImpact()
+    //process.exit()
+    let all_champs = 0
     all_games_list[sport_id].forEach(game=>{
         /* console.log(`Home: ${game.home.name}, Away: ${game.away.name}`)
         console.log(game.EOS_results.home.win.regular)
@@ -86,6 +90,7 @@ const simulateProfessionalLeague = (all_games_list, teams, sport_id, simulations
         console.log(game.EOS_results.home.loss.regular)
         console.log(game.last_result.home) */
         game.calculateRawImpact()
+        //console.log(game.raw_impact['home'])
         game_projections.push({team_id: game.home.team_id, global_game_id: game.global_game_id, win_percentage: game.home_win_percentage, impact: game.raw_impact['home']})
         game_projections.push({team_id: game.away.team_id, global_game_id: game.global_game_id, win_percentage: game.away_win_percentage, impact: game.raw_impact['away']})
     })
