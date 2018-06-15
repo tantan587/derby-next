@@ -1,4 +1,5 @@
 const simulateHelpers = require('./simulateHelpers.js')
+const points = require('./points.js')
 
 class Game{
     constructor(global_game_id, home, away, sport_id){
@@ -24,6 +25,7 @@ class Game{
         this.raw_impact = {home: {}, away: {}}
         this.home_win_percentage = 0
         this.away_win_percentage = 0
+        this.hard_impact = 0
         
     }
     
@@ -172,6 +174,15 @@ class Game{
         //console.log(this.EOS_results.home.win.regular)
         this.calculateRawImpactTeam('home')
         this.calculateRawImpactTeam('away')
+        let points_home_win = this.calculateRawPointsImpactByTeam('home', 'win')
+        let points_home_loss = this.calculateRawPointsImpactByTeam('home', 'loss')
+        let points_away_win = this.calculateRawPointsImpactByTeam('away', 'win')
+        let points_away_loss = this.calculateRawPointsImpactByTeam('away', 'loss')
+        this.hard_impact = (points_home_win-points_home_loss)*(points_away_win-points_away_loss)
+        this.hard_impact === NaN ? (
+            console.log(points_home_win, points_away_win, points_home_loss, points_away_loss),
+            process.exit()
+        ):0
     }
 
     calculateRawImpactTeam(team){
@@ -194,13 +205,29 @@ class Game{
             playoff_appearences: raw_impact_array[5],
             finalist: raw_impact_array[6],
             champions: raw_impact_array[7]
-        }
+        } 
         this.raw_impact[team] = JSON.stringify(impact_for_JSON)
         //console.log(this.raw_impact[team])
         //JSON.stringify(this.raw_impact_array)
         //afterwards, above should be adjusted based upon point structure to get raw impact. For now, using a base calculation to approximate - may build in individual point values later, or just keep the two arrays, and have it adjusted when uploaded for each league
         //think it is better as concatenated arrays, and then to adjust for point values later
         //if Yoni thinks, will put it into an object from array
+    }
+
+    calculateRawPointsImpactByTeam(team, result){
+        let regular_wins = this.EOS_results[team][result].regular.wins
+        let bonus_win = regular_wins < points.baseball.bonus_1 ? 0 :
+            regular_wins < points.baseball.bonus_2 ? 15 :
+            regular_wins < points.baseball.bonus_3 ? 30 : 45
+        let win_points = (
+            this.EOS_results[team][result].regular.wins * points.baseball.win + 
+            this.EOS_results[team][result].playoffs.playoff_appearance * points.bonus.playoff_appearance +
+            this.EOS_results[team][result].playoffs.finalist * points.bonus.finalist +
+            this.EOS_results[team][result].playoffs.champions * points.bonus.champions +
+            this.EOS_results[team][result].playoffs.wins * points.baseball.playoff_win +
+            bonus_win
+        )
+        return win_points
     }
 }
 
