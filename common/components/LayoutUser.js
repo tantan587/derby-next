@@ -1,4 +1,5 @@
 import TopNavUser from './Navigation/TopNavUser'
+import SportsSocket from './Sockets/SportsSocket'
 
 
 const layoutStyle = {
@@ -9,8 +10,10 @@ const layoutStyle = {
 
 const LayoutUser = (props) => (
   <div style={layoutStyle}>
-    <TopNavUser />
-    {props.children}
+    <SportsSocket>
+      <TopNavUser />
+      {props.children}
+    </SportsSocket>
   </div>
 )
 

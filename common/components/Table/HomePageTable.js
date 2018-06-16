@@ -22,14 +22,14 @@ class HomePageTable extends React.Component {
 
     return (
       //maxWidth: 1000,
-      <Table style={{width:'60%',marginLeft:'20%',color: 'white'}}>
+      <Table style={{color: 'white'}}>
         <TableHead>
           <TableRow>
             {headers.map((column,i) => {
               return (
                 <TableCell
                   key={i}
-                  padding='default'
+                  padding='dense'
                   style={{color:'white', fontSize:16, textAlign:'center'}}
                 >
                   {column}
@@ -46,7 +46,7 @@ class HomePageTable extends React.Component {
                   i == 0 ?
                     <TableCell
                       key={i}
-                      padding='default'
+                      padding='none'
                       style={{color:'white', fontSize:16, textAlign:'center', fontFamily:column=='DERBY' ? 'museo-slab-bold' : 'roboto'}}
                     >
                       {column}
@@ -54,13 +54,13 @@ class HomePageTable extends React.Component {
                     : column ?
                       <TableCell
                         key={i}
-                        padding='default'
+                        padding='none'
                         style={{color:'white', width:'13%', textAlign:'center'}}>
                         <CheckIcon style={{color:'#EBAB38', fontSize:40}}/>
                       </TableCell>
                       : <TableCell
                         key={i}
-                        padding='default'
+                        padding='none'
                         style={{color:'white',  width:'13%', fontSize:16}}/>
                 )
               })}
