@@ -7,7 +7,8 @@ function SportsManager(io) {
    
   this.Create = async () =>
   {
-    console.log('the time is', new Date())
+    var a = new Date()
+    console.log('the time time and offset is',a, -a.getTimezoneOffset()/60)
     this.TeamInfo = await getSports()
     this.GameInfo = {}
     const gameInfoResults = await getNearGames()
