@@ -52,7 +52,7 @@ class MenuListComposition extends React.Component {
     return <MenuList role="menu" style={{display: 'inline-block' }}>
       {items.map((item, i) => { 
         return <MenuItem key={i} disabled={item.disabled} onClick={() => this.handleCloseWithId(item.id)}>
-          <Link href={item.link ? item.link : 'nolink'}>
+          <Link href={item.link ? item.link : '/'}>
             <div
               onMouseEnter={() => this.setHover(i+n)} 
               onMouseLeave={() => this.setHover(-1)} 
@@ -70,19 +70,18 @@ class MenuListComposition extends React.Component {
     const { open, hoverIndex } = this.state
 
     let items1 = items.concat([])
-    let items2
+    let items2 = []
 
     //this whole code is in order to make the two lists show up top aligned rather than bottome aligned
-    if(items2)
+    if(extraItems)
     {
-      let items2 = extraItems.concat([])
+      items2 = extraItems
       const howManyToAdd = Math.abs(items1.length - items2.length)
-
       let extraPaddding = new Array(howManyToAdd).fill({disabled:true})
-
+      
       if(items1.length > items2.length) 
         items2 = items2.concat(extraPaddding) 
-      else
+      else if(items2.length > items1.length)
       {
         items1=  items1.concat(extraPaddding)
       }
