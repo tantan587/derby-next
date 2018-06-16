@@ -42,7 +42,6 @@ const Standings = withStyles(styles)(({ classes, owners }) =>
   <div className={classes.root}>
     {
       owners.map(owner => <div id={owner.owner_id} className={classes.owner}>
-        {console.log(owner)}
         <div style={{ display: 'flex' }}>
           { chooseSilk(owner, { height: 50, margin: '8px 0px' }) }
           <div className={classes.names}>
