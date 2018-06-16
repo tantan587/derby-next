@@ -18,7 +18,7 @@ router.post('/sportleagues', authHelpers.loginRequired, (req, res, next)  => {
 })
 
 router.post('/schedule', authHelpers.loginRequired, (req, res, next)  => {
-  return sportsHelpers.getSchedule(req.body.league_id, req.body.date, res)
+  return sportsHelpers.getLeagueSchedule(req.body.league_id, req.body.date, res)
     .catch((err) => {
       handleResponse(res, 500, err)})
 })

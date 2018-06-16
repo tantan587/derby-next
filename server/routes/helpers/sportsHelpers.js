@@ -55,17 +55,39 @@ const getTeamInfoAndRespond = async (res, type) => {
   })
 }
 
-const getSchedule = (league_id, date, res) => {
+const getNearSchedule = () => {
+  var d = new Date()
+  //-60 for eastern time zone. 
+  var nd = new Date(d.getTime() - ((d.getTimezoneOffset()-60) * 60000))
+  const dayCount = fantasyHelpers.getDayCountStr(nd.toJSON())
+  var str =  `select * from sports.schedule a, sports.results b where
+         a.global_game_id = b.global_game_id
+          and day_count in(` + dayCount + ', ' + (dayCount + 1) + ', ' + (dayCount - 1) + ')'    
+  return getSchedule(str)
+}
+
+const getLeagueSchedule = (league_id, date, res) => {
   const dayCount = fantasyHelpers.getDayCountStr(date)
   var str =  `select a.*, c.* from sports.schedule a, fantasy.sports b, sports.results c where
           b.league_id = '` + league_id + `' and a.sport_id = b.sport_id and a.global_game_id = c.global_game_id
           and day_count = ` + dayCount
+
+  return getSchedule(str)
+    .then((resp) => {
+      return handleReduxResponse(res,200, {
+        type: C.GET_SCHEDULE_BY_DAY,
+        schedule : resp
+      })
+    })
+}
+
+const getSchedule = (str) => {
   return knex.raw(str)
     .then(result =>
     {
+      const scheduleRows = []
       if (result.rows.length > 0)
       {
-        const scheduleRows = []
         result.rows.map(row =>
         {
           scheduleRows.push({
@@ -80,19 +102,14 @@ const getSchedule = (league_id, date, res) => {
             status:row.status,
             winner:row.winner,
             game_time:row.time,
-            period:row.period
+            period:row.period,
+            dayCount:row.day_count
           })
 
-        })
-        return handleReduxResponse(res,200, {
-          type: C.GET_SCHEDULE_BY_DAY,
-          schedule : scheduleRows
+
         })
       }
-      else
-      {
-        return handleReduxResponse(res,400, {})
-      }
+      return scheduleRows
     })
 }
 
@@ -229,7 +246,8 @@ module.exports = {
   getOneTeam,
   getTeamInfoAndRespond,
   getTeamInfo,
-  getSchedule,
+  getNearSchedule,
+  getLeagueSchedule,
   getSportLeagues
 }
 

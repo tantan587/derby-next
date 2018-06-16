@@ -1,14 +1,6 @@
 import C from '../constants'
 import {FetchThenDispatch} from './actionHelpers'
 
-export const clickedStandings = (league_id) => dispatch =>
-  FetchThenDispatch(
-    dispatch,
-    '/api/standings',
-    'POST',
-    JSON.stringify({league_id})
-  )
-
 export const clickedSportLeagues = (league_id) => dispatch =>
   FetchThenDispatch(
     dispatch,
@@ -49,7 +41,7 @@ export const handleTeamUpdateTime = updateTime =>
 
 export const handleTeamUpdate = teams =>
   ({
-    type: C.UPDATE_TEAM,
+    type: C.UPDATE_TEAMS,
     teams
   })
 
@@ -57,6 +49,24 @@ export const handleTeamUpdateDiff = teamsDiff =>
   ({
     type: C.UPDATE_TEAM_DIFF,
     teamsDiff
+  })
+
+export const handleGameUpdateTime = updateTime =>
+  ({
+    type: C.UPDATE_GAME_UPDATE_TIME,
+    updateTime
+  })
+
+export const handleGameUpdate = games =>
+  ({
+    type: C.UPDATE_GAMES,
+    games
+  })
+
+export const handleGameUpdateDiff = gamesDiff =>
+  ({
+    type: C.UPDATE_GAME_DIFF,
+    gamesDiff
   })
   
 export const handleUpdateDraftOrder = draftOrder =>

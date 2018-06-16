@@ -3,7 +3,7 @@ import C from '../../constants'
 
 export default (state = {}, action={ type: null }) => {
   switch (action.type){
-  case C.GET_TEAMS: case C.UPDATE_TEAM:
+  case C.GET_TEAMS: case C.UPDATE_TEAMS:
     return action.teams
   case C.UPDATE_TEAM_DIFF:
   {

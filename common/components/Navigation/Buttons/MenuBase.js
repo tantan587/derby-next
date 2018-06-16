@@ -66,29 +66,25 @@ class MenuListComposition extends React.Component {
   }
 
   render() {
-    const { classes, items, items2, title, backgroundColor, color } = this.props
+    const { classes, items, extraItems, title, backgroundColor, color } = this.props
     const { open, hoverIndex } = this.state
+
+    let items1 = items.concat([])
+    let items2
 
     //this whole code is in order to make the two lists show up top aligned rather than bottome aligned
     if(items2)
     {
-      if (items.length > items2.length)
-      {
-        let i 
-        for(i = 0; i < items.length - items2.length; i++)
-        {
-          items2.push({disabled:true})
-        }
+      let items2 = extraItems.concat([])
+      const howManyToAdd = Math.abs(items1.length - items2.length)
 
-      }
-      else if (items.length < items2.length)
-      {
-        let i 
-        for(i = 0; i < items2.length - items.length; i++)
-        {
-          items.push({disabled:true})
-        }
+      let extraPaddding = new Array(howManyToAdd).fill({disabled:true})
 
+      if(items1.length > items2.length) 
+        items2 = items2.concat(extraPaddding) 
+      else
+      {
+        items1=  items1.concat(extraPaddding)
       }
     }
 
@@ -124,7 +120,7 @@ class MenuListComposition extends React.Component {
                     <div>
                       {this.getMenuList(items2,0, hoverIndex, true)}
                       <div style={{borderRight:'1px solid grey', display: 'inline-block', height:'240px'}}/>
-                      {this.getMenuList(items,items2.length, hoverIndex)}
+                      {this.getMenuList(items1,items2.length, hoverIndex)}
                     </div>
                     : 
                     this.getMenuList(items,0, hoverIndex)
