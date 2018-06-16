@@ -2,11 +2,9 @@ import React from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
-import Button from '@material-ui/core/Button'
 import { connect } from 'react-redux'
 import MenuButton from './Buttons/MenuButton'
 import LeaguesButton from './Buttons/LeaguesButton'
-import HomeLogoIconSmall from '../Icons/HomeLogoIconSmall'
 
 const styles = () => ({
   root: {

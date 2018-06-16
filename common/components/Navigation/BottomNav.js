@@ -1,9 +1,11 @@
 import React from 'react'
 import { withStyles } from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography'
 import { connect } from 'react-redux'
 import LogoIcon from '../Icons/LogoIcon'
-
+import Button from '@material-ui/core/Button'
+import Typography from '@material-ui/core/Typography'
+import Link from 'next/link'
+import HomeLogoIconSmall from '../Icons/HomeLogoIconSmall'
 
 const styles = () => ({
   root: {
@@ -21,8 +23,21 @@ class BottomNav extends React.Component {
  
 
   render() {
-    const {classes} = this.props
-    
+    const {classes, user} = this.props
+    console.log(user.loggedIn)
+    const items = user.loggedIn ? [
+      {text:'Home', link:'/'},
+      {text:'Rules', link:''},
+      {text:'FAQ', link:''},
+      {text:'Private Policy', link:''},
+      {text:'Logout', link:'/logout'},] :
+      [ {text:'Home', link:'/'},
+        {text:'Login', link:'/login'},
+        {text:'Sign Up', link:'/signup'},
+        {text:'Rules', link:''},
+        {text:'FAQ', link:''},
+        {text:'Private Policy', link:''}]
+
     return (
       <div className={classes.root}>
         <div style={{display:'inline-block',float:'left'}}>
@@ -30,17 +45,45 @@ class BottomNav extends React.Component {
             <LogoIcon color='#594632' viewbox='15 0 62 62'/>
           </div>
         </div>
-        <Typography variant='display3' style={{color:'white', paddingTop:50, display:'inline-block'}}>
-        Footer Info
-        </Typography>
-        <br/>
-        <Typography variant='display3' style={{color:'white', display:'inline-block'}}>
-        Footer Info
-        </Typography>
-        <br/>
-        <Typography variant='display3' style={{color:'white', display:'inline-block'}}>
-        Footer Info
-        </Typography>
+        <div style={{display:'inline-block',float:'left', marginLeft:50, marginTop:40}}>
+          {items.map((item, i) => { 
+            return <div>
+              <Link key={-i-1} href={item.link ? item.link : 'nolink'}>
+                <Button key={i} style={{fontSize:16, color:'white', width:170}}>
+                  {item.text}            
+                </Button>               
+              </Link>
+              <br/>
+            </div>
+            
+          })
+          }
+        </div>
+        <div style={{float:'right', marginRight:100, marginTop:50}}>
+          <a href='/' target="_blank">
+            <HomeLogoIconSmall color={'white'}/>
+          </a>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <div style={{marginLeft:0, display: 'inline-block'}}>
+            <img src='/static/icons/Footer/social_media_icon_facebook.svg' width='50' height='auto'/>
+          </div>
+          <div style={{marginLeft:20, display: 'inline-block'}}>
+            <img src='/static/icons/Footer/social_media_icon_twitter.svg' width='50' height='auto'/>
+          </div>
+          <br/>
+          <br/>
+          <a href="http://fantasydata.com/" target="_blank">
+            <img src="https://fantasydata.com/images/badges/fantasydata-light-wide.png" alt="Powered by FantasyData.com"/>
+          </a>
+          <div style={{marginTop:20}}>
+            <Typography variant="caption" gutterBottom style={{color:'white', textAlign:'center'}} >
+              Copyright 2018 Derby Fantasy Wins League
+            </Typography>
+          </div>
+        </div>   
       </div>
 
     )
