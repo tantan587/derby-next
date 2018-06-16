@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const authHelpers = require('./helpers/authHelpers')
 const adminHelpers = require('./helpers/adminHelpers')
+const userHelpers = require('./helpers/userHelpers')
 const passport = require('./helpers/local')
 const C = require('../../common/constants')
 const ErrorText = require('../../common/models/ErrorText')
@@ -60,7 +61,8 @@ router.post('/login', authHelpers.loginRedirect, (req, res, next) => {
               last_name : user1.last_name,
               first_name : user1.first_name,
               username : user1.username,
-              leagues : leagues
+              leagues : leagues,
+              verified: user1.verified
             })
           )
         }
@@ -111,6 +113,22 @@ router.post('/createpassword', authHelpers.loginRedirect, (req, res, next) => {
         })
     }
   })(req, res, next)
+})
+
+router.get('/verify-email', (req, res) => {
+  const { i: user_id } = req.query
+  return userHelpers.isVerified(user_id).then(user => {
+    if (!user || user.verified) res.sendStatus(400)
+    else res.json({ expires_at: user.expires_at })
+  })
+})
+
+router.post('/verify-email', (req, res) => {
+  const { i: user_id, c: verification_code } = req.body
+  return userHelpers.verify(user_id, verification_code).then(updateCount => {
+    if (updateCount) res.sendStatus(200)
+    else res.sendStatus(400)
+  })
 })
 
 // *** helpers *** //

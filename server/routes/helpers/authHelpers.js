@@ -22,7 +22,10 @@ function createUser(req, res) {
           first_name: req.body.first_name,
           last_name: req.body.last_name,
           email: req.body.email,
-          admin: false
+          admin: false,
+          
+          verified: false,
+          verification_code: Math.floor(1000 + Math.random() * 9000),
         })
         .returning('*')
     })
