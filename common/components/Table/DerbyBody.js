@@ -43,7 +43,7 @@ class DerbyBody extends React.Component {
   {
     const {handleOpenDialog, clickedOneTeam, activeLeague, styleProps} = this.props
     return (
-      
+
       columns.filter(
         header => header.id !=='order').map(
         (header,i) =>
@@ -58,7 +58,7 @@ class DerbyBody extends React.Component {
                 styleProps.TableCellComponent.bind(null, i, n) : ''
             }
             >
-            {header.imageInd === true && n[header.id] && n[header.id] !== 'none' 
+            {header.imageInd === true && n[header.id] && n[header.id] !== 'none'
               ?  <img src={n[header.id]} preserveAspectRatio='true'  style={{maxWidth:'40px', maxHeight:'40px'}}/>
               : header.button
                 ? <Button

@@ -48,7 +48,7 @@ const styleProps = {
       borderRight: '1px solid white',
       borderLeft: '1px solid white'
     }),
-    TableCellComponent: (i, n) => i === 0 ? chooseSilk(n) : false,
+    TableCellComponent: (i, n) => i === 0 ? <td style={{ height: 80, width: 80, borderBottom: '1px solid white' }}>{chooseSilk(n)}</td> : false,
     TableRow: {
       borderRight: '1px solid white'
     }

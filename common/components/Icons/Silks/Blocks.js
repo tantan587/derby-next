@@ -1,10 +1,11 @@
-const Blocks = ({ st0, st1 }) => {
+const Blocks = ({ st0, st1, style }) => {
   // let st0 = st0 || '#CCCCCC'
   // let st1 = st1 || '#874321'
-
   return (
-    <td style={{ height: 50, width: 50, borderBottom: '1px solid white' }}>
-      <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+    // <div style={{ ...{ height: 50, width: 50, borderBottom: '1px solid white' }, ...style }}>
+      <svg
+        style={{ ...style }}
+        version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
         viewBox="0 0 91.7 91.3">
         {/* <style type="text/css">
         	.st0{fill: '#CCCCCC'}
@@ -43,7 +44,7 @@ const Blocks = ({ st0, st1 }) => {
         <polygon fill={st1 || '#874321'} points="25,82.6 25.9,88.6 36.7,88.6 36.7,82.6 "/>
         <polygon fill={st1 || '#874321'} points="49.5,88.6 60.3,88.6 61.1,82.6 49.5,82.6 "/>
       </svg>
-    </td>
+    // </div>
   )
 }
 

@@ -1,12 +1,12 @@
 /* eslint-disable */
-const Diamonds = ({ st0, st1, st2 }) => {
+const Diamonds = ({ st0, st1, st2, style }) => {
   // const st0 = '#CCCCCC'
   // const st1 = '#FFFFFF'
 
   return (
-    <td style={{ height: 50, width: 50, borderBottom: '1px solid white' }}>
-      <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 91.7 91.3">
-        {/* <style type="text/css">
+    <svg
+      style={{ ...style }}
+      version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 91.7 91.3">        {/* <style type="text/css">
       	.st0{fill:#CCCCCC;}
       	.st1{fill:#FFFFFF;}
       </style> */}
@@ -54,7 +54,6 @@ const Diamonds = ({ st0, st1, st2 }) => {
         <polygon fill={st1 || '#231F20'} points="5.8,64.6 10.2,73.5 18.2,67.1 13.8,58.2 "/>
         <polygon fill={st1 || '#231F20'} points="14.6,82.6 10.2,73.7 2.3,80.1 2.3,80.1 6.7,89 "/>
       </svg>
-    </td>
   )
 }
 
