@@ -1,4 +1,4 @@
-const sportsHelpers = require('../../routes/helpers/sportshelpers')
+const sportsHelpers = require('../../routes/helpers/sportsHelpers')
 const hash = require('object-hash')
 
 function SportsManager(io) {
