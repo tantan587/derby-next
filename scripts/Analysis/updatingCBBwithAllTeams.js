@@ -5436,7 +5436,7 @@ data.forEach(conference => {
 })
 
 let list_conferences = info2.map(team => team.conference_id)
-console.log(list_conferences)
+console.log(info2)
 
 /* db_helpers.insertIntoTable(knex, 'sports', 'conferences', info2)
 .then(()=>
