@@ -1,6 +1,6 @@
 import { withStyles } from '@material-ui/core/styles'
 
-import chooseSilk from '../../Icons/Silks/silkUtil'
+import OwnerSilk from '../../Icons/Avatars/OwnerSilk'
 
 const styles = {
   root: {
@@ -44,7 +44,7 @@ const Standings = withStyles(styles)(({ classes, owners }) =>
       owners.map(owner => <div id={owner.owner_id} className={classes.owner}>
         {console.log(owner)}
         <div style={{ display: 'flex' }}>
-          { chooseSilk(owner, { height: 50, margin: '8px 0px' }) }
+          { OwnerSilk(owner, { height: 50, margin: '8px 0px' }) }
           <div className={classes.names}>
             <div className={classes.ownerName}>{owner.owner_name}</div>
             <div className={classes.username}>{owner.username}</div>
