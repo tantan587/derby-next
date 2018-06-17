@@ -1,18 +1,20 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { withStyles } from '@material-ui/core/styles'
 
 import { handleOpenDialog } from '../../actions/dialog-actions'
 import silksAndColors from '../../../data/silksAndColors'
+import upcomingGames from '../../../data/upcomingGames'
 
-import DerbyTableContainer from '../Table/DerbyTableContainer'
-import TeamsDialog from '../TeamsDialog/TeamsDialog'
 import Title from '../Navigation/Title'
 import Owner from '../Home/Owner'
 import Card from '../Home/Card'
 import Standings from '../Home/Cards/Standings'
+import TheWire from '../Home/Cards/TheWire'
+import Countdown from '../Home/Cards/Countdown'
+import Upcoming from '../Home/Cards/Upcoming'
+import StyledButton from '../Navigation/Buttons/StyledButton'
 
 
 const styles = {
@@ -35,13 +37,15 @@ const styles = {
   }
 }
 
-const HomeContainer = ({ className }) => <div className={className} />
-
 class MainLeagueHome extends React.Component {
 
+  state = {
+    startTime: Math.round((new Date(this.props.activeLeague.draft_start_time)-new Date())/1000)
+  }
 
   render() {
-    const { classes, activeLeague } = this.props
+    const { classes, activeLeague, sportLeagues, schedules } = this.props
+    const { startTime } = this.state
 
     let ownersWithColors = []
     if (activeLeague.owners) {
@@ -50,7 +54,7 @@ class MainLeagueHome extends React.Component {
 
     const myOwner = ownersWithColors.find(owner => owner.owner_id === activeLeague.my_owner_id)
 
-    console.log(ownersWithColors)
+    console.log('activeLeague', schedules)
     return (
       <div>
         <Title color='white' backgroundColor='black' title={'Welcome Us'}/>
@@ -59,17 +63,56 @@ class MainLeagueHome extends React.Component {
           <Owner myOwner={myOwner} num={ownersWithColors.length} />
           <div className={classes.cards}>
 
-            <Card title="Standings">
+            <Card
+              title="Upcoming Games"
+              Button={() => <StyledButton text="View Complete Schedules"/>}
+            >
+              <Upcoming
+                thing="Thing"
+                upcomingGames={upcomingGames}
+              />
+            </Card>
+
+            {/* <Card
+              title="Draft Countdown"
+              Button={() => <StyledButton text="Go to Draft Room"/>}
+            >
+              <Countdown
+                startTime={startTime}
+              />
+            </Card> */}
+
+            <Card
+              title="Standings"
+              scroll
+              Button={() => <StyledButton text="View Complete Standings"/>}
+            >
               <Standings owners={ownersWithColors.sort((a, b) => a.rank - b.rank)} />
             </Card>
 
-            <Card title="Standings">
-              <Standings owners={ownersWithColors.sort((a, b) => a.rank - b.rank)} />
+            <Card title="The Wire" scroll>
+              <TheWire items={[
+                {
+                  headline: 'Headline placeholder copy here.',
+                  body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+                  Button: () => <StyledButton text="Link" />
+                },
+                {
+                  headline: 'Headline placeholder copy here.',
+                  body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+                  Button: () => <StyledButton text="Link" />
+                },
+                {
+                  headline: 'Headline placeholder copy here.',
+                  body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+                  Button: () => <StyledButton text="Link" />
+                },
+              ]}/>
             </Card>
 
-            <Card title="Standings">
+            {/* <Card title="Standings">
               <Standings owners={ownersWithColors.sort((a, b) => a.rank - b.rank)} />
-            </Card>
+            </Card> */}
 
           </div>
         </div>
@@ -95,6 +138,7 @@ export default compose(
     activeLeague: state.activeLeague,
     sportLeagues : state.sportLeagues,
     teams: state.teams,
+    schedules: state.schedules
   }),
   mapDispatchToProps),
   withStyles(styles)

@@ -5,6 +5,7 @@ const styles = {
   root: {
     display: 'flex',
     flexDirection: 'column',
+    alignItems: 'center',
     height: 350,
     width: 300,
     backgroundColor: 'white',
@@ -18,22 +19,27 @@ const styles = {
     fontSize: 14,
     color: '#2D934C'
   },
+  button: {
+    margin: '14px 0px',
+  },
   container: {
     width: '90%',
-    margin: 'auto',
-    overflowY: 'scroll'
+    // overflowY: 'scroll'
   }
 }
 
-const DerbyCard = withStyles(styles)(({ classes, title, children }) => {
+const DerbyCard = withStyles(styles)(({ classes, title, children, scroll = false, Button }) => {
   console.log(title)
   return (
     <Card className={classes.root}>
       <div className={classes.title}>
         {title}
       </div>
-      <div className={classes.container}>
+      <div className={classes.container} style={{ overflowY: scroll && 'scroll' }}>
         {children}
+      </div>
+      <div className={classes.button}>
+        {Button && <Button />}
       </div>
     </Card>
   )

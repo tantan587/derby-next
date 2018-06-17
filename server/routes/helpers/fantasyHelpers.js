@@ -51,7 +51,8 @@ const getLeague = async (league_id, user_id, res, type) =>{
           rank:owner.rank,
           username:owner.username,
           user_id: owner.user_id,
-          draft_position: draft_position.indexOf(owner.owner_id)
+          draft_position: draft_position.indexOf(owner.owner_id),
+          avatar:owner.avatar
         })
     })
 

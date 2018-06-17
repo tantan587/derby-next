@@ -6,6 +6,9 @@ import Button from '@material-ui/core/Button'
 import Typography from '@material-ui/core/Typography'
 import Link from 'next/link'
 import HomeLogoIconSmall from '../Icons/HomeLogoIconSmall'
+import Patterns from '../Icons/Avatars/Patterns'
+import Silk from '../Icons/Avatars/Silk'
+import Horse from '../Icons/Avatars/Horse'
 
 const styles = () => ({
   root: {
@@ -47,9 +50,9 @@ class BottomNav extends React.Component {
         </div>
         <div style={{display:'inline-block',float:'left', marginLeft:50, marginTop:40}}>
           {items.map((item, i) => { 
-            return <div>
-              <Link key={-i-1} href={item.link ? item.link : 'nolink'}>
-                <Button key={i} style={{fontSize:16, color:'white', width:170}}>
+            return <div key={i}>
+              <Link  href={item.link ? item.link : 'nolink'}>
+                <Button  style={{fontSize:16, color:'white', width:170}}>
                   {item.text}            
                 </Button>               
               </Link>
@@ -83,7 +86,7 @@ class BottomNav extends React.Component {
               Copyright 2018 Derby Fantasy Wins League
             </Typography>
           </div>
-        </div>   
+        </div>
       </div>
 
     )
