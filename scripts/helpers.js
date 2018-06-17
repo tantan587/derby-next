@@ -1,7 +1,7 @@
 var methods = {}
 const rp = require('request-promise')
 
-
+//method to insert and create a table
 methods.insertIntoTable = function(knex, schema, table, data) {
   return knex
     .withSchema(schema)
@@ -9,6 +9,7 @@ methods.insertIntoTable = function(knex, schema, table, data) {
     .insert(data)
 }
 
+//method to find the Team ID?
 methods.getTeamId =  function(knex, sportId)
 {
   return knex
@@ -17,6 +18,7 @@ methods.getTeamId =  function(knex, sportId)
     .where('sport_id', sportId)
 }
 
+//method to find 
 methods.getTeamAndGlobalId =  function(knex, sportId)
 {
   return knex
@@ -31,10 +33,10 @@ methods.getScheduleData = (knex, sportName, url) =>
   return knex
     .withSchema('sports')
     .table('leagues')
-    .where('sport_name', sportName)
+    .where('sport_name', sportName) //grabs the sport we are looking for from postgres
     .then((league)=> {
       const sportId = league[0].sport_id
-      const idSpelling = sportName === 'EPL' ? 'Id' : 'ID'
+      const idSpelling = sportName === 'EPL' ? 'Id' : 'ID' //EPL lists its ID as Id, so fix that
       return methods.getTeamAndGlobalId(knex, sportId)
         .then(teamIds => {
           let teamIdMap = {}
@@ -187,17 +189,18 @@ methods.updateSchedule = (knex,newResults) =>
     .then(results => {
       let oldResults = {}
       var updateList =[]
+      //map all the old results into a dictionary, with the global game ID as key, and the time updated as what it pulls
       results.map(result => oldResults[result.global_game_id] =result.updated_time)
       newResults.map(x =>
       {
-        if(!(x.global_game_id in oldResults))
+        if(!(x.global_game_id in oldResults)) //check to see if the game is in the old results - if its not:
         {
-          updateList.push(Promise.resolve(methods.insertOneResultRow(knex, x)))
+          updateList.push(Promise.resolve(methods.insertOneResultRow(knex, x))) //insert a new results row
         }
-        else if(oldResults[x.global_game_id] !== x.updated_time)
+        else if(oldResults[x.global_game_id] !== x.updated_time) //if it is in old results, check to see if the time is same as last update
         { 
           console.log(x.global_game_id) 
-          updateList.push(Promise.resolve(methods.updateOneResultRow(knex, x.global_game_id, x)))
+          updateList.push(Promise.resolve(methods.updateOneResultRow(knex, x.global_game_id, x))) //update result row
         }
       })
       if (updateList.length > 0)

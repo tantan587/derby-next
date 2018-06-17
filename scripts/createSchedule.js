@@ -17,12 +17,11 @@ async function createSchedule()
   // let nflData = await getNflData()
   // let eplData = await getEplData()
   let data = nhlData.concat(nbaData).concat(cbbData).concat(cfbData).concat(mlbData).concat(nflData).concat(eplData)
-
-  db_helpers.insertIntoTable(knex, 'sports', 'schedule', data)
-    .then(result => {
-      console.log('Number of Schedules Updated: ' + result)
-      process.exit()
-    })
+ 
+  await db_helpers.insertIntoTable(knex, 'sports', 'schedule', data.slice(0,5000))
+  await db_helpers.insertIntoTable(knex, 'sports', 'schedule', data.slice(5000,10000))
+  await db_helpers.insertIntoTable(knex, 'sports', 'schedule', data.slice(10000))
+  process.exit()
 }
 
 async function getData(league, url)
