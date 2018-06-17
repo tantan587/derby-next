@@ -18,6 +18,15 @@ methods.getTeamId =  function(knex, sportId)
     .where('sport_id', sportId)
 }
 
+methods.getSportId =   function(knex, sportName)
+{
+  return knex
+    .withSchema('sports')
+    .table('leagues')
+    .where('sport_name', sportName) 
+    .select('sport_id')
+}
+
 methods.getTeamAndGlobalId =  function(knex, sportId)
 {
   return knex
@@ -75,11 +84,13 @@ methods.getFdata = async (knex, sportName,api, promiseToGet) =>
 
   const keys = {}
   keys[api] = league[0].fantasy_data_key
+  const sport_id = league[0].sport_id
 
   const FantasyDataClient = new fdClientModule(keys);
   //const fandata = FantasyDataClient.func()
   //console.log('test')
   //console.log(FantasyDataClient[api][promiseToGet]())
+  //return [FantasyDataClient[api][promiseToGet](), sport_id]
   return FantasyDataClient[api][promiseToGet]()
   
 }
