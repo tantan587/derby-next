@@ -1,15 +1,14 @@
 import React from 'react'
 import {clickedLeague} from '../../../actions/fantasy-actions'
-import {clickedStandings, clickedSportLeagues} from '../../../actions/sport-actions'
+import {clickedSportLeagues} from '../../../actions/sport-actions'
 import { connect } from 'react-redux'
 import MenuBase from './MenuBase'
 
 
 class LeaguesButton extends React.Component {
   handleClick = (league_id) => {
-    const { onClickedLeague, onStandings, onSportLeagues } = this.props
+    const { onClickedLeague, onSportLeagues } = this.props
     onClickedLeague(league_id, this.props.user.id)
-    onStandings(league_id)
     onSportLeagues(league_id)
   };
   render() {
@@ -30,11 +29,11 @@ class LeaguesButton extends React.Component {
       link:'/livedraft'})
 
     items2.push({
-        text:'Message Board',
-        link:'/livedraft'})    
+      text:'Message Board',
+      link:'/livedraft'})    
     items2.push({
-        text:'News',
-        link:'/livedraft'})
+      text:'News',
+      link:'/livedraft'})
     items2.push({
       text:'League Settings',
       link:'/livedraft'})
@@ -47,7 +46,7 @@ class LeaguesButton extends React.Component {
         color={color}
         backgroundColor={backgroundColor}
         items={items}
-        items2={useItems2 ? items2 : null}
+        extraItems={useItems2 ? items2 : null}
         handleClick={this.handleClick} 
         title='My Leagues'/>
     )
@@ -59,10 +58,6 @@ export default connect(({ user, leagues }) => ({ user, leagues }),
       onClickedLeague(league_id, user_id) {
         dispatch(
           clickedLeague(league_id, user_id))
-      },
-      onStandings(league_id) {
-        dispatch(
-          clickedStandings(league_id))
       },
       onSportLeagues(league_id) {
         dispatch(

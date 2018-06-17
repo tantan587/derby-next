@@ -26,7 +26,7 @@ async function updateStandings()
   let nflData = await getNflData()
   let eplData = await getEplData()
   let data = nhlData.concat(nbaData).concat(cbbData).concat(cfbData).concat(mlbData).concat(nflData).concat(eplData)
-
+  console.log(data.length)
   db_helpers.updateStandings(knex, data)
     .then(result => {
       console.log('Number of Standings Updated: ' + result)

@@ -9,7 +9,7 @@ const styleProps = {
   Container:{
     overflowY:'scroll',
     maxHeight:540
-},
+  },
 }
 
 class TeamDisplay extends React.Component {

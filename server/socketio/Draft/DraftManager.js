@@ -1,9 +1,9 @@
-const draftHelpers = require('../routes/helpers/draftHelpers')
-const fantasyHelpers = require('../routes/helpers/fantasyHelpers')
-const socketIoHelpers = require('./socketioHelpers')
-const Owners = require('./Draft/Owners')
+const draftHelpers = require('../../routes/helpers/draftHelpers')
+const fantasyHelpers = require('../../routes/helpers/fantasyHelpers')
+const socketIoHelpers = require('../socketioHelpers')
+const Owners = require('./Owners')
 
-function DraftManager(io, roomId) {
+function DraftManager(roomId, draftEmitter) {
   
   var that = this
   let timeToDraft = 5
@@ -19,7 +19,7 @@ function DraftManager(io, roomId) {
     that.totalPicks = resp.totalPicks
     that.leagueId = resp.league_id
     that.owners = new Owners()
-    that.owners.CreateOwners(resp.owners, resp.queueByOwner, roomId, resp.teams)
+    await that.owners.CreateOwners(resp.owners, resp.queueByOwner, roomId, resp.teams)
     that.counter = 0
   }
 
@@ -31,39 +31,27 @@ function DraftManager(io, roomId) {
   {
     that.pick = 0
     console.log(roomId, 'is online')
-    console.log(io.sockets.adapter.rooms)
-    emitWhosHere()
+    draftEmitter.EmitWhosHere()
     waitToStartDraft()
   }
 
   this.OwnerJoined = (socketId, ownerId) =>
   {
     that.owners.Joined(socketId, ownerId)
-    io.in(roomId).emit('people', 
-      {state:'joined',
-        owners:that.owners.WhoIsInDraft(),
-        owner_id:ownerId})
+    draftEmitter.EmitJoined(that.owners.WhoIsInDraft(), ownerId)
   }
 
   this.OwnerLeft = (socketId) =>
   {
     const ownerId = that.owners.GetOwnerIdFromSocketId(socketId)
     that.owners.Left(socketId)
-    io.in(roomId).emit('people', 
-      {state:'left', owner_id:ownerId})
-
-    //for now, start again when everyone leaves
-    // if(!io.sockets.adapter.rooms[roomId])
-    // {
-    //   socketIoHelpers.InsertDraftAction(roomId, 'server', 'STATE', {'mode':'pre'})
-    //   this.StartAgain()
-    // }
+    draftEmitter.EmitLeft(ownerId)
   }
 
   this.EndDraft = () =>
   {
     socketIoHelpers.InsertDraftAction(roomId, 'server', 'STATE', {'mode':'post'})
-    emitModeChange('post')
+    draftEmitter.EmitModeChange('post')
     console.log('saving Teams')
     draftHelpers.enterDraftToDb(that.owners.AssembleTeams(), that.leagueId)
     //draftIsUp = false
@@ -78,7 +66,7 @@ function DraftManager(io, roomId) {
     that.time = 5000
     that.owners.ResetEligible()
     let date = new Date(new Date().getTime() + that.time)
-    io.in(roomId).emit('reset', {draftStartTime: date.toJSON()})
+    draftEmitter.EmitReset(date.toJSON())
     waitToStartDraft()
   }
 
@@ -100,10 +88,10 @@ function DraftManager(io, roomId) {
       const distinctQueue = [...new Set(data.queue.concat([data.teamId]))]
       socketIoHelpers.InsertDraftAction(
         roomId, data.ownerId, 'QUEUE', {queue:distinctQueue})
-      addQueueResp({ownerId:data.ownerId, queue:distinctQueue, success:true})
+      draftEmitter.EmitQueueSuccess(data.ownerId, distinctQueue)
     }
     else{
-      addQueueResp({ownerId:data.ownerId, success:false, teamId:data.teamId})
+      draftEmitter.EmitQueueFail(data.ownerId,data.teamId)
     }
   }
 
@@ -115,7 +103,7 @@ function DraftManager(io, roomId) {
     data.ownerId = that.owners.GetOwnerIdFromSocketId(socketId)
     socketIoHelpers.InsertDraftAction(
       roomId, data.ownerId, 'MESSAGE', {message:data.message}, data.clientTs)
-    sendMessage(data)
+    draftEmitter.EmitMessage(data)
   }
 
   this.Timeout = (amountOfTime) =>
@@ -123,7 +111,7 @@ function DraftManager(io, roomId) {
     console.log('in timeout')
     clearTimers()
     socketIoHelpers.InsertDraftAction(roomId, 'server', 'STATE', {'mode':'timeout'})
-    emitModeChange('timeout')
+    draftEmitter.EmitModeChange('timeout')
     if (amountOfTime) 
     {
       that.timer = setTimeout(() => {
@@ -144,16 +132,16 @@ function DraftManager(io, roomId) {
     that.timer = setInterval(() => {
       if(that.time < counter){
         clearInterval(that.timer)
-        emitDraftLive()
+        draftEmitter.EmitDraftLive()
         socketIoHelpers.InsertDraftAction(roomId, 'server', 'STATE', {'mode':'live'})
         waitToAutoDraft(timeToDraft)
         return
       }
       counter += 1000
 
-      console.log('counting in start draft', that.time, counter)
+      //console.log('counting in start draft', that.time, counter)
 
-      emitStartTick(roomId)
+      draftEmitter.EmitStartTick()
     }, 1000)
   }
 
@@ -165,7 +153,7 @@ function DraftManager(io, roomId) {
     else{
       that.counter = timeOnClock
       clearTimers()
-      emitDraftTick()
+      draftEmitter.EmitDraftTick(that.counter)
     
       that.timer = setInterval(() => {
         if(that.counter === 0){
@@ -178,7 +166,7 @@ function DraftManager(io, roomId) {
           return
         }
         that.counter -= 1
-        emitDraftTick()
+        draftEmitter.EmitDraftTick(that.counter)
         console.log('counting in autodraft')
         
       }, 1000)
@@ -198,8 +186,8 @@ function DraftManager(io, roomId) {
     socketIoHelpers.InsertDraftAction(
       roomId, ownerId, 'QUEUE', {queue:draftResult.queue})
 
-    io.in(roomId).emit('draftInfo',{
-      teamId:teamId, ownerId:ownerId, queue:draftResult.queue, eligibleTeams:draftResult.eligibleTeams})
+    draftEmitter.EmitDraftTeam(teamId,ownerId,draftResult.queue,draftResult.eligibleTeams)
+
     waitToAutoDraft(timeToDraft)
   }
 
@@ -223,40 +211,9 @@ function DraftManager(io, roomId) {
 
   const timeIn = () => {
     socketIoHelpers.InsertDraftAction(roomId, 'server', 'STATE', {'mode':'live'})
-    emitModeChange('live')
+    draftEmitter.EmitModeChange('live')
     waitToAutoDraft(that.counter)
   }
-
-  ///SOCKET IO FUNCTIONS
-  const emitDraftLive = () => {
-    io.in(roomId).emit('start')
-  }
-
-  const emitStartTick = () => {
-    io.in(roomId).emit('startTick')
-  }
-
-  const emitDraftTick = () => {
-    io.in(roomId).emit('draftTick', that.counter)
-  }
-
-  const emitWhosHere = () => {
-    io.in(roomId).emit('whoshere')
-  }
-
-  const emitModeChange = (mode) => {
-    io.in(roomId).emit('modechange', mode)
-  }
-
-  const addQueueResp = (payload) => {
-    io.in(roomId).emit('addqueueresp', payload)
-  }
-
-  const sendMessage = (data) =>{
-    io.in(roomId).emit('message', data)
-  }
-
-  ////
 }
 
 module.exports = DraftManager

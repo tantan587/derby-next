@@ -209,7 +209,7 @@ const sendForgotPasswordEmail = (user, res) =>
             <li><span style={`+style+`}>Enter your username.</span></li>
             <li><span style={`+style+`}>Enter your temporary password. Hint: Copy and paste the password in order to enter it.</span></li>
             <li><span style={`+style+`}>Create your new password.&nbsp;</span></li>
-            <li><span style={`+style+`}>Hit the SUMBIT&nbsp;button.&nbsp;</span></li>
+            <li><span style={`+style+`}>Hit the SUBMIT&nbsp;button.&nbsp;</span></li>
           </ol>
           <span style={`+style+`}>Enjoy The Derby!</span><br />
           &nbsp;

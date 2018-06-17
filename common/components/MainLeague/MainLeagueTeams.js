@@ -21,14 +21,28 @@ const styles = {
 
 class MainLeagueTeams extends React.Component {
 
+  
 
   render() {
-    let myTeams = []
-    Object.values(this.props.teams).map(team => myTeams.push({
-      ...team,
-      record:team.wins + '-' + team.losses + '-' + team.ties,
-      percentage: (team.wins + team.ties + team.losses) === 0 ? 0.0.toFixed(3) : ((team.wins + 1/2*team.ties) / (team.wins + team.ties + team.losses)).toFixed(3)
-    }))
+    const {teams, activeLeague} = this.props
+    const sportLeagueIds = this.props.sportLeagues.map(x => x.sport_id)
+    let myTeams = Object.values(teams).filter(team => sportLeagueIds.includes(team.sport_id)).map(team => 
+    {
+      let owner = null 
+      if (activeLeague.teams[team.team_id])
+        owner = activeLeague.owners.filter(owner => owner.owner_id === activeLeague.teams[team.team_id].owner_id)[0]
+      else
+      {
+        console.log(team.team_id)
+      }
+      return {
+        ...team,
+        record:team.wins + '-' + team.losses + '-' + team.ties,
+        percentage: (team.wins + team.ties + team.losses) === 0 ? 0.0.toFixed(3) : ((team.wins + 1/2*team.ties) / (team.wins + team.ties + team.losses)).toFixed(3),
+        owner_name: owner ? owner.owner_name : 'N/A',
+        points:activeLeague.teams[team.team_id].points
+      }
+    })
 
     return (
       <div>
@@ -76,6 +90,7 @@ export default connect(
   state => ({
     sportLeagues : state.sportLeagues,
     teams: state.teams,
+    activeLeague : state.activeLeague
   }),
   mapDispatchToProps,
 )(withStyles(styles)(MainLeagueTeams))

@@ -7,6 +7,7 @@ import LogoutButton from './Buttons/LogoutButton'
 import LoginButton from './Buttons/LoginButton'
 import MenuButton from './Buttons/MenuButton'
 import LeaguesButton from './Buttons/LeaguesButton'
+import AdminButton from './Buttons/AdminButton'
 
 const styles = () => ({
   root: {
@@ -62,7 +63,10 @@ class TopNavHome extends React.Component {
             {!this.props.user.loggedIn ?
               <LoginButton color='#707070' backgroundColor='#ffffff'/>
               :
-              <LogoutButton color='#707070' backgroundColor='#ffffff'/>
+              <div>
+                <LogoutButton color='#707070' backgroundColor='#ffffff'/>
+                {/* <AdminButton color='#707070' backgroundColor='#ffffff'/> */}
+              </div>
             }
             <br/>
             

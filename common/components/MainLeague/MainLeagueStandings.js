@@ -23,7 +23,7 @@ const styles = {
 
 const styleProps = {
   Container:{
-       overflowY:'hidden'
+    overflowY:'hidden'
   },
   Table: {
     backgroundImage: 'url("/static/images/chalkboard.jpg")',
