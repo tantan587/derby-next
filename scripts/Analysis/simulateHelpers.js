@@ -91,12 +91,12 @@ const simulateEPLGame = (home, away) =>
     //return [home_win_value, Math.abs(1-home_win_value)]
 }
 
-const updateProjections = (teams) => {
+const updateProjections = (teams, day) => {
     let rows = teams.map(team => {
         //let playoff_json = JSON.stringify({wins: team.average_playoff_wins, playoffs: team.average_playoff_appearances, finalists: team.average_finalists, champions: team.average_champions})
         //console.log(playoff_json)
         return {team_id: team.team_id, wins: team.average_wins,
-             losses: team.average_losses, ties: 0, day_count: 1, 
+             losses: team.average_losses, ties: 0, day_count: day, 
              playoff: {wins: team.average_playoff_wins, playoffs: team.average_playoff_appearances, finalists: team.average_finalists, champions: team.average_champions}}
     })
     console.log(rows.length)

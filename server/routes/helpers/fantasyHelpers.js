@@ -342,6 +342,7 @@ const formatGameDate = (date) => {
 
 module.exports = {
   getLeague,
+  getDayCount,
   updateTeamPoints,
   updateLeaguePoints,
   updateFantasy,

@@ -178,11 +178,12 @@ class Game{
         let points_home_loss = this.calculateRawPointsImpactByTeam('home', 'loss')
         let points_away_win = this.calculateRawPointsImpactByTeam('away', 'win')
         let points_away_loss = this.calculateRawPointsImpactByTeam('away', 'loss')
-        this.hard_impact = (points_home_win-points_home_loss)*(points_away_win-points_away_loss)
+        let unround_impact = (points_home_win-points_home_loss)*(points_away_win-points_away_loss)
         this.hard_impact === NaN ? (
             console.log(points_home_win, points_away_win, points_home_loss, points_away_loss),
             process.exit()
         ):0
+        this.hard_impact = Math.round(unround_impact*100)/100
     }
 
     calculateRawImpactTeam(team){
