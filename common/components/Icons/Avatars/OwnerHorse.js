@@ -1,16 +1,19 @@
 import Horse from './Horse'
 import Patterns from './Patterns'
+import Colors from './Colors'
 
 const OwnerHorse = (ownerObj, style) => {
-  
-  if (Object.keys(Patterns).includes(ownerObj.silk))
+
+  let primary = Colors[ownerObj.avatar.primary]
+  let secondary = Colors[ownerObj.avatar.secondary]
+  let pattern = Patterns[ownerObj.avatar.pattern].horse
+  if (pattern)
   {
-    console.log(ownerObj.silk)
-    return <Horse st1={ownerObj.color} style={style} pattern={Patterns[ownerObj.silk].horse}/>
+    return <Horse primary={primary} secondary={secondary} style={style} pattern={pattern}/>
   }
   else
   {
-    return <Horse st1={ownerObj.color} style={style} pattern={Patterns['Default'].horse}/>
+    return <Horse primary={primary} secondary={secondary} style={style} pattern={Patterns['Default'].horse}/>
   }
 }
 

@@ -1,15 +1,18 @@
 import Silk from './Silk'
 import Patterns from './Patterns'
+import Colors from './Colors'
 
 const OwnerSilk = (ownerObj, style) => {
-  console.log(ownerObj, style)
-  if (Object.keys(Patterns).includes(ownerObj.silk))
+  let primary = Colors[ownerObj.avatar.primary]
+  let secondary = Colors[ownerObj.avatar.secondary]
+  let pattern = Patterns[ownerObj.avatar.pattern].silk
+  if (pattern)
   {
-    return <Silk st1={ownerObj.color} style={style} pattern={Patterns[ownerObj.silk].silk}/>
+    return <Silk primary={primary} secondary={secondary} style={style} pattern={pattern}/>
   }
   else
   {
-    return <Silk st1={ownerObj.color} style={style} pattern={Patterns['Default'].silk}/>
+    return <Silk primary={primary} secondary={secondary} style={style} pattern={Patterns['Default'].silk}/>
   }
 }
 

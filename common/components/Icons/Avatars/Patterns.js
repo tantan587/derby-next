@@ -133,5 +133,5 @@ const Patterns = {
   
 }
 
-export default Patterns
+module.exports =  Patterns
 
