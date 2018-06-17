@@ -73,14 +73,14 @@ class MainLeagueHome extends React.Component {
               />
             </Card>
 
-            {/* <Card
+            <Card
               title="Draft Countdown"
               Button={() => <StyledButton text="Go to Draft Room"/>}
             >
               <Countdown
                 startTime={startTime}
               />
-            </Card> */}
+            </Card>
 
             <Card
               title="Standings"
