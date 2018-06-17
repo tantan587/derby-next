@@ -80,7 +80,7 @@ class MainLeagueHome extends React.Component {
               <Countdown
                 startTime={startTime}
               />
-            </Card>
+            </Card> */}
 
             <Card
               title="Standings"
@@ -88,7 +88,7 @@ class MainLeagueHome extends React.Component {
               Button={() => <StyledButton text="View Complete Standings"/>}
             >
               <Standings owners={ownersWithColors.sort((a, b) => a.rank - b.rank)} />
-            </Card> */}
+            </Card>
 
             <Card title="The Wire" scroll>
               <TheWire items={[

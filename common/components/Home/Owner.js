@@ -24,6 +24,7 @@ const styles = {
     height: '100%',
     fontFamily: 'HorsebackSlab',
     fontSize: 18,
+    marginLeft : 20,
     textTransform: 'uppercase',
     '& > div > .entry': {
       marginLeft: 10,
