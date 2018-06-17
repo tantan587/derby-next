@@ -10,7 +10,6 @@ console.log('run')
 const createAllStadiums = async () => {
 
   let MLB_stadiums = await getStadiumInfo(knex, 'MLB', 'MLBv3ScoresClient', 'getStadiumsPromise')
-  console.log(MLB_stadiums)
   let NBA_stadiums = await getStadiumInfo(knex, 'NBA', 'NBAv3ScoresClient', 'getStadiumsPromise')
   let NHL_stadiums = await getStadiumInfo(knex, 'NHL', 'NHLv3ScoresClient', 'getStadiumsPromise')
   let NFL_stadiums = await getStadiumInfo(knex, 'NFL', 'NFLv3ScoresClient', 'getStadiumsPromise')
@@ -26,21 +25,19 @@ const createAllStadiums = async () => {
 }
 
 const getStadiumInfo = async (knex, sportName, api, promiseToGet) => {
-  db_helpers.getFdata (knex, sportName, api, promiseToGet)
+  let resp = await db_helpers.getFdata (knex, sportName, api, promiseToGet)
 /*   .then((FantasyDataClient) => {
     FantasyDataClient.MLBv3ScoresClient.getStadiumsPromise() */
-    .then((resp)=> {
-      let cleanStadiums = JSON.parse(resp)
+  let cleanStadiums = JSON.parse(resp)
 
-      stadiumInfo = cleanStadiums.map(stadium =>
-        {
-          return {stadium_id: stadium.StadiumID, name: stadium.Name, city: stadium.City, state: stadium.State}
-      }
-      )
-      console.log(stadiumInfo[0])
-      return stadiumInfo[0]
-    })
-  .catch((err) => {console.log(err)})
+  stadiumInfo = cleanStadiums.map(stadium =>
+    {
+      return {stadium_id: stadium.StadiumID, name: stadium.Name, city: stadium.City, state: stadium.State}
+  }
+  )
+  //console.log('here')
+  //console.log(stadiumInfo[0])
+  return stadiumInfo
 }
 
 createAllStadiums()

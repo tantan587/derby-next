@@ -67,6 +67,7 @@ methods.getScheduleData = (knex, sportName, url) =>
 
 methods.getFdata = async (knex, sportName,api, promiseToGet) =>
 {
+  //console.log('this')
   let league = await knex
   .withSchema('sports')
   .table('leagues')
@@ -77,7 +78,10 @@ methods.getFdata = async (knex, sportName,api, promiseToGet) =>
 
   const FantasyDataClient = new fdClientModule(keys);
   //const fandata = FantasyDataClient.func()
+  //console.log('test')
+  //console.log(FantasyDataClient[api][promiseToGet]())
   return FantasyDataClient[api][promiseToGet]()
+  
 }
 
 methods.getFantasyData = async (knex, sportName, func, teamKeyField, confField, eplAreaIdInd = false) => 
