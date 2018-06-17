@@ -42,7 +42,7 @@ const NewsItem = withStyles(newsStyle)(({ classes, headline, body, Button }) =>
 const TheWire = ({ items }) =>
   <div>
     {
-      items.map(item => <NewsItem headline={item.headline} body={item.body} Button={item.Button} />)
+      items.map((item,i) => <NewsItem key={i} headline={item.headline} body={item.body} Button={item.Button} />)
     }
   </div>
 
