@@ -7,6 +7,7 @@ const dbSimulateHelpers = require('./databaseSimulateHelpers.js')
 const conferences_already =[1,3,6,9,10,24,26]
 let x = 10608
 let y = 10601
+let info2=[]
 conferences_already.includes(1) ? console.log('yes') : console.log('no')
 const data = [{
     "ConferenceID": 1,
@@ -5434,7 +5435,8 @@ data.forEach(conference => {
     return {conference_id: conf_id, name: conference.Name, display_name:conference.Name}
 })
 
-console.log(info2)
+let list_conferences = info2.map(team => team.conference_id)
+console.log(list_conferences)
 
 /* db_helpers.insertIntoTable(knex, 'sports', 'conferences', info2)
 .then(()=>

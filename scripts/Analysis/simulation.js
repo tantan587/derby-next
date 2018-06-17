@@ -25,9 +25,9 @@ async function simulate(knex)
     //.then(games => {
     const mlb_teams = simulateProfessionalLeague(games, all_teams, '103', 10000)
     //code below to be added in once all simulations tested, ready to go
-    const nba_teams = [] //simulateProfessionalLeague(games, all_teams, '101')
-    const nfl_teams = [] //simulateProfessionalLeague(games, all_teams, '102')
-    const nhl_teams = [] //simulateProfessionalLeague(games, all_teams, '104')
+    const nba_teams = simulateProfessionalLeague(games, all_teams, '101', 10000)
+    const nfl_teams = simulateProfessionalLeague(games, all_teams, '102', 10000)
+    const nhl_teams = simulateProfessionalLeague(games, all_teams, '104', 10000)
     const cfb_teams = [] //simulateCFB(games, all_teams)
     const cbb_teams = [] //simulateCBB(games, all_teams)
     const epl_teams = [] //simulateEPL(games, all_teams)
@@ -141,9 +141,13 @@ const simulateCBB = (all_games_list, teams, simulations = 10) => {
         //below needs to calculate conference wins, not overall wins
         cbb_teams.sort(function(a,b){return b.wins-a.wins})
         //play the conference championship games, add winners to array conference champions
-        const conference_ids = [10601, 10602, 10603, 10604, 10605, 10606, 10607]
-        let conference_champions = conference_ids.map(id => {return playoffFunctions[106](cbb_teams.filter(team => team.conference_id === id))})
-        conference_champions.forEach(team=>{team.playoff_appearences++})
+        const conference_ids = ['10601', '10602', '10603', '10604', '10605', '10606', '10607', '10608',
+            '10609', '10610', '10611', '10612', '10613', '10614', '10615', '10616', '10617', '10618',
+            '10619', '10620', '10621', '10622', '10623', '10624', '10625', '10626',
+            '10627', '10628', '10629', '10630', '10631','10632', '10633' ]
+        let conference_champions = conference_ids.map(id => {return playoffFunctions[106](cbb_teams.filter(team => team.conference === id), simulateHelpers)})
+        console.log(conference_champions)
+        conference_champions.forEach(team=>{team.playoff_appearances++})
         //calculate RPI
         cbb_teams.forEach(team => {team.calculateRPIWinPercentage()})
         cbb_teams.forEach(team => {team.calculateOpponentWinPercentage()})
@@ -165,9 +169,9 @@ const simulateCBB = (all_games_list, teams, simulations = 10) => {
         conference_champions.forEach(team => {team.playoff_wins[0]++})
         at_large.forEach(team=>{
             team.playoff_wins[0]++
-            team.playoff_appearences++
+            team.playoff_appearances++
         })
-        last_four.forEach(team=>{team.playoff_appearences++})
+        last_four.forEach(team=>{team.playoff_appearances++})
         let last_four_winner_1 = Series(last_four[0],last_four[3],1,'106',1,neutral=true)
         let last_four_winner_2 = Series(last_four[1],last_four[2],1,'106',1,neutral=true)
         let last_conference_champ_winner_1 = Series(last_four_conference_champions[0],last_four_conference_champions[3],1,'106',1,neutral=true)

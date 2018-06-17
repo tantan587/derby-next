@@ -100,29 +100,36 @@ const simulateCFBconf =(conference) => {
         let list_division_2 = conference.filter(team => team.division != division_1)
         let conf_champ = simulateHelpers.simulateGame(list_division_1[0], list_division_2[0],'105',neutral=true)
     }else{
-        let conf_champ = simulateHelpers.simulateGame(confernece[0], conference[1],'105',neutral=true)
+        let conf_champ = simulateHelpers.simulateGame(conference[0], conference[1],'105',neutral=true)
     }
     return conf_champ}
     
-const simulateCBBconf = (conference) => {
+const simulateCBBconf = (conference, simulateHelpers) => {
     let total_teams = conference.length
+    console.log("total teams", total_teams)
+    console.log(conference[0].conference)
     let rounds = total_teams === 8 ? 3: total_teams < 12 ? 4:5
     let tournament_teams_left = conference
     let teams_left,non_byes = 0
-    let this_round_teams, next_round_teams = []
+    let this_round_teams = []
+    let next_round_teams = []
     for(let x = 0; x<rounds; x++){
         teams_left = tournament_teams_left.length
         non_byes = teams_left > 12 ? (teams_left-12)*2: teams_left>8 ? (teams_left-8)*2:0
-        this_round_teams = tournament_teams_left.slice(non_byes,teams_left)
+        this_round_teams = tournament_teams_left.slice((non_byes-1),teams_left)
         next_round_teams = non_byes === 0 ? []:tournament_teams_left.slice(0, non_byes)
         for(let y = 0; y<(non_byes/2); y++){
+            //console.log(y)
             let team_1 = this_round_teams.shift()
             let team_2 = this_round_teams.pop()
+            //console.log(team_1.name)
+            //console.log(team_2.name)
             let winner = simulateHelpers.simulateGame(team_1,team_2,'106',neutral=true)
             next_round_teams.push(winner[0])
         }
         tournament_teams_left.length = 0
         tournament_teams_left.push(...next_round_teams)
+        //console.log(tournament_teams_left)
         next_round_teams.length = 0
         this_round_teams.length = 0
     }

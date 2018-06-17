@@ -76,4 +76,8 @@ const createPastGamesArray = (all_teams, day) => {
     return all_games
     })}
 
+const getCBBConferences = (knex) => {
+    return knex
+        .withSchema()
+}
 module.exports = {createGamesArray, createPastGamesArray, createTeams}
