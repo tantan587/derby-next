@@ -56,8 +56,8 @@ class Game{
             this.last_result.away.losses++
             this.home.cbb_rpi_WL.wins += .6
             this.away.cbb_rpi_WL.losses += .6
-            this.home.cbb_teams_played.home_wins.push(away)
-            this.away.cbb_teams_played.away_losses.push(home)
+            this.home.cbb_teams_played.home_wins.push(this.away)
+            this.away.cbb_teams_played.away_losses.push(this.home)
         }else{
             this.all_simulate_results.home.losses += 1
             this.all_simulate_results.away.wins += 1
@@ -65,11 +65,11 @@ class Game{
             this.last_result.home.losses++
             this.home.cbb_rpi_WL.losses += 1.4
             this.away.cbb_rpi_WL.wins += 1.4
-            this.home.cbb_teams_played.home_losses.push(away)
-            this.away.cbb_teams_played.away_wins.push(home)
+            this.home.cbb_teams_played.home_losses.push(this.away)
+            this.away.cbb_teams_played.away_wins.push(this.home)
         }
-        this.home.cbb_all_teams_played.push(away)
-        this.away.cbb_all_teams_played.push(home)
+        this.home.cbb_all_teams_played.push(this.away)
+        this.away.cbb_all_teams_played.push(this.home)
         }
 
     play_NHL_game(){

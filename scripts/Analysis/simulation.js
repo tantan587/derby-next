@@ -18,7 +18,7 @@ async function simulate(knex)
     //this is the calculation of day count normally:
     let day_count = getDayCount(today)
     //this is the first day of the seasno
-    //day_count = 1467
+    day_count = 1467
     /* this to be added back in later
     rpiHelpers.addRpiToTeamClass(knex,all_teams) */
     const games = await dbSimulateHelpers.createGamesArray(knex, all_teams,day_count)
@@ -112,7 +112,7 @@ const simulateCFB = (all_games_list, teams, simulations = 10) => {
         let conference_champions = conference_ids.map(id => {return playoffFunctions['105'](cfb_teams.filter(team => team.conference_id === id))})
         //calculate there CFB playoff value, sort them from highest to lowest, and put the four highest teams into playoffs
         cfb_teams.forEach(team => {
-            champ_boost = conference_champions.include(team) ? 1:0
+            champ_boost = conference_champions.includes(team) ? 1:0
             team.calculateCFBValue(champ_boost)})
         cfb_teams.sort(function(a,b){return b.cfb_value - a.cfb_value})
         let playoffs = cfb_teams.slice(0,4)
@@ -135,17 +135,19 @@ const simulateCFB = (all_games_list, teams, simulations = 10) => {
 //function to simulate CBB - also figures out most likely march madness teams using formula
 const simulateCBB = (all_games_list, teams, simulations = 10) => {
     const cbb_teams = individualSportTeams(teams, '106')
+    console.log(simulations)
     for(var x=0; x<simulations; x++){
+        //console.log('test')
         all_games_list['106'].forEach(game => {game.play_CBB_game()})
         //below needs to calculate conference wins, not overall wins
         cbb_teams.sort(function(a,b){return b.wins-a.wins})
         //play the conference championship games, add winners to array conference champions
+        //following array is all the conference
         const conference_ids = ['10601', '10602', '10603', '10604', '10605', '10606', '10607', '10608',
-            '10609', '10610', '10611', '10612', '10613', '10614', '10615', '10616', '10617', '10618',
+            '10609', '10610', '10611', '10612', '10613', '10614', '10615', '10616', '10618',
             '10619', '10620', '10621', '10622', '10623', '10624', '10625', '10626',
             '10627', '10628', '10629', '10630', '10631','10632', '10633' ]
-        let conference_champions = conference_ids.map(id => {return playoffFunctions[106](cbb_teams.filter(team => team.conference === id), simulateHelpers)})
-        console.log(conference_champions)
+        let conference_champions = league_conference['106'].map(id => {return playoffFunctions[106](cbb_teams.filter(team => team.conference === id), simulateHelpers)})
         conference_champions.forEach(team=>{team.playoff_appearances++})
         //calculate RPI
         cbb_teams.forEach(team => {team.calculateRPIWinPercentage()})
@@ -160,7 +162,7 @@ const simulateCBB = (all_games_list, teams, simulations = 10) => {
         })
         cbb_teams.forEach(team=>{team.calculateCBBValue()})
         cbb_teams.sort(function(a,b){return b.cbb_value - a.cbb_value})
-        let non_conf_champs = cbb_teams.filter(team => conference_champions.include(team) === false)
+        let non_conf_champs = cbb_teams.filter(team => conference_champions.includes(team) === false)
         let at_large = non_conf_champs.slice(0,32)
         let last_four = non_conf_champs.slice(32,36)
         let last_four_conference_champions = []
@@ -171,10 +173,10 @@ const simulateCBB = (all_games_list, teams, simulations = 10) => {
             team.playoff_appearances++
         })
         last_four.forEach(team=>{team.playoff_appearances++})
-        let last_four_winner_1 = Series(last_four[0],last_four[3],1,'106',1,neutral=true)
-        let last_four_winner_2 = Series(last_four[1],last_four[2],1,'106',1,neutral=true)
-        let last_conference_champ_winner_1 = Series(last_four_conference_champions[0],last_four_conference_champions[3],1,'106',1,neutral=true)
-        let last_conference_champ_winner_2 = Series(last_four_conference_champions[1],last_four_conference_champions[2],1,'106',1,neutral=true)
+        let last_four_winner_1 = simulateHelpers.Series(last_four[0],last_four[3],1,'106',1,neutral=true)
+        let last_four_winner_2 = simulateHelpers.Series(last_four[1],last_four[2],1,'106',1,neutral=true)
+        let last_conference_champ_winner_1 = simulateHelpers.Series(last_four_conference_champions[0],last_four_conference_champions[3],1,'106',1,neutral=true)
+        let last_conference_champ_winner_2 = simulateHelpers.Series(last_four_conference_champions[1],last_four_conference_champions[2],1,'106',1,neutral=true)
         let march_madness = [...conference_champions, ...at_large, last_four_winner_1, last_four_winner_2,last_conference_champ_winner_1, last_conference_champ_winner_2]
         march_madness.sort(function(a,b){return b.cbb_value - a.cbb_value})
         let next_round = []
@@ -185,7 +187,7 @@ const simulateCBB = (all_games_list, teams, simulations = 10) => {
             while(march_madness.length != 0){
                 let team_1 = march_madness.shift()
                 let team_2 = march_madness.pop()
-                let winner = Series(team_1, team_2, 1, '106', round, neutral = true)
+                let winner = simulateHelpers.Series(team_1, team_2, 1, '106', round, neutral = true)
                 next_round.push(winner)
             }
             march_madness.push(...next_round)
@@ -197,6 +199,7 @@ const simulateCBB = (all_games_list, teams, simulations = 10) => {
             team.cbb_reset()
         })
     }
+    console.log('here')
     cbb_teams.forEach(team => {
         team.averages(simulations)
     })
@@ -257,11 +260,16 @@ async function testFunctionsWithPastGames()
 })
 }
 
+//variable that stores conferences for each sport. CBB is missing 10617, which is independents.
 const league_conference = {
     101: ['10101', '10102'],
     102: ['10201', '10202'],
     103: ['10301', '10302'],
-    104: ['10401', '10402']
+    104: ['10401', '10402'],
+    106: ['10601', '10602', '10603', '10604', '10605', '10606', '10607', '10608',
+    '10609', '10610', '10611', '10612', '10613', '10614', '10615', '10616', '10618',
+    '10619', '10620', '10621', '10622', '10623', '10624', '10625', '10626',
+    '10627', '10628', '10629', '10630', '10631','10632', '10633' ]
 }
 //testFunctionsWithPastGames()
 

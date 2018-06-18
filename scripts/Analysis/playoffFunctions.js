@@ -106,8 +106,8 @@ const simulateCFBconf =(conference) => {
     
 const simulateCBBconf = (conference, simulateHelpers) => {
     let total_teams = conference.length
-    console.log("total teams", total_teams)
-    console.log(conference[0].conference)
+    //console.log("total teams", total_teams)
+    //console.log(conference[0].conference)
     let rounds = total_teams === 8 ? 3: total_teams < 13 ? 4:5
     let tournament_teams_left = conference
     let teams_left = 0
@@ -120,7 +120,7 @@ const simulateCBBconf = (conference, simulateHelpers) => {
         this_round_teams = tournament_teams_left.slice(byes)
         next_round_teams = byes === 0 ? []:tournament_teams_left.slice(0, byes)
         for(let y = 0; y<((teams_left-byes)/2); y++){
-            console.log("game #",y)
+            //console.log("game #",y)
             let team_1 = this_round_teams.shift()
             let team_2 = this_round_teams.pop()
             //console.log(team_1.name)

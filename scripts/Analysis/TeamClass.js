@@ -87,22 +87,22 @@ class Team {
         let q2_losses = 0
         let q3_losses = 0
         let q4_losses = 0
-        this.cbb_all_teams_played.home_wins.forEach(team=>{
+         this.cbb_teams_played.home_wins.forEach(team=>{
             team.cbb_rpi_rank < 31 ? q1_wins++: team.cbb_rpi_rank < 76 ? q2_wins++:team.cbb_rpi_rank<161 ? q3_wins++:q4_wins++
         })
-        this.cbb_all_teams_played.home_losses.forEach(team=>{
+        this.cbb_teams_played.home_losses.forEach(team=>{
             team.cbb_rpi_rank < 31 ? q1_losses++: team.cbb_rpi_rank < 76 ? q2_losses++:team.cbb_rpi_rank<161 ? q3_losses++:q4_losses++
         })
-        this.cbb_all_teams_played.neutral_wins.forEach(team=>{
+        this.cbb_teams_played.neutral_wins.forEach(team=>{
             team.cbb_rpi_rank < 51 ? q1_wins++: team.cbb_rpi_rank < 101 ? q2_wins++:team.cbb_rpi_rank<201 ? q3_wins++:q4_wins++
         })
-        this.cbb_all_teams_played.neutral_losses.forEach(team=>{
+        this.cbb_teams_played.neutral_losses.forEach(team=>{
             team.cbb_rpi_rank < 51 ? q1_losses++: team.cbb_rpi_rank < 101 ? q2_losses++:team.cbb_rpi_rank<201 ? q3_losses++:q4_losses++
         })
-        this.cbb_all_teams_played.away_wins.forEach(team=>{
+        this.cbb_teams_played.away_wins.forEach(team=>{
             team.cbb_rpi_rank < 76 ? q1_wins++: team.cbb_rpi_rank < 136 ? q2_wins++:team.cbb_rpi_rank<241 ? q3_wins++:q4_wins++
         })
-        this.cbb_all_teams_played.away_losses.forEach(team=>{
+        this.cbb_teams_played.away_losses.forEach(team=>{
             team.cbb_rpi_rank < 76 ? q1_losses++: team.cbb_rpi_rank < 136 ? q2_losses++:team.cbb_rpi_rank<241 ? q3_losses++:q4_losses++
         })
         //all adjustments here are guesses, and not finalized, but for now
@@ -120,7 +120,7 @@ class Team {
 
     calculateRPI(){
         let opponent_opponent_WP = 0
-        this.cbb_all_teams_played.forEach(team => {opponent_opponent_WP += cbb_opponent_rpi_WP})
+        this.cbb_all_teams_played.forEach(team => {opponent_opponent_WP += this.cbb_opponent_rpi_WP})
         this.cbb_rpi_value = this.cbb_rpi_WP/4 + this.cbb_opponent_rpi_WP/2 + opponent_opponent_WP/4
     }
 /*     def adjRWins(this,winVal): #formula to adjust regular season wins by win Value: 1 is 1, 0 is loss
