@@ -2,12 +2,12 @@ const simulateHelpers = require('./simulateHelpers.js')
 const points = require('./points.js')
 
 class Game{
-    constructor(global_game_id, home, away, sport_id){
+    constructor(global_game_id, home, away, sport_id, home_result=0, away_result=0){
         this.global_game_id = global_game_id
         this.home = home
         this.away = away
-        this.home_result = 0
-        this.away_result = 0
+        this.home_result = home_result
+        this.away_result = away_result
         this.sport_id = sport_id
         //this.day = day
         this.all_simulate_results = {home: {wins: 0, losses: 0, ties: 0},  away: {wins: 0, losses: 0, ties: 0}}
@@ -169,7 +169,6 @@ class Game{
     }
 
     calculateRawImpact(){
-        let camila = 0 
         this.adjustImpactWithAllSims()
         //console.log(this.EOS_results.home.win.regular)
         this.calculateRawImpactTeam('home')

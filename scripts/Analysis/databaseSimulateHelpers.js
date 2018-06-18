@@ -65,7 +65,7 @@ const createGamesArray = async (knex, all_teams, day) => {
     })}
 
 
-//creates an array of played games by sport, with the past games, to use either for updating elos or testing simulate functions
+//creates an array of played games by sport, with the past games, to use either for  testing simulate functions
 const createPastGamesArray = (all_teams, day) => {
     all_games = {101:[], 102:[],103:[],104:[],105:[],106:[],107:[]}
     return pullPastGames(knex, day)
@@ -76,8 +76,15 @@ const createPastGamesArray = (all_teams, day) => {
     return all_games
     })}
 
-const getCBBConferences = (knex) => {
-    return knex
-        .withSchema()
-}
-module.exports = {createGamesArray, createPastGamesArray, createTeams}
+//creates an array of played games by sport, with the past games, to use either for updating elos
+const createPastGamesArrayWithScores = async (all_teams, day) => {
+    all_games = {101:[], 102:[],103:[],104:[],105:[],106:[],107:[]}
+    return pullPastGames(knex, day)
+    .then(games => {
+        games.forEach(game => {
+            all_games[game.sport_id].push(new Game(game.global_game_id, all_teams[game.sport_id][game.home_team_id], all_teams[game.sport_id][game.away_team_id], game.sport_id, game.home_team_score, game.away_team_score))
+        })
+    return all_games
+    })}
+
+module.exports = {createGamesArray, createPastGamesArray, createTeams, createPastGamesArrayWithScores}

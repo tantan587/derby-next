@@ -107,12 +107,25 @@ const updateProjections = (teams, day) => {
         .insert(rows) */
     }
 
+const normalizeImpact = (games) => {
+    let all_impacts = games.map(game => {
+        return game.hard_impact
+    })
+    let average = Math.mean(all_impacts)
+    let standard_dev = Math.std(all_impacts)
+    games.forEach(game => {
+        game.actual_impact = game.hard_impact
+    })
+
+}
+
 const insertProjections = (knex, rows) => {
     return knex
     .withSchema('analysis')
     .table('record_projections')
     .insert(rows)
 }
+
 
 const infoForGameProjections = (game) => {
     
