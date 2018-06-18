@@ -23,31 +23,29 @@ async function simulate(knex)
     rpiHelpers.addRpiToTeamClass(knex,all_teams) */
     const games = await dbSimulateHelpers.createGamesArray(knex, all_teams,day_count)
     //.then(games => {
-    const mlb_teams = simulateProfessionalLeague(games, all_teams, '103')
+    const mlb_teams = []//simulateProfessionalLeague(games, all_teams, '103')
     //code below to be added in once all simulations tested, ready to go
     const nba_teams = []//simulateProfessionalLeague(games, all_teams, '101')
     const nfl_teams = []//simulateProfessionalLeague(games, all_teams, '102')
     const nhl_teams = []//simulateProfessionalLeague(games, all_teams, '104')
     const cfb_teams = [] //simulateCFB(games, all_teams)
-    const cbb_teams = [] //simulateCBB(games, all_teams)
+    const cbb_teams = simulateCBB(games, all_teams)
     const epl_teams = [] //simulateEPL(games, all_teams)
+    //projection team list needs to be the first value of array
     const projection_team_list = [...nba_teams, ...nfl_teams, ...mlb_teams[0], ...nhl_teams, ...cbb_teams, ...cfb_teams, ...epl_teams]
     var list = []
     const projections = simulateHelpers.updateProjections(projection_team_list, day_count)
     //console.log(projections[0])
     return db_helpers.insertIntoTable(knex,'analysis', 'record_projections', projections)
     .then(()=>{
-        console.log('here')
-        console.log(mlb_teams[1][0])
-        return db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', mlb_teams[1][0])
+        //the insert for game_projections should be the second value of each array
+        return db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', projections)
         .then(()=> {
             console.log('done')
             process.exit()
         })
     })
 }
-            
-
 
 //function which simulates NBA, NFL, NHL, MLB - default set to 10 for now to modify later
 const simulateProfessionalLeague = (all_games_list, teams, sport_id, simulations = 10) => {
