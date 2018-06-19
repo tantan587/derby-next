@@ -2,13 +2,12 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import { connect } from 'react-redux'
-
 import DerbyTableContainer from '../Table/DerbyTableContainer'
 import Title from '../Navigation/Title'
 import StandingsSeasons from '../Standings/StandingsSeasons'
 import StandingsRace from '../Standings/StandingsRace'
 import silksAndColors from '../../../data/silksAndColors'
-import chooseSilk from '../Icons/Silks/silkUtil'
+import OwnerSilk from '../Icons/Avatars/OwnerSilk'
 
 const styles = {
   container: {
@@ -48,7 +47,8 @@ const styleProps = {
       borderRight: '1px solid white',
       borderLeft: '1px solid white'
     }),
-    TableCellComponent: (i, n) => i === 0 ? chooseSilk(n) : false,
+    TableCellComponent: (i, n) => i === 0 ? <td 
+      style={{ height: 80, width: 80, borderBottom: '1px solid white' }}>{OwnerSilk(n, {height:90})}</td> : false,
     TableRow: {
       borderRight: '1px solid white'
     }

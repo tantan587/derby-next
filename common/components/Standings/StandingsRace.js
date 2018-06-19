@@ -1,9 +1,6 @@
 import React from 'react'
 import { withStyles } from '@material-ui/core/styles'
-
-import chooseHorse from '../Icons/Horses/horseUtil'
-
-import Blocks from '../Icons/Horses/Blocks'
+import OwnerHorse from '../Icons/Avatars/OwnerHorse'
 import FinishLine from './FinishLine'
 import MonthIndicator from './LeagueSeasons/MonthIndicator'
 import SeasonsIndicator from './LeagueSeasons/SeasonsIndicator'
@@ -53,7 +50,7 @@ class StandingsRace extends React.Component {
                   }}>
                     <span style={{ color: 'grey' }}> ▮ </span> {owner.owner_name}
                     <div style={{ position: 'relative', top: -20, height: 20, width: `calc(${currentDifference * 100}% - 53px)`}}>
-                      { chooseHorse(owner, { position: 'absolute', left: `calc(${horseWidth(owner)}%)` }) }
+                      { OwnerHorse(owner, { position: 'absolute', left: `calc(${horseWidth(owner)}%)` }) }
                     </div>
                   </div>
                 </div>
@@ -92,4 +89,3 @@ class StandingsRace extends React.Component {
 }
 
 export default withStyles(styles)(StandingsRace)
-// export default StandingsRace
