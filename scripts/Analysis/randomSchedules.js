@@ -15,7 +15,7 @@ const randomSchedule = async (knex) => {
     let team_list = teams.map(team => {
         return new Team(team.name, team.sport_id, 0, 0, 0, 0, team.division, team.conference_id, team.team_id)
     })
-    console.log(team_list)
+    //console.log(team_list)
     let schedule = []
     let teams_for_sched = []
     let x = 0
@@ -25,7 +25,7 @@ const randomSchedule = async (knex) => {
     //divide teams into an array by div/conference
     conferences.forEach(conference =>{
         divisions.forEach(division =>{
-            div = team_list.filter(team => (team.conference_id===conference,team.division === division))
+            div = team_list.filter(team => (team.conference===conference && team.division === division))
             teams_in_divisions.push(div)
         })
     })
@@ -44,6 +44,7 @@ const randomSchedule = async (knex) => {
                 }
             })
         })
+    
     //schedule intraleague games
     teams_in_divisions[0].forEach(team =>{
         x = 0
@@ -90,13 +91,17 @@ const randomSchedule = async (knex) => {
     //schedule rivalryy games
     rivalries.forEach(team_set =>{
         let team_1 = team_list.find(team => team.team_id===team_set[0])
+        //console.log(team_1)
         let team_2 = team_list.find(team => team.team_id===team_set[1])
-        addToSchedule(schedule, '103', 4, team_1, team_2)
+        //console.log(team_2)
+        //addToSchedule(schedule, '103', 4, team_1, team_2)
     })
 
     team_list.forEach(team => {
         console.log(team.name,team.games_scheduled)
     })
+    console.log(schedule)
+    process.exit()
 
     
 }
