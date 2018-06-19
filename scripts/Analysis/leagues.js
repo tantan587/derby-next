@@ -11,12 +11,12 @@ const MLB_margin_mod = (margin, elo_difference) =>
 
 const NFL_margin_mod = (margin, elo_difference) =>
 {
-    return Math.log(Math.abs(margin)+1, Math.E) * 2.2/((elo_diffence)*.001 + 2.2)
+    return Math.log(Math.abs(margin)+1, Math.E) * 2.2/((elo_difference)*.001 + 2.2)
 }
 
 const NBA_margin_mod = (margin, elo_difference) =>
 {
-    return (pow((margin+3),0.8))/(7.5+0.006*elo_difference)
+    return (Math.pow((Math.abs(margin)+3),0.8))/(7.5+0.006*elo_difference)
 }
 
 const NHL_margin_mod = (margin, elo_difference) =>

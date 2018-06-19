@@ -77,7 +77,7 @@ const createPastGamesArray = (all_teams, day) => {
     })}
 
 //creates an array of played games by sport, with the past games, to use either for updating elos
-const createPastGamesArrayWithScores = async (all_teams, day) => {
+const createPastGamesArrayWithScores = async (knex, all_teams, day) => {
     all_games = {101:[], 102:[],103:[],104:[],105:[],106:[],107:[]}
     return pullPastGames(knex, day)
     .then(games => {

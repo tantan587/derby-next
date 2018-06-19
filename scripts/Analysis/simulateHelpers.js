@@ -119,15 +119,20 @@ const normalizeImpact = (games) => {
 
 }
 
-const insertProjections = (knex, rows) => {
-    return knex
-    .withSchema('analysis')
-    .table('record_projections')
-    .insert(rows)
+const createImpactArray = (all_games_list, sport_id) => {
+    let game_projections = []
+    all_games_list[sport_id].forEach(game => {
+        game.calculateRawImpact()
+        //console.log(game.raw_impact['home'])
+        game_projections.push({ team_id: game.home.team_id, global_game_id: game.global_game_id, win_percentage: game.home_win_percentage, impact: game.hard_impact });
+        game_projections.push({ team_id: game.away.team_id, global_game_id: game.global_game_id, win_percentage: game.away_win_percentage, impact: game.hard_impact });
+    })
+    return game_projections
 }
+
 
 
 const infoForGameProjections = (game) => {
     
 }
-module.exports = {Series, moreWins, simulateGame, updateProjections, simulateNHLGame}
+module.exports = {Series, moreWins, simulateGame, updateProjections, simulateNHLGame, createImpactArray}

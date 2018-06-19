@@ -32,14 +32,13 @@ async function simulate(knex)
     const cbb_teams = simulateCBB(games, all_teams)
     const epl_teams = [] //simulateEPL(games, all_teams)
     //projection team list needs to be the first value of array
-    const projection_team_list = [...nba_teams, ...nfl_teams, ...mlb_teams[0], ...nhl_teams, ...cbb_teams, ...cfb_teams, ...epl_teams]
-    var list = []
+    const projection_team_list = cbb_teams[0] // [...nba_teams, ...nfl_teams, ...mlb_teams[0], ...nhl_teams, ...cbb_teams, ...cfb_teams, ...epl_teams]
     const projections = simulateHelpers.updateProjections(projection_team_list, day_count)
     //console.log(projections[0])
     return db_helpers.insertIntoTable(knex,'analysis', 'record_projections', projections)
     .then(()=>{
         //the insert for game_projections should be the second value of each array
-        return db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', projections)
+        return db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', cbb_teams[1])
         .then(()=> {
             console.log('done')
             process.exit()
@@ -78,21 +77,10 @@ const simulateProfessionalLeague = (all_games_list, teams, sport_id, simulations
         console.log(`${team.name}: ${team.average_wins}/${team.average_losses}`) */
     })
     //shouldn't the below have the impact function? might need to be added in
-    let game_projections= []
     //all_games_list[sport_id][0].calculateRawImpact()
     //process.exit()
     let all_champs = 0
-    all_games_list[sport_id].forEach(game=>{
-        /* console.log(`Home: ${game.home.name}, Away: ${game.away.name}`)
-        console.log(game.EOS_results.home.win.regular)
-        console.log(game.all_simulate_results.home)
-        console.log(game.EOS_results.home.loss.regular)
-        console.log(game.last_result.home) */
-        game.calculateRawImpact()
-        //console.log(game.raw_impact['home'])
-        game_projections.push({team_id: game.home.team_id, global_game_id: game.global_game_id, win_percentage: game.home_win_percentage, impact: game.hard_impact})
-        game_projections.push({team_id: game.away.team_id, global_game_id: game.global_game_id, win_percentage: game.away_win_percentage, impact: game.hard_impact})
-    })
+    let game_projections = simulateHelpers.createImpactArray(all_games_list, sport_id)
     /* return db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', game_projections)
     .then(()=>{
         console.log(sport_teams[0])
@@ -166,7 +154,7 @@ const simulateCBB = (all_games_list, teams, simulations = 10) => {
         let at_large = non_conf_champs.slice(0,32)
         let last_four = non_conf_champs.slice(32,36)
         let last_four_conference_champions = []
-        for(x=0;x<4;x++){last_four_conference_champions.unshift(conference_champions.pop())}
+        for(y=0;y<4;y++){last_four_conference_champions.unshift(conference_champions.pop())}
         conference_champions.forEach(team => {team.playoff_wins[0]++})
         at_large.forEach(team=>{
             team.playoff_wins[0]++
@@ -194,16 +182,22 @@ const simulateCBB = (all_games_list, teams, simulations = 10) => {
             next_round.length = 0
         }
         march_madness[0].champions++
+        all_games_list['106'].forEach(game=>{
+            game.adjustImpact()
+        })
         cbb_teams.forEach(team =>{
             team.reset()
             team.cbb_reset()
         })
+        console.log('test')
     }
     console.log('here')
     cbb_teams.forEach(team => {
         team.averages(simulations)
     })
-    return cbb_teams
+    let game_projections = simulateHelpers.createImpactArray(all_games_list, '106')
+
+    return [cbb_teams, game_projections]
     }
 
 //function which simulates NBA, NFL, NHL, MLB - default set to 10 for now to modify later
@@ -247,6 +241,8 @@ const individualSportTeams = (all_teams, sport_id) => {
     let sport_teams = Object.keys(all_teams[sport_id]).map(team => {return all_teams[sport_id][team]})
     return sport_teams
 }
+
+
 
 async function testFunctionsWithPastGames()
 {
