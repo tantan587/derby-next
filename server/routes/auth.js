@@ -14,6 +14,14 @@ const ErrorText = require('../../common/models/ErrorText')
 router.post('/signup', authHelpers.loginRedirect, (req, res, next)  => {
   return authHelpers.createUser(req, res)
     .then((response) => {
+      const newUser = response[0]
+      return authHelpers
+        .sendSignupEmail(newUser)
+        .then(() => {
+          return response
+        })
+    })
+    .then((response) => {
     //need to check to make sure there is a reponse, else there was an error
       if (response)
       {

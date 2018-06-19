@@ -1,9 +1,12 @@
+const R = require('ramda')
 var bcrypt = require('bcrypt-nodejs')
+const mailer = require('mailgun-js')
 const knex = require('../../db/connection')
 const ErrorText = require('../../../common/models/ErrorText')
 const C = require('../../../common/constants')
 const v4 = require('uuid/v4')
 const generatePassword = require('password-generator')
+const dev = process.env.NODE_ENV !== 'production'
 
 function comparePass(userPassword, databasePassword) {
   return bcrypt.compareSync(userPassword, databasePassword)
@@ -186,12 +189,40 @@ const updatePassword = (req) => {
   })
 }
 
+const sendSignupEmail = (user) => {
+  const HOST = dev ? 'http://localhost:3000' : 'http://www.derby-fwl.com'
+  const LINK = `${HOST}/email-verification?i=${user.user_id}&c=${user.verification_code}`
+
+  return knex('users.email_auth')
+    .select('*')
+    .where('application', (dev ? 'forgotpassword' : 'forgotpassword-dev'))
+    .first()
+    .then(({api_key: apiKey, domain, email}) => {
+      const mailGun = mailer({apiKey, domain})
+      const mgConfig = {
+        from: email,
+        to: user.email,
+        subject: '[Derby] Verify Email',
+        html: `
+          <h1>Welcome to Derby, ${user.first_name}!</h1>
+          <p>Here's your verification code: <b>${user.verification_code}</b></p>
+          <br />
+          <p>
+            Or you can also click here: <br />
+            <a href="${LINK}">${LINK}</a>
+          </p>
+        `
+      }
+      return mailGun.messages().send(mgConfig)
+    })
+}
+
 const sendForgotPasswordEmail = (user, res) =>
 {
   return knex.withSchema('users').table('email_auth').where('application', 'forgotpassword')
     .then(result => 
     {
-      const mailgun = require('mailgun-js')({apiKey: result[0].api_key, domain: result[0].domain})
+      const mailgun = mailer({apiKey: result[0].api_key, domain: result[0].domain})
       const style = 'background-color:rgb(255, 255, 255); color:rgb(34, 34, 34); font-family:arial,sans-serif; font-size:12.8px'
       console.log(user.email)
       const data = {
@@ -248,5 +279,6 @@ module.exports = {
   getUserLeagues,
   updatePassword,
   createNewPassword,
+  sendSignupEmail,
   sendForgotPasswordEmail
 }
