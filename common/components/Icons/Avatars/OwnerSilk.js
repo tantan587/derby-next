@@ -8,7 +8,12 @@ const OwnerSilk = (ownerObj, style) => {
   let pattern = Patterns[ownerObj.avatar.pattern].silk
   if (pattern)
   {
-    return <Silk primary={primary} secondary={secondary} style={style} pattern={pattern}/>
+    return <Silk 
+      primary={primary}
+      secondary={secondary}
+      style={style} 
+      pattern={pattern} 
+      darkPrimaryColorInd={ownerObj.avatar.primary==='Black'}/>
   }
   else
   {
