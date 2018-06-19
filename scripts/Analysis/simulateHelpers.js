@@ -113,8 +113,14 @@ const normalizeImpact = (games) => {
     })
     let average = Math.mean(all_impacts)
     let standard_dev = Math.std(all_impacts)
+    let max = Math.max(all_impacts)
+    let min = Math.min(all_impacts)
+    let adj = (max-average)>(average-min) ? max-average: average-min
+    let new_standard_dev = 50/(adj/standard_dev)
+    let adjust_standard_dev = new_standard_dev/standard_dev
+    //should i create a sport impact link table, to add these impacts, and adjust over time, to keep consistent and more varied?
     games.forEach(game => {
-        game.actual_impact = game.hard_impact
+        game.actual_impact = ((game.hard_impact-average)*adjust_standard_dev)+50
     })
 
 }

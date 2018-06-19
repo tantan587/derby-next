@@ -26,6 +26,7 @@ class Game{
         this.home_win_percentage = 0
         this.away_win_percentage = 0
         this.hard_impact = 0
+        this.actual_impact = 0
         
     }
     

@@ -49,8 +49,10 @@ class Team {
         this.cbb_rpi_rank = 0
         this.cbb_all_teams_played = []
         this.cbb_teams_played = {home_wins: [], away_wins: [], home_losses: [], away_losses: [], neutral_wins: [], neutral_losses: []}
-        //this is for creating random schedules
+        //below for random schedule generator
         this.games_scheduled = 0
+        this.home_games_scheduled = 0
+        this.away_games_scheduled = 0
     }
     
     addInitialRpiWL(wins,losses){
