@@ -14,7 +14,44 @@ const getTeams = async(knex, sportId) => {
         .where('sport_id', sportId)
 }
 
-const randomSchedule = async (knex) => {
+const randomNBASchedule = async (knex) => {
+    let teams = await getTeams(knex, '101')
+    //schedule contains home team id, away team id, sport id, game id
+    let team_list = teams.map(team => {
+        return new Team(team.name, team.sport_id, 0, 0, 0, 0, team.division, team.conference_id, team.team_id)
+    })
+    //console.log(team_list)
+    let schedule = []
+    let x = 0
+    let divisions = [['Atlantic', '10101'], ['Central', '10101'], ['Southeast', '10101'],['Northwest','10102'],['Pacific','10102'],['Southwest','10102']]
+    let teams_in_divisions = []
+    //divide teams into an array by div/conference
+    divisions.forEach(division =>{
+        let div = team_list.filter(team => (team.conference===division[1] && team.division === division[0]))
+            teams_in_divisions.push(div)
+        })
+    
+    let western_conference = team_list.filter(team => team.conference === '10102')
+    let eastern_conference = team_list.filter(team => team.conference === '10101')
+    //schedule intradivision games
+    scheduleIntradivision(teams_in_divisions, schedule, '101', 4)
+    
+    //schedule intraleague games
+    scheduleIntraLeague(teams_in_divisions, schedule, '101', [4,3])
+
+    //schedule interleague games
+    eastern_conference.forEach(team => {
+        western_conference.forEach(opponent =>{
+            addToSchedule(schedule, '101', 2, team, opponent)
+        })
+    })
+    
+    randomizeSchedule(schedule)
+
+    return schedule
+    }
+
+const randomBaseballSchedule = async (knex) => {
     let teams = await getTeams(knex, '103')
     //schedule contains home team id, away team id, sport id, game id
     let team_list = teams.map(team => {
@@ -35,60 +72,11 @@ const randomSchedule = async (knex) => {
         })
     })
     //schedule intradivision games
-    teams_in_divisions.forEach(div =>{
-        teams_for_sched = div.slice(0)
-        x=0
-        div.forEach(team => {
-            teams_for_sched.shift()
-            if(teams_for_sched.length !== 0){
-                teams_for_sched.forEach(opponent => {
-                    let teams = x%2 === 0 ? [team, opponent]: [opponent, team]
-                    addToSchedule(schedule, '103', 19, teams[0], teams[1])
-                    x++
-                    })
-                }
-            })
-        })
+    scheduleIntradivision(teams_in_divisions, schedule, '103', 19)
     
     //schedule intraleague games
-    teams_in_divisions[0].forEach(team =>{
-        x = 0
-        teams_in_divisions[1].forEach(opponent => {
-            intraleagueGames(teams_in_divisions[0], teams_in_divisions[1], opponent, team, x, schedule)
-            x++
-        })
-        x=1
-        teams_in_divisions[2].forEach(opponent => {
-            intraleagueGames(teams_in_divisions[0], teams_in_divisions[2], opponent, team, x, schedule)
-            x++
-        })
-    })
-    teams_in_divisions[1].forEach(team=>{
-        x=0
-        teams_in_divisions[2].forEach(opponent=>{
-            intraleagueGames(teams_in_divisions[1],teams_in_divisions[2], opponent, team, x, schedule)
-            x++
-        })
-    })
-    teams_in_divisions[3].forEach(team =>{
-        x = 0
-        teams_in_divisions[4].forEach(opponent => {
-            intraleagueGames(teams_in_divisions[3], teams_in_divisions[4], opponent, team, x, schedule)
-            x++
-        })
-        x=1
-        teams_in_divisions[5].forEach(opponent => {
-            intraleagueGames(teams_in_divisions[3], teams_in_divisions[5], opponent, team, x, schedule)
-            x++
-        })
-    })
-    teams_in_divisions[4].forEach(team=>{
-        x=0
-        teams_in_divisions[5].forEach(opponent=>{
-            intraleagueGames(teams_in_divisions[4],teams_in_divisions[5], opponent, team, x, schedule)
-            x++
-        })
-    })
+    scheduleIntraLeague(teams_in_divisions, schedule, '103', [7,6])
+
     //schedule interleague games - for 2019, ALEast vs. NLWest, ALWest vs. NLCentral, ALCentral vs. NLEast
     interLeagueSchedule(teams_in_divisions[0], teams_in_divisions[5], schedule)
     interLeagueSchedule(teams_in_divisions[2], teams_in_divisions[4], schedule)
@@ -106,9 +94,10 @@ const randomSchedule = async (knex) => {
     team_list.forEach(team => {
         console.log(team.name,team.home_games_scheduled)
     })
-    process.exit()
-
     
+    randomizeSchedule(schedule);
+
+    return schedule
 }
 
 const addToSchedule = (schedule_array, sport_id, amount_of_games, team_1, team_2) =>{
@@ -133,7 +122,7 @@ const addToSchedule = (schedule_array, sport_id, amount_of_games, team_1, team_2
     team_2.home_games_scheduled += away_games 
 }
 
-const createSeven = (team_index) => {
+const createArrayOfGameAmountOptions = (team_index) => {
     let second = team_index > 2 ? team_index - 3 : team_index + 2;
     let third = team_index === 0 ? 4 : team_index - 1;
     let seven = [team_index, second, third];
@@ -153,13 +142,32 @@ const interLeagueSchedule = (division_1, division_2, schedule, x=0) => {
     })
 }
 
-function intraleagueGames(division_1, division_2, opponent, team, x, schedule) {
+const scheduleIntradivision = (teams_in_divisions, schedule, sport_id, games) => {
+    let x = 0
+    let teams_for_sched = []
+    teams_in_divisions.forEach(div => {
+        teams_for_sched = div.slice(0)
+        x = 0
+        div.forEach(team => {
+            teams_for_sched.shift()
+            if (teams_for_sched.length !== 0) {
+                teams_for_sched.forEach(opponent => {
+                    let teams = x % 2 === 0 ? [team, opponent] : [opponent, team]
+                    addToSchedule(schedule, sport_id, games, teams[0], teams[1])
+                    x++
+                })
+            }
+        })
+    })
+}
+
+const intraleagueGames = (division_1, division_2, opponent, team, x, schedule, games_array, sport_id) => {
     let opp_index = division_2.indexOf(opponent)
     let team_index = division_1.indexOf(team)
-    let seven = createSeven(team_index)
+    let game_amount_options = createArrayOfGameAmountOptions(team_index)
     let teams = x % 2 === 0 ? [team, opponent] : [opponent, team]
-    let games = seven.includes(opp_index) ? 7 : 6
-    addToSchedule(schedule, '103', games, teams[0], teams[1])
+    let games = game_amount_options.includes(opp_index) ? games_array[0] : games_array[1]
+    addToSchedule(schedule, sport_id, games, teams[0], teams[1])
 }
 
 const rivalries = [['103103', '103130'],
@@ -179,4 +187,50 @@ const rivalries = [['103103', '103130'],
 ['103109', '103128']
 ]
 
+const scheduleIntraLeague = (teams_in_divisions, schedule, sport_id, games_array) => {
+    let x = 0
+    teams_in_divisions[0].forEach(team => {
+        x = 0
+        teams_in_divisions[1].forEach(opponent => {
+            intraleagueGames(teams_in_divisions[0], teams_in_divisions[1], opponent, team, x, schedule, games_array, sport_id)
+            x++
+        })
+        x = 1
+        teams_in_divisions[2].forEach(opponent => {
+            intraleagueGames(teams_in_divisions[0], teams_in_divisions[2], opponent, team, x, schedule, games_array, sport_id)
+            x++
+        })
+    })
+    teams_in_divisions[1].forEach(team => {
+        x = 0
+        teams_in_divisions[2].forEach(opponent => {
+            intraleagueGames(teams_in_divisions[1], teams_in_divisions[2], opponent, team, x, schedule, games_array, sport_id)
+            x++
+        })
+    });
+    teams_in_divisions[3].forEach(team => {
+        x = 0
+        teams_in_divisions[4].forEach(opponent => {
+            intraleagueGames(teams_in_divisions[3], teams_in_divisions[4], opponent, team, x, schedule, games_array, sport_id)
+            x++
+        })
+        x = 1
+        teams_in_divisions[5].forEach(opponent => {
+            intraleagueGames(teams_in_divisions[3], teams_in_divisions[5], opponent, team, x, schedule, games_array, sport_id)
+            x++
+        })
+    })
+    teams_in_divisions[4].forEach(team => {
+        x = 0
+        teams_in_divisions[5].forEach(opponent => {
+            intraleagueGames(teams_in_divisions[4], teams_in_divisions[5], opponent, team, x, schedule, games_array, sport_id)
+            x++
+        })
+    })
+}
+
 randomSchedule(knex)
+
+const randomizeSchedule = (schedule) => {
+    schedule.sort(function (a, b) { return 0.5 - Math.random()})
+}
