@@ -189,20 +189,37 @@ const updateOneRowTeamPoints = (league_id,team_id, column, value ) =>
       //console.log(column_link_val + " updated!")
     })
 }
+const getPointsStructure = async (knex, scoring_type = 1) => {
+  return knex
+    .withSchema('fantasy')
+    .table('scoring')
+    .where('scoring_type_id', scoring_type)
+    .then((points)=>{
+      let point_map = {}
+      points.forEach(structure => {
+        points_map[strucure.sport_id] = {...structure}
+      })
+      return point_map
+    })
+  }
 
-const updateTeamPoints = (league_id) =>
+
+
+const updateTeamPoints = (league_id, scoring_type_id = 1) =>
 {
   return getStandingData()
     .then((data) =>
     {
-      let points = [
+      //somewhere, this needs to check to be sure the league scoring type is 1 and input it here
+      let points = await getPointsStructure(knex, scoring_type_id)
+     /*  let points = [
         {sport_id: 101, win:3, tie:0},
         {sport_id: 102, win:15, tie:0},
         {sport_id: 103, win:2, tie:0},
         {sport_id: 104, win:3.5, tie:1.75},
         {sport_id: 105, win:16.75, tie:0},
         {sport_id: 106, win:7, tie:0},
-        {sport_id: 107, win:6.75, tie:2.25}]
+        {sport_id: 107, win:6.75, tie:2.25}] */
 
 
       let str = league_id
@@ -216,9 +233,25 @@ const updateTeamPoints = (league_id) =>
           {
             const teamPoints = result.rows.map(fteam => {
               const team = data[fteam.team_id]
-              const league = points.filter(league => league.sport_id == fteam.sport_id)[0]
-              fteam.reg_points = league.win * team.wins + league.tie * team.ties
-              fteam.bonus_points = 0
+              //const league = points.filter(league => league.sport_id == fteam.sport_id)[0]
+              let sport_id = fteam.sport_id
+              if(sport_id === '103'||'104'){
+                let milestone_parameter = sport_id === '103' ? team.wins : team.wins+team.ties/2
+                let milestone_points = points[sport_id].regular_season.milestone_points
+                let bonus_win = milestone_parameter < points[sport_id].regular_season.milestone_1 ? 0 :
+                milestone_parameter < points[sport_id].regular_season.milestone_2 ? milestone_points :
+                milestone_parameter < points[sport_id].regular_season.milestone_3 ? milestone_points*2 : milestone_points*3
+              }else{
+                let bonus_win = 0
+              }
+              let bonus_points = team.playoff.result === 'appearance' ? points[sport_id].bonus.appearance : 
+                                  team.playoff.result === 'finalist' ? points[sport_id].bonus.finalist + points[sport_id].bonus.appearance :
+                                  team.playoff.result === 'championship' ? points[sport_id].bonus.championship + points[sport_id].bonus.finalist + points[sport_id].bonus.appearance : 0
+              fteam.reg_points = points[sport_id].regular_season.wins * team.wins + points[sport_id].regular_season.tie * team.ties
+              fteam.playoff_points = points[sport_id].playoffs.wins * team.playoff_wins
+              //below depends on how we format bowl wins
+              sport_id === '105' ? fteam.playoff_points += (points[sport_id].playoffs.bowl_win * team.playoff.bowl_win) : 0
+              fteam.bonus_points = bonus_win + bonus_points
               return fteam})
             updateTeamPointsTable(teamPoints)
               .then((result) =>
