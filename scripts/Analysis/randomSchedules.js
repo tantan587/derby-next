@@ -1,6 +1,11 @@
 const knex = require('../../server/db/connection')
 const Team = require('./TeamClass.js')
+const math = require('mathjs')
 
+//note: currently, home and away games are not perfect, and are thrown off by a little
+//range for amount of home games is between 79-83
+//leaving it for now: don't want to work on finding error
+//second note: this is currently only set up for baseball.
 
 const getTeams = async(knex, sportId) => {
     return knex
@@ -31,7 +36,7 @@ const randomSchedule = async (knex) => {
     })
     //schedule intradivision games
     teams_in_divisions.forEach(div =>{
-        teams_for_sched = div
+        teams_for_sched = div.slice(0)
         x=0
         div.forEach(team => {
             teams_for_sched.shift()
@@ -68,19 +73,19 @@ const randomSchedule = async (knex) => {
     teams_in_divisions[3].forEach(team =>{
         x = 0
         teams_in_divisions[4].forEach(opponent => {
-            intraleagueGames(teams_in_divisions[0], teams_in_divisions[1], opponent, team, x, schedule)
+            intraleagueGames(teams_in_divisions[3], teams_in_divisions[4], opponent, team, x, schedule)
             x++
         })
         x=1
         teams_in_divisions[5].forEach(opponent => {
-            intraleagueGames(teams_in_divisions[0], teams_in_divisions[2], opponent, team, x, schedule)
+            intraleagueGames(teams_in_divisions[3], teams_in_divisions[5], opponent, team, x, schedule)
             x++
         })
     })
     teams_in_divisions[4].forEach(team=>{
         x=0
         teams_in_divisions[5].forEach(opponent=>{
-            intraleagueGames(teams_in_divisions[1],teams_in_divisions[2], opponent, team, x, schedule)
+            intraleagueGames(teams_in_divisions[4],teams_in_divisions[5], opponent, team, x, schedule)
             x++
         })
     })
@@ -90,17 +95,17 @@ const randomSchedule = async (knex) => {
     interLeagueSchedule(teams_in_divisions[1], teams_in_divisions[3], schedule)
     //schedule rivalryy games
     rivalries.forEach(team_set =>{
+        console.log(team_set)
         let team_1 = team_list.find(team => team.team_id===team_set[0])
         //console.log(team_1)
         let team_2 = team_list.find(team => team.team_id===team_set[1])
         //console.log(team_2)
-        //addToSchedule(schedule, '103', 4, team_1, team_2)
+        addToSchedule(schedule, '103', 4, team_1, team_2)
     })
 
     team_list.forEach(team => {
-        console.log(team.name,team.games_scheduled)
+        console.log(team.name,team.home_games_scheduled)
     })
-    console.log(schedule)
     process.exit()
 
     
@@ -108,15 +113,25 @@ const randomSchedule = async (knex) => {
 
 const addToSchedule = (schedule_array, sport_id, amount_of_games, team_1, team_2) =>{
     for(let a = 0; a<amount_of_games; a++){
-        let teams = a%2 === 0 ? [team_1, team_2]:[team_1, team_2]
+        let teams = a%2 === 0 ? [team_1, team_2]:[team_2, team_1]
         schedule_array.push({home_team_id: teams[0].team_id, away_team_id: teams[1].team_id, sport_id: sport_id})
     }
     team_1.games_scheduled += amount_of_games
     team_2.games_scheduled += amount_of_games
+    let home_games = 0
+    let away_games = 0
+    amount_of_games%2 === 0 ? (
+        home_games = amount_of_games/2,
+        away_games = amount_of_games/2
+    ) : (
+        home_games = Math.ceil(amount_of_games/2),
+        away_games = Math.floor(amount_of_games/2)
+    )
+    team_1.home_games_scheduled += home_games
+    team_2.away_games_scheduled += home_games
+    team_1.away_games_scheduled += away_games
+    team_2.home_games_scheduled += away_games 
 }
-
-
-
 
 const createSeven = (team_index) => {
     let second = team_index > 2 ? team_index - 3 : team_index + 2;
@@ -147,21 +162,21 @@ function intraleagueGames(division_1, division_2, opponent, team, x, schedule) {
     addToSchedule(schedule, '103', games, teams[0], teams[1])
 }
 
-const rivalries = [[103103, 103130],
-[103104, 103102],
-[103119, 103118],
-[103115, 103127],
-[103129, 130121],
-[103105, 103106],
-[103107, 103108],
-[103110, 103122],
-[103112, 103126],
-[103116, 103117],
-[103111, 103101],
-[103114, 103113],
-[103124, 103120],
-[103123, 103125],
-[103109, 103128]
+const rivalries = [['103103', '103130'],
+['103104', '103102'],
+['103119', '103118'],
+['103115', '103127'],
+['103129', '103121'],
+['103105', '103106'],
+['103107', '103108'],
+['103110', '103122'],
+['103112', '103126'],
+['103116', '103117'],
+['103111', '103101'],
+['103114', '103113'],
+['103124', '103120'],
+['103123', '103125'],
+['103109', '103128']
 ]
 
 randomSchedule(knex)

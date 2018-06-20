@@ -1,5 +1,6 @@
 const leagues = require('./leagues.js')
-//const league = require('./leagues.js')
+//const league = require('./leagues.js')// load math.js
+const math = require('mathjs')
 
 //Function to simulate an entire series - round is what round of the playoffs this is (1,2,3, etc.)
 const Series = (home, away, games, sport_id, round, neutral=false) => {
@@ -111,27 +112,30 @@ const normalizeImpact = (games) => {
     let all_impacts = games.map(game => {
         return game.hard_impact
     })
-    let average = Math.mean(all_impacts)
-    let standard_dev = Math.std(all_impacts)
-    let max = Math.max(all_impacts)
-    let min = Math.min(all_impacts)
+    let average = math.mean(all_impacts)
+    let standard_dev = math.std(all_impacts)
+    let max = math.max(all_impacts)
+    let min = math.min(all_impacts)
     let adj = (max-average)>(average-min) ? max-average: average-min
     let new_standard_dev = 50/(adj/standard_dev)
     let adjust_standard_dev = new_standard_dev/standard_dev
     //should i create a sport impact link table, to add these impacts, and adjust over time, to keep consistent and more varied?
     games.forEach(game => {
-        game.actual_impact = ((game.hard_impact-average)*adjust_standard_dev)+50
+        game.adjusted_impact = ((game.hard_impact-average)*adjust_standard_dev)+50
     })
-
 }
 
 const createImpactArray = (all_games_list, sport_id) => {
     let game_projections = []
     all_games_list[sport_id].forEach(game => {
         game.calculateRawImpact()
-        //console.log(game.raw_impact['home'])
-        game_projections.push({ team_id: game.home.team_id, global_game_id: game.global_game_id, win_percentage: game.home_win_percentage, impact: game.hard_impact });
-        game_projections.push({ team_id: game.away.team_id, global_game_id: game.global_game_id, win_percentage: game.away_win_percentage, impact: game.hard_impact });
+    })
+    normalizeImpact(all_games_list[sport_id])
+        
+    //console.log(game.raw_impact['home'])
+    all_games_list[sport_id].forEach(game => {
+        game_projections.push({ team_id: game.home.team_id, global_game_id: game.global_game_id, win_percentage: game.home_win_percentage, impact: game.adjusted_impact })
+        game_projections.push({ team_id: game.away.team_id, global_game_id: game.global_game_id, win_percentage: game.away_win_percentage, impact: game.adjusted_impact})
     })
     return game_projections
 }

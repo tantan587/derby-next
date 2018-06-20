@@ -26,7 +26,7 @@ class Game{
         this.home_win_percentage = 0
         this.away_win_percentage = 0
         this.hard_impact = 0
-        this.actual_impact = 0
+        this.adjusted_impact = 0
         
     }
     
@@ -216,18 +216,23 @@ class Game{
     }
 
     calculateRawPointsImpactByTeam(team, result){
+        let sport_id = team.sport_id
         let regular_wins = this.EOS_results[team][result].regular.wins
-        let bonus_win = regular_wins < points.baseball.bonus_1 ? 0 :
-            regular_wins < points.baseball.bonus_2 ? 15 :
-            regular_wins < points.baseball.bonus_3 ? 30 : 45
+        let milestone_points = points[sport_id].regular_seasons.milestone_points
+        let bonus_win = sport_id === ('103'||'104') ? regular_wins < points[sport_id].regular_season.milestone_1 ? 0 :
+            regular_wins < points[sport_id].regular_season.milestone_2 ? milestone_points :
+            regular_wins < points[sport_id].regular_season.milestone_3 ? milestone_points*2 : milestone_points*3 :0
         let win_points = (
-            this.EOS_results[team][result].regular.wins * points.baseball.win + 
-            this.EOS_results[team][result].playoffs.playoff_appearance * points.bonus.playoff_appearance +
-            this.EOS_results[team][result].playoffs.finalist * points.bonus.finalist +
-            this.EOS_results[team][result].playoffs.champions * points.bonus.champions +
-            this.EOS_results[team][result].playoffs.wins * points.baseball.playoff_win +
+            this.EOS_results[team][result].regular.wins * points[sport_id].regular_season.win + 
+            this.EOS_results[team][result].playoffs.playoff_appearance * points[sport_id].bonus.appearance +
+            this.EOS_results[team][result].playoffs.finalist * points[sport_id].bonus.finalist +
+            this.EOS_results[team][result].playoffs.champions * points[sport_id].bonus.champions +
+            this.EOS_results[team][result].playoffs.wins * points[sport_id].playoffs.win +
             bonus_win
         )
+        if(sport_id === ('104'||'107')){
+            bonus_win += this.EOS_results[team][result].regular.ties * points[sport_id].regular_season.tie
+        }
         return win_points
     }
 }

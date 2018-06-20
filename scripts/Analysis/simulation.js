@@ -13,6 +13,7 @@ const db_helpers = require('../helpers.js').data
 async function simulate(knex)
 {
     console.log('im in')
+    let simulations = 1000
     let all_teams = await dbSimulateHelpers.createTeams(knex)
     var today = new Date()
     //this is the calculation of day count normally:
@@ -23,22 +24,22 @@ async function simulate(knex)
     rpiHelpers.addRpiToTeamClass(knex,all_teams) */
     const games = await dbSimulateHelpers.createGamesArray(knex, all_teams,day_count)
     //.then(games => {
-    const mlb_teams = []//simulateProfessionalLeague(games, all_teams, '103')
+    const mlb_teams = simulateProfessionalLeague(games, all_teams, '103', simulations)
     //code below to be added in once all simulations tested, ready to go
     const nba_teams = []//simulateProfessionalLeague(games, all_teams, '101')
     const nfl_teams = []//simulateProfessionalLeague(games, all_teams, '102')
     const nhl_teams = []//simulateProfessionalLeague(games, all_teams, '104')
     const cfb_teams = [] //simulateCFB(games, all_teams)
-    const cbb_teams = simulateCBB(games, all_teams)
+    const cbb_teams = [] //simulateCBB(games, all_teams)
     const epl_teams = [] //simulateEPL(games, all_teams)
     //projection team list needs to be the first value of array
-    const projection_team_list = cbb_teams[0] // [...nba_teams, ...nfl_teams, ...mlb_teams[0], ...nhl_teams, ...cbb_teams, ...cfb_teams, ...epl_teams]
+    const projection_team_list = [...nba_teams, ...nfl_teams, ...mlb_teams[0], ...nhl_teams, ...cbb_teams, ...cfb_teams, ...epl_teams]
     const projections = simulateHelpers.updateProjections(projection_team_list, day_count)
     //console.log(projections[0])
     return db_helpers.insertIntoTable(knex,'analysis', 'record_projections', projections)
     .then(()=>{
         //the insert for game_projections should be the second value of each array
-        return db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', cbb_teams[1])
+        return db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', mlb_teams[1])
         .then(()=> {
             console.log('done')
             process.exit()
@@ -90,6 +91,7 @@ const simulateProfessionalLeague = (all_games_list, teams, sport_id, simulations
     }
 
 //function to simulate CFB - also figures out most likely playoff teams using formula
+//this needs to include something to simulate likely bowl game results, eventually
 const simulateCFB = (all_games_list, teams, simulations = 10) => {
     const cfb_teams = individualSportTeams(teams, '105')
     for(var x=0; x<simulations; x++){
