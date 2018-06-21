@@ -92,11 +92,12 @@ const randomBaseballSchedule = async (knex) => {
     })
 
     team_list.forEach(team => {
-        console.log(team.name,team.home_games_scheduled)
+        //console.log(team.name,team.home_games_scheduled)
     })
     
     randomizeSchedule(schedule);
 
+    console.log(schedule)
     return schedule
 }
 
@@ -229,8 +230,10 @@ const scheduleIntraLeague = (teams_in_divisions, schedule, sport_id, games_array
     })
 }
 
-randomSchedule(knex)
+
 
 const randomizeSchedule = (schedule) => {
     schedule.sort(function (a, b) { return 0.5 - Math.random()})
 }
+
+randomBaseballSchedule(knex)

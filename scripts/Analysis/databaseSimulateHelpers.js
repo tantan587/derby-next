@@ -87,4 +87,17 @@ const createPastGamesArrayWithScores = async (knex, all_teams, day) => {
     return all_games
     })}
 
+const getPointsStructure = async (knex, scoring_type = 1) => {
+    return knex
+        .withSchema('fantasy')
+        .table('scoring')
+        .where('scoring_type_id', scoring_type)
+        .then((points)=>{
+        let point_map = {}
+        points.forEach(structure => {
+            points_map[strucure.sport_id] = {...structure}
+        })
+        return point_map
+        })
+    }
 module.exports = {createGamesArray, createPastGamesArray, createTeams, createPastGamesArrayWithScores}

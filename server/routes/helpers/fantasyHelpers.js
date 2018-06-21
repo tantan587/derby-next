@@ -133,6 +133,7 @@ const updateTeamPointsTable = (newTeamPoints) =>
     })
 }
 
+//total points for each owner in the league - be sure its correctly called
 const updatePointsTable = (newPoints) =>
 {
   return knex
@@ -189,7 +190,7 @@ const updateOneRowTeamPoints = (league_id,team_id, column, value ) =>
       //console.log(column_link_val + " updated!")
     })
 }
-const getPointsStructure = async (knex, scoring_type = 1) => {
+const getPoints = async (knex, scoring_type = 1) => {
   return knex
     .withSchema('fantasy')
     .table('scoring')
@@ -211,7 +212,7 @@ const updateTeamPoints = (league_id, scoring_type_id = 1) =>
     .then((data) =>
     {
       //somewhere, this needs to check to be sure the league scoring type is 1 and input it here
-      let points = await getPointsStructure(knex, scoring_type_id)
+      //let points = await getPoints(knex, scoring_type_id)
      /*  let points = [
         {sport_id: 101, win:3, tie:0},
         {sport_id: 102, win:15, tie:0},
@@ -267,6 +268,7 @@ const updateTeamPoints = (league_id, scoring_type_id = 1) =>
     })
 }
 
+//runs for each league to run points
 const updateLeaguePoints = (league_id) =>
 {
   let str = league_id

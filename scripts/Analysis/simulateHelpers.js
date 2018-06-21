@@ -1,6 +1,7 @@
 const leagues = require('./leagues.js')
 //const league = require('./leagues.js')// load math.js
 const math = require('mathjs')
+const Points = require('./getPointsStructure.js')
 
 //Function to simulate an entire series - round is what round of the playoffs this is (1,2,3, etc.)
 const Series = (home, away, games, sport_id, round, neutral=false) => {
@@ -141,8 +142,75 @@ const createImpactArray = (all_games_list, sport_id) => {
 }
 
 
+const fantasyProjections = async (all_teams, knex, day) => {
+    let points = await Points.getPointsStructure(knex)
+    let array_for_copy = []
+    let array_of_all_teams = []
+    let total_point_structures = points.length
+    let data_for_insert = []
+    points.forEach(type => {
+        array_for_copy.push([])
+    })
+    //i should be dividing this up by conference and not just by league
+    let sport_ids = ['101', '102', '103', '104'] //['101', '102', '103', '104', '105', '106', '107']
+    sport_ids.forEach(sport => {
+        let sport_teams = Object.keys(all_teams[sport]).map(team => {return all_teams[sport][team]})
+        let x = 0
+        let points_array = array_for_copy.slice(0)
 
-const infoForGameProjections = (game) => {
-    
+        sport_teams.forEach(team => {
+            team.calculateFantasyPoints(points)
+            x = 0
+            team.fantasy_points_projected.forEach(point_total => {
+                points_array[x].push(point_total)
+            })
+        })
+        let averages = []
+        let last_drafted = []
+        points_array.forEach(arr => {
+            arr.sort(function(a,b){return b-a})
+            //normalize size of leagues for rankings
+            let size = 12
+            let roster_size_for_ranking = sport === ('106'||'105') ? size*3 : sport === '107' ? size : size*2
+            let drafted_teams = arr.slice(0, roster_size_for_ranking)
+            averages.push(math.mean(drafted_teams))
+            let standard_dev = math.std(drafted_teams)
+            last_drafted.push(arr[roster_size_for_ranking])
+        })
+        sport_teams.forEach(team => {
+            team.calculateAboveValuesForRanking(last_drafted, averages)
+        })
+        array_of_all_teams.push(...sport_teams)
+    })
+    let rank = 0
+    //below goes through each point structure, sorts each team by how far they are above average and last_drafted, and then resorts based upon rankings
+    //it then uses 
+    for(let index = 0; index < total_point_structures; index++){
+        array_of_all_teams.sort(function(a,b){return b.points_above_last_drafted[index]-a.points_above_last_drafted[index]})
+        rank = 0
+        array_of_all_teams.forEach(team => {
+            team.rank_above_last.push(rank)
+            rank++
+        })
+        array_of_all_teams.sort(function(a,b){return b.points_above_average[index]-a.points_above_average[index]})
+        rank = 0
+        array_of_all_teams.forEach(team => {
+            team.rank_above_average.push(rank)
+            rank++
+        })
+        array_of_all_teams.sort(function(a,b){return a.rank_above_last[index]+a.rank_above_average[index]-b.rank_above_last[index]-b.rank_above_average[index]})
+        rank = 1
+        array_of_all_teams.forEach(team => {
+            team.overall_ranking.push(rank)
+            let f_points = math.round(team.fantasy_points_projected[index], 2)
+            data_for_insert.push({
+                team_id: team.team_id, scoring_type_id: index+1, points: f_points, day_count: day, ranking: rank
+            })
+            rank++
+        })
+
+        return data_for_insert
+    }
 }
-module.exports = {Series, moreWins, simulateGame, updateProjections, simulateNHLGame, createImpactArray}
+
+module.exports = {Series, moreWins, simulateGame, updateProjections, simulateNHLGame, createImpactArray, fantasyProjections}

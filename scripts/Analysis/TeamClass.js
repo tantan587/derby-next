@@ -1,4 +1,5 @@
 //const leagues = require('./leagues.js')
+const Points = require('./getPointsStructure.js')
  
 class Team {
     constructor(name, sport_id, elo, wins, losses, ties, division, conference, team_id){
@@ -53,6 +54,14 @@ class Team {
         this.games_scheduled = 0
         this.home_games_scheduled = 0
         this.away_games_scheduled = 0
+        //below is for figuring out projections and rankings -
+        //each index of an array is equal to the fantasy scoring type -1
+        this.fantasy_points_projected = []
+        this.points_above_last_drafted = []
+        this.points_above_average = []
+        this.rank_above_last = []
+        this.rank_above_average = []
+        this.overall_ranking = []
     }
     
     addInitialRpiWL(wins,losses){
@@ -181,6 +190,42 @@ class Team {
         this.average_champions = (this.total_champions / sims)
         this.average_losses = (this.total_losses / sims)
         this.average_ties = (this.total_ties / sims)
+    }
+
+    calculateFantasyPoints(points){
+        points.forEach(point_type => {
+            let bonus_win = 0
+            let sport_points = point_type[this.sport_id]
+            if(this.sport_id === ('103'||'104')){
+                let milestone_parameter = this.sport_id === '103' ? this.wins : this.wins+this.ties/2
+                let milestone_points = sport_points.regular_season.milestone_points
+                //maybe this should not be so rigid - if you are close to points, projects you getting some of bonus. Fade out as season goes along
+                bonus_win = milestone_parameter < sport_points.regular_season.milestone_1 ? 0 :
+                milestone_parameter < sport_points.regular_season.milestone_2 ? milestone_points :
+                milestone_parameter < sport_points.regular_season.milestone_3 ? milestone_points*2 : milestone_points*3
+              }else{
+                bonus_win = 0
+              }
+
+            this.fantasy_points_projected.push(
+                this.average_wins * sport_points.regular_season.win +
+                this.average_ties * sport_points.regular_season.tie +
+                this.average_champions * sport_points.bonus.championship +
+                this.average_finalists * sport_points.bonus.finalist +
+                this.average_playoff_appearances * sport_points.bonus.appearance +
+                this.average_playoff_wins * sport_points.playoffs.win +
+                bonus_win
+            )
+        })
+
+    }
+
+    calculateAboveValuesForRanking(last_drafted, averages){
+        let total_scoring_types = averages.length
+        for(let index = 0; index<total_scoring_types; index++){
+            this.points_above_average.push(this.fantasy_points_projected[index]-averages[index])
+            this.points_above_last_drafted.push(this.fantasy_points_projected[index]-last_drafted[index]) 
+        }
     }
    
 }

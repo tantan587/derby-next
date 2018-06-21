@@ -172,8 +172,10 @@ class Game{
     calculateRawImpact(){
         this.adjustImpactWithAllSims()
         //console.log(this.EOS_results.home.win.regular)
-        this.calculateRawImpactTeam('home')
-        this.calculateRawImpactTeam('away')
+        //below is the old way, which would create an impact json to put in to the db. 
+        //Now we are using a number instead, which is the calculate raw points
+        // this.calculateRawImpactTeam('home')
+        // this.calculateRawImpactTeam('away')
         let points_home_win = this.calculateRawPointsImpactByTeam('home', 'win')
         let points_home_loss = this.calculateRawPointsImpactByTeam('home', 'loss')
         let points_away_win = this.calculateRawPointsImpactByTeam('away', 'win')
@@ -216,9 +218,9 @@ class Game{
     }
 
     calculateRawPointsImpactByTeam(team, result){
-        let sport_id = team.sport_id
+        let sport_id = this.sport_id
         let regular_wins = this.EOS_results[team][result].regular.wins
-        let milestone_points = points[sport_id].regular_seasons.milestone_points
+        let milestone_points = points[sport_id].regular_season.milestone_points
         let bonus_win = sport_id === ('103'||'104') ? regular_wins < points[sport_id].regular_season.milestone_1 ? 0 :
             regular_wins < points[sport_id].regular_season.milestone_2 ? milestone_points :
             regular_wins < points[sport_id].regular_season.milestone_3 ? milestone_points*2 : milestone_points*3 :0
