@@ -47,8 +47,7 @@ const simulateGame = (home, away, sport_id, neutral = false, playoff_game = fals
     away.adjustEloWins(Math.abs(1-home_win_value), 1 - home_win_percentage, leagues[sport_id].elo_adjust, playoff_game)
     let results = home_win_value === 1 ?[home, away]:[away,home]
     return results
-    
-    //return [home_win_value, Math.abs(1-home_win_value)]
+
 }
 
 const simulateNHLGame = (home, away, neutral = false) => 
@@ -64,12 +63,22 @@ const simulateNHLGame = (home, away, neutral = false) =>
     //ELO assumes an overtime loss and overtime win is the same as a tie. 
     let home_win_value_ELO = random_number < home_win_no_OT ? 1 : random_number < away_win_in_OT ? .5 : 0
     //this calculates the values for standings, giving .5 for OT loss
-    let home_win_value_standings = home_win_value_ELO != .5 ? home_win_value_ELO : random_number < home_win_percentage ? 1:.5
+    let home_win_value_standings = 0
+    let away_win_value_standings = 0
+    random_number < home_win_no_OT ? (
+        home_win_value_standings = 1
+    ) : random_number < home_win_percentage ? (
+        home_win_value_standings = 1, away_win_value_standings = .5
+    ) : random_number < away_win_in_OT ? (
+        home_win_value_standings = .5, away_win_value_standings = 1
+    ) : away_win_value_standings = 1
+    //let home_win_value_standings = home_win_value_ELO !== .5 ? home_win_value_ELO : random_number < home_win_percentage ? 1:.5
+    //let away_win_value_standings = home_win_value_ELO != .5 ? 1-home_win_value_ELO : random_number < home_win_percentage ? .5: 1
     home.adjustEloWins(home_win_value_ELO, home_win_percentage, leagues['107'].elo_adjust)
     away.adjustEloWins(Math.abs(1-home_win_value_ELO), 1 - home_win_percentage, leagues['107'].elo_adjust)
-    return home_win_value_ELO
+    return [home_win_value_standings, away_win_value_standings]
     
-    //return [home_win_value, Math.abs(1-home_win_value)]
+
 }
 
 const simulateEPLGame = (home, away) => 
@@ -113,6 +122,7 @@ const normalizeImpact = (games) => {
     let all_impacts = games.map(game => {
         return game.hard_impact
     })
+    console.log(all_impacts)
     let average = math.mean(all_impacts)
     let standard_dev = math.std(all_impacts)
     let max = math.max(all_impacts)
@@ -126,7 +136,7 @@ const normalizeImpact = (games) => {
     })
 }
 
-const createImpactArray = (all_games_list, sport_id, knex, points) => {
+const createImpactArray = (all_games_list, sport_id, points) => {
     let game_projections = []
     all_games_list[sport_id].forEach(game => {
         game.calculateRawImpact(points)
@@ -142,7 +152,7 @@ const createImpactArray = (all_games_list, sport_id, knex, points) => {
 }
 
 
-const fantasyProjections = (all_teams, knex, day, points) => {
+const fantasyProjections = (all_teams, day, points) => {
     let array_for_copy = []
     let array_of_all_teams = []
     let total_point_structures = points.length
@@ -151,7 +161,7 @@ const fantasyProjections = (all_teams, knex, day, points) => {
         array_for_copy.push([])
     })
     //i should be dividing this up by conference and not just by league
-    let sport_ids = ['101', '102', '103', '104'] //['101', '102', '103', '104', '105', '106', '107']
+    let sport_ids = ['101', '102', '103', '104', '106'] //['101', '102', '103', '104', '105', '106', '107']
     sport_ids.forEach(sport => {
         let sport_teams = Object.keys(all_teams[sport]).map(team => {return all_teams[sport][team]})
         let x = 0

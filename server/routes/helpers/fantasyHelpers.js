@@ -236,7 +236,7 @@ const updateTeamPoints = (league_id, scoring_type_id = 1) =>
               const team = data[fteam.team_id]
               //const league = points.filter(league => league.sport_id == fteam.sport_id)[0]
               let sport_id = fteam.sport_id
-              if(sport_id === '103'||'104'){
+              if(sport_id === ('103'||'104')){
                 let milestone_parameter = sport_id === '103' ? team.wins : team.wins+team.ties/2
                 let milestone_points = points[sport_id].regular_season.milestone_points
                 let bonus_win = milestone_parameter < points[sport_id].regular_season.milestone_1 ? 0 :

@@ -74,7 +74,7 @@ class Game{
         }
 
     play_NHL_game(){
-        //need to add adjustment in this function for playoffs, neutral games
+        //the difference is this has ties. Instead of returning home/away, this returns home value and away value for standings
         let results = simulateHelpers.simulateNHLGame(this.home, this.away)
         if(results[0]===1){
             this.all_simulate_results.home.wins ++
@@ -83,7 +83,7 @@ class Game{
             this.all_simulate_results.home.ties ++
             this.last_result.home.ties++
         }else{
-            this.all_simulate_results.losses++
+            this.all_simulate_results.home.losses++
             this.last_result.home.losses++
         }
 
@@ -154,8 +154,12 @@ class Game{
         this.adjustImpactPartial('home', 'loss',total_home_losses)
         this.adjustImpactPartial('away', 'win', total_away_wins)
         this.adjustImpactPartial('away', 'loss', total_away_losses)
-        this.home_win_percentage = Math.round(total_home_wins/(total_home_losses+total_home_wins)*100)/100
-        this.away_win_percentage = Math.round(total_away_wins/(total_away_wins+total_away_losses)*100)/100
+        this.home_win_percentage = Math.round(total_home_wins/(total_home_losses+total_home_wins + this.all_simulate_results.home.ties)*100)/100
+        this.away_win_percentage = Math.round(total_away_wins/(total_away_wins+total_away_losses + this.all_simulate_results.away.ties)*100)/100
+        if(this.away_win_percentage == 1){
+            console.log(this)
+            process.exit()
+        }
     }
 
     adjustImpactPartial(team, result, divisor) {
@@ -188,55 +192,25 @@ class Game{
         this.hard_impact = Math.round(unround_impact*100)/100
     }
 
-    //this is not being used anymore
-    calculateRawImpactTeam(team){
-        //these two below create two new arrays. One is an array of the difference between wins and losses for regular season: the other is the difference between wins and losses for postseason.
-        let regular_impact = Object.keys(this.EOS_results[team]['win'].regular).map(result => 
-            this.EOS_results[team]['win'].regular[result] - this.EOS_results[team]['loss'].regular[result]
-        )
-        let playoff_impact = Object.keys(this.EOS_results[team]['win'].playoffs).map(result => 
-            this.EOS_results[team]['win'].playoffs[result] - this.EOS_results[team]['loss'].playoffs[result]
-        )
-        let raw_impact_array = [...regular_impact, ...playoff_impact]
-        let impact_keys = ["win", "losses", "tie", "playoff_wins", "playoff_losses", "playoff_appearences", "finalists", "champions"]
-        let index = 0
-        let impact_for_JSON = {
-            win: raw_impact_array[0],
-            loss: raw_impact_array[1],
-            tie: raw_impact_array[2],
-            playoff_wins: raw_impact_array[3],
-            playoff_losses: raw_impact_array[4],
-            playoff_appearences: raw_impact_array[5],
-            finalist: raw_impact_array[6],
-            champions: raw_impact_array[7]
-        } 
-        this.raw_impact[team] = JSON.stringify(impact_for_JSON)
-        //console.log(this.raw_impact[team])
-        //JSON.stringify(this.raw_impact_array)
-        //afterwards, above should be adjusted based upon point structure to get raw impact. For now, using a base calculation to approximate - may build in individual point values later, or just keep the two arrays, and have it adjusted when uploaded for each league
-        //think it is better as concatenated arrays, and then to adjust for point values later
-        //if Yoni thinks, will put it into an object from array
-    }
-
     calculateRawPointsImpactByTeam(team, result, pointsObject){
         let sport_id = this.sport_id
         let points = pointsObject[0]
         let regular_wins = this.EOS_results[team][result].regular.wins
+        let milestone_wins = sport_id === '104' ? regular_wins + (this.EOS_results[team][result].regular.ties/2) : regular_wins
         let milestone_points = points[sport_id].regular_season.milestone_points
-        let bonus_win = sport_id === ('103'||'104') ? regular_wins < points[sport_id].regular_season.milestone_1 ? 0 :
-            regular_wins < points[sport_id].regular_season.milestone_2 ? milestone_points :
-            regular_wins < points[sport_id].regular_season.milestone_3 ? milestone_points*2 : milestone_points*3 : 0
+        let bonus_win = sport_id === ('103'||'104') ? milestone_wins < points[sport_id].regular_season.milestone_1 ? 0 :
+            milestone_wins < points[sport_id].regular_season.milestone_2 ? milestone_points :
+            milestone_wins < points[sport_id].regular_season.milestone_3 ? milestone_points*2 : milestone_points*3 : 0
         let win_points = (
             this.EOS_results[team][result].regular.wins * points[sport_id].regular_season.win + 
             this.EOS_results[team][result].playoffs.playoff_appearance * points[sport_id].bonus.appearance +
             this.EOS_results[team][result].playoffs.finalist * points[sport_id].bonus.finalist +
             this.EOS_results[team][result].playoffs.champions * points[sport_id].bonus.championship +
             this.EOS_results[team][result].playoffs.wins * points[sport_id].playoffs.win +
+            this.EOS_results[team][result].regular.ties * points[sport_id].regular_season.tie +
             bonus_win
         )
-        if(sport_id === ('104'||'107')){
-            win_points += this.EOS_results[team][result].regular.ties * points[sport_id].regular_season.tie
-        }
+        
         return win_points
     }
 }

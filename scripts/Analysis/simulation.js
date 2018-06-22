@@ -26,19 +26,19 @@ async function simulate(knex)
     rpiHelpers.addRpiToTeamClass(knex,all_teams) */
     const games = await dbSimulateHelpers.createGamesArray(knex, all_teams,day_count)
     //.then(games => {
-    const mlb_teams = [[],[]] //await simulateProfessionalLeague(games, all_teams, '103', all_points, simulations)
+    const mlb_teams = [[],[]] //simulateProfessionalLeague(games, all_teams, '103', all_points, simulations)
     //code below to be added in once all simulations tested, ready to go
-    const nba_teams = await simulateProfessionalLeague(games, all_teams, '101', all_points, simulations)
-    const nfl_teams = [[],[]]//await simulateProfessionalLeague(games, all_teams, '102', all_points, simulations)
-    const nhl_teams = [[],[]] //await simulateProfessionalLeague(games, all_teams, '104', all_points, simulations)
+    const nba_teams = [[],[]] //simulateProfessionalLeague(games, all_teams, '101', all_points, simulations)
+    const nfl_teams = [[],[]] //simulateProfessionalLeague(games, all_teams, '102', all_points, simulations)
+    const nhl_teams = [[],[]] //simulateProfessionalLeague(games, all_teams, '104', all_points, simulations)
     const cfb_teams = [[],[]] //simulateCFB(games, all_teams)
-    const cbb_teams = [[],[]] //simulateCBB(games, all_teams)
+    const cbb_teams = simulateCBB(games, all_teams, all_points, simulations)
     const epl_teams = [[],[]] //simulateEPL(games, all_teams)
     //projection team list needs to be the first value of array
     const projection_team_list = [...nba_teams[0], ...nfl_teams[0], ...mlb_teams[0], ...nhl_teams[0], ...cbb_teams[0], ...cfb_teams[0], ...epl_teams[0]]
-    const game_projections = [...nba_teams[1], ...mlb_teams[1], ...nfl_teams[1], ...nhl_teams[1]]
+    const game_projections = [...nba_teams[1], ...mlb_teams[1], ...nfl_teams[1], ...nhl_teams[1], ...cbb_teams[1]]
     const projections = simulateHelpers.updateProjections(projection_team_list, day_count)
-    const fantasy_projections = simulateHelpers.fantasyProjections(all_teams, knex, day_count, all_points)
+    const fantasy_projections = simulateHelpers.fantasyProjections(all_teams, day_count, all_points)
     //console.log(fantasy_projections)
     //console.log(projections[0])
     return db_helpers.insertIntoTable(knex,'analysis', 'record_projections', projections)
@@ -56,7 +56,7 @@ async function simulate(knex)
 }
 
 //function which simulates NBA, NFL, NHL, MLB - default set to 10 for now to modify later
-const simulateProfessionalLeague = async (all_games_list, teams, sport_id, points, simulations = 10) => {
+const simulateProfessionalLeague = (all_games_list, teams, sport_id, points, simulations = 10) => {
     console.log(simulations)
     const sport_teams = individualSportTeams(teams, sport_id)
     //console.log(leagues)
@@ -89,7 +89,7 @@ const simulateProfessionalLeague = async (all_games_list, teams, sport_id, point
     //all_games_list[sport_id][0].calculateRawImpact()
     //process.exit()
     let all_champs = 0
-    let game_projections = simulateHelpers.createImpactArray(all_games_list, sport_id, knex, points)
+    let game_projections = simulateHelpers.createImpactArray(all_games_list, sport_id, points)
     /* return db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', game_projections)
     .then(()=>{
         console.log(sport_teams[0])
@@ -131,7 +131,7 @@ const simulateCFB = (all_games_list, teams, simulations = 10) => {
     }
 
 //function to simulate CBB - also figures out most likely march madness teams using formula
-const simulateCBB = (all_games_list, teams, simulations = 10) => {
+const simulateCBB = (all_games_list, teams, points, simulations = 10) => {
     const cbb_teams = individualSportTeams(teams, '106')
     console.log(simulations)
     for(var x=0; x<simulations; x++){
@@ -199,13 +199,11 @@ const simulateCBB = (all_games_list, teams, simulations = 10) => {
             team.reset()
             team.cbb_reset()
         })
-        console.log('test')
     }
-    console.log('here')
     cbb_teams.forEach(team => {
         team.averages(simulations)
     })
-    let game_projections = simulateHelpers.createImpactArray(all_games_list, '106')
+    let game_projections = simulateHelpers.createImpactArray(all_games_list, '106', points)
 
     return [cbb_teams, game_projections]
     }
