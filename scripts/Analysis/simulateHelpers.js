@@ -1,7 +1,7 @@
 const leagues = require('./leagues.js')
 //const league = require('./leagues.js')// load math.js
 const math = require('mathjs')
-const Points = require('./getPointsStructure.js')
+
 
 //Function to simulate an entire series - round is what round of the playoffs this is (1,2,3, etc.)
 const Series = (home, away, games, sport_id, round, neutral=false) => {
@@ -126,10 +126,10 @@ const normalizeImpact = (games) => {
     })
 }
 
-const createImpactArray = (all_games_list, sport_id) => {
+const createImpactArray = (all_games_list, sport_id, knex, points) => {
     let game_projections = []
     all_games_list[sport_id].forEach(game => {
-        game.calculateRawImpact()
+        game.calculateRawImpact(points)
     })
     normalizeImpact(all_games_list[sport_id])
         
@@ -142,8 +142,7 @@ const createImpactArray = (all_games_list, sport_id) => {
 }
 
 
-const fantasyProjections = async (all_teams, knex, day) => {
-    let points = await Points.getPointsStructure(knex)
+const fantasyProjections = (all_teams, knex, day, points) => {
     let array_for_copy = []
     let array_of_all_teams = []
     let total_point_structures = points.length

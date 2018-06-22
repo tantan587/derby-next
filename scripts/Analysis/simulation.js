@@ -9,12 +9,14 @@ const dbSimulateHelpers = require('./databaseSimulateHelpers.js')
 const rpiHelpers = require('./cbbRPItracker.js')
 const getDayCount = require('./dayCount.js')
 const db_helpers = require('../helpers.js').data
+const points = require('./getPointsStructure.js')
 
 async function simulate(knex)
 {
     console.log('im in')
     let simulations = 1000
     let all_teams = await dbSimulateHelpers.createTeams(knex)
+    let all_points = await points.getPointsStructure(knex)
     var today = new Date()
     //this is the calculation of day count normally:
     let day_count = getDayCount(today)
@@ -24,19 +26,19 @@ async function simulate(knex)
     rpiHelpers.addRpiToTeamClass(knex,all_teams) */
     const games = await dbSimulateHelpers.createGamesArray(knex, all_teams,day_count)
     //.then(games => {
-    const mlb_teams = simulateProfessionalLeague(games, all_teams, '103', simulations)
+    const mlb_teams = [[],[]] //await simulateProfessionalLeague(games, all_teams, '103', all_points, simulations)
     //code below to be added in once all simulations tested, ready to go
-    const nba_teams = [[],[]] //simulateProfessionalLeague(games, all_teams, '101')
-    const nfl_teams = [[],[]] //simulateProfessionalLeague(games, all_teams, '102')
-    const nhl_teams = [[],[]] //simulateProfessionalLeague(games, all_teams, '104')
-    const cfb_teams = [] //simulateCFB(games, all_teams)
-    const cbb_teams = [] //simulateCBB(games, all_teams)
-    const epl_teams = [] //simulateEPL(games, all_teams)
+    const nba_teams = await simulateProfessionalLeague(games, all_teams, '101', all_points, simulations)
+    const nfl_teams = [[],[]]//await simulateProfessionalLeague(games, all_teams, '102', all_points, simulations)
+    const nhl_teams = [[],[]] //await simulateProfessionalLeague(games, all_teams, '104', all_points, simulations)
+    const cfb_teams = [[],[]] //simulateCFB(games, all_teams)
+    const cbb_teams = [[],[]] //simulateCBB(games, all_teams)
+    const epl_teams = [[],[]] //simulateEPL(games, all_teams)
     //projection team list needs to be the first value of array
-    const projection_team_list = [...nba_teams[0], ...nfl_teams[0], ...mlb_teams[0], ...nhl_teams[0], ...cbb_teams, ...cfb_teams, ...epl_teams]
+    const projection_team_list = [...nba_teams[0], ...nfl_teams[0], ...mlb_teams[0], ...nhl_teams[0], ...cbb_teams[0], ...cfb_teams[0], ...epl_teams[0]]
     const game_projections = [...nba_teams[1], ...mlb_teams[1], ...nfl_teams[1], ...nhl_teams[1]]
     const projections = simulateHelpers.updateProjections(projection_team_list, day_count)
-    const fantasy_projections = await simulateHelpers.fantasyProjections(all_teams, knex, day_count)
+    const fantasy_projections = simulateHelpers.fantasyProjections(all_teams, knex, day_count, all_points)
     //console.log(fantasy_projections)
     //console.log(projections[0])
     return db_helpers.insertIntoTable(knex,'analysis', 'record_projections', projections)
@@ -54,7 +56,7 @@ async function simulate(knex)
 }
 
 //function which simulates NBA, NFL, NHL, MLB - default set to 10 for now to modify later
-const simulateProfessionalLeague = (all_games_list, teams, sport_id, simulations = 10) => {
+const simulateProfessionalLeague = async (all_games_list, teams, sport_id, points, simulations = 10) => {
     console.log(simulations)
     const sport_teams = individualSportTeams(teams, sport_id)
     //console.log(leagues)
@@ -87,7 +89,7 @@ const simulateProfessionalLeague = (all_games_list, teams, sport_id, simulations
     //all_games_list[sport_id][0].calculateRawImpact()
     //process.exit()
     let all_champs = 0
-    let game_projections = simulateHelpers.createImpactArray(all_games_list, sport_id)
+    let game_projections = simulateHelpers.createImpactArray(all_games_list, sport_id, knex, points)
     /* return db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', game_projections)
     .then(()=>{
         console.log(sport_teams[0])
