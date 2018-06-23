@@ -36,12 +36,13 @@ const styles = {
 }
 
 const Owner = withStyles(styles)(({ classes, myOwner, num }) => {
-
-  const ownerData = [
-    { entry: 'Record', data: 'N/A' },
-    { entry: 'Points Overall', data: myOwner.total_points },
-    { entry: `of ${num} Teams`, data: myOwner.rank },
-  ]
+  let ownerData = []
+  if(myOwner)
+    ownerData = [
+      { entry: 'Record', data: 'N/A' },
+      { entry: 'Points Overall', data: myOwner.total_points },
+      { entry: `of ${num} Teams`, data: myOwner.rank },
+    ]
 
   return (
     <div className={classes.root}>
@@ -51,7 +52,7 @@ const Owner = withStyles(styles)(({ classes, myOwner, num }) => {
       <div className={classes.data}>
         <div>{myOwner.owner_name}</div>
         {
-          ownerData.map(dataObj => <div id={dataObj.entry}>
+          ownerData.map((dataObj, i) => <div key={i} id={dataObj.entry}>
             <span className="data">{dataObj.data}</span>
             <span className="entry">{dataObj.entry}</span>
           </div>)

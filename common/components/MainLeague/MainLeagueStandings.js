@@ -6,7 +6,6 @@ import DerbyTableContainer from '../Table/DerbyTableContainer'
 import Title from '../Navigation/Title'
 import StandingsSeasons from '../Standings/StandingsSeasons'
 import StandingsRace from '../Standings/StandingsRace'
-import silksAndColors from '../../../data/silksAndColors'
 import OwnerSilk from '../Icons/Avatars/OwnerSilk'
 
 const styles = {
@@ -57,9 +56,9 @@ const styleProps = {
 
 class MainLeagueStandings extends React.Component {
   render() {
-    let ownersWithColors = []
+    let owners = []
     if (this.props.activeLeague.owners)
-      ownersWithColors = this.props.activeLeague.owners.map((owner, i) => ({ ...owner, ...silksAndColors[i] }))
+      owners = this.props.activeLeague.owners
 
     const dates = {
       season_start: new Date(Date.UTC(2017, 7, 1, 0, 0, 0)).getTime(),
@@ -79,7 +78,7 @@ class MainLeagueStandings extends React.Component {
           />
           <StandingsSeasons />
           <StandingsRace
-            owners={ownersWithColors}
+            owners={owners}
             dates={dates}
           />
         </div>
@@ -87,7 +86,7 @@ class MainLeagueStandings extends React.Component {
           noBreak
           usePagination={false}
           styleProps={styleProps}
-          myRows={ownersWithColors}
+          myRows={owners}
           myHeaders = {[
             {label: '', key: 'color'},
             {label: 'Rank', key: 'rank'},
