@@ -56,25 +56,27 @@ const Countdown = withStyles(styles)(({ classes, startTime }) => {
   preDraftTime.seconds = add0IfLessThanAmount(preDraftTime.seconds,10)
 
   return (
-    <div className={classes.root}>
-      <div className={classes.bold}>Your League's live draft begins in</div>
-      <div className={`${classes.centered}`}>
-        <div className={classes.stack}>
-          <div className={classes.time}>Days</div>
-          <div className={classes.clock}>{preDraftTime.days.slice(-2)}</div>
+    preDraftTime ?
+      <div className={classes.root}>
+        <div className={classes.bold}>Your League's live draft begins in</div>
+        <div className={`${classes.centered}`}>
+          <div className={classes.stack}>
+            <div className={classes.time}>Days</div>
+            <div className={classes.clock}>{preDraftTime.days.slice(-2)}</div>
+          </div>
+          <div className={classes.stack}>
+            <div className={classes.time}>Hours</div>
+            <div className={classes.clock}>{preDraftTime.hours}</div>
+          </div>
+          <div className={classes.stack}>
+            <div className={classes.time}>Minutes</div>
+            <div className={classes.clock}>{preDraftTime.minutes}</div>
+          </div>
         </div>
-        <div className={classes.stack}>
-          <div className={classes.time}>Hours</div>
-          <div className={classes.clock}>{preDraftTime.hours}</div>
-        </div>
-        <div className={classes.stack}>
-          <div className={classes.time}>Minutes</div>
-          <div className={classes.clock}>{preDraftTime.minutes}</div>
-        </div>
-      </div>
-      <div className={classes.bold} style={{ marginTop: 20 }}>Have you completed your draft preparation?</div>
-      <div className={classes.small}>Be sure to visit the Draft Room to plan your strategy and rank your teams.</div>
-    </div>
+        <div className={classes.bold} style={{ marginTop: 20 }}>Have you completed your draft preparation?</div>
+        <div className={classes.small}>Be sure to visit the Draft Room to plan your strategy and rank your teams.</div>
+      </div> :
+      <div/>
   )
 })
 
