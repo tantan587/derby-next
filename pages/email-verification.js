@@ -9,6 +9,9 @@ import Typography from '@material-ui/core/Typography'
 import Button from '@material-ui/core/Button'
 import Input from '@material-ui/core/Input'
 import {withStyles} from '@material-ui/core/styles'
+import Snackbar from '@material-ui/core/Snackbar'
+import IconButton from '@material-ui/core/IconButton'
+import CloseIcon from '@material-ui/icons/Close'
 
 import LayoutUser from '../common/components/LayoutUser'
 import withRoot from '../common/components/withRoot'
@@ -63,7 +66,7 @@ class EmailVerification extends Component {
   constructor(props) {
     super(props)
     autobind(this)
-    this.state = {code: '', timeLeft: 60, status: STATUS.INITIALIZING}
+    this.state = {code: '', timeLeft: 60, status: STATUS.INITIALIZING, snackbar: true}
   }
 
   componentDidMount() {
@@ -109,6 +112,10 @@ class EmailVerification extends Component {
     return this[`show${toProper(STATUS[this.state.status])}`]()
   }
 
+  hideSnackbar() {
+    this.setState({snackbar: false})
+  }
+
   showInitializing() {
     return (
       this.state.meta === META.FAILURE
@@ -142,6 +149,22 @@ class EmailVerification extends Component {
           </Button>
         </Typography>
         {hasError && <Typography variant="body2" color="error" paragraph={true}>Email verification code is wrong. Please try again.</Typography>}
+        <Snackbar
+          anchorOrigin={{vertical: 'bottom', horizontal: 'left'}}
+          open={this.state.snackbar}
+          autoHideDuration={6000}
+          message="Email has been sent."
+          action={(
+            <IconButton
+              key="close"
+              aria-label="Close"
+              color="inherit"
+              onClick={this.hideSnackbar}
+            >
+              <CloseIcon />
+            </IconButton>
+          )}
+        />
       </Grid>
     )
   }
@@ -161,7 +184,7 @@ class EmailVerification extends Component {
           justify="center"
           className={this.props.classes.container}
           children={this.determineStatus()}
-        />  
+        />
       </LayoutUser>
     )
   }
