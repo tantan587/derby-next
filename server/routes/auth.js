@@ -6,6 +6,7 @@ const userHelpers = require('./helpers/userHelpers')
 const passport = require('./helpers/local')
 const C = require('../../common/constants')
 const ErrorText = require('../../common/models/ErrorText')
+const EMAIL_VERIFICATION = require('../../common/constants/email_verification')
 
 //https://blog.jscrambler.com/implementing-jwt-using-passport/
 //https://github.com/trandainhan/next.js-example-authentication-with-jwt/blob/master/utils/CookieUtils.js
@@ -127,15 +128,21 @@ router.get('/verify-email', (req, res) => {
   const { i: user_id } = req.query
   return userHelpers.isVerified(user_id).then(user => {
     if (!user || user.verified) res.sendStatus(400)
-    else res.json({ expires_at: user.expires_at })
+    else res.json({expires_at: user.expires_at, number_of_tries: user.number_of_tries})
   })
 })
 
 router.post('/verify-email', (req, res) => {
   const { i: user_id, c: verification_code } = req.body
-  return userHelpers.verify(user_id, verification_code).then(updateCount => {
-    if (updateCount) res.sendStatus(200)
-    else res.sendStatus(400)
+  return userHelpers.verify(user_id, verification_code).then(payload => {
+    switch(payload.type) {
+      case EMAIL_VERIFICATION.CORRECT:
+        return res.sendStatus(200)
+      case EMAIL_VERIFICATION.INCORRECT:
+      case EMAIL_VERIFICATION.NOT_FOUND:
+      case EMAIL_VERIFICATION.LIMIT_EXCEEDED:
+        return res.status(400).json(payload)
+    }
   })
 })
 

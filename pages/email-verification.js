@@ -15,22 +15,36 @@ import CloseIcon from '@material-ui/icons/Close'
 
 import LayoutUser from '../common/components/LayoutUser'
 import withRoot from '../common/components/withRoot'
-import CountDown from '../common/components/CountDown'
 import {isVerified, doVerify} from '../common/actions/auth-actions'
+import EMAIL_VERIFICATION from '../common/constants/email_verification'
 
-const styles = {
+const styles = (theme) => ({
   container: {
-    padding: '20px',
+    padding: '50px 20px',
+  },
+  title: {
+    fontFamily: 'HorsebackSlab',
+    color: theme.palette.primary.main,
   },
   code: {
     width: '100%',
     fontSize: '3em',
     marginBottom: '10px',
+    '& > input': {
+      textAlign: 'center',
+    },
   },
   withError: {
     color: 'red',
   },
-}
+  resubmit: {
+    padding: '1em 3em',
+    background: '#E9AA45',
+    color: 'white',
+    borderRadius: 0,
+    margin: '0 auto'
+  },
+})
 
 function TextMaskCustom(props) {
   const { inputRef, ...other } = props;
@@ -66,7 +80,7 @@ class EmailVerification extends Component {
   constructor(props) {
     super(props)
     autobind(this)
-    this.state = {code: '', timeLeft: 60, status: STATUS.INITIALIZING, snackbar: true}
+    this.state = {code: '', timeLeft: 60, status: STATUS.INITIALIZING, snackbar: true, serverResponse: {}}
   }
 
   componentDidMount() {
@@ -79,20 +93,27 @@ class EmailVerification extends Component {
   async handleIsValid(user_id) {
     const response = await this.props.isVerified(user_id)
     if (response.ok) {
-      const expiresAt = (new Date(await response.json().then(R.prop('expires_at')))).getTime()  
+      const {expires_at, number_of_tries} = await response.json()
+      const expiresAt = (new Date(expires_at)).getTime()  
       const isExpired = Date.now() > expiresAt
-      this.setState({status: isExpired ? STATUS.EXPIRED : STATUS.VALID, expiresAt: (expiresAt - Date.now())/(1000)})
+      this.setState({
+        status: isExpired ? STATUS.EXPIRED : STATUS.VALID, 
+        serverResponse: Object.assign(
+          {number_of_tries: number_of_tries}, 
+          number_of_tries >= 5 && {type: EMAIL_VERIFICATION.LIMIT_EXCEEDED}
+        ),
+      })
     } else {
       this.setState({status: STATUS.INVALID})
     }
   }
 
   async handleDoVerify(user_id, verification_code) {
-    const userHasBeenVerified = await this.props.doVerify(user_id, verification_code.replace(/\s/g, '')).then(R.prop('ok'))
-    if (userHasBeenVerified) {
+    const serverResponse = await this.props.doVerify(user_id, verification_code.replace(/\s/g, ''))
+    if (serverResponse.ok) {
       this.setState({status: STATUS.COMPLETE})
     } else {
-      this.setState({meta: META.FAILURE})
+      serverResponse.json().then(payload => this.setState({meta: META.FAILURE, serverResponse: payload}))
     }
   }
 
@@ -101,7 +122,7 @@ class EmailVerification extends Component {
       const isValid = /\d\s\d\s\d\s\d/.test(this.state.code)
       if (isValid) {
         const {i: user_id} = this.props.url.query
-        this.setState({meta: META.LOADING})
+        this.setState({meta: META.LOADING, attempt: this.state.attempt + 1})
         this.handleDoVerify(user_id, this.state.code)
       }
     })
@@ -109,7 +130,12 @@ class EmailVerification extends Component {
 
   determineStatus() {
     const toProper = (str) => str[0].toUpperCase() + str.slice(1).toLowerCase()
-    return this[`show${toProper(STATUS[this.state.status])}`]()
+    switch(this.state.serverResponse.type) {
+      case EMAIL_VERIFICATION.LIMIT_EXCEEDED: return this.showExpired() 
+      case EMAIL_VERIFICATION.NOT_FOUND: return this.showInvalid()
+      default: 
+        return this[`show${toProper(STATUS[this.state.status])}`]()  
+    }
   }
 
   hideSnackbar() {
@@ -126,15 +152,15 @@ class EmailVerification extends Component {
 
   showValid() {
     const hasError = this.state.meta === META.FAILURE && /\d\s\d\s\d\s\d/.test(this.state.code)
+    const {number_of_tries} = this.state.serverResponse
 
     return (
       <Grid
         item
         md={6}
       >
-        <Typography variant="title" paragraph={true}>Email verification in progress.</Typography>
-        <Typography variant="body1" paragraph={true}>You should receive a code in your email.</Typography>
-        {this.state.expiresAt && <Typography variant="body1">Time left: <CountDown timeLeft={this.state.expiresAt} onFinish={R.identity} /></Typography>}
+        <Typography align="center" variant="display1" className={this.props.classes.title} paragraph={true}>Saddle Up</Typography>
+        <Typography align="center" variant="subheading" paragraph={true}>We sent a 4-digit code to your email address. Verify it here:</Typography>
         <Input
           disabled={this.state.meta === META.LOADING}
           onChange={this.handleCodeChange}
@@ -143,12 +169,17 @@ class EmailVerification extends Component {
           disableUnderline={true}
           value={this.state.code}
         />
-        <Typography paragraph={true}>
-          <Button variant="contained" color="default" disabled={!this.state.isResendable}>
-            Resend Email {!this.state.isResendable && <CountDown timeLeft={this.state.timeLeft} onFinish={this.setResendableTrue} />}
+        <Typography
+          align="center"
+          color={hasError ? "error" : "default"}
+          paragraph={true}
+          children={hasError ? `Your code does not match. Please try again. Attempt ${number_of_tries} / 5` : `Attempt ${number_of_tries} / 5`}
+        />
+        <Typography align="center" paragraph={true}>
+          <Button className={this.props.classes.resubmit} variant="contained" color="default">
+            Resend Email
           </Button>
         </Typography>
-        {hasError && <Typography variant="body2" color="error" paragraph={true}>Email verification code is wrong. Please try again.</Typography>}
         <Snackbar
           anchorOrigin={{vertical: 'bottom', horizontal: 'left'}}
           open={this.state.snackbar}
@@ -169,9 +200,51 @@ class EmailVerification extends Component {
     )
   }
 
-  showExpired() { return 'Expired' }
+  headingSubheading(heading, subheading) {
+    return [
+      <Typography
+        key="t-1"
+        align="center"
+        variant="display1"
+        className={this.props.classes.title}
+        paragraph={true}
+        children={heading}
+      />,
+      <Typography
+        key="t-2"
+        align="center"
+        variant="subheading"
+        paragraph={true}
+        children={subheading}
+      />
+    ]
+  }
 
-  showInvalid() { return 'Invalid' }
+  showExpired() {
+    return (
+      <Grid
+        item
+        md={6}
+      >
+        {this.headingSubheading('False Start', 'For security, your verification code has timed out. Please click below to send a new code:')}
+        <Typography align="center" paragraph={true}>
+          <Button className={this.props.classes.resubmit} variant="contained" color="default">
+            Resend Email
+          </Button>
+        </Typography>
+      </Grid>
+    )
+  }
+
+  showInvalid() {
+    return (
+      <Grid
+        item
+        md={6}
+        children={this.headingSubheading('Nothing to do here 404', 'Unfortunately, this link is dead :(')}
+      />
+    )
+  }
 
   showComplete() { return 'Complete' }
 
