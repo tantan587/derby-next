@@ -35,7 +35,9 @@ const styles = {
     fontFamily: 'Roboto',
     fontSize: 13,
     textTransform: 'uppercase',
-    color: '#848484'
+    color: '#848484',
+    textAlign:'center',
+    marginLeft:20
   },
   clock: {
     marginTop: 20,
@@ -62,7 +64,7 @@ const Countdown = withStyles(styles)(({ classes, startTime }) => {
         <div className={`${classes.centered}`}>
           <div className={classes.stack}>
             <div className={classes.time}>Days</div>
-            <div className={classes.clock}>{preDraftTime.days.slice(-2)}</div>
+            <div className={classes.clock}>{preDraftTime.days}</div>
           </div>
           <div className={classes.stack}>
             <div className={classes.time}>Hours</div>
