@@ -50,7 +50,7 @@ const Owner = withStyles(styles)(({ classes, myOwner, num }) => {
         { myOwner && OwnerSilk(myOwner, { height: 125, width: 125 }) }
       </div>
       <div className={classes.data}>
-        <div>{myOwner.owner_name}</div>
+        <div>{myOwner && myOwner.owner_name}</div>
         {
           ownerData.map((dataObj, i) => <div key={i} id={dataObj.entry}>
             <span className="data">{dataObj.data}</span>

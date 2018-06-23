@@ -33,7 +33,7 @@ const styles = {
 const Upcoming = withStyles(styles)(({ classes, sportLeagues, upcomingGames, teams }) =>
   <div className={classes.root}>
     {
-      upcomingGames.map((game, idx) => <div key={idx} className={classes.game}>
+      upcomingGames ? upcomingGames.map((game, idx) => <div key={idx} className={classes.game}>
         <div className={classes.date}>
           {game.date}
         </div>
@@ -54,6 +54,7 @@ const Upcoming = withStyles(styles)(({ classes, sportLeagues, upcomingGames, tea
           {sportLeagues.filter(x => x.sport_id === game.sport_id)[0].sport}
         </div>
       </div>)
+        : <div/>
     }
   </div>)
 
