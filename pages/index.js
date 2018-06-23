@@ -140,7 +140,7 @@ class Index extends React.Component {
             />
             <TitleCopyButton 
               title='Simple To Play'
-              copy='Simple To Play With Derby, no roster maintenance is needed. Derby is great to play with friends who are casual sports fans or people who don’t have time to manage a team. Just Draft, Watch and Win!'
+              copy='Simple To Play With Derby, no roster maintenance is needed. Derby is great to play with friends who are casual sports fans or people without the time to manage a team. Just Draft, Watch and Win!'
               buttonText='View Rules'
               marginLeft={20}
             />

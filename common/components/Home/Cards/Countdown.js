@@ -49,14 +49,11 @@ const Countdown = withStyles(styles)(({ classes, startTime }) => {
   const add0IfLessThanAmount = (time, amount ) => {
     return time < amount ? '0' + time : time
   }
-  console.log(startTime)
   let preDraftTime = GetCountdownTimeObj(startTime)
   preDraftTime.days = add0IfLessThanAmount(add0IfLessThanAmount(preDraftTime.days,10),100)
   preDraftTime.hours = add0IfLessThanAmount(preDraftTime.hours,10)
   preDraftTime.minutes = add0IfLessThanAmount(preDraftTime.minutes,10)
   preDraftTime.seconds = add0IfLessThanAmount(preDraftTime.seconds,10)
-
-  console.log('preDraftTime', preDraftTime)
 
   return (
     <div className={classes.root}>

@@ -40,7 +40,7 @@ class MainLeagueTeams extends React.Component {
         record:team.wins + '-' + team.losses + '-' + team.ties,
         percentage: (team.wins + team.ties + team.losses) === 0 ? 0.0.toFixed(3) : ((team.wins + 1/2*team.ties) / (team.wins + team.ties + team.losses)).toFixed(3),
         owner_name: owner ? owner.owner_name : 'N/A',
-        points:activeLeague.teams[team.team_id].points
+        //points:activeLeague.teams[team.team_id].points
       }
     })
 
@@ -71,7 +71,7 @@ class MainLeagueTeams extends React.Component {
             {label: 'Conference', key: 'conference'},
             {label: 'Record', key: 'record', sortId:'percentage'},
             {label: 'Percentage', key: 'percentage'},
-            {label: 'Points', key: 'points'}
+            // {label: 'Points', key: 'points'}
           ]}/>
       </div>
     )

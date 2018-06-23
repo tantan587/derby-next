@@ -70,8 +70,7 @@ class MenuListComposition extends React.Component {
     const { open, hoverIndex } = this.state
 
     let items1 = items.concat([])
-    let items2 = []
-
+    let items2 = null
     //this whole code is in order to make the two lists show up top aligned rather than bottome aligned
     if(extraItems)
     {
