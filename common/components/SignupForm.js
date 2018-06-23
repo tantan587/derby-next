@@ -30,7 +30,7 @@ const styles = (theme) => ({
   },
   textField: {
     marginBottom: '0.5em',
-    borderBottom: `1px solid ${theme.palette.primary.main}`,
+    // borderBottom: `1px solid ${theme.palette.primary.main}`,
   },
   submit: {
     margin: '2em 1em 1.5em',
@@ -46,6 +46,7 @@ const FIELDS = [
   {name: 'username', label: 'Username'},
   {name: 'password', label: 'Password', type: 'password'},
   {name: 'email', label: 'Email Address'},
+  {name: 'confirm_email', label: 'Confirm Email Address'},
   {name: 'first_name', label: 'First Name'},
   {name: 'last_name', label: 'Last Name'},
 ]
@@ -61,19 +62,27 @@ class SignupForm extends React.Component {
     this.setState({[e.target.name]: e.target.value})
   }
 
+  handleValidate() {
+    return this.state.email !== this.state.confirm_email
+      ? this.setState({errors: {confirm_email: 'Email does not match!'}})
+      : true
+  }
+
   handleSubmit(e) {
     e.preventDefault()
-    const {onSignup, router} = this.props
-    onSignup(...R.props(['username', 'first_name', 'last_name', 'email', 'password'], this.state))
-      .then(() => {
-        const {loggedIn, id} = this.props.user
-        loggedIn && router.push(`/email-verification?i=${id}`)
-      })
+    if (this.handleValidate()) {
+      const {onSignup, router} = this.props
+      onSignup(...R.props(['username', 'first_name', 'last_name', 'email', 'password'], this.state))
+        .then(() => {
+          const {loggedIn, id} = this.props.user
+          loggedIn && router.push(`/email-verification?i=${id}`)
+        }) 
+    }
   }
 
   renderField({name, label, type, ...rest}) {
     const { classes } = this.props
-    const errorMessage = R.path(['user', 'error', `signup_${name}`], this.props)
+    const errorMessage = R.path(['user', 'error', `signup_${name}`], this.props) || R.path(['errors', name], this.state)
     return (
       <TextField
         className={classes.textField}
@@ -110,6 +119,7 @@ class SignupForm extends React.Component {
           Signup
         </Typography>
         {FIELDS.map(this.renderField)}
+        {this.state.error && <Typography children={this.state.error}/>}
         <Button
           className={classes.submit}
           raised
