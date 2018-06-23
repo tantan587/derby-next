@@ -30,11 +30,7 @@ class MainLeagueTeams extends React.Component {
     {
       let owner = null 
       if (activeLeague.teams[team.team_id])
-        owner = activeLeague.owners.filter(owner => owner.owner_id === activeLeague.teams[team.team_id].owner_id)[0]
-      else
-      {
-        console.log(team.team_id)
-      }
+        owner = activeLeague.owners.find(owner => owner.owner_id === activeLeague.teams[team.team_id].owner_id)
       return {
         ...team,
         record:team.wins + '-' + team.losses + '-' + team.ties,

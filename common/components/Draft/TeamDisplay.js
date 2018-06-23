@@ -142,7 +142,7 @@ class TeamDisplay extends React.Component {
             {label: 'Sport League', key: 'sport'},
             {label: 'Record', key: 'record', sortId:'percentage'},
             {label: 'Percentage', key: 'percentage'},
-            {label: 'Points', key: 'points'}
+            // {label: 'Points', key: 'points'}
           ]}/>
       </div>
     )
