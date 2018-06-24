@@ -71,7 +71,7 @@ class MainLeagueHome extends React.Component {
     const myOwner =owners.find(owner => owner.owner_id === activeLeague.my_owner_id)
     return (
       <div>
-        <Title color='white' backgroundColor='black' title={'Welcome Us'}/>
+        <Title color='white' backgroundColor='#EBAB38' title={'Welcome To The Stable'}/>
         <div className={classes.section1}>
           {/* <div className={classes.section1}/> */}
           <Owner myOwner={myOwner} num={owners.length} />

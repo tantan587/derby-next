@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { withStyles } from '@material-ui/core/styles'
 import { handleOpenDialog } from '../../actions/dialog-actions'
-
+import Title from '../Navigation/Title'
 import DerbyTableContainer from '../Table/DerbyTableContainer'
 import TeamsDialog from '../TeamsDialog/TeamsDialog'
 
@@ -43,8 +43,9 @@ class MainLeagueTeams extends React.Component {
     return (
       <div>
         <TeamsDialog />
+
+        <Title color='white' backgroundColor='#EBAB38' title='All Teams'/>
         <DerbyTableContainer
-          title='All Teams'
           usePagination={true}
           myRows={myTeams}
           filters={[
@@ -52,7 +53,7 @@ class MainLeagueTeams extends React.Component {
               values :this.props.sportLeagues.map(x => x.sport),
               column:'sport',
               allInd:true,
-              tabStyles:{background:'#707070', foreground:'white', text:'#229246'}
+              tabStyles:{background:'#e3dac9', foreground:'white', text:'#229246'}
             },
             // {type:'checkbox',
             //   values :this.props.sportLeagues.map(x => x.sport),
@@ -63,10 +64,10 @@ class MainLeagueTeams extends React.Component {
             {label: 'Logo', key: 'logo_url', sortId:'team_name', imageInd:true},
             {label: 'Team Name', key: 'team_name'},
             {label: 'Owner Name', key: 'owner_name'},
-            {label: 'Sport League', key: 'sport'},
+            {label: 'Sport', key: 'sport'},
             {label: 'Conference', key: 'conference'},
             {label: 'Record', key: 'record', sortId:'percentage'},
-            {label: 'Percentage', key: 'percentage'},
+            {label: 'Win Percentage', key: 'percentage'},
             // {label: 'Points', key: 'points'}
           ]}/>
       </div>

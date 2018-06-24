@@ -69,13 +69,14 @@ class MainLeagueStandings extends React.Component {
 
     return(
       <div>
+        <Title
+          backgroundColor="#EBAB38"
+          color="white"
+          title="STANDINGS"
+          subheading={this.props.activeLeague.league_name}
+        />
         <div style={{ width: '94%', marginLeft: '3%' }}>
-          <Title
-            backgroundColor="#EBAB38"
-            color="white"
-            title="STANDINGS"
-            subheading={this.props.activeLeague.league_name}
-          />
+          
           <StandingsSeasons />
           <StandingsRace
             owners={owners}

@@ -390,7 +390,7 @@ class DraftContainer extends React.Component {
                           style={{fontSize:14, 
                             backgroundColor:allowDraft ? '#EBAB38' : '#b2b2b2',
                             fontStyle:allowDraft ? 'normal' : 'italic',
-                            marginTop:10, marginLeft:'-5%', color:'white', width:'90%'}} 
+                            marginTop:10, color:'white', width:'90%'}} 
                           onClick={() => this.onDraftButton()}>
                           DRAFT #1 TEAM
                         </Button>

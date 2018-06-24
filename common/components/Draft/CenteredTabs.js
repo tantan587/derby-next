@@ -10,7 +10,7 @@ import RosterGrid from './RosterGrid'
 
 const styles = () => ({
   root: {
-    flexGrow: 1
+    flexGrow: 1,
   },
   deepindicator : {
     height:0
@@ -20,12 +20,13 @@ const styles = () => ({
   },
   tab : {
     fontFamily:'museo-slab-bold',
-    backgroundColor: '#707070',
-    borderRight: '0.1em solid #E2E2E2', padding: '0.5em'
+    backgroundColor: '#ffffff',
+    borderRight: '0.1em solid #E2E2E2', padding: '0.5em',
+    color:'#392007'
   },
   tabSelected : {
     fontFamily:'museo-slab-bold',
-    backgroundColor: '#E2E2E2',
+    backgroundColor: '#e3dac9',
     borderRight: '0.1em solid #E2E2E2', padding: '0.5em'
   }
 })
@@ -47,7 +48,7 @@ class CenteredTabs extends React.Component {
       <div  className={classes.root}>
         <Tabs
           value={this.state.value}
-          style={{backgroundColor:'#707070'}}
+          style={{backgroundColor:'#707070', width:'96%', marginLeft:'1.9%'}}
           onChange={this.handleChange}
           classes={{indicator: classes.deepindicator}}
           textColor="primary"

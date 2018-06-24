@@ -104,7 +104,7 @@ class TeamDisplay extends React.Component {
               values :this.props.sportLeagues.map(x => x.sport),
               column:'sport',
               allInd:true,
-              tabStyles:{background:'#E2E2E2', foreground:'white', text:'#229246'}
+              tabStyles:{background:'#e3dac9', foreground:'white', text:'#229246'}
             },
             {type:'dropdown',
               values:confs,
@@ -139,9 +139,9 @@ class TeamDisplay extends React.Component {
                 backgroundColor: '#EBAB38',
               }},
             {label: 'Conference', key: 'conference'},
-            {label: 'Sport League', key: 'sport'},
+            {label: 'Sport', key: 'sport'},
             {label: 'Record', key: 'record', sortId:'percentage'},
-            {label: 'Percentage', key: 'percentage'},
+            {label: 'Win Percentage', key: 'percentage'},
             // {label: 'Points', key: 'points'}
           ]}/>
       </div>

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { withStyles } from '@material-ui/core/styles'
 import { handleOpenDialog } from '../../actions/dialog-actions'
-
+import Title from '../Navigation/Title'
 import DerbyTableContainer from '../Table/DerbyTableContainer'
 import TeamsDialog from '../TeamsDialog/TeamsDialog'
 
@@ -46,6 +46,8 @@ class MainLeagueRoster extends React.Component {
 
     return (
       <div>
+        <Title color='white' backgroundColor='#EBAB38' title='Rosters'/>
+        {/* //tabStyles:{background:'#e3dac9', foreground:'white', text:'#229246'} */}
         <TeamsDialog />
         <DerbyTableContainer
           title='All Teams'
@@ -55,7 +57,7 @@ class MainLeagueRoster extends React.Component {
             {type:'tab', 
               values :this.props.activeLeague.owners.map(x => x.owner_name),
               column:'owner_name',
-              tabStyles:{background:'#E2E2E2', foreground:'white', text:'#229246', fontSize:12}
+              tabStyles:{background:'#e3dac9', foreground:'white', text:'#229246', fontSize:12}
             },
           ]}
           orderInd={true}
