@@ -190,6 +190,7 @@ const updateOneRowTeamPoints = (league_id,team_id, column, value ) =>
       //console.log(column_link_val + " updated!")
     })
 }
+
 const getPoints = async (knex, scoring_type = 1) => {
   return knex
     .withSchema('fantasy')
@@ -208,11 +209,11 @@ const getPoints = async (knex, scoring_type = 1) => {
 
 const updateTeamPoints = (league_id, scoring_type_id = 1) =>
 {
-  return getStandingData()
+  return getStandingDataPlayoffAndRegular()
     .then((data) =>
     {
       //somewhere, this needs to check to be sure the league scoring type is 1 and input it here
-      //let points = await getPoints(knex, scoring_type_id)
+      let points = await getPoints(knex, scoring_type_id)
      /*  let points = [
         {sport_id: 101, win:3, tie:0},
         {sport_id: 102, win:15, tie:0},
@@ -315,6 +316,22 @@ const getStandingData = () =>
 {
   return new Promise((resolve) => {
     return knex.withSchema('sports').table('standings').select('*')
+      .then(result => {
+        let teamMap = {}
+        result.map(team => {teamMap[team.team_id] = {...team}})
+        resolve(teamMap)
+      })
+  })
+}
+
+const getStandingDataPlayoffAndRegular = () =>
+{
+  return new Promise((resolve) => {
+    return knex
+      .withSchema('sports')
+      .talbe('standings')
+      .leftOuterJoin('sports.playoff_standings', 'sports.standings.team_id', 'sports.playoff_standings.team_id')
+      .select('*')
       .then(result => {
         let teamMap = {}
         result.map(team => {teamMap[team.team_id] = {...team}})

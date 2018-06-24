@@ -258,6 +258,22 @@ methods.updateOneResultRow = (knex, global_game_id, row) =>
   })
 }
 
+methods.updateOneElo = (knex, team_id, team_elo) =>
+{
+    return knex
+        .withSchema('analysis')
+        .table('current_elo')
+        .where('team_id', team_id)    
+        .update('elo',team_elo)
+        .then(() => {
+            var today = new Date()
+            return knex
+            .withSchema('analysis')
+            .table('historical_elo')
+            .insert({'team_id': team_id, 'elo': team_elo, 'date': today})
+            .then(() => {console.log('done')})
+})}
+
   
 
 exports.data = methods
