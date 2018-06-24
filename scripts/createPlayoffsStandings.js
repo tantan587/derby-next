@@ -10,12 +10,12 @@ async function createStandingsPO () {
     let NFL_standPO = await getStandInfo(knex, 'MLB','NFLv3ScoresClient','getStandingsPromise', '2017POST')
     let CFB_standPO = await getStandInfo(knex, 'MLB','CFBv3ScoresClient','getStandingsPromise', '2017POST')
     let CBB_standPO = await getStandInfo(knex, 'MLB','CBBv3ScoresClient','getStandingsPromise', '2017POST')
-    let EPL_standPO = await getStandInfo(knex, 'MLB','EPLv3ScoresClient','getStandingsPromise', '2017POST')
+    let EPL_standPO = await getStandInfo(knex, 'MLB','EPLv3ScoresClient','getStandingsPromise', '144')
 
     process.exit()
     
     let data = MLB_standPO.concat(NBA_standPO).concat(NHL_standPO).concat(NFL_standPO).concat(CFB_standPO).concat(CBB_standPO).concat(EPL_standPO)
-  db_helpers.insertIntoTable(knex, 'sports', 'standingsPO', data)
+  db_helpers.insertIntoTable(knex, 'sports', 'playoff_standings', data)
     .then(()=>{
       // sport id+ 100+ stadium id
   //   console.log('done! - Matt is the best')
@@ -32,8 +32,8 @@ const getStandInfo = async (knex, sportName, api, promiseToGet, year) => {
 
   standInfo = cleanStand.map(game =>
     {
-      return {wins: game.Wins, 
-        losses : game.Losses, 
+      return {playoff_wins: game.Wins, 
+        playoff_losses : game.Losses, 
         }
   }
   )
