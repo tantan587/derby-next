@@ -52,25 +52,27 @@ class LoginForm extends Component {
   constructor(props) {
     super(props)
     autobind(this)
-    this.state = {username: '', password: '', formError: ''}
+    this.state = {username: '', password: '', formError: '', loading: false, dirty: false}
   }
 
   handleChange(e) {
-    this.setState({[e.target.name]: e.target.value})
+    this.setState({[e.target.name]: e.target.value, dirty: true})
   }
 
   handleSubmit(e) {
     e.preventDefault()
     const {onLogin, router} = this.props
-    onLogin(...R.props(['username', 'password'], this.state))
-      .then((response) => {
-        if (response.type === 'LOGIN_FAIL') {
-          this.setState({formError: response.error.form || ''})
-        } else {
-          const {user: {loggedIn}, previousPage, router} = this.props
-          loggedIn && router.push('/')
-        }
-      })
+    this.setState({loading: true}, () => {
+      onLogin(...R.props(['username', 'password'], this.state))
+        .then((response) => {
+          if (response.type === 'LOGIN_FAIL') {
+            this.setState({formError: response.error.form || '', loading: false, dirty: false})
+          } else {
+            const {user: {loggedIn}, previousPage, router} = this.props
+            loggedIn && router.push('/')
+          }
+        })
+    })
   }
 
   renderField({name, label, type, ...rest}) {
@@ -116,7 +118,8 @@ class LoginForm extends Component {
           className={classes.submit}
           raised
           type="submit"
-          children="Login"
+          children={this.state.loading ? 'LOADING...' : 'LOGIN'}
+          disabled={this.state.loading}
         />
         <Grid container>
           <Grid className={classes.actions.button} item xs={12} component={Button} raised color="accent">
@@ -129,7 +132,7 @@ class LoginForm extends Component {
             <Link href="/forgotpassword">FORGOT PASSWORD</Link>
           </Grid>
         </Grid>
-        {!!this.state.formError.length && (
+        {!!this.state.formError.length && !this.state.dirty && (
           <Typography
             paragraph={true}
             color="error"

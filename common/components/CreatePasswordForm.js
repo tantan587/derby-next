@@ -48,7 +48,7 @@ class CreatePasswordForm extends Component {
   constructor(props) {
     super(props)
     autobind(this)
-    this.state = {username: '', password: '', newPassword: ''}
+    this.state = {username: '', password: '', newPassword: '', loading: false}
   }
 
   handleChange(e) {
@@ -58,11 +58,14 @@ class CreatePasswordForm extends Component {
   handleSubmit(e) {
     e.preventDefault()
     const {onCreatePassword, router} = this.props
-    onCreatePassword(...R.props(['username', 'password', 'newPassword'], this.state))
-      .then(() => {
-        const {user: {error: {success1}}, router} = this.props
-        success1 && router.push('/login')
-      })
+    this.setState({loading: true}, () => {
+      onCreatePassword(...R.props(['username', 'password', 'newPassword'], this.state))
+        .then(() => {
+          const {user: {error: {success1}}, router} = this.props
+          success1 && router.push('/login')
+          this.setState({loading: false})
+        })
+    })
   }
 
   renderField({name, label, type, ...rest}) {
@@ -108,7 +111,8 @@ class CreatePasswordForm extends Component {
           className={classes.submit}
           raised
           type="submit"
-          children="SUBMIT"
+          children={this.state.loading ? 'LOADING...' : 'SUBMIT'}
+          disabled={this.state.loading}
         />
       </Grid>
     )

@@ -51,7 +51,7 @@ class ForgotPasswordForm extends Component {
   constructor(props) {
     super(props)
     autobind(this)
-    this.state = {email: ''}
+    this.state = {email: '', loading: false}
   }
 
   handleChange(e) {
@@ -61,11 +61,13 @@ class ForgotPasswordForm extends Component {
   handleSubmit(e) {
     e.preventDefault()
     const {onForgotPassword, router} = this.props
-    onForgotPassword(...R.props(['email'], this.state))
-      .then(() => {
-        const {user: {error: {success}}, router} = this.props
-        success && router.push('/createpassword')
-      })
+    this.setState({loading: true}, () => {
+      onForgotPassword(...R.props(['email'], this.state))
+        .then(() => {
+          const {user: {error: {success}}, router} = this.props
+          success && router.push('/createpassword')
+        })
+    })
   }
 
   renderField({name, label, type, ...rest}) {
@@ -111,7 +113,8 @@ class ForgotPasswordForm extends Component {
           className={classes.submit}
           raised
           type="submit"
-          children="SUBMIT"
+          children={this.state.loading ? 'LOADING...' : 'SUBMIT'}
+          disabled={this.state.loading}
         />
       </Grid>
     )
