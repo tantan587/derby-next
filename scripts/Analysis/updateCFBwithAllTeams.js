@@ -2417,30 +2417,42 @@ let data = [{
   }]
 
 let current_conf = [
-  {conference_id:10501,fantasy_data_key:3, name: 'Atlantic'},
-  {conference_id:10503,fantasy_data_key:5, name: 'Big 12 Conference'},
-  {conference_id:10504,fantasy_data_key:6, name: 'Big Ten - East'},
-  {conference_id:10505,fantasy_data_key:7, name: 'Big Ten - West'},
-  {conference_id:10506,fantasy_data_key:15, name: 'Pac-12 North'},
-  {conference_id:10507,fantasy_data_key:16, name: 'Pac-12 South'},
-  {conference_id:10508,fantasy_data_key:17, name: 'SEC - East'},
-  {conference_id:10509,fantasy_data_key:18, name: 'SEC - West'},
-  {conference_id:10510,fantasy_data_key:10, name: 'FBS Independents'}]
+    {conference_id:10501,fantasy_data_key:3, name: 'Atlantic'},
+    {conference_id:10501,fantasy_data_key: 4, name: 'Coastal'},
+    {conference_id:10502,fantasy_data_key:5, name: 'Big 12 Conference'},
+    {conference_id:10503,fantasy_data_key:6, name: 'Big Ten - East'},
+    {conference_id:10503,fantasy_data_key:7, name: 'Big Ten - West'},
+    {conference_id:10504,fantasy_data_key:15, name: 'Pac-12 North'},
+    {conference_id:10504,fantasy_data_key:16, name: 'Pac-12 South'},
+    {conference_id:10505,fantasy_data_key:17, name: 'SEC - East'},
+    {conference_id:10505,fantasy_data_key:18, name: 'SEC - West'},
+    {conference_id:10506,fantasy_data_key:10, name: 'FBS Independents'}, 
+    {conference_id: 10507,fantasy_data_key: 1, name: 'American Athletic - East' },
+    {conference_id: 10507, fantasy_data_key: 2, name: 'American Athletic - West' },
+    {conference_id: 10508, fantasy_data_key: 8, name: 'Conference USA East' },
+    {conference_id: 10508, fantasy_data_key: 9, name: 'Conference USA West' },
+    {conference_id: 10509, fantasy_data_key: 11, name: 'Mid-American - East' },
+    {conference_id: 10509, fantasy_data_key: 12, name: 'Mid-American - West' },
+    {conference_id: 10510,fantasy_data_key: 13,name: 'Mountain West - Mountain' },
+    {conference_id: 10510,fantasy_data_key: 14,name: 'Mountain West - West' },
+    {conference_id: 10511, fantasy_data_key: 19, name: 'Sun Belt Conference' } ]
 
-conferences_already = [3,5,6, 7, 15, 16, 17, 18, 10]
+conferences_already = [3, 4, 5,6, 7, 15, 16, 17, 18, 10]
 
-let x = 10511
+let x = 10507
 let y = 10501
+let m = 1
 
-  let for_sports_conferences_table = data.map(conference => {
-    const conf_id = conferences_already.includes(conference.ConferenceID) ? (
-        y, y++
-    ) : conference.ConferenceID === 4 ? (
-        '10502', y++) : (
-        x, x++
-    )
-    return {conference_id: conf_id, fantasy_data_key: conference.ConferenceID, name: conference.Name}
-    //return {conference_id: conf_id, name: conference.Name, display_name:conference.Name}
+let filtered_data = data.filter(conference => {return conferences_already.includes(conference.ConferenceID) === false})
+
+let for_sports_conferences_table = filtered_data.map(conference => {
+   const conf_id = (m === 1) ? (
+       x, m++
+   ) : (
+       x, m=1, x++
+   )
+return {conference_id: conf_id, fantasy_data_key: conference.ConferenceID, name: conference.Name}
+//return {conference_id: conf_id, name: conference.Name, display_name:conference.Name}
 })
 
 console.log(for_sports_conferences_table)
