@@ -65,7 +65,7 @@ class LoginForm extends Component {
     onLogin(...R.props(['username', 'password'], this.state))
       .then((response) => {
         if (response.type === 'LOGIN_FAIL') {
-          this.setState({formError: response.error.form})
+          this.setState({formError: response.error.form || ''})
         } else {
           const {user: {loggedIn}, previousPage, router} = this.props
           loggedIn && router.push('/')
