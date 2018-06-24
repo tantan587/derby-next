@@ -51,20 +51,13 @@ router.post('/signup', authHelpers.loginRedirect, (req, res, next)  => {
 router.post('/login', authHelpers.loginRedirect, (req, res, next) => {
   passport.authenticate('local', (err, user, info) => {
     if (err) { handleResponse(res, 500, 'error') }
-    if (!user) {
-      var errorText = new ErrorText()
-      errorText.addError('login_password','Username / Password does not match')
-      handleReduxResponse(res, 404, {
-        type: C.LOGIN_FAIL,
-        error: errorText
-      })
-    }
-    if (user && user.verified === false) {
-      var errorText = new ErrorText()
-      errorText.addError('form', `
+    if (!user || user.verified === false) {
+      const errMsg = !user ? 'Username / Password does not match' : `
         You can\'t login if your email is not verified.<br />
         <a href="/email-verification?i=${user.user_id}">Click here to verify.</a>
-      `)
+      `
+      var errorText = new ErrorText()
+      errorText.addError('form', errMsg)
       return handleReduxResponse(res, 404, {
         type: C.LOGIN_FAIL,
         error: errorText
