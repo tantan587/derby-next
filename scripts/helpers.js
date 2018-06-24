@@ -74,7 +74,7 @@ methods.getScheduleData = (knex, sportName, url) =>
     })
 }
 
-methods.getFdata = async (knex, sportName,api, promiseToGet) =>
+methods.getFdata = async (knex, sportName,api, promiseToGet, year=false) =>
 {
   //console.log('this')
   let league = await knex
@@ -91,7 +91,18 @@ methods.getFdata = async (knex, sportName,api, promiseToGet) =>
   //console.log('test')
   //console.log(FantasyDataClient[api][promiseToGet]())
   //return [FantasyDataClient[api][promiseToGet](), sport_id]
-  return FantasyDataClient[api][promiseToGet]()
+  
+  if(year===false){
+    return FantasyDataClient[api][promiseToGet]()
+  }else{
+    console.log('here')
+    console.log(api)
+    console.log(promiseToGet)
+    console.log(year)
+    let year_2 = year.toString()
+    console.log(year_2)
+    return FantasyDataClient[api][promiseToGet]('2017')
+  }
   
 }
 
