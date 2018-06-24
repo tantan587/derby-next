@@ -59,6 +59,17 @@ router.post('/login', authHelpers.loginRedirect, (req, res, next) => {
         error: errorText
       })
     }
+    if (user && user.verified === false) {
+      var errorText = new ErrorText()
+      errorText.addError('form', `
+        You can\'t login if your email is not verified.<br />
+        <a href="/email-verification?i=${user.user_id}">Click here to verify.</a>
+      `)
+      return handleReduxResponse(res, 404, {
+        type: C.LOGIN_FAIL,
+        error: errorText
+      })
+    }
     if (user) {
       return req.login(user, function (err) {
         if (err) { handleResponse(res, 500, 'error') }
