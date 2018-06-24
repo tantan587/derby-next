@@ -146,6 +146,14 @@ router.post('/verify-email', (req, res) => {
   })
 })
 
+router.get('/verify-email/resend', (req, res) => {
+  const { i: user_id } = req.query
+  return userHelpers.resendEmail(user_id).then(payload => {
+    if (payload) return res.sendStatus(200)
+    else return res.sendStatus(400)
+  })
+})
+
 // *** helpers *** //
 
 function handleResponse(res, code, statusMsg) {

@@ -15,7 +15,7 @@ import CloseIcon from '@material-ui/icons/Close'
 
 import LayoutUser from '../common/components/LayoutUser'
 import withRoot from '../common/components/withRoot'
-import {isVerified, doVerify} from '../common/actions/auth-actions'
+import {isVerified, doVerify, doResend} from '../common/actions/auth-actions'
 import EMAIL_VERIFICATION from '../common/constants/email_verification'
 
 const styles = (theme) => ({
@@ -122,10 +122,16 @@ class EmailVerification extends Component {
       const isValid = /\d\s\d\s\d\s\d/.test(this.state.code)
       if (isValid) {
         const {i: user_id} = this.props.url.query
-        this.setState({meta: META.LOADING, attempt: this.state.attempt + 1})
+        this.setState({meta: META.LOADING})
         this.handleDoVerify(user_id, this.state.code)
       }
     })
+  }
+
+  async handleResend() {
+    const {i: user_id} = this.props.url.query
+    const response = await this.props.doResend(user_id).then()
+    if (response.ok) window.location.reload()
   }
 
   determineStatus() {
@@ -176,26 +182,28 @@ class EmailVerification extends Component {
           children={hasError ? `Your code does not match. Please try again. Attempt ${number_of_tries} / 5` : `Attempt ${number_of_tries} / 5`}
         />
         <Typography align="center" paragraph={true}>
-          <Button className={this.props.classes.resubmit} variant="contained" color="default">
+          <Button onClick={this.handleResend} className={this.props.classes.resubmit} variant="contained" color="default">
             Resend Email
           </Button>
         </Typography>
-        <Snackbar
-          anchorOrigin={{vertical: 'bottom', horizontal: 'left'}}
-          open={this.state.snackbar}
-          autoHideDuration={6000}
-          message="Email has been sent."
-          action={(
-            <IconButton
-              key="close"
-              aria-label="Close"
-              color="inherit"
-              onClick={this.hideSnackbar}
-            >
-              <CloseIcon />
-            </IconButton>
-          )}
-        />
+        {number_of_tries === 0 && (
+          <Snackbar
+            anchorOrigin={{vertical: 'bottom', horizontal: 'left'}}
+            open={this.state.snackbar}
+            autoHideDuration={6000}
+            message="Email has been sent."
+            action={(
+              <IconButton
+                key="close"
+                aria-label="Close"
+                color="inherit"
+                onClick={this.hideSnackbar}
+              >
+                <CloseIcon />
+              </IconButton>
+            )}
+          />
+        )}
       </Grid>
     )
   }
@@ -228,7 +236,7 @@ class EmailVerification extends Component {
       >
         {this.headingSubheading('False Start', 'For security, your verification code has timed out. Please click below to send a new code:')}
         <Typography align="center" paragraph={true}>
-          <Button className={this.props.classes.resubmit} variant="contained" color="default">
+          <Button onClick={this.handleResend} className={this.props.classes.resubmit} variant="contained" color="default">
             Resend Email
           </Button>
         </Typography>
@@ -246,7 +254,17 @@ class EmailVerification extends Component {
     )
   }
 
-  showComplete() { return 'Complete' }
+  showComplete() {
+    setTimeout(() => this.props.url.push('/login'), 5000)
+    return (
+      <Grid
+        item
+        md={6}
+        children={this.headingSubheading('Success!', 'You should be redirected to login page in a sec.')}
+      />
+    )
+
+  }
 
   render() {
     return (
@@ -266,5 +284,5 @@ class EmailVerification extends Component {
 export default R.compose(
   withRoot,
   withStyles(styles),
-  connect(null, {isVerified, doVerify})
+  connect(null, {isVerified, doVerify, doResend})
 )(EmailVerification)

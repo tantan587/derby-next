@@ -73,3 +73,5 @@ export const doVerify = (user_id, verification_code) => () => Fetcher(
   `/api/verify-email`,
   { method: 'POST', body: JSON.stringify({i:user_id, c:verification_code})}
 )
+
+export const doResend = (user_id) => () => Fetcher(`/api/verify-email/resend?i=${user_id}`)

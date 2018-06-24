@@ -1,5 +1,6 @@
 const R = require('ramda')
 const knex = require('../../db/connection')
+const {sendSignupEmail} = require('./authHelpers')
 const EMAIL_VERIFICATION = require('../../../common/constants/email_verification')
 
 module.exports.getById = (user_id) => knex('users.users')
@@ -27,3 +28,18 @@ module.exports.verify = (user_id, verification_code) => knex('users.users')
       } else return {type: EMAIL_VERIFICATION.INCORRECT, number_of_tries: userObj.number_of_tries}
     } else return {type: EMAIL_VERIFICATION.NOT_FOUND}
   })
+
+  module.exports.resendEmail = (user_id) => knex('users.users')
+    .where({user_id, verified: false})
+    .update({
+      verification_code: Math.floor(1000 + Math.random() * 9000),
+      expires_at: knex.raw("now() + INTERVAL '15 minutes'"),
+      number_of_tries: 0,
+    })
+    .returning('*')
+    .then(([userObj]) => {
+      if (userObj) {
+        return sendSignupEmail(userObj)
+      }
+      else return false
+    })
