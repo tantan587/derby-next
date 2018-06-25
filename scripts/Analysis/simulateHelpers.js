@@ -12,7 +12,7 @@ const Series = (home, away, games, sport_id, round, neutral=false) => {
     let x = 0
     //console.log(round)
     while(home.playoff_wins[round] < clinch && away.playoff_wins[round] < clinch){
-        let results = homeGames.includes(x) ? simulateGame(home, away, sport_id, neutral, playoff_game=true):simulateGame(away, home, sport_id, neutral, playoff_game=true)
+        let results = homeGames.includes(x) ? simulateGame(home, away, sport_id, neutral, true):simulateGame(away, home, sport_id, neutral, true)
         results[0].playoff_wins[round]++
         x++
     }
@@ -50,6 +50,24 @@ const simulateGame = (home, away, sport_id, neutral = false, playoff_game = fals
 
 }
 
+const simulateBowlGame = (home, away) => 
+{   //need to add adjustment in this function for playoffs, NHL
+    let elo_difference = home.elo - away.elo
+    let home_win_percentage = 1/(Math.pow(10,(-1*elo_difference/400))+1)
+    let random_number = Math.random()
+    let home_win_value = random_number < home_win_percentage ? 1:0
+    /*if reg == True:
+        home.adjRWins(homeWin)
+        away.adjRWins(awayWin)
+    else:
+        home.adjPWins(homeWin)
+        away.adjPWins(awayWin)*/
+    home.adjustEloWins(home_win_value, home_win_percentage, leagues['105'].elo_adjust, true)
+    away.adjustEloWins(Math.abs(1-home_win_value), 1 - home_win_percentage, leagues['105'].elo_adjust, true)
+    home_win_value === 1 ? home.bowl_wins++ : away.bowl_wins++
+}
+
+
 const simulateNHLGame = (home, away, neutral = false) => 
 {   //need to add adjustment in this function for playoffs
     let home_adv = neutral === false ? leagues['104'].home_advantage:0
@@ -81,14 +99,15 @@ const simulateNHLGame = (home, away, neutral = false) =>
 
 }
 
+
 const simulateEPLGame = (home, away) => 
-{   //need to add adjustment in this function for playoffs
+{   
     let home_adv = leagues['107'].home_advantage
     let elo_difference = home.elo - away.elo + home_adv
     let home_win_percentage_raw = 1/(Math.pow(10,(-1*elo_difference/400))+1)
     let random_number = Math.random()
     //EPL: teams just straight up tie.
-    let tie_percent = .23  //how often teams in the EPL tie
+    let tie_percent = .23  //how often teams in the EPL tie - maybe?
     let home_win_percentage = home_win_percentage_raw - tie_percent/2
     let tie_percentage = home_win_percentage_raw + tie_percent/2
     //ELO assumes an overtime loss and overtime win is the same as a tie. 
@@ -222,4 +241,4 @@ const fantasyProjections = (all_teams, day, points) => {
     }
 }
 
-module.exports = {Series, moreWins, simulateGame, updateProjections, simulateNHLGame, createImpactArray, fantasyProjections}
+module.exports = {Series, moreWins, simulateGame, updateProjections, simulateNHLGame, createImpactArray, fantasyProjections, simulateBowlGame}

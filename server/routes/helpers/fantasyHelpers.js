@@ -117,8 +117,11 @@ const updateTeamPointsTable = (newTeamPoints) =>
           updateList.push(Promise.resolve(updateOneRowTeamPoints(teamPoints.league_id,teamPoints.team_id,'reg_points',teamPoints.reg_points )))
         }
 
-        if(oldTeamPoints[teamPoints.league_id][teamPoints.team_id].bonus_points != teamPoints.bonus_points)
-          updateList.push(Promise.resolve(updateOneRowTeamPoints(teamPoints.owner_id,teamPoints.team_id,'bonus_points',teamPoints.bonus_points )))
+        if(oldTeamPoints[teamPoints.league_id][teamPoints.team_id].bonus_points != teamPoints.bonus_points){
+          updateList.push(Promise.resolve(updateOneRowTeamPoints(teamPoints.owner_id,teamPoints.team_id,'bonus_points',teamPoints.bonus_points )))}
+        
+        if(oldTeamPoints[teamPoints.league_id][teamPoints.team_id].playoff_points != teamPoints.playoff_points){
+          updateList.push(Promise.resolve(updateOneRowTeamPoints(teamPoints.owner_id,teamPoints.team_id,'playoff_points',teamPoints.playoff_points )))}
       })
       if (updateList.length > 0)
       {
@@ -191,6 +194,7 @@ const updateOneRowTeamPoints = (league_id,team_id, column, value ) =>
     })
 }
 
+//maybe this should be modified to grab all the different scoring structures
 const getPoints = async (knex, scoring_type = 1) => {
   return knex
     .withSchema('fantasy')
@@ -206,7 +210,8 @@ const getPoints = async (knex, scoring_type = 1) => {
   }
 
 
-
+//this should be updated to do all the different team points structures
+//similar to the way i did that before with the update fantasy projected points
 const updateTeamPoints = (league_id, scoring_type_id = 1) =>
 {
   return getStandingDataPlayoffAndRegular()
@@ -270,6 +275,7 @@ const updateTeamPoints = (league_id, scoring_type_id = 1) =>
 }
 
 //runs for each league to run points
+//not sure if this is set up to run for each and every league - this hsould match up leagues with scoring type
 const updateLeaguePoints = (league_id) =>
 {
   let str = league_id

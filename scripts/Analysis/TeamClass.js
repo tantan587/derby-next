@@ -22,17 +22,20 @@ class Team {
         this.total_losses = 0
         this.total_playoff_wins = 0
         this.total_playoff_losses = 0
+        this.total_bowl_wins = 0
         this.playoff_wins = [0, 0, 0, 0, 0, 0, 0] //this is wins in each round of playoffs
         this.playoff_losses = [0, 0, 0, 0, 0, 0, 0] //this is losses in each round of playoffs
         this.playoff_appearances = 0
         this.finalist = 0
         this.champions = 0
+        this.bowl_wins = 0
         this.average_wins = 0
         this.average_losses = 0
         this.average_playoff_wins = 0
         this.average_playoff_appearances = 0
         this.average_finalists = 0
         this.average_champions = 0
+        this.average_bowl_wins = 0
         this.cTWins = 0
         this.aLosses = 0
         //this.wOnePoints = 0 //Derby Points accrued in a single season
@@ -157,6 +160,7 @@ class Team {
         this.total_playoff_appearances += this.playoff_appearances
         this.total_playoff_losses += this.playoff_losses.reduce((a,b)=>a+b)
         this.total_playoff_wins += this.playoff_wins.reduce((a,b)=>a+b)
+        this.total_bowl_wins += this.bowl_wins
         this.wins = this.original_wins
         this.losses = this.original_losses
         this.ties = this.original_ties
@@ -166,6 +170,7 @@ class Team {
         this.playoff_appearances = 0
         this.finalist = 0
         this.champions = 0
+        this.bowl_wins = 0
     }
     
     cbb_reset(){
@@ -190,6 +195,7 @@ class Team {
         this.average_champions = (this.total_champions / sims)
         this.average_losses = (this.total_losses / sims)
         this.average_ties = (this.total_ties / sims)
+        this.average_bowl_wins = (this.total_bowl_wins / sims)
     }
 
     calculateFantasyPoints(points){
@@ -206,6 +212,8 @@ class Team {
               }else{
                 bonus_win = 0
               }
+
+              if(sport_id === '105'){bonus_win+= this.average_bowl_wins * sport_points.playoffs.bowl_wins}
 
             this.fantasy_points_projected.push(
                 this.average_wins * sport_points.regular_season.win +

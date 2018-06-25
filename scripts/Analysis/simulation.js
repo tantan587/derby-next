@@ -9,38 +9,44 @@ const dbSimulateHelpers = require('./databaseSimulateHelpers.js')
 const rpiHelpers = require('./cbbRPItracker.js')
 const getDayCount = require('./dayCount.js')
 const db_helpers = require('../helpers.js').data
-const points = require('./getPointsStructure.js')
+const points = require('./getPointsStructure.js') //this pulls all the differnet point strtuctures
 
+
+//this is the overall simulate function - runs for each sport
+//eventually needs to add in how it detects if in the middle of a season
 async function simulate(knex)
 {
     console.log('im in')
-    let simulations = 1000
+    let simulations = 1000 //how many simulatoins to run
     let all_teams = await dbSimulateHelpers.createTeams(knex)
     let all_points = await points.getPointsStructure(knex)
     var today = new Date()
     //this is the calculation of day count normally:
     let day_count = getDayCount(today)
-    //this is the first day of the seasno
+    //this is the first day of the season of 2017
     day_count = 1467
     /* this to be added back in later
     rpiHelpers.addRpiToTeamClass(knex,all_teams) */
     const games = await dbSimulateHelpers.createGamesArray(knex, all_teams,day_count)
     //.then(games => {
+
+    //these are the functions for each individual season. 
     const mlb_teams = [[],[]] //simulateProfessionalLeague(games, all_teams, '103', all_points, simulations)
-    //code below to be added in once all simulations tested, ready to go
     const nba_teams = [[],[]] //simulateProfessionalLeague(games, all_teams, '101', all_points, simulations)
     const nfl_teams = [[],[]] //simulateProfessionalLeague(games, all_teams, '102', all_points, simulations)
     const nhl_teams = [[],[]] //simulateProfessionalLeague(games, all_teams, '104', all_points, simulations)
-    const cfb_teams = [[],[]] //simulateCFB(games, all_teams)
+    const cfb_teams = [[],[]] //simulateCFB(games, all_teams, all_points, simulations)
     const cbb_teams = simulateCBB(games, all_teams, all_points, simulations)
     const epl_teams = [[],[]] //simulateEPL(games, all_teams)
-    //projection team list needs to be the first value of array
+    
+    //team variables contain team projections as first object, game projections as second.
+    //the following three functions find the team projections, game projections, and then find fantasy.projections
     const projection_team_list = [...nba_teams[0], ...nfl_teams[0], ...mlb_teams[0], ...nhl_teams[0], ...cbb_teams[0], ...cfb_teams[0], ...epl_teams[0]]
-    const game_projections = [...nba_teams[1], ...mlb_teams[1], ...nfl_teams[1], ...nhl_teams[1], ...cbb_teams[1]]
+    const game_projections = [...nba_teams[1], ...mlb_teams[1], ...nfl_teams[1], ...nhl_teams[1], ...cbb_teams[1], ...cfb_teams[1], ...epl_teams[1]]
     const projections = simulateHelpers.updateProjections(projection_team_list, day_count)
     const fantasy_projections = simulateHelpers.fantasyProjections(all_teams, day_count, all_points)
-    //console.log(fantasy_projections)
-    //console.log(projections[0])
+
+    //insert record, game, and fantasy projections into table
     return db_helpers.insertIntoTable(knex,'analysis', 'record_projections', projections)
     .then(()=>{
         //the insert for game_projections should be the second value of each array
@@ -57,7 +63,6 @@ async function simulate(knex)
 
 //function which simulates NBA, NFL, NHL, MLB - default set to 10 for now to modify later
 const simulateProfessionalLeague = (all_games_list, teams, sport_id, points, simulations = 10) => {
-    console.log(simulations)
     const sport_teams = individualSportTeams(teams, sport_id)
     //console.log(leagues)
     let y = 1
@@ -72,35 +77,30 @@ const simulateProfessionalLeague = (all_games_list, teams, sport_id, points, sim
         let finalist_2 = playoffFunctions[sport_id](sport_teams.filter(team => team.conference === league_conference[sport_id][1]), simulateHelpers)
         let finalists = simulateHelpers.moreWins(finalist_1, finalist_2)
         finalists.forEach(team=>{team.finalist++})
-        let champion = sport_id === '102' ? simulateHelpers.Series(finalists[0], finalists[1],1, sport_id, 4,neutral = true):simulateHelpers.Series(finalists[0], finalists[1],7, sport_id, 4)
+        //finds champion. different for each sport because super bowl is neutral
+        let champion = sport_id === '102' ? simulateHelpers.Series(finalists[0], finalists[1],1, sport_id, 4, true):simulateHelpers.Series(finalists[0], finalists[1],7, sport_id, 4)
         champion.champions++
+        //adjusts game by game impact, and update result with results of this sim
         all_games_list[sport_id].forEach(game=>{
             game.adjustImpact()
         })
+        //resets the team values, back to the original
         sport_teams.forEach(team => {
-            team.reset()})}
-        //console.log(`${teams[team].name}: ${teams[team].wins}/${teams[team].losses}, defaultElo: ${teams[team].defaultElo}, finalElo: ${teams[team].elo}`)})
+            team.reset()})
+        }
+    //finds the averages after all the simulations, for each team
     sport_teams.forEach(team => {
         team.averages(simulations)
-        /* console.log(team.average_playoff_wins)
-        console.log(`${team.name}: ${team.average_wins}/${team.average_losses}`) */
     })
-    //shouldn't the below have the impact function? might need to be added in
-    //all_games_list[sport_id][0].calculateRawImpact()
-    //process.exit()
-    let all_champs = 0
+
+    //creates game projections for impact, and also calculating each temas iwnning percentage
     let game_projections = simulateHelpers.createImpactArray(all_games_list, sport_id, points)
-    /* return db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', game_projections)
-    .then(()=>{
-        console.log(sport_teams[0])
-        return sport_teams
-    }) */
+
     return [sport_teams, game_projections]
     }
 
 //function to simulate CFB - also figures out most likely playoff teams using formula
-//this needs to include something to simulate likely bowl game results, eventually
-const simulateCFB = (all_games_list, teams, simulations = 10) => {
+const simulateCFB = (all_games_list, teams, points, simulations = 10) => {
     const cfb_teams = individualSportTeams(teams, '105')
     for(var x=0; x<simulations; x++){
         all_games_list['105'].forEach(game => {game.play_game()})
@@ -116,18 +116,43 @@ const simulateCFB = (all_games_list, teams, simulations = 10) => {
         let playoffs = cfb_teams.slice(0,4)
         playoffs.forEach(team=>{team.playoffs++})
         //find finalists, add finalist value, play championship, add champ value
-        let finalist_1 = simulateHelpers.Series(playoffs[0],playoffs[3],1,'105',1,neutral=true)
-        let finalist_2 = simulateHelpers.Series(playoffs[1],playoffs[2],1,'105',1,neutral=true)
+        let finalist_1 = simulateHelpers.Series(playoffs[0],playoffs[3],1,'105',1, true)
+        let finalist_2 = simulateHelpers.Series(playoffs[1],playoffs[2],1,'105',1, true)
         finalist_1.finalist++
         finalist_2.finalist++
-        let champion = simulateHelpers.Series(finalist_1, finalist_2,1,'105', 2,neutral=true)
+        let champion = simulateHelpers.Series(finalist_1, finalist_2,1,'105', 2, true)
         champion.champions++
+
+        //calculate bowl games, to simulate
+        //first, slice all teams that did not make the playoffs
+        let non_playoff_teams = cfb_teams.slice(4)
+        //next find bowl eligible teams, be sure it is an even number
+        let bowl_eligible_teams = non_playoff_teams.filter(team => team.wins>5)
+        if(bowl_eligible_teams.length%2 === 1){bowl_eligible_teams.pop}
+        
+        //matches up each bowl team against one within rank 7 of them. Is this the right amount of difference? tbd
+        //we want to use array.splice - splice returns an array
+        while(bowl_eligible_teams.length !== 0){
+            let team_1 = bowl_eligible_teams.shift()
+            let index_other_team = Math.round(Math.random()*7)
+            let ind = index_other_team > bowl_eligible_teams.length ? bowl_eligible_teams.length : index_other_team
+            let team_2 = bowl_eligible_teams.splice(ind, 1)
+            simulateHelpers.simulateBowlGame(team_1, team_2[0])
+        }
+
+        all_games_list['105'].forEach(game=>{
+            game.adjustImpact()
+        })
         cfb_teams.forEach(team =>{team.reset()})
     }
+    //calculates average season
     cfb_teams.forEach(team => {
         team.averages(simulations)
     })
-    return cfb_teams
+    //creates game projections for impact, and also calculating each temas iwnning percentage
+    let game_projections = simulateHelpers.createImpactArray(all_games_list, '105', points)
+
+    return [cfb_teams, game_projections]
     }
 
 //function to simulate CBB - also figures out most likely march madness teams using formula
