@@ -12,10 +12,10 @@ const styles = theme => ({
   },
   button : {
     backgroundColor: theme.palette.secondary.A700,
-    color: theme.palette.secondary.A100,
+    color: '#e3dac9',
   },
   banner : {
-    color: theme.palette.secondary[100],
+    color:'#e3dac9',
     backgroundColor: theme.palette.primary[500],
   }
 })
@@ -45,7 +45,7 @@ class SimpleSnackbar extends React.Component {
             <IconButton
               key="close"
               aria-label="Close"
-              color="inherit"
+              style={{color:'#e3dac9'}}
               className={classes.close}
               onClick={handleClose}
             >

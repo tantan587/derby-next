@@ -58,7 +58,7 @@ const Countdown = withStyles(styles)(({ classes, startTime }) => {
   preDraftTime.seconds = add0IfLessThanAmount(preDraftTime.seconds,10)
 
   return (
-    preDraftTime ?
+    startTime ?
       <div className={classes.root}>
         <div className={classes.bold}>Your League's live draft begins in</div>
         <div className={`${classes.centered}`}>

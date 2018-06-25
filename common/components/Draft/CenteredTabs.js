@@ -48,7 +48,7 @@ class CenteredTabs extends React.Component {
       <div  className={classes.root}>
         <Tabs
           value={this.state.value}
-          style={{backgroundColor:'#707070', width:'96%', marginLeft:'1.9%'}}
+          style={{backgroundColor:'white', width:'96%', marginLeft:'1.9%'}}
           onChange={this.handleChange}
           classes={{indicator: classes.deepindicator}}
           textColor="primary"

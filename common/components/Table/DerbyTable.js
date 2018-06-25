@@ -95,7 +95,7 @@ class DerbyTable extends React.Component {
         {
           return <DerbyFooter
             key={x}
-            only10={false}
+            only20={true}
             styleProps={styleProps && styleProps.Footer}
             count={localRows.length}
             rowsPerPage={rowsPerPage}

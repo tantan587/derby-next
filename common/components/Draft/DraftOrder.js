@@ -9,6 +9,7 @@ import ListItemText from '@material-ui/core/ListItemText'
 import Divider from '@material-ui/core/Divider'
 import Typography from '@material-ui/core/Typography'
 import { Scrollbars } from 'react-custom-scrollbars'
+import OwnerSilk from '../Icons/Avatars/OwnerSilk'
 
 const styles = theme => ({
   greenFullCircle: {
@@ -34,11 +35,11 @@ const styles = theme => ({
     backgroundColor: theme.palette.primary[500],
   },
   onTheClock :
-  { backgroundColor:'#229246', color:'white', textAlign: 'left', paddingLeft:20},
+  { backgroundColor:'#229246', color:'#e3dac9', textAlign: 'left', paddingLeft:20},
 
   round :
   {
-    backgroundColor:'#707070', color:'white', textAlign: 'left', 
+    backgroundColor:'#e3dac9', color:'#229246', textAlign: 'left', 
     paddingLeft:20, fontWeight : 'bold', paddingTop:5, paddingBottom:5
   },
 
@@ -92,11 +93,11 @@ class DraftOrder extends React.Component {
     const showOnTheClock = mode === 'live' && ownerList.length > 0
     return (
       <div >
-        <Divider style={{backgroundColor:'white'}}/>
+        <Divider style={{backgroundColor:'#e3dac9'}}/>
         <Typography key={'head'} variant='subheading' 
-          style={{fontFamily:'HorsebackSlab', backgroundColor:'black', color:'white', 
+          style={{fontFamily:'museo-slab-bold', backgroundColor:'black', color:'white', 
             paddingTop:10, paddingBottom:10}}>
-            Draft Order
+            DRAFT ORDER
         </Typography>
 
         {showOnTheClock
@@ -105,7 +106,7 @@ class DraftOrder extends React.Component {
             <Typography className={classes.round} key={'first1'} variant='subheading'>
               {'ROUND ' + (ownerList[0].round) + ' - PICK ' + ownerList[0].pick}
             </Typography>
-            <Divider style={{backgroundColor:'white'}}/> 
+            <Divider style={{backgroundColor:'#e3dac9'}}/> 
             <Typography variant='body2' 
               className={classes.onTheClock}>
             ON THE CLOCK:
@@ -115,7 +116,7 @@ class DraftOrder extends React.Component {
               {myOwnerName === ownerList[0].owner_name ? ownerList[0].owner_name +' (you)':ownerList[0].owner_name}
             </Typography>
           </div> : <div/>}
-        <Divider style={{backgroundColor:'white'}}/>  
+        <Divider style={{backgroundColor:'#e3dac9'}}/>  
         <List style={{maxHeight: 600, overflow: 'auto', paddingTop:0}}>
           <Scrollbars autoHide style={showOnTheClock? { height:455 } : { height:530 } }>
             {/*renderView={this.renderView} onUpdate={this.handleUpdate}> */}
@@ -124,7 +125,7 @@ class DraftOrder extends React.Component {
                 <Typography key='first2' className={classes.round} variant='subheading'>
                   {lastRound !== ownerList[0].round ? 'ROUND ' + (ownerList[0].round) : 'DRAFT OVER'}
                 </Typography>
-                <Divider style={{backgroundColor:'white'}}/>
+                <Divider style={{backgroundColor:'#e3dac9'}}/>
               </div>
             }
             {ownerList.filter((x,i) => showOnTheClock || mode === 'post' ? i !== 0 : i > -1).map( owner => 
@@ -134,10 +135,12 @@ class DraftOrder extends React.Component {
                   {/* <Avatar>
                     <ImageIcon />
                   </Avatar> */}
+                  {OwnerSilk(owner, { height: 35, width:'35', marginLeft:-20 })}
                   <ListItemText disableTypography 
                     primary=
-                      {<Typography variant="subheading" style={{ color: '#FFFFFF' }}>
-                        {owner.owner_name===myOwnerName ? owner.owner_name +' (you)':owner.owner_name}
+                      {<Typography variant="body1" style={{   color: owner.owner_name===myOwnerName  ? '#EBAB38' :  'white' }}>
+                        {/* {owner.owner_name===myOwnerName ? owner.owner_name +' (you)':owner.owner_name} */}
+                        {owner.owner_name}
                       </Typography>}
                     secondary={<Typography variant="body1" style={{ color: '#A0A0A0' }}>
                       {'Pick '+ owner.round +'.'+owner.pick}
@@ -148,14 +151,14 @@ class DraftOrder extends React.Component {
                 {owner.pick % owners.length === 0 && owner.round < draftOrder.length
                   ?
                   <div>
-                    <Divider style={{backgroundColor:'white'}} />
+                    <Divider style={{backgroundColor:'#e3dac9'}} />
                     <Typography key={owner.round} className={classes.round} variant='subheading'>
                       {lastRound !== owner.round ? 'ROUND ' + (owner.round+1) : 'DRAFT OVER'}
                     </Typography>
-                    <Divider style={{backgroundColor:'white'}}/>
+                    <Divider style={{backgroundColor:'#e3dac9'}}/>
                   </div>
                   :
-                  <Divider style={{backgroundColor:'white'}}/>
+                  <Divider style={{backgroundColor:'#e3dac9'}}/>
                 }
               </div>
             )}

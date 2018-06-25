@@ -79,7 +79,7 @@ class MainLeagueHome extends React.Component {
 
             <Card
               title="Upcoming Games"
-              Button={() => <StyledButton text="View Complete Schedules"/>}
+              Button={() => <StyledButton text="View Complete Schedules" link='/mainleagueschedule' />}
             >
               <Upcoming
                 sportLeagues={sportLeagues}
@@ -90,7 +90,7 @@ class MainLeagueHome extends React.Component {
 
             <Card
               title="Draft Countdown"
-              Button={() => <StyledButton text="Go to Draft Room"/>}
+              Button={() => <StyledButton text="Go to Draft Room" link='/livedraft'/>}
             >
               <Countdown
                 startTime={startTime}
@@ -100,7 +100,7 @@ class MainLeagueHome extends React.Component {
             <Card
               title="Standings"
               scroll
-              Button={() => <StyledButton text="View Complete Standings"/>}
+              Button={() => <StyledButton text="View Complete Standings" link='/mainleaguestandings'/>}
             >
               <Standings owners={owners.sort((a, b) => a.rank - b.rank)} />
             </Card>
@@ -110,17 +110,17 @@ class MainLeagueHome extends React.Component {
                 {
                   headline: 'Headline placeholder copy here.',
                   body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-                  Button: () => <StyledButton text="Link" />
+                  Button: () => <StyledButton text="Link" link='/login'/>
                 },
                 {
                   headline: 'Headline placeholder copy here.',
                   body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-                  Button: () => <StyledButton text="Link" />
+                  Button: () => <StyledButton text="Link" link='/login'/>
                 },
                 {
                   headline: 'Headline placeholder copy here.',
                   body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-                  Button: () => <StyledButton text="Link" />
+                  Button: () => <StyledButton text="Link" link='/login'/>
                 },
               ]}/>
             </Card>

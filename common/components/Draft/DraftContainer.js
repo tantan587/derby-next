@@ -94,7 +94,8 @@ class DraftContainer extends React.Component {
       ownerMap[owner.owner_id] =
        {draft_position:owner.draft_position, 
          owner_name:owner.owner_name,
-         here:here}
+         here:here,
+         avatar:owner.avatar}
     })
     this.setState({ownerMap:ownerMap, myDraftPosition:myDraftPosition})
   }

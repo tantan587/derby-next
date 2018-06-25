@@ -1,15 +1,16 @@
 import React from 'react'
-import IconText from './IconText'
+import Typography from '@material-ui/core/Typography'
 class SportIconText extends React.Component {
 
-  
   render() {
     const {src, name} = this.props
     return (
-      <IconText name={name} src={src} 
-        textStyle={{color:'white'}}
-        boxStyle={{width:80}}
-        iconStyle={{width:30, height:'auto'}}/> 
+      <div style={{width:80, display:'inline-block'}}> 
+        <img src={src} alt="none" width={30}  height='auto'/>
+        <Typography style={{color:'white'}}>
+          {name}
+        </Typography>
+      </div> 
     )
   }
 }

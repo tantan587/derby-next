@@ -65,14 +65,14 @@ class Index extends React.Component {
       {name:'NHL', src:'/static/icons/SportIcons/sport_icon_hockey.svg'},
       {name:'EPL', src:'/static/icons/SportIcons/sport_icon_soccer.svg'},
       {name:'NCAAM', src:'/static/icons/SportIcons/sport_icon_ncaa_basketball.svg'},
-      {name:'NCAAM', src:'/static/icons/SportIcons/sport_icon_ncaa_football.svg'}
+      {name:'NCAAF', src:'/static/icons/SportIcons/sport_icon_ncaa_football.svg'}
     ]
 
     const howToPlay = [
       {name:'1) Create Your Free Account', src:'/static/icons/HowToPlayIcons/CreateAccount.svg', link:'/signup'}, //create account
       {name:'2) Join a League of Friends', src:'/static/icons/HowToPlayIcons/DraftTeam.svg', link:'/participate'}, //particpate form remove protection 
-      {name:'3) Draft your Teams', src:'/static/icons/HowToPlayIcons/FormLeague.svg'}, //page of images
-      {name:'4) Watch and Win the Race', src:'/static/icons/HowToPlayIcons/WatchWin.svg'} //page of images
+      {name:'3) Draft your Teams', src:'/static/icons/HowToPlayIcons/FormLeague.svg', link:'/signup'}, //page of images
+      {name:'4) Watch and Win the Race', src:'/static/icons/HowToPlayIcons/WatchWin.svg', link:'/signup'} //page of images
     ]
 
     return (
@@ -124,18 +124,18 @@ class Index extends React.Component {
             <ExpandMoreIcon style={{color:'white', fontSize: 50}}/>
           </div>
           <div className={classes.section2}>
-            <HomeTitle title='Why Derby Is Great' color='white'/>
+            <HomeTitle title='Why Enter the Derby' color='white'/>
             <br/>
             <TitleCopyButton 
-              title='Play the Way You Watch'
-              copy='Play fantasy sports the same way you watch live sports: by rooting for teams to win games and grabbing bragging rights along the way. With Derby, you will always have a team to root for. And, yes, it’s free.'
+              title='Play Like You Watch'
+              copy='Play fantasy sports the same way you watch live sports: by rooting for teams to win games and grabbing bragging rights along the way. Stay on track with our live scoreboard and fantasy scoring updates. With Derby, you will always have a favorite team to root for. And, yes, it’s free.'
               buttonText='Create An Account'
               marginRight={20}
               marginLeft={20}
             />
             <TitleCopyButton 
               title='Find Your Unicorn'
-              copy='Draft teams across many sports, showing off your strategy skills at both selecting the best odds-on favorites and finding dark horses while your friends get stuck with also-rans.'
+              copy='Real teams are your horses in this race! Draft teams across multiple sports to create your own unique roster. Set the pace by showing off your strategy skills at both selecting the best odds-on favorites and finding dark horses while your friends get stuck in the mud with also-rans.'
               buttonText='More'
               marginRight={20}
               marginLeft={20}
