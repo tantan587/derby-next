@@ -1,5 +1,6 @@
 var methods = {}
 const rp = require('request-promise')
+const fdClientModule = require('fantasydata-node-client');
 
 //method to insert and create a table
 methods.insertIntoTable = function(knex, schema, table, data) {
@@ -18,12 +19,20 @@ methods.getTeamId =  function(knex, sportId)
     .where('sport_id', sportId)
 }
 
-//method to find 
+methods.getSportId =   function(knex, sportName)
+{
+  return knex
+    .withSchema('sports')
+    .table('leagues')
+    .where('sport_name', sportName) 
+    .select('sport_id')
+}
+//method to find team and global id
 methods.getTeamAndGlobalId =  function(knex, sportId)
 {
   return knex
     .withSchema('sports')
-    .table('team_info')
+    .table('data_link')
     .where('sport_id', sportId)
     .select('team_id', 'global_team_id')
 }
@@ -66,7 +75,28 @@ methods.getScheduleData = (knex, sportName, url) =>
     })
 }
 
-methods.getFantasyData = async (knex, sportName, url, teamKeyField, confField, eplAreaIdInd = false) => 
+methods.getFdata = async (knex, sportName,api, promiseToGet) =>
+{
+  //console.log('this')
+  let league = await knex
+  .withSchema('sports')
+  .table('leagues')
+  .where('sport_name', sportName)
+
+  const keys = {}
+  keys[api] = league[0].fantasy_data_key
+  const sport_id = league[0].sport_id
+
+  const FantasyDataClient = new fdClientModule(keys);
+  //const fandata = FantasyDataClient.func()
+  //console.log('test')
+  //console.log(FantasyDataClient[api][promiseToGet]())
+  //return [FantasyDataClient[api][promiseToGet](), sport_id]
+  return FantasyDataClient[api][promiseToGet]()
+  
+}
+
+methods.getFantasyData = async (knex, sportName, func, teamKeyField, confField, eplAreaIdInd = false) => 
 {
   console.log(sportName)
   let league = await knex
@@ -79,15 +109,20 @@ methods.getFantasyData = async (knex, sportName, url, teamKeyField, confField, e
   const teamIds = await methods.getTeamId(knex, sportId)
          
   teamIds.forEach(r => teamIdMap[r.fantasydata_id]= r.team_id)
-
-  const options = {
-    url: url,
-    headers: {
-      'User-Agent': 'request',
-      'Ocp-Apim-Subscription-Key':league[0].fantasy_data_key
-    },
-    json: true
-  }
+  
+  const keys = {
+      api:league[0].fantasy_data_key
+  };
+  const FantasyDataClient = new fdClientModule(keys);
+  const fandata = FantasyDataClient.func
+  // const options = {
+  //   url: url,
+  //   headers: {
+  //     'User-Agent': 'request',
+  //     'Ocp-Apim-Subscription-Key':league[0].fantasy_data_key
+  //   },
+  //   json: true
+  // }
 
   let confMap = {}
   const conferences = await knex
@@ -113,7 +148,7 @@ methods.getFantasyData = async (knex, sportName, url, teamKeyField, confField, e
   //filter out only the conferences we are using
   //TODO: this needs to change as we need more info on all teams
   if (filterConferencesInd) {
-    fdata.filter(fd => fd.ConferenceID in confMap)
+    fandata.filter(fd => fd.ConferenceID in confMap)
       .map(conf => 
         conf.Teams.map(team => 
           teams.push({...team, 
@@ -124,7 +159,7 @@ methods.getFantasyData = async (knex, sportName, url, teamKeyField, confField, e
   // used for creation of epl leagues
   else if(eplAreaIdInd){
 
-    fdata.filter(fd => fd.AreaId === 68 || fd.TeamId === 523)
+    fandata.filter(fd => fd.AreaId === 68 || fd.TeamId === 523)
       .map(team =>
       {
         if(teamIdMap[team[teamKeyField]])
@@ -138,7 +173,8 @@ methods.getFantasyData = async (knex, sportName, url, teamKeyField, confField, e
   } 
   //used for everything else (nba, nhl, mlb, nfl and epl when not creating)   
   else{
-    fdata
+
+    fandata
       .map(team =>
         teams.push({...team, 
           sport_id:sportId,
@@ -147,38 +183,6 @@ methods.getFantasyData = async (knex, sportName, url, teamKeyField, confField, e
   }
   return teams
 
-}
-
-methods.updateStandings = (knex,newStandings) =>
-{
-  return knex
-    .withSchema('sports')
-    .table('standings')
-    .then(results => {
-      let oldStandings = {}
-      var updateList =[]
-      results.map(result => oldStandings[result.team_id] =result)
-
-      newStandings.map(teamRec =>
-      {
-        if(oldStandings[teamRec.team_id].wins !== teamRec.wins)  
-          updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'wins', teamRec.wins )))
-        if(oldStandings[teamRec.team_id].losses !== teamRec.losses)  
-          updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'losses', teamRec.losses )))
-        if(oldStandings[teamRec.team_id].ties !== teamRec.ties)  
-          updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'ties', teamRec.ties )))
-      })
-      if (updateList.length > 0)
-      {
-        return Promise.all(updateList)
-          .then(() => { 
-            //console.log("im done updating!")
-            return updateList.length
-          })
-      }
-      else
-        return 0
-    })
 }
 
 methods.updateSchedule = (knex,newResults) =>
