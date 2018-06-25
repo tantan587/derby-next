@@ -85,7 +85,8 @@ class Team {
 
     calculateCFBValue(conf_champ_boost){
         let adj_elo = Number(this.elo)/100
-        let conf_boost = this.conference === '105' ? 1:0
+        //conf boost gives greater boost to sec teams, and then boost to other major conf. should give boost as well to notre dame - needs to be added in.
+        let conf_boost = this.conference === '10505' ? 2: this.conference === ('10501' || '10502'||'10503'||'10504') ? 1: 0
         this.cfb_value = adj_elo + conf_boost + conf_champ_boost + this.wins - (this.losses * 3)
     }
 

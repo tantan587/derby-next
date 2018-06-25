@@ -3,6 +3,7 @@ const leagues = require('./leagues.js')
 const getDayCount = require('./dayCount.js')
 const rpiUpdate = require('./cbbRPItracker')
 
+
 const updateOneElo = (knex, team_id, team_elo) =>
 {
     return knex
@@ -40,7 +41,7 @@ const getTodaysGames = (knex) =>
 async function calculate_new_elos()
 {
     return getTodaysGames(knex)
-    .then(x => {
+    .then(games => {
         let new_elos = []
         //for college basketball rpi - to add the win values to the database
         let home_wins = []
@@ -50,7 +51,9 @@ async function calculate_new_elos()
         let away_losses = []
         let neutral_losses = []
         let any_cbb = false
-        x.map(game => {
+        //currently, we are updating epl games through a different feed.
+        let games_for_update = games.filter(game => game.sport_id !== '107')
+        games_for_update.map(game => {
             let home_court = leagues[game.sport_id].home_advantage //this needs to be adjusted for neutral court games later
             let elo_difference = game.home_team_elo - game.away_team_elo + home_court
             let home_win_value = game.winner === 'H' ? 1:0
