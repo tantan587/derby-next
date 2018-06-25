@@ -114,9 +114,8 @@ const simulateEPLGame = (home, away) =>
     let home_win_value = random_number < home_win_percentage ? 1 : random_number < tie_percentage ? .5 : 0
     home.adjustEloWins(home_win_value, home_win_percentage_raw, leagues['107'].elo_adjust)
     away.adjustEloWins(Math.abs(1-home_win_value), 1 - home_win_percentage_raw, leagues['107'].elo_adjust)
-    let away_win_value_standings = home_win_value != 1 ? 1: home_win_value_ELO === .5 ? .5:0
-    let results = [home_win_value, away_win_value_standings]
-    return results
+
+    return home_win_value
     
     //return [home_win_value, Math.abs(1-home_win_value)]
 }

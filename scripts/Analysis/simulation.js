@@ -35,9 +35,9 @@ async function simulate(knex)
     const nba_teams = [[],[]] //simulateProfessionalLeague(games, all_teams, '101', all_points, simulations)
     const nfl_teams = [[],[]] //simulateProfessionalLeague(games, all_teams, '102', all_points, simulations)
     const nhl_teams = [[],[]] //simulateProfessionalLeague(games, all_teams, '104', all_points, simulations)
-    const cfb_teams = [[],[]] //simulateCFB(games, all_teams, all_points, simulations)
+    const cfb_teams = [[],[]] //simulateCFB(games, all_teams, all_points, all_points, simulations)
     const cbb_teams = simulateCBB(games, all_teams, all_points, simulations)
-    const epl_teams = [[],[]] //simulateEPL(games, all_teams)
+    const epl_teams = [[],[]] //simulateEPL(games, all_teams, all_points, simulations)
     
     //team variables contain team projections as first object, game projections as second.
     //the following three functions find the team projections, game projections, and then find fantasy.projections
@@ -166,10 +166,6 @@ const simulateCBB = (all_games_list, teams, points, simulations = 10) => {
         cbb_teams.sort(function(a,b){return b.wins-a.wins})
         //play the conference championship games, add winners to array conference champions
         //following array is all the conference
-        const conference_ids = ['10601', '10602', '10603', '10604', '10605', '10606', '10607', '10608',
-            '10609', '10610', '10611', '10612', '10613', '10614', '10615', '10616', '10618',
-            '10619', '10620', '10621', '10622', '10623', '10624', '10625', '10626',
-            '10627', '10628', '10629', '10630', '10631','10632', '10633' ]
         let conference_champions = league_conference['106'].map(id => {return playoffFunctions[106](cbb_teams.filter(team => team.conference === id), simulateHelpers)})
         conference_champions.forEach(team=>{team.playoff_appearances++})
         //calculate RPI
@@ -183,25 +179,37 @@ const simulateCBB = (all_games_list, teams, points, simulations = 10) => {
             team.cbb_rpi_rank = rank
             rank++
         })
+        //create a CBB value approximation for tournament teams. This will be used to find march madness
         cbb_teams.forEach(team=>{team.calculateCBBValue()})
         cbb_teams.sort(function(a,b){return b.cbb_value - a.cbb_value})
+        //conf champs automatically qualify. This filters those out.
         let non_conf_champs = cbb_teams.filter(team => conference_champions.includes(team) === false)
+        //s
         let at_large = non_conf_champs.slice(0,32)
         let last_four = non_conf_champs.slice(32,36)
-        let last_four_conference_champions = []
-        for(y=0;y<4;y++){last_four_conference_champions.unshift(conference_champions.pop())}
+        //this needs to be checked that splice was done properlyl
+        let last_four_conference_champions = conference_champions.splice(29,4)
+        //why did I do the below this way?
+        //for(y=0;y<4;y++){last_four_conference_champions.unshift(conference_champions.pop())}
+        //each team that made tournament and received by scores one playoff win for first round, equivalent to bye
         conference_champions.forEach(team => {team.playoff_wins[0]++})
         at_large.forEach(team=>{
             team.playoff_wins[0]++
             team.playoff_appearances++
         })
+        //last four separate - only have playoff appearance so far
         last_four.forEach(team=>{team.playoff_appearances++})
-        let last_four_winner_1 = simulateHelpers.Series(last_four[0],last_four[3],1,'106',1,neutral=true)
-        let last_four_winner_2 = simulateHelpers.Series(last_four[1],last_four[2],1,'106',1,neutral=true)
-        let last_conference_champ_winner_1 = simulateHelpers.Series(last_four_conference_champions[0],last_four_conference_champions[3],1,'106',1,neutral=true)
-        let last_conference_champ_winner_2 = simulateHelpers.Series(last_four_conference_champions[1],last_four_conference_champions[2],1,'106',1,neutral=true)
+        //first round of march madness: simulate games of last 4 and bottom 4
+        let last_four_winner_1 = simulateHelpers.Series(last_four[0],last_four[3],1,'106', 1, true)
+        let last_four_winner_2 = simulateHelpers.Series(last_four[1],last_four[2],1,'106', 1, true)
+        let last_conference_champ_winner_1 = simulateHelpers.Series(last_four_conference_champions[0],last_four_conference_champions[3],1,'106',1, true)
+        let last_conference_champ_winner_2 = simulateHelpers.Series(last_four_conference_champions[1],last_four_conference_champions[2],1,'106',1, true)
+        //creates bracket of 64 teams, and sorts them
         let march_madness = [...conference_champions, ...at_large, last_four_winner_1, last_four_winner_2,last_conference_champ_winner_1, last_conference_champ_winner_2]
         march_madness.sort(function(a,b){return b.cbb_value - a.cbb_value})
+        //runs the tournament
+        //this function goes round by round, and in each round, takes team at top of list and they play team at bottom.
+        //this therefore simulates a bracket
         let next_round = []
         for(let round = 2; round <8; round++){
             if(round === 6){
@@ -216,13 +224,13 @@ const simulateCBB = (all_games_list, teams, points, simulations = 10) => {
             march_madness.push(...next_round)
             next_round.length = 0
         }
-        march_madness[0].champions++
+        march_madness[0].champions++ //team remaining is champ
         all_games_list['106'].forEach(game=>{
             game.adjustImpact()
         })
         cbb_teams.forEach(team =>{
             team.reset()
-            team.cbb_reset()
+            team.cbb_reset() //cbb reset also reset rpi
         })
     }
     cbb_teams.forEach(team => {
@@ -234,15 +242,18 @@ const simulateCBB = (all_games_list, teams, points, simulations = 10) => {
     }
 
 //function which simulates NBA, NFL, NHL, MLB - default set to 10 for now to modify later
-const simulateEPL = (all_games_list, teams, simulations = 10) => {
+const simulateEPL = (all_games_list, teams, points, simulations = 10) => {
     const epl_teams = individualSportTeams(teams, '107')
     //console.log(leagues)
     for(let x=0; x<simulations; x++){
         all_games_list[sport_id].forEach(game => {
             //console.log(game)
            game.play_EPL_game()})
+        
+        //sort by EPL points
         epl_teams.sort(function(a,b){return 2*b.wins+b.ties-2*a.wins-a.ties})
-        //find both finalists
+        
+        //EPL does not have playoffs, just a top 4 that qualify for champions league
         let playoffs = epl_teams.slice(0,4)
         playoffs.forEach(team => {team.playoffs++})
         playoffs[0].champions++
@@ -250,23 +261,17 @@ const simulateEPL = (all_games_list, teams, simulations = 10) => {
         playoffs[1].finalist++
         all_games_list['107'].forEach(game=>{game.adjustImpact()})
         epl_teams.forEach(team => {
-            team.reset()})}
+            team.reset()})
+        }
         //console.log(`${teams[team].name}: ${teams[team].wins}/${teams[team].losses}, defaultElo: ${teams[team].defaultElo}, finalElo: ${teams[team].elo}`)})
     epl_teams.forEach(team => {
         team.averages(simulations)
-        console.log(team.average_playoff_wins)
-        console.log(`${team.name}: ${team.average_wins}/${team.average_losses}`)
-    })
-    all_games_list['107'].forEach(game=>{
-        console.log(`Home: ${game.home.name}, Away: ${game.away.name}`)
-        console.log(game.EOS_results.home.win.regular)
-        console.log(game.all_simulate_results.home)
-        console.log(game.EOS_results.home.loss.regular)
-        console.log(game.last_result.home)
-    })
-    simulateHelpers.updateProjections(knex,sport_teams)
-    return epl_teams
-    //process.exit()
+        })
+
+    //creates game projections for impact, and also calculating each temas iwnning percentage
+    let game_projections = simulateHelpers.createImpactArray(all_games_list, '107', points)
+    return [epl_teams, game_projections]
+
     }
 
 
