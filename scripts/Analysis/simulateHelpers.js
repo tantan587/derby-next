@@ -37,12 +37,7 @@ const simulateGame = (home, away, sport_id, neutral = false, playoff_game = fals
     let home_win_percentage = 1/(Math.pow(10,(-1*elo_difference/400))+1)
     let random_number = Math.random()
     let home_win_value = random_number < home_win_percentage ? 1:0
-    /*if reg == True:
-        home.adjRWins(homeWin)
-        away.adjRWins(awayWin)
-    else:
-        home.adjPWins(homeWin)
-        away.adjPWins(awayWin)*/
+
     home.adjustEloWins(home_win_value, home_win_percentage, leagues[sport_id].elo_adjust, playoff_game)
     away.adjustEloWins(Math.abs(1-home_win_value), 1 - home_win_percentage, leagues[sport_id].elo_adjust, playoff_game)
     let results = home_win_value === 1 ?[home, away]:[away,home]
@@ -56,12 +51,6 @@ const simulateBowlGame = (home, away) =>
     let home_win_percentage = 1/(Math.pow(10,(-1*elo_difference/400))+1)
     let random_number = Math.random()
     let home_win_value = random_number < home_win_percentage ? 1:0
-    /*if reg == True:
-        home.adjRWins(homeWin)
-        away.adjRWins(awayWin)
-    else:
-        home.adjPWins(homeWin)
-        away.adjPWins(awayWin)*/
     home.adjustEloWins(home_win_value, home_win_percentage, leagues['105'].elo_adjust, true)
     away.adjustEloWins(Math.abs(1-home_win_value), 1 - home_win_percentage, leagues['105'].elo_adjust, true)
     home_win_value === 1 ? home.bowl_wins++ : away.bowl_wins++

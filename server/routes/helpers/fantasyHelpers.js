@@ -105,23 +105,23 @@ const updateTeamPointsTable = (newTeamPoints) =>
       let oldTeamPoints = {}
       var updateList =[]
       results.map(result => {
-        if (!oldTeamPoints[result.league_id]){
-          oldTeamPoints[result.league_id] = {}
+        if (!oldTeamPoints[result.scoring_type_id]){
+          oldTeamPoints[result.scoring_type_id] = {}
         }
-        oldTeamPoints[result.league_id][result.team_id] =result})
+        oldTeamPoints[result.scoring_type_id][result.team_id] = result})
       newTeamPoints.map(teamPoints =>
       {
         //needs to be != because of 100.00 vs 100
-        if(oldTeamPoints[teamPoints.league_id][teamPoints.team_id].reg_points != teamPoints.reg_points)
+        if(oldTeamPoints[teamPoints.scoring_type_id][teamPoints.team_id].reg_points != teamPoints.reg_points)
         {
-          updateList.push(Promise.resolve(updateOneRowTeamPoints(teamPoints.league_id,teamPoints.team_id,'reg_points',teamPoints.reg_points )))
+          updateList.push(Promise.resolve(updateOneRowTeamPoints(teamPoints.scoring_type_id,teamPoints.team_id,'reg_points',teamPoints.reg_points )))
         }
 
-        if(oldTeamPoints[teamPoints.league_id][teamPoints.team_id].bonus_points != teamPoints.bonus_points){
-          updateList.push(Promise.resolve(updateOneRowTeamPoints(teamPoints.owner_id,teamPoints.team_id,'bonus_points',teamPoints.bonus_points )))}
+        if(oldTeamPoints[teamPoints.scoring_type_id][teamPoints.team_id].bonus_points != teamPoints.bonus_points){
+          updateList.push(Promise.resolve(updateOneRowTeamPoints(teamPoints.scoring_type_id,teamPoints.team_id,'bonus_points',teamPoints.bonus_points )))}
         
-        if(oldTeamPoints[teamPoints.league_id][teamPoints.team_id].playoff_points != teamPoints.playoff_points){
-          updateList.push(Promise.resolve(updateOneRowTeamPoints(teamPoints.owner_id,teamPoints.team_id,'playoff_points',teamPoints.playoff_points )))}
+        if(oldTeamPoints[teamPoints.scoring_type_id][teamPoints.team_id].playoff_points != teamPoints.playoff_points){
+          updateList.push(Promise.resolve(updateOneRowTeamPoints(teamPoints.scoring_type_id,teamPoints.team_id,'playoff_points',teamPoints.playoff_points )))}
       })
       if (updateList.length > 0)
       {
@@ -180,12 +180,12 @@ const updateOneRow = (schema, table, column_link, column_link_val, column, value
     })
 }
 
-const updateOneRowTeamPoints = (league_id,team_id, column, value ) =>
+const updateOneRowTeamPoints = (scoring_type_id,team_id, column, value ) =>
 {
   return knex
     .withSchema('fantasy')
     .table('team_points')
-    .where('league_id',league_id)
+    .where('scoring_type_id',scoring_type_id)
     .andWhere('team_id',team_id)
     .update(column, value)
     .then(() =>
@@ -203,35 +203,42 @@ const getPoints = async (knex, scoring_type = 1) => {
     .then((points)=>{
       let point_map = {}
       points.forEach(structure => {
-        points_map[strucure.sport_id] = {...structure}
+        points_map[structure.sport_id] = {...structure}
       })
       return point_map
     })
   }
 
-
+const getPointsStructure = async (knex) => {
+  return knex
+    .withSchema('fantasy')
+    .table('scoring')
+    .then((points)=>{
+      let point_map = {}
+      points.forEach(structure => {
+        if(!point_map[structure.scoring_type_id]){
+          point_map[structure.scoring_type_id] = {}
+        }
+        point_map[structure.scoring_type_id][structure.sport_id] = {...structure}
+      })
+      return point_map
+    })
+  }
+  
 //this should be updated to do all the different team points structures
 //similar to the way i did that before with the update fantasy projected points
-const updateTeamPoints = (league_id, scoring_type_id = 1) =>
+//need to set up this table somewhere...
+const updateTeamPoints = () =>
 {
   return getStandingDataPlayoffAndRegular()
     .then((data) =>
     {
       //somewhere, this needs to check to be sure the league scoring type is 1 and input it here
-      let points = await getPoints(knex, scoring_type_id)
-     /*  let points = [
-        {sport_id: 101, win:3, tie:0},
-        {sport_id: 102, win:15, tie:0},
-        {sport_id: 103, win:2, tie:0},
-        {sport_id: 104, win:3.5, tie:1.75},
-        {sport_id: 105, win:16.75, tie:0},
-        {sport_id: 106, win:7, tie:0},
-        {sport_id: 107, win:6.75, tie:2.25}] */
+      //let points = await getPoints(knex, scoring_type_id)
+      let points = await getPointsStructure(knex)
 
-
-      let str = league_id
-        ? 'select a.*, b.sport_id from fantasy.team_points a, sports.team_info b where a.team_id = b.team_id and a.league_id = \'' + league_id + '\''
-        : 'select a.*, b.sport_id from fantasy.team_points a, sports.team_info b where a.team_id = b.team_id'
+      //this should maybe be taken out, unless it would be by scoring type instead
+      let str = 'select a.*, b.sport_id from fantasy.team_points a, sports.team_info b where a.team_id = b.team_id'
 
       return knex.raw(str)
         .then(result =>
@@ -244,20 +251,20 @@ const updateTeamPoints = (league_id, scoring_type_id = 1) =>
               let sport_id = fteam.sport_id
               if(sport_id === ('103'||'104')){
                 let milestone_parameter = sport_id === '103' ? team.wins : team.wins+team.ties/2
-                let milestone_points = points[sport_id].regular_season.milestone_points
-                let bonus_win = milestone_parameter < points[sport_id].regular_season.milestone_1 ? 0 :
-                milestone_parameter < points[sport_id].regular_season.milestone_2 ? milestone_points :
-                milestone_parameter < points[sport_id].regular_season.milestone_3 ? milestone_points*2 : milestone_points*3
+                let milestone_points = points[fteam.scoring_type_id][sport_id].regular_season.milestone_points
+                let bonus_win = milestone_parameter < points[fteam.scoring_type_id][sport_id].regular_season.milestone_1 ? 0 :
+                milestone_parameter < points[fteam.scoring_type_id][sport_id].regular_season.milestone_2 ? milestone_points :
+                milestone_parameter < points[fteam.scoring_type_id][sport_id].regular_season.milestone_3 ? milestone_points*2 : milestone_points*3
               }else{
                 let bonus_win = 0
               }
-              let bonus_points = team.playoff.result === 'appearance' ? points[sport_id].bonus.appearance : 
-                                  team.playoff.result === 'finalist' ? points[sport_id].bonus.finalist + points[sport_id].bonus.appearance :
-                                  team.playoff.result === 'championship' ? points[sport_id].bonus.championship + points[sport_id].bonus.finalist + points[sport_id].bonus.appearance : 0
-              fteam.reg_points = points[sport_id].regular_season.wins * team.wins + points[sport_id].regular_season.tie * team.ties
-              fteam.playoff_points = points[sport_id].playoffs.wins * team.playoff_wins
+              let bonus_points = team.playoff.result === 'appearance' ? points[fteam.scoring_type_id][sport_id].bonus.appearance : 
+                                  team.playoff.result === 'finalist' ? points[fteam.scoring_type_id][sport_id].bonus.finalist + points[fteam.scoring_type_id][sport_id].bonus.appearance :
+                                  team.playoff.result === 'championship' ? points[fteam.scoring_type_id][sport_id].bonus.championship + points[fteam.scoring_type_id][sport_id].bonus.finalist + points[fteam.scoring_type_id][sport_id].bonus.appearance : 0
+              fteam.reg_points = points[f_team.scoring_type_id][sport_id].regular_season.wins * team.wins + points[fteam.scoring_type_id][sport_id].regular_season.tie * team.ties
+              fteam.playoff_points = points[fteam.scoring_type_id][sport_id].playoffs.wins * team.playoff_wins
               //below depends on how we format bowl wins
-              sport_id === '105' ? fteam.playoff_points += (points[sport_id].playoffs.bowl_win * team.playoff.bowl_win) : 0
+              sport_id === '105' ? fteam.playoff_points += (points[fteam.scoring_type_id][sport_id].playoffs.bowl_win * team.playoff.bowl_win) : 0
               fteam.bonus_points = bonus_win + bonus_points
               return fteam})
             updateTeamPointsTable(teamPoints)
