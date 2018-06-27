@@ -10,7 +10,7 @@ const rpiHelpers = require('./cbbRPItracker.js')
 const getDayCount = require('./dayCount.js')
 const db_helpers = require('../helpers.js').data
 const points = require('./getPointsStructure.js') //this pulls all the differnet point strtuctures
-
+const randomSchedules = require('./randomSchedules.js')
 
 //this is the overall simulate function - runs for each sport
 //eventually needs to add in how it detects if in the middle of a season
@@ -28,15 +28,22 @@ async function simulate(knex)
     /* this to be added back in later
     rpiHelpers.addRpiToTeamClass(knex,all_teams) */
     const games = await dbSimulateHelpers.createGamesArray(knex, all_teams,day_count)
+/*     const MLB_random_games = await randomSchedules.randomMLBSchedule(knex)
+    let game_list = {103:[]}
+    let inc = 0
+    MLB_random_games.forEach(game =>{
+        game_list[103].push(new Game(inc, all_teams['103'][game.home_team_id], all_teams['103'][game.away_team_id], '103'))
+        inc++
+    }) */
     //.then(games => {
 
     //these are the functions for each individual season. 
-    const mlb_teams = [[],[]] //simulateProfessionalLeague(games, all_teams, '103', all_points, simulations)
+    const mlb_teams = simulateProfessionalLeague(games, all_teams, '103', all_points, simulations)
     const nba_teams = [[],[]] //simulateProfessionalLeague(games, all_teams, '101', all_points, simulations)
     const nfl_teams = [[],[]] //simulateProfessionalLeague(games, all_teams, '102', all_points, simulations)
     const nhl_teams = [[],[]] //simulateProfessionalLeague(games, all_teams, '104', all_points, simulations)
     const cfb_teams = [[],[]] //simulateCFB(games, all_teams, all_points, all_points, simulations)
-    const cbb_teams = simulateCBB(games, all_teams, all_points, simulations)
+    const cbb_teams = [[],[]] //simulateCBB(games, all_teams, all_points, simulations)
     const epl_teams = [[],[]] //simulateEPL(games, all_teams, all_points, simulations)
     
     //team variables contain team projections as first object, game projections as second.
@@ -65,7 +72,6 @@ async function simulate(knex)
 const simulateProfessionalLeague = (all_games_list, teams, sport_id, points, simulations = 10) => {
     const sport_teams = individualSportTeams(teams, sport_id)
     //console.log(leagues)
-    let y = 1
     for(var x=0; x<simulations; x++){
         all_games_list[sport_id].forEach(game => {
             //console.log(game)
@@ -84,6 +90,13 @@ const simulateProfessionalLeague = (all_games_list, teams, sport_id, points, sim
         all_games_list[sport_id].forEach(game=>{
             game.adjustImpact()
         })
+
+        //below is way to test how many games the team is playing, to test. Keeping it so can easily build and test for future.
+/*         sport_teams.forEach(team=>{
+            let total = team.wins + team.losses
+            console.log(team.name, ':', total)
+        })
+        process.exit() */
         //resets the team values, back to the original
         sport_teams.forEach(team => {
             team.reset()})

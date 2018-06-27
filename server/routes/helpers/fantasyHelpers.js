@@ -228,14 +228,15 @@ const getPointsStructure = async (knex) => {
 //this should be updated to do all the different team points structures
 //similar to the way i did that before with the update fantasy projected points
 //need to set up this table somewhere...
-const updateTeamPoints = () =>
+const updateTeamPoints = async () =>
 {
+  let points = await getPointsStructure(knex)
   return getStandingDataPlayoffAndRegular()
     .then((data) =>
     {
       //somewhere, this needs to check to be sure the league scoring type is 1 and input it here
       //let points = await getPoints(knex, scoring_type_id)
-      let points = await getPointsStructure(knex)
+
 
       //this should maybe be taken out, unless it would be by scoring type instead
       let str = 'select a.*, b.sport_id from fantasy.team_points a, sports.team_info b where a.team_id = b.team_id'
