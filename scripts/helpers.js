@@ -27,7 +27,7 @@ methods.getSportId =   function(knex, sportName)
     .select('sport_id')
 }
 
-methods.getTeamAndGlobalId =  function(knex, sportId)
+methods.getTeamAndGlobalId =  async function(knex, sportId)
 {
   return knex
     .withSchema('sports')
@@ -95,13 +95,8 @@ methods.getFdata = async (knex, sportName,api, promiseToGet, year=false) =>
   if(year===false){
     return FantasyDataClient[api][promiseToGet]()
   }else{
-    console.log('here')
-    console.log(api)
-    console.log(promiseToGet)
-    console.log(year)
-    let year_2 = year.toString()
-    console.log(year_2)
-    return FantasyDataClient[api][promiseToGet]('2017')
+    console.log('here4')
+    return FantasyDataClient[api][promiseToGet]('2017POST')
   }
   
 }
@@ -215,6 +210,68 @@ methods.updateSchedule = (knex,newResults) =>
           console.log(x.global_game_id) 
           updateList.push(Promise.resolve(methods.updateOneResultRow(knex, x.global_game_id, x)))
         }
+      })
+      if (updateList.length > 0)
+      {
+        return Promise.all(updateList)
+          .then(() => { 
+            //console.log("im done updating!")
+            return updateList.length
+          })
+      }
+      else
+        return 0
+    })
+}
+
+methods.updatePlayoffStandings = (knex,newStandings) =>
+{
+  return knex
+    .withSchema('sports')
+    .table('playoff_standings')
+    .then(results => {
+      let oldStandings = {}
+      var updateList =[]
+      results.map(result => oldStandings[result.team_id] =result)
+
+      newStandings.map(teamRec =>
+      {
+        if(oldStandings[teamRec.team_id].playoff_wins !== teamRec.wins)  
+          updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'wins', teamRec.wins )))
+        if(oldStandings[teamRec.team_id].playoff_losses !== teamRec.losses)  
+          updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'losses', teamRec.losses )))
+      })
+      if (updateList.length > 0)
+      {
+        return Promise.all(updateList)
+          .then(() => { 
+            //console.log("im done updating!")
+            return updateList.length
+          })
+      }
+      else
+        return 0
+    })
+}
+
+methods.updateStandings = (knex,newStandings) =>
+{
+  return knex
+    .withSchema('sports')
+    .table('standings')
+    .then(results => {
+      let oldStandings = {}
+      var updateList =[]
+      results.map(result => oldStandings[result.team_id] =result)
+
+      newStandings.map(teamRec =>
+      {
+        if(oldStandings[teamRec.team_id].wins !== teamRec.wins)  
+          updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'wins', teamRec.wins )))
+        if(oldStandings[teamRec.team_id].losses !== teamRec.losses)  
+          updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'losses', teamRec.losses )))
+        if(oldStandings[teamRec.team_id].ties !== teamRec.ties)  
+          updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'ties', teamRec.ties )))
       })
       if (updateList.length > 0)
       {

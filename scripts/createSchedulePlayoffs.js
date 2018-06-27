@@ -6,16 +6,6 @@ const knex = require('../server/db/connection')
 
 async function createSchedule()
 {
-  // //let nhlData = await getNhlData()
-  // let nbaData = await getData('NBA', 'https://api.fantasydata.net/v3/nba/scores/JSON/Games/2018')
-  // let nhlData = await getData('NHL', 'https://api.fantasydata.net/v3/nhl/scores/JSON/Games/2018')
-  // let nflData = await getData('NFL', 'https://api.fantasydata.net/v3/nfl/scores/JSON/Schedules/2017')
-  // let mlbData = await getData('MLB', 'https://api.fantasydata.net/v3/mlb/scores/JSON/Games/2018')
-  // let cfbData = await getData('CFB', 'https://api.fantasydata.net/v3/cfb/scores/JSON/Games/2017')
-  // let cbbData = await getData('CBB', 'https://api.fantasydata.net/v3/cbb/scores/JSON/Games/2018')
-  // let eplData = await getData('EPL', 'https://api.fantasydata.net/v3/soccer/scores/json/Schedule/144')
-  // // let nflData = await getNflData()
-  // let eplData = await getEplData()
 
   let MLB_schedPO = await getSchedInfo(knex, 'MLB', 'MLBv3ScoresClient', 'getSchedulesPromise')
   //console.log(MLB_stadiums.length)
