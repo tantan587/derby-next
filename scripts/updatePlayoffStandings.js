@@ -36,9 +36,9 @@ const getStandInfo = async (knex, sportName, api, promiseToGet, year) => {
     let teamIdMap = {}
     const idSpelling = sportName === 'EPL' ? 'Id' : 'ID'
     teamIds.forEach(team => teamIdMap[team.global_team_id] = team.team_id)
-  standInfo = cleanStand.map(team =>
+    let standInfo = cleanStand.map(team =>
     {
-      return {team_id: teamIdMap[team['GlobalGame' + idSpelling]], playoff_wins: team.Wins, 
+      return {team_id: teamIdMap[team['GlobalTeam' + idSpelling]], playoff_wins: team.Wins, 
         playoff_losses : team.Losses, byes: 0, playoff_status: 'in_playoffs' 
         }
   }
