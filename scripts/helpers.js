@@ -1,5 +1,6 @@
 var methods = {}
 const rp = require('request-promise')
+const fdClientModule = require('fantasydata-node-client')
 
 //method to insert and create a table
 methods.insertIntoTable = function(knex, schema, table, data) {
@@ -65,6 +66,35 @@ methods.getScheduleData = (knex, sportName, url) =>
         })
     })
 }
+
+methods.getFdata = async (knex, sportName,api, promiseToGet, year=false) =>
+{
+  //console.log('this')
+  let league = await knex
+  .withSchema('sports')
+  .table('leagues')
+  .where('sport_name', sportName)
+
+  console.log(league)
+  const keys = {}
+  keys[api] = league[0].fantasy_data_key
+  const sport_id = league[0].sport_id
+
+  const FantasyDataClient = new fdClientModule(keys);
+  //const fandata = FantasyDataClient.func()
+  //console.log('test')
+  //console.log(FantasyDataClient[api][promiseToGet]())
+  //return [FantasyDataClient[api][promiseToGet](), sport_id]
+  
+  if(year===false){
+    return FantasyDataClient[api][promiseToGet]()
+  }else{
+    console.log('here4')
+    return FantasyDataClient[api][promiseToGet](year)
+  }
+  
+}
+
 
 methods.getFantasyData = async (knex, sportName, url, teamKeyField, confField, eplAreaIdInd = false) => 
 {
