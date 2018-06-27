@@ -285,9 +285,10 @@ const updateTeamPoints = () =>
 //not sure if this is set up to run for each and every league - this hsould match up leagues with scoring type
 const updateLeaguePoints = (league_id) =>
 {
+  //check the and part of this raw statement to be sure it works
   let str = league_id
-    ? 'select a.reg_points, a.bonus_points, b.owner_id, b.league_id from fantasy.team_points a, fantasy.rosters b where a.team_id = b.team_id and a.league_id = b.league_id and a.league_id = \'' + league_id + '\''
-    : 'select a.reg_points, a.bonus_points, b.owner_id, b.league_id from fantasy.team_points a, fantasy.rosters b where a.team_id = b.team_id and a.league_id = b.league_id'
+    ? 'select a.reg_points, a.bonus_points, a.playoff_points, b.league_id from fantasy.team_points a, fantasy.rosters b, fantasy.leagues c where a.team_id = b.team_id and c.league_id = b.league_id and c.scoring_type_id = a.scoring_type_id and a.league_id = \'' + league_id + '\''
+    : 'select a.reg_points, a.bonus_points, a.playoff_points, b.league_id from fantasy.team_points a, fantasy.rosters b, fantasy.leagues c where a.team_id = b.team_id and c.league_id = b.league_id andWhere c.scoring_type_id = a.scoring_type_id'
 
   return knex.raw(str)
     .then(result =>
@@ -300,7 +301,7 @@ const updateLeaguePoints = (league_id) =>
           {
             byOwner[roster.owner_id] = {total_points:0, league_id:roster.league_id, owner_id:roster.owner_id}
           }
-          byOwner[roster.owner_id].total_points += Number.parseFloat(roster.reg_points) + Number.parseFloat(roster.bonus_points)
+          byOwner[roster.owner_id].total_points += Number.parseFloat(roster.reg_points) + Number.parseFloat(roster.bonus_points) + Number.parseFloat(roster.playoff_points)
         })
         let byLeague = {}
         Object.values(byOwner).map(owner => {

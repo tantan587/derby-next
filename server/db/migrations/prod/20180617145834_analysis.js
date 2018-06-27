@@ -50,6 +50,7 @@ exports.up = function(knex, Promise) {
   ])
 }
 
+//this is missing part of the drop table for fantasy
 exports.down = function(knex, Promise) {
   knex.schema.withSchema('analysis').dropTable('current_elo'),
   knex.schema.withSchema('analysis').dropTable('historical_elo'),
