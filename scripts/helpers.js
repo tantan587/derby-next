@@ -185,6 +185,38 @@ methods.getFantasyData = async (knex, sportName, func, teamKeyField, confField, 
 
 }
 
+methods.updateStandings = (knex,newStandings) =>
+{
+  return knex
+    .withSchema('sports')
+    .table('standings')
+    .then(results => {
+      let oldStandings = {}
+      var updateList =[]
+      results.map(result => oldStandings[result.team_id] =result)
+
+      newStandings.map(teamRec =>
+      {
+        if(oldStandings[teamRec.team_id].wins !== teamRec.wins)  
+          updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'wins', teamRec.wins )))
+        if(oldStandings[teamRec.team_id].losses !== teamRec.losses)  
+          updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'losses', teamRec.losses )))
+        if(oldStandings[teamRec.team_id].ties !== teamRec.ties)  
+          updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'ties', teamRec.ties )))
+      })
+      if (updateList.length > 0)
+      {
+        return Promise.all(updateList)
+          .then(() => { 
+            //console.log("im done updating!")
+            return updateList.length
+          })
+      }
+      else
+        return 0
+    })
+}
+
 methods.updateSchedule = (knex,newResults) =>
 {
   return knex
