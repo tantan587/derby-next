@@ -51,7 +51,7 @@ const randomNBASchedule = async (knex) => {
     return schedule
     }
 
-const randomBaseballSchedule = async (knex) => {
+const randomMLBSchedule = async (knex) => {
     let teams = await getTeams(knex, '103')
     //schedule contains home team id, away team id, sport id, game id
     let team_list = teams.map(team => {
@@ -81,9 +81,8 @@ const randomBaseballSchedule = async (knex) => {
     interLeagueSchedule(teams_in_divisions[0], teams_in_divisions[5], schedule)
     interLeagueSchedule(teams_in_divisions[2], teams_in_divisions[4], schedule)
     interLeagueSchedule(teams_in_divisions[1], teams_in_divisions[3], schedule)
-    //schedule rivalryy games
-    rivalries.forEach(team_set =>{
-        console.log(team_set)
+    //schedule rivalry games
+    baseball_rivalries.forEach(team_set =>{
         let team_1 = team_list.find(team => team.team_id===team_set[0])
         //console.log(team_1)
         let team_2 = team_list.find(team => team.team_id===team_set[1])
@@ -91,13 +90,13 @@ const randomBaseballSchedule = async (knex) => {
         addToSchedule(schedule, '103', 4, team_1, team_2)
     })
 
+    //this checks that they each play correct amount of games
     team_list.forEach(team => {
         //console.log(team.name,team.home_games_scheduled)
     })
     
-    randomizeSchedule(schedule);
+    randomizeSchedule(schedule)
 
-    console.log(schedule)
     return schedule
 }
 
@@ -171,7 +170,7 @@ const intraleagueGames = (division_1, division_2, opponent, team, x, schedule, g
     addToSchedule(schedule, sport_id, games, teams[0], teams[1])
 }
 
-const rivalries = [['103103', '103130'],
+const baseball_rivalries = [['103103', '103130'],
 ['103104', '103102'],
 ['103119', '103118'],
 ['103115', '103127'],
@@ -236,4 +235,7 @@ const randomizeSchedule = (schedule) => {
     schedule.sort(function (a, b) { return 0.5 - Math.random()})
 }
 
-randomBaseballSchedule(knex)
+
+randomMLBSchedule(knex)
+
+module.exports = {randomMLBSchedule, randomNBASchedule}
