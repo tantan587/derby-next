@@ -26,8 +26,12 @@ async function createStandingsPO () {
 
 const getStandInfo = async (knex, sportName, api, promiseToGet, year) => {
     let standData = await db_helpers.getFdata (knex, sportName, api, promiseToGet, year)
-    let sport_id = await db_helpers.getSportId(knex,sportName)
+    console.log('test1')
+    let sport_id = await db_helpers.getSportId(knex, sportName)
+    console.log('test2')
+    console.log(sport_id)
     let teamIds = await db_helpers.getTeamAndGlobalId(knex, sport_id)
+    console.log('test3')
     let cleanStand = JSON.parse(standData)
     let teamIdMap = {}
     const idSpelling = sportName === 'EPL' ? 'Id' : 'ID'
@@ -39,6 +43,7 @@ const getStandInfo = async (knex, sportName, api, promiseToGet, year) => {
         }
   }
   )
+  console.log(sport_id)
   //this needs to log if teams have a bye:
   //there is a couple of ways to do this. Either it can check if a team "clinched"
   //it could also be done in the update Standings: will look for that there

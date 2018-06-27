@@ -18,13 +18,17 @@ methods.getTeamId =  function(knex, sportId)
     .where('sport_id', sportId)
 }
 
-methods.getSportId =   function(knex, sportName)
+methods.getSportId = async function(knex, sportName)
 {
   return knex
     .withSchema('sports')
     .table('leagues')
     .where('sport_name', sportName) 
     .select('sport_id')
+    .then((x)=>{
+      console.log(x)
+      return x[0].sport_id
+    })
 }
 
 methods.getTeamAndGlobalId =  async function(knex, sportId)

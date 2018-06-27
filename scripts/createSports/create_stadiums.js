@@ -42,15 +42,14 @@ const getStadiumInfo = async (knex, sportName, api, promiseToGet) => {
 /*   .then((FantasyDataClient) => {
     FantasyDataClient.MLBv3ScoresClient.getStadiumsPromise() */
   let cleanStadiums = JSON.parse(stadiumData)
-  let stadiums = sportid[0].sport_id === '107' ? cleanStadiums.filter(stadium => UK.includes(stadium.Country)) : cleanStadiums
-  console.log('sportid', sportid[0].sport_id, 'stadium length:', stadiums.length)
-  console.log(stadiums[0])
-  let s = sportid[0].sport_id
+  let stadiums = sport_id === '107' ? cleanStadiums.filter(stadium => UK.includes(stadium.Country)) : cleanStadiums
+  console.log('sportid', sport_id, 'stadium length:', stadiums.length)
+
   stadiumInfo = stadiums.map(stadium =>
     {
-      let i = s === '107' ? stadium.VenueId : stadium.StadiumID
-      let state = s === '107' ? stadium.Country : stadium.State
-      const StadiumID = s * 1000 + i + 100
+      let i = sportid === '107' ? stadium.VenueId : stadium.StadiumID
+      let state = sportid === '107' ? stadium.Country : stadium.State
+      const StadiumID = sportid * 1000 + i + 100
       return {stadium_id: StadiumID, name: stadium.Name, city: stadium.City, state: state}
   }
   )
