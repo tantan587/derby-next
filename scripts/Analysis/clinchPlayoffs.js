@@ -1,3 +1,6 @@
+//this was started in case we need it to automate when teams make playoffs, since fantasydata doesn't yet provide
+//will have to work towards correcting this and finishing if necessary
+
 const knex = require('../../server/db/connection')
 
 const getStandings = async (knex, sport_id) => {
