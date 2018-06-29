@@ -42,6 +42,7 @@ class MainLeagueHome extends React.Component {
   }
 
   componentDidMount() {
+    this.tick()
     this.timerID = setInterval(
       () => this.tick(),
       5000
