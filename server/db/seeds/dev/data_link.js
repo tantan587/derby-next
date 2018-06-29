@@ -1,5 +1,5 @@
 
-var data = require('../../../../data/teamid-fantasyid.json')
+var data = require('../../../../data/team-sport-global-id.json')
 
 exports.seed = function(knex, Promise) {
   // Deletes ALL existing entries

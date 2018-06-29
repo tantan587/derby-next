@@ -1,5 +1,6 @@
 var methods = {}
 const rp = require('request-promise')
+const fdClientModule = require('fantasydata-node-client')
 
 //method to insert and create a table
 methods.insertIntoTable = function(knex, schema, table, data) {
@@ -18,52 +19,22 @@ methods.getTeamId =  function(knex, sportId)
     .where('sport_id', sportId)
 }
 
-//method to find 
-methods.getTeamAndGlobalId =  function(knex, sportId)
-{
-  return knex
-    .withSchema('sports')
-    .table('team_info')
-    .where('sport_id', sportId)
-    .select('team_id', 'global_team_id')
-}
-
-methods.getScheduleData = (knex, sportName, url) => 
+methods.getSportId =   function(knex, sportName)
 {
   return knex
     .withSchema('sports')
     .table('leagues')
-    .where('sport_name', sportName) //grabs the sport we are looking for from postgres
-    .then((league)=> {
-      const sportId = league[0].sport_id
-      const idSpelling = sportName === 'EPL' ? 'Id' : 'ID' //EPL lists its ID as Id, so fix that
-      return methods.getTeamAndGlobalId(knex, sportId)
-        .then(teamIds => {
-          let teamIdMap = {}
-          teamIds.map(r => teamIdMap[r.global_team_id]= r.team_id)
-          const options = {
-            url: url,
-            headers: {
-              'User-Agent': 'request',
-              'Ocp-Apim-Subscription-Key':league[0].fantasy_data_key
-            },
-            json: true
-          }
-          return rp(options)
-            .then((fdata) => {
-              let games = []
-              fdata.filter(game => game['GlobalGame' + idSpelling] ).map(game => games.push({...game, //&& !game.Canceled
-                global_game_id:game['GlobalGame' + idSpelling], 
-                home_team_id:teamIdMap[game['GlobalHomeTeam' + idSpelling]],
-                away_team_id:teamIdMap[game['GlobalAwayTeam' + idSpelling]],
-                date_time:game.DateTime ? game.DateTime : game.Day,
-                sport_id:sportId
-              })
-              )
-              return games
-            })
-        })
-    })
+    .where('sport_name', sportName) 
+    .select('sport_id')
+}
+//method to find team and global id
+methods.getTeamAndGlobalId =  function(knex, sportId)
+{
+  return knex
+    .withSchema('sports')
+    .table('data_link')
+    .where('sport_id', sportId)
+    .select('team_id', 'global_team_id')
 }
 
 methods.getFantasyData = async (knex, sportName, url, teamKeyField, confField, eplAreaIdInd = false) => 
@@ -149,6 +120,60 @@ methods.getFantasyData = async (knex, sportName, url, teamKeyField, confField, e
 
 }
 
+methods.getScheduleData = (knex, sportName, url) => 
+{
+  return knex
+    .withSchema('sports')
+    .table('leagues')
+    .where('sport_name', sportName) //grabs the sport we are looking for from postgres
+    .then((league)=> {
+      const sportId = league[0].sport_id
+      const idSpelling = sportName === 'EPL' ? 'Id' : 'ID' //EPL lists its ID as Id, so fix that
+      return methods.getTeamAndGlobalId(knex, sportId)
+        .then(teamIds => {
+          let teamIdMap = {}
+          teamIds.map(r => teamIdMap[r.global_team_id]= r.team_id)
+          const options = {
+            url: url,
+            headers: {
+              'User-Agent': 'request',
+              'Ocp-Apim-Subscription-Key':league[0].fantasy_data_key
+            },
+            json: true
+          }
+          return rp(options)
+            .then((fdata) => {
+              let games = []
+              fdata.filter(game => game['GlobalGame' + idSpelling] ).map(game => games.push({...game, //&& !game.Canceled
+                global_game_id:game['GlobalGame' + idSpelling], 
+                home_team_id:teamIdMap[game['GlobalHomeTeam' + idSpelling]],
+                away_team_id:teamIdMap[game['GlobalAwayTeam' + idSpelling]],
+                date_time:game.DateTime ? game.DateTime : game.Day,
+                sport_id:sportId
+              })
+              )
+              return games
+            })
+        })
+    })
+}
+
+methods.getFdata = async (knex, sportName,api, promiseToGet) =>
+{
+
+  let league = await knex
+    .withSchema('sports')
+    .table('leagues')
+    .where('sport_name', sportName)
+
+  const keys = {}
+  keys[api] = league[0].fantasy_data_key
+
+  const FantasyDataClient = new fdClientModule(keys)
+  return FantasyDataClient[api][promiseToGet]()
+  
+}
+
 methods.updateStandings = (knex,newStandings) =>
 {
   return knex
@@ -172,7 +197,6 @@ methods.updateStandings = (knex,newStandings) =>
       {
         return Promise.all(updateList)
           .then(() => { 
-            //console.log("im done updating!")
             return updateList.length
           })
       }

@@ -71,7 +71,7 @@ class Chat extends React.Component {
       <div >
         <List style={{maxHeight: 250, overflow: 'auto', paddingTop:0}}>
           <Scrollbars autoHide style={{ height: 200 }} ref={(el) => { this.messagesEnd1 = el}}>
-            {messages.map( (message,i) =>
+            {messages && messages.map( (message,i) =>
               <div key={i}>
                 <ListItem className={classes.message} key={i}
                 //key={message.messageId}

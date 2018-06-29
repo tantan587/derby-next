@@ -39,55 +39,63 @@ class TeamDisplay extends React.Component {
   {
 
     const newFilterInfo = this.props.draft.filterInfo
-    newFilterInfo[filterInfo.type] = {'key':filterInfo.key, 'value': filterInfo.value}
 
-    if (filterInfo.type === 'tab')
-      newFilterInfo['dropdown'] = null
+    if (newFilterInfo)
+    {
+      newFilterInfo[filterInfo.type] = {'key':filterInfo.key, 'value': filterInfo.value}
 
-    this.props.onFilterTab(newFilterInfo)
-  }
+      if ( filterInfo.type === 'tab')
+        newFilterInfo['dropdown'] = null
+
+      this.props.onFilterTab(newFilterInfo)
+    }
+}
 
   render() {
     const {  draft,teams, allowDraft} = this.props
     const availableTeams = draft.availableTeams
     const queue = draft.queue
+    let confs = []
     let teamsToShow = []
-    availableTeams.map(teamId => {
-      if(!draft.eligibleTeams.includes(teamId))
-        teamsToShow.push({...teams[teamId],disableQueue:true, labelOverride:'Not eligible', eligible:false })
-      else if(queue.indexOf(teamId) === -1)
-        teamsToShow.push({...teams[teamId], eligible:true})
-      else
-        teamsToShow.push({...teams[teamId], labelOverride:'Remove',onClickOverride:this.removeItem, eligible:true })
-    })
-    if (draft.filterInfo['tab'])
-      teamsToShow = draft.filterInfo['tab'].value ?
-        teamsToShow = teamsToShow.filter(x => x[draft.filterInfo['tab'].key] === draft.filterInfo['tab'].value) :
-        teamsToShow
 
-    const confs = [...new Set(teamsToShow.map(x => x.conference))]
-
-    if (draft.filterInfo['dropdown'])
-      teamsToShow = draft.filterInfo['dropdown'].value ?
-        teamsToShow.filter(x => x[draft.filterInfo['dropdown'].key] === draft.filterInfo['dropdown'].value) :
-        teamsToShow
-
-    if (draft.filterInfo['search'] && draft.filterInfo['search'].value)
-      teamsToShow = teamsToShow.filter(x =>
-        x[draft.filterInfo['search'].key].toLowerCase().includes(draft.filterInfo['search'].value.toLowerCase()))
-
-
-    if (teamsToShow && !allowDraft)
+    if (availableTeams)
     {
-      teamsToShow = teamsToShow.map(team => {return {...team,disableDraft:true }})
-    }
-    else{
-      teamsToShow = teamsToShow.map(team => {
-        if (!draft.eligibleTeams.includes(team.team_id))
-          return {...team,disableDraft:true }
+      availableTeams.map(teamId => {
+        if(!draft.eligibleTeams.includes(teamId))
+          teamsToShow.push({...teams[teamId],disableQueue:true, labelOverride:'Not eligible', eligible:false })
+        else if(queue.indexOf(teamId) === -1)
+          teamsToShow.push({...teams[teamId], eligible:true})
         else
-          return team
+          teamsToShow.push({...teams[teamId], labelOverride:'Remove',onClickOverride:this.removeItem, eligible:true })
       })
+      if (draft.filterInfo['tab'])
+        teamsToShow = draft.filterInfo['tab'].value ?
+          teamsToShow = teamsToShow.filter(x => x[draft.filterInfo['tab'].key] === draft.filterInfo['tab'].value) :
+          teamsToShow
+
+      confs= [...new Set(teamsToShow.map(x => x.conference))]
+
+      if (draft.filterInfo['dropdown'])
+        teamsToShow = draft.filterInfo['dropdown'].value ?
+          teamsToShow.filter(x => x[draft.filterInfo['dropdown'].key] === draft.filterInfo['dropdown'].value) :
+          teamsToShow
+
+      if (draft.filterInfo['search'] && draft.filterInfo['search'].value)
+        teamsToShow = teamsToShow.filter(x =>
+          x[draft.filterInfo['search'].key].toLowerCase().includes(draft.filterInfo['search'].value.toLowerCase()))
+
+      if (teamsToShow && !allowDraft)
+      {
+        teamsToShow = teamsToShow.map(team => {return {...team,disableDraft:true }})
+      }
+      else{
+        teamsToShow = teamsToShow.map(team => {
+          if (!draft.eligibleTeams.includes(team.team_id))
+            return {...team,disableDraft:true }
+          else
+            return team
+        })
+      }
     }
 
 
