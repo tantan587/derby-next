@@ -9,7 +9,7 @@ import Grid from '@material-ui/core/Grid'
 import Button from '@material-ui/core/Button'
 import Typography from '@material-ui/core/Typography'
 import TextField from '@material-ui/core/TextField'
-import {clickedForgotPassword} from '../actions/auth-actions'
+import {clickedForgotUsername} from '../actions/auth-actions'
 
 const styles = (theme) => ({
   container: {
@@ -47,11 +47,11 @@ const FIELDS = [
   {name: 'email', label: 'Email'},
 ]
 
-class ForgotPasswordForm extends Component {
+class ForgotUsernameForm extends Component {
   constructor(props) {
     super(props)
     autobind(this)
-    this.state = {email: '', loading: false, error: ''}
+    this.state = {email: '', loading: false, error: '', dirty: false}
   }
 
   handleChange(e) {
@@ -60,13 +60,13 @@ class ForgotPasswordForm extends Component {
 
   handleSubmit(e) {
     e.preventDefault()
-    const {onForgotPassword, router} = this.props
+    const {onForgotUsername, router} = this.props
     this.setState({loading: true}, () => {
-      onForgotPassword(...R.props(['email'], this.state))
-        .then(() => {
-          const {user: {error: {success, forgot_password_email}}, router} = this.props
-          success && router.push('/createpassword')
-          forgot_password_email && this.setState({error: forgot_password_email, loading: false, dirty: false})
+      onForgotUsername(...R.props(['email'], this.state))
+        .then((res) => {
+            const {user: {error: {success, form}}, router} = this.props
+            success && router.push('/login?SB=EHBS')
+            form && this.setState({loading: false, error: form, dirty: false})
         })
     })
   }
@@ -76,6 +76,7 @@ class ForgotPasswordForm extends Component {
     const errorMessage = R.path(['user', 'error', `signup_${name}`], this.props) || R.path(['errors', name], this.state)
     return (
       <TextField
+        key={name}
         className={classes.textField}
         name={name}
         error={R.not(R.isNil(errorMessage))}
@@ -107,7 +108,7 @@ class ForgotPasswordForm extends Component {
           gutterBottom
           align="center"
         >
-          Forgot Password
+          Forgot Username
         </Typography>
         {FIELDS.map(this.renderField)}
         <Button
@@ -126,5 +127,5 @@ class ForgotPasswordForm extends Component {
 export default R.compose(
   withRouter,
   withStyles(styles),
-  connect(R.pick(['user']), {onForgotPassword: clickedForgotPassword})
-)(ForgotPasswordForm)
+  connect(R.pick(['user']), {onForgotUsername: clickedForgotUsername})
+)(ForgotUsernameForm)
