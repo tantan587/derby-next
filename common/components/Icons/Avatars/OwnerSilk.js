@@ -3,6 +3,11 @@ import Patterns from './Patterns'
 import Colors from './Colors'
 
 const OwnerSilk = (ownerObj, style) => {
+
+  if (!ownerObj.avatar)
+  {
+    return <Silk style={style} pattern={Patterns['Default'].silk}/>
+  }
   let primary = Colors[ownerObj.avatar.primary]
   let secondary = Colors[ownerObj.avatar.secondary]
   let pattern = Patterns[ownerObj.avatar.pattern].silk

@@ -11,6 +11,7 @@ const io = require('socket.io')(server)
 const next = require('next')
 const session = require('express-session')
 const FileStore = require('session-file-store')(session)
+const sslRedirect = require('heroku-ssl-redirect')
 
 const dev = process.env.NODE_ENV !== 'production'
 const nextApp = next({ dev })
@@ -26,9 +27,10 @@ nextApp.prepare()
     app.use(require('cookie-parser')())
     app.use(session(Object.assign(
       { secret: 'keyboard cat' }, 
-      dev && { store: new FileStore() }
+      !dev && { store: new FileStore() }
     )))
     
+    app.use(sslRedirect())
     app.use(passport.initialize())
     app.use(passport.session())
     app.use('/api', authRoutes)

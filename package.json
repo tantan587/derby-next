@@ -29,6 +29,7 @@
     "express-session": "^1.15.6",
     "fantasydata-node-client": "^1.1.0",
     "glob": "^7.1.2",
+    "heroku-ssl-redirect": "0.0.4",
     "hoek": "^5.0.3",
     "hsl-to-hex": "^1.0.0",
     "immutability-helper": "^2.6.2",
