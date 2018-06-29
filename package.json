@@ -60,7 +60,7 @@
     "react-dom": "^16.4.0",
     "react-popper": "^0.10.4",
     "react-redux": "^5.0.6",
-    "react-text-mask": "^5.4.1",
+    "react-text-mask": "^5.4.2",
     "redux": "^3.7.2",
     "redux-auth-wrapper": "^2.0.2",
     "redux-persist": "^5.9.1",
