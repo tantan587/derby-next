@@ -38,11 +38,11 @@ async function simulate(knex)
     //.then(games => {
 
     //these are the functions for each individual season. 
-    const mlb_teams = simulateProfessionalLeague(games, all_teams, '103', all_points, simulations)
+    const mlb_teams = [[],[]]//simulateProfessionalLeague(games, all_teams, '103', all_points, simulations)
     const nba_teams = [[],[]] //simulateProfessionalLeague(games, all_teams, '101', all_points, simulations)
     const nfl_teams = [[],[]] //simulateProfessionalLeague(games, all_teams, '102', all_points, simulations)
     const nhl_teams = [[],[]] //simulateProfessionalLeague(games, all_teams, '104', all_points, simulations)
-    const cfb_teams = [[],[]] //simulateCFB(games, all_teams, all_points, all_points, simulations)
+    const cfb_teams = simulateCFB(games, all_teams, all_points, simulations)
     const cbb_teams = [[],[]] //simulateCBB(games, all_teams, all_points, simulations)
     const epl_teams = [[],[]] //simulateEPL(games, all_teams, all_points, simulations)
     
@@ -119,8 +119,8 @@ const simulateCFB = (all_games_list, teams, points, simulations = 10) => {
         all_games_list['105'].forEach(game => {game.play_game()})
         cfb_teams.sort(function(a,b){return b.wins-a.wins})
         //play the conference championship games, add winners to array conference champions
-        const conference_ids = [10501, 10502, 10503, 10504, 10505]
-        let conference_champions = conference_ids.map(id => {return playoffFunctions['105'](cfb_teams.filter(team => team.conference_id === id))})
+        const conference_ids = ['10501', '10502', '10503', '10504', '10505']
+        let conference_champions = conference_ids.map(id => {return playoffFunctions['105'](cfb_teams.filter(team => team.conference === id), simulateHelpers)})
         //calculate there CFB playoff value, sort them from highest to lowest, and put the four highest teams into playoffs
         cfb_teams.forEach(team => {
             champ_boost = conference_champions.includes(team) ? 1:0
@@ -142,15 +142,20 @@ const simulateCFB = (all_games_list, teams, points, simulations = 10) => {
         //next find bowl eligible teams, be sure it is an even number
         let bowl_eligible_teams = non_playoff_teams.filter(team => team.wins>5)
         if(bowl_eligible_teams.length%2 === 1){bowl_eligible_teams.pop}
-        
+        let tim = 0
         //matches up each bowl team against one within rank 7 of them. Is this the right amount of difference? tbd
         //we want to use array.splice - splice returns an array
+        bowl_eligible_teams.forEach(team => {
+            console.log(team.name, team.elo)
+        })
         while(bowl_eligible_teams.length !== 0){
             let team_1 = bowl_eligible_teams.shift()
             let index_other_team = Math.round(Math.random()*7)
             let ind = index_other_team > bowl_eligible_teams.length ? bowl_eligible_teams.length : index_other_team
             let team_2 = bowl_eligible_teams.splice(ind, 1)
+            console.log(tim)
             simulateHelpers.simulateBowlGame(team_1, team_2[0])
+            tim++
         }
 
         all_games_list['105'].forEach(game=>{

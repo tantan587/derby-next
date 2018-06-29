@@ -90,19 +90,19 @@ const simulateNHLconf = (conference, simulateHelpers) => {
     conference_champ.finalist++
     return conference_champ
 }
-const simulateEPLconf =(conference) => {return 1}
 
-const simulateCFBconf =(conference) => {
-    if (conference[0].conference_id != '10502'){
+const simulateCFBconf =(conference, simulateHelpers) => {
+    let conf_champ = []
+    if (conference[0].conference != '10502'){
         let division_1 = conference[0].division //this is one of the two divisions
-    //create an array of all the teams in each division
+        //create an array of all the teams in each division
         let list_division_1 = conference.filter(team => team.division === division_1)
-        let list_division_2 = conference.filter(team => team.division != division_1)
-        let conf_champ = simulateHelpers.simulateGame(list_division_1[0], list_division_2[0],'105',neutral=true)
+        let list_division_2 = conference.filter(team => team.division !== division_1)
+        conf_champ = simulateHelpers.simulateGame(list_division_1[0], list_division_2[0],'105',neutral=true)
     }else{
-        let conf_champ = simulateHelpers.simulateGame(conference[0], conference[1],'105',neutral=true)
+        conf_champ = simulateHelpers.simulateGame(conference[0], conference[1],'105',neutral=true)
     }
-    return conf_champ}
+    return conf_champ[0]}
     
 const simulateCBBconf = (conference, simulateHelpers) => {
     let total_teams = conference.length

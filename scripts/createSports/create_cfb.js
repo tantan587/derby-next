@@ -9,7 +9,7 @@ db_helpers.getFantasyData(knex, 'CFB', 'https://api.fantasydata.net/v3/cfb/score
     result.map(team => 
     {
       teamInfo.push({sport_id: team.sport_id, team_id: team.team_id, key: team.Key, city: team.School, 
-        name: team.Name, conference_id: team.conference_id, 
+        name: team.Name, conference_id: team.conference_id, division: team.Conference,
         logo_url:team.TeamLogoUrl, global_team_id:team.GlobalTeamID})
 
       standings.push({team_id: team.team_id, wins : 0, losses: 0, ties: 0})    
@@ -23,4 +23,4 @@ db_helpers.getFantasyData(knex, 'CFB', 'https://api.fantasydata.net/v3/cfb/score
             process.exit()
           })
       })
-  })
+})

@@ -129,7 +129,6 @@ const normalizeImpact = (games) => {
     let all_impacts = games.map(game => {
         return game.hard_impact
     })
-    console.log(all_impacts)
     let average = math.mean(all_impacts)
     let standard_dev = math.std(all_impacts)
     let max = math.max(all_impacts)
