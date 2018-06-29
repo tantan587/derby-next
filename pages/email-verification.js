@@ -86,8 +86,8 @@ class EmailVerification extends Component {
   componentDidMount() {
     const {i: user_id, c: verification_code} = this.props.url.query;
     (user_id && verification_code)
-    ? this.handleDoVerify(user_id, verification_code)
-    : this.handleIsValid(user_id)
+      ? this.handleDoVerify(user_id, verification_code)
+      : this.handleIsValid(user_id)
   }
 
   async handleIsValid(user_id) {
@@ -137,10 +137,10 @@ class EmailVerification extends Component {
   determineStatus() {
     const toProper = (str) => str[0].toUpperCase() + str.slice(1).toLowerCase()
     switch(this.state.serverResponse.type) {
-      case EMAIL_VERIFICATION.LIMIT_EXCEEDED: return this.showExpired() 
-      case EMAIL_VERIFICATION.NOT_FOUND: return this.showInvalid()
-      default: 
-        return this[`show${toProper(STATUS[this.state.status])}`]()  
+    case EMAIL_VERIFICATION.LIMIT_EXCEEDED: return this.showExpired() 
+    case EMAIL_VERIFICATION.NOT_FOUND: return this.showInvalid()
+    default: 
+      return this[`show${toProper(STATUS[this.state.status])}`]()  
     }
   }
 
@@ -236,7 +236,7 @@ class EmailVerification extends Component {
       >
         {this.headingSubheading('False Start', 'For security, your verification code has timed out. Please click below to send a new code:')}
         <Typography align="center" paragraph={true}>
-          <Button onClick={this.handleResend} className={this.props.classes.resubmit} variant="contained" color="default">
+          <Button onClick={this.handleResend} className={this.props.classes.resubmit} color="default">
             Resend Email
           </Button>
         </Typography>

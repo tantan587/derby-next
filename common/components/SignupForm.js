@@ -76,13 +76,13 @@ class SignupForm extends React.Component {
         .then((response) => {
           const {id} = this.props.user
           response.type === 'SIGNUP_FAIL'
-          ? this.setState({dirty: false, errors: Object.assign(
-            {},
-            response.error.signup_email && {email: response.error.signup_email},
-            response.error.signup_username && {username: response.error.signup_username},
-            response.error.signup_password && {password: response.error.signup_password},
-          )})
-          : (id && router.push(`/email-verification?i=${id}`))
+            ? this.setState({dirty: false, errors: Object.assign(
+              {},
+              response.error.signup_email && {email: response.error.signup_email},
+              response.error.signup_username && {username: response.error.signup_username},
+              response.error.signup_password && {password: response.error.signup_password},
+            )})
+            : (id && router.push(`/email-verification?i=${id}`))
         }) 
     }
   }
@@ -93,6 +93,7 @@ class SignupForm extends React.Component {
     const error = !this.state.dirty && errorMessage
     return (
       <TextField
+        key={name}
         className={classes.textField}
         name={name}
         error={error}
@@ -129,11 +130,10 @@ class SignupForm extends React.Component {
         {FIELDS.map(this.renderField)}
         <Button
           className={classes.submit}
-          raised
           type="submit"
           children="SUBMIT"
         />
-        <Button raised color="accent">
+        <Button>
           <Link href="/login">ALREADY HAVE AN ACCOUNT? LOGIN.</Link>
         </Button>
       </Grid>

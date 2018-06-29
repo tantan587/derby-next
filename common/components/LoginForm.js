@@ -80,6 +80,7 @@ class LoginForm extends Component {
     const errorMessage = R.path(['user', 'error', `login_${name}`], this.props) || R.path(['errors', name], this.state)
     return (
       <TextField
+        key={name}
         className={classes.textField}
         name={name}
         error={R.not(R.isNil(errorMessage))}
@@ -116,19 +117,18 @@ class LoginForm extends Component {
         {FIELDS.map(this.renderField)}
         <Button
           className={classes.submit}
-          raised
           type="submit"
           children={this.state.loading ? 'LOADING...' : 'LOGIN'}
           disabled={this.state.loading}
         />
         <Grid container>
-          <Grid className={classes.actions.button} item xs={12} component={Button} raised color="accent">
+          <Grid className={classes.actions.button} item xs={12} component={Button}>
             <Link href="/signup">DON'T HAVE AN ACCOUNT? SIGNUP.</Link>
           </Grid>
-          <Grid className={classes.actions.button} item xs={6} component={Button} raised color="accent">
+          <Grid className={classes.actions.button} item xs={6} component={Button}>
             <Link href="/forgotusername">FORGOT USERNAME</Link>
           </Grid>
-          <Grid className={classes.actions.button} item xs={6} component={Button} raised color="accent">
+          <Grid className={classes.actions.button} item xs={6} component={Button}>
             <Link href="/forgotpassword">FORGOT PASSWORD</Link>
           </Grid>
         </Grid>
