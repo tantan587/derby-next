@@ -43,6 +43,14 @@ export const clickedForgotPassword = (email) => dispatch =>
     JSON.stringify({email})
   )
 
+export const clickedForgotUsername = (email) => dispatch =>
+  FetchThenDispatch(
+    dispatch,
+    '/api/forgotusername',
+    'POST',
+    JSON.stringify({email})
+  )  
+
 export const clickedCreatePassword = (username,password,newPassword) => dispatch =>
   FetchThenDispatch(
     dispatch,

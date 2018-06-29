@@ -48,11 +48,11 @@ class CreatePasswordForm extends Component {
   constructor(props) {
     super(props)
     autobind(this)
-    this.state = {username: '', password: '', newPassword: '', loading: false}
+    this.state = {username: '', password: '', newPassword: '', loading: false, error: '', dirty: false}
   }
 
   handleChange(e) {
-    this.setState({[e.target.name]: e.target.value})
+    this.setState({[e.target.name]: e.target.value, dirty: 'true'})
   }
 
   handleSubmit(e) {
@@ -61,16 +61,16 @@ class CreatePasswordForm extends Component {
     this.setState({loading: true}, () => {
       onCreatePassword(...R.props(['username', 'password', 'newPassword'], this.state))
         .then(() => {
-          const {user: {error: {success1}}, router} = this.props
-          success1 && router.push('/login')
-          this.setState({loading: false})
+          const {user: {error: {success1, create_password_password}}, router} = this.props
+          success1 && router.push('/login?SB=YHSCUPPL')
+          create_password_password && this.setState({loading: false, error: create_password_password, dirty: false})
         })
     })
   }
 
   renderField({name, label, type, ...rest}) {
     const { classes } = this.props
-    const errorMessage = R.path(['user', 'error', `signup_${name}`], this.props) || R.path(['errors', name], this.state)
+    const errorMessage = R.path(['user', 'error', `create_password_${name}`], this.props) || R.path(['errors', name], this.state)
     return (
       <TextField
         className={classes.textField}
@@ -114,6 +114,7 @@ class CreatePasswordForm extends Component {
           children={this.state.loading ? 'LOADING...' : 'SUBMIT'}
           disabled={this.state.loading}
         />
+        {!!this.state.error.length && !this.state.dirty && <Typography align="center" color="error" children={this.state.error} paragraph/>}
       </Grid>
     )
   }

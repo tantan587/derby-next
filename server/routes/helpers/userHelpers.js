@@ -1,10 +1,15 @@
 const R = require('ramda')
 const knex = require('../../db/connection')
-const {sendSignupEmail} = require('./authHelpers')
+const {sendEmail} = require('./authHelpers')
 const EMAIL_VERIFICATION = require('../../../common/constants/email_verification')
 
 module.exports.getById = (user_id) => knex('users.users')
   .where('user_id', user_id)
+  .first()
+
+module.exports.getByEmail = (email) => knex('users.users')
+  .where('email', email)
+  .first()
 
 module.exports.isVerified = (user_id) => knex('users.users')
   .select('expires_at', 'verified', 'number_of_tries')

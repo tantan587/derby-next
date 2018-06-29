@@ -55,11 +55,11 @@ class SignupForm extends React.Component {
   constructor(props) {
     super(props)
     autobind(this)
-    this.state = {username:'', password:'', first_name:'', last_name:'', email:''}
+    this.state = {username:'', password:'', first_name:'', last_name:'', email:'', dirty: false}
   }
 
   handleChange(e) {
-    this.setState({[e.target.name]: e.target.value})
+    this.setState({[e.target.name]: e.target.value, dirty: true})
   }
 
   handleValidate() {
@@ -73,22 +73,30 @@ class SignupForm extends React.Component {
     if (this.handleValidate()) {
       const {onSignup, router} = this.props
       onSignup(...R.props(['username', 'first_name', 'last_name', 'email', 'password'], this.state))
-        .then(() => {
-          const {loggedIn, id} = this.props.user
-          loggedIn && router.push(`/email-verification?i=${id}`)
+        .then((response) => {
+          const {id} = this.props.user
+          response.type === 'SIGNUP_FAIL'
+          ? this.setState({dirty: false, errors: Object.assign(
+            {},
+            response.error.signup_email && {email: response.error.signup_email},
+            response.error.signup_username && {username: response.error.signup_username},
+            response.error.signup_password && {password: response.error.signup_password},
+          )})
+          : (id && router.push(`/email-verification?i=${id}`))
         }) 
     }
   }
 
   renderField({name, label, type, ...rest}) {
     const { classes } = this.props
-    const errorMessage = R.path(['user', 'error', `signup_${name}`], this.props) || R.path(['errors', name], this.state)
+    const errorMessage = R.path(['errors', name], this.state)
+    const error = !this.state.dirty && errorMessage
     return (
       <TextField
         className={classes.textField}
         name={name}
-        error={R.not(R.isNil(errorMessage))}
-        helperText={errorMessage}
+        error={error}
+        helperText={error}
         label={label}
         type={type || 'text'}
         value={this.state[name]}
@@ -119,7 +127,6 @@ class SignupForm extends React.Component {
           Signup
         </Typography>
         {FIELDS.map(this.renderField)}
-        {this.state.error && <Typography children={this.state.error}/>}
         <Button
           className={classes.submit}
           raised

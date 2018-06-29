@@ -1,23 +1,41 @@
-import React from 'react'
+const R = require('ramda') 
+import React, {Component} from 'react'
+import autobind from 'react-autobind'
 import LayoutUser from '../common/components/LayoutUser'
 import LoginForm from '../common/components/LoginForm'
 import withRoot from '../common/components/withRoot'
 import withRedux from 'next-redux-wrapper'
 import initStore from '../common/store'
 import ReloadProtector from '../common/components/ReloadProtector'
+import withSnackbar from '../common/components/withSnackbar'
 
-class Login extends React.Component {
+class Login extends Component {
+  constructor(props) {
+    super(props)
+    autobind(this)
+  }
+
+  renderComponent() {
+    return (
+      <LoginForm
+        redirectInd={false}
+      />
+    )
+  }
 
   render() {
     return (
-      <div>
-        <LayoutUser >
-          <ReloadProtector 
-            ProtectedRoute={() => 
-              <LoginForm redirectInd={false}/>}/>
-        </LayoutUser>
-      </div>
+      <LayoutUser>
+        <ReloadProtector 
+          ProtectedRoute={this.renderComponent}
+        />
+      </LayoutUser>
     )
   }
 }
-export default withRedux(initStore, null, null)(withRoot(Login))
+
+export default R.compose(
+  withRoot,
+  withRedux(initStore),
+  withSnackbar
+)(Login)

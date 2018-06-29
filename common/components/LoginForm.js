@@ -52,7 +52,7 @@ class LoginForm extends Component {
   constructor(props) {
     super(props)
     autobind(this)
-    this.state = {username: '', password: '', formError: '', loading: false, dirty: false}
+    this.state = {username: '', password: '', error: '', loading: false, dirty: false}
   }
 
   handleChange(e) {
@@ -66,7 +66,7 @@ class LoginForm extends Component {
       onLogin(...R.props(['username', 'password'], this.state))
         .then((response) => {
           if (response.type === 'LOGIN_FAIL') {
-            this.setState({formError: response.error.form || '', loading: false, dirty: false})
+            this.setState({error: response.error.form || '', loading: false, dirty: false})
           } else {
             const {user: {loggedIn}, previousPage, router} = this.props
             loggedIn && router.push('/')
@@ -77,7 +77,7 @@ class LoginForm extends Component {
 
   renderField({name, label, type, ...rest}) {
     const { classes } = this.props
-    const errorMessage = R.path(['user', 'error', `signup_${name}`], this.props) || R.path(['errors', name], this.state)
+    const errorMessage = R.path(['user', 'error', `login_${name}`], this.props) || R.path(['errors', name], this.state)
     return (
       <TextField
         className={classes.textField}
@@ -126,18 +126,18 @@ class LoginForm extends Component {
             <Link href="/signup">DON'T HAVE AN ACCOUNT? SIGNUP.</Link>
           </Grid>
           <Grid className={classes.actions.button} item xs={6} component={Button} raised color="accent">
-            <Link href="/signup">FORGOT USERNAME</Link>
+            <Link href="/forgotusername">FORGOT USERNAME</Link>
           </Grid>
           <Grid className={classes.actions.button} item xs={6} component={Button} raised color="accent">
             <Link href="/forgotpassword">FORGOT PASSWORD</Link>
           </Grid>
         </Grid>
-        {!!this.state.formError.length && !this.state.dirty && (
+        {!!this.state.error.length && !this.state.dirty && (
           <Typography
             paragraph={true}
             color="error"
             align="center"
-            dangerouslySetInnerHTML={{__html: this.state.formError}}
+            dangerouslySetInnerHTML={{__html: this.state.error}}
           />
         )}
       </Grid>

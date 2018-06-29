@@ -6,6 +6,7 @@ const ErrorText = require('../../../common/models/ErrorText')
 const C = require('../../../common/constants')
 const v4 = require('uuid/v4')
 const generatePassword = require('password-generator')
+const signupTemplates = require('../../email-templates/signup')
 const dev = process.env.NODE_ENV !== 'production'
 
 function comparePass(userPassword, databasePassword) {
@@ -217,6 +218,24 @@ const sendSignupEmail = (user) => {
     })
 }
 
+const sendEmail = (user, {subject, body, inline} = {}) => {
+  return knex('users.email_auth')
+    .select('*')
+    .where('application', (dev ? 'forgotpassword' : 'forgotpassword-dev'))
+    .first()
+    .then(({api_key: apiKey, domain, email}) => {
+      const mailGun = mailer({apiKey, domain})
+      const mgConfig = {
+        from: email,
+        to: user.email,
+        subject: subject ? subject(user) : '[Derby] Test Email',
+        html: body ? body(user) : '<h1>This message does not contain a body</h1>',
+        inline: inline,
+      }
+      return mailGun.messages().send(mgConfig)
+    })
+}
+
 const sendForgotPasswordEmail = (user, res) =>
 {
   return knex.withSchema('users').table('email_auth').where('application', 'forgotpassword')
@@ -280,5 +299,6 @@ module.exports = {
   updatePassword,
   createNewPassword,
   sendSignupEmail,
-  sendForgotPasswordEmail
+  sendForgotPasswordEmail,
+  sendEmail,
 }
