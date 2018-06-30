@@ -59,13 +59,13 @@ export const clickedCreatePassword = (username,password,newPassword) => dispatch
     JSON.stringify({username,password,newPassword})
   )
 
-export const clickedAdminUpdates = () => dispatch =>
+export const clickedAdminUpdates = (id) => dispatch =>
 {
   FetchThenDispatch(
     dispatch,
     '/api/adminupdates',
     'POST',
-    JSON.stringify()
+    JSON.stringify({id})
   )
 }
 

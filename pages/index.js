@@ -1,5 +1,6 @@
 const R = require('ramda')
 import React from 'react'
+import {connect} from 'react-redux'
 import PropTypes from 'prop-types'
 import Button from '@material-ui/core/Button'
 import Link from 'next/link'
@@ -7,9 +8,7 @@ import Typography from '@material-ui/core/Typography'
 import { withStyles } from '@material-ui/core/styles'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import withRoot from '../common/components/withRoot'
-import withRedux from 'next-redux-wrapper'
 import '../styles/style.css'
-import initStore from '../common/store'
 import TopNavHome from '../common/components/Navigation/TopNavHome'
 import SportIconText from '../common/components/Icons/SportIconText'
 import HowToPlayIconText from '../common/components/Icons/HowToPlayIconText'
@@ -18,7 +17,7 @@ import HomeTitle from '../common/components/CopyFields/HomeTitle'
 import BottomNav from '../common/components/Navigation/BottomNav'
 import HomePageTable from '../common/components/Table/HomePageTable'
 import SportsSocket from '../common/components/Sockets/SportsSocket'
-
+import {clickedAdminUpdates} from '../common/actions/auth-actions'
 
 //https://github.com/zeit/next.js/tree/master/examples/with-global-stylesheet
 
@@ -57,6 +56,24 @@ const styles = {
 
 
 class Index extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {toggleResetEmail:false, firstClick:false}
+  }
+
+  firstClick = () =>
+  {
+    this.setState({firstClick:true})
+    setTimeout(() => { console.log('reset'); this.setState({firstClick:false,toggleResetEmail:false }) }, 5000)
+  }
+
+  toggleResetEmail = () =>
+  {
+    this.setState({toggleResetEmail:true})
+    
+  }
+  
+
   render() {
     const {classes} = this.props
     const sports = [
@@ -153,7 +170,7 @@ class Index extends React.Component {
           </div>
           <div className={classes.section3}>
             <div style={{ marginRight: -35 }}>
-              <img src={'/static/icons/Pennant_Icon.svg'} style={{height:100, width:'auto'}} />
+              <img src={'/static/icons/Pennant_Icon.svg'} style={{height:100, width:'auto'}} onClick={() => this.firstClick()}/>
             </div>
             <div style={{ marginRight: 40 }}>
               <HomeTitle title='Root For Teams' color='#229246'/>
@@ -162,7 +179,7 @@ class Index extends React.Component {
               </Typography>
             </div>
             <div>
-              <img src={'/static/icons/Foam_Finger_Icon.svg'} style={{height:100, width:'auto'}} />
+              <img src={'/static/icons/Foam_Finger_Icon.svg'} style={{height:100, width:'auto'}} onClick={() => this.toggleResetEmail()} />
             </div>
           </div>
           <Typography variant='headline'style={{color:'#229246', width:'60%',marginLeft:'20%', marginBottom: 40,lineHeight:1.6, textAlign:'center'}}>
@@ -195,6 +212,9 @@ class Index extends React.Component {
           </div>
           <br/>
           <br/>
+
+          {this.state.toggleResetEmail ?
+            <Button onClick={() => this.props.clickedAdminUpdates(this.props.user.id)}>Invalidate Email</Button> : <div/>}
           <BottomNav/>
           {/* <img src={'/static/icons/racehorse_plain.svg'} alt="none" height={300} width={300}/> */}
         </SportsSocket>
@@ -211,4 +231,5 @@ Index.propTypes = {
 export default R.compose(
   withRoot,
   withStyles(styles),
+  connect(R.pick(['user']), {clickedAdminUpdates})
 )(Index)

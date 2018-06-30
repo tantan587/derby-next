@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import autobind from 'react-autobind'
 import {connect} from 'react-redux'
 import Link from 'next/link'
-import Router, {withRouter} from 'next/router'
+import {withRouter} from 'next/router'
 
 import {withStyles} from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
@@ -78,16 +78,18 @@ class SignupForm extends React.Component {
           .then((response) => {
             const {id} = this.props.user
             response.type === 'SIGNUP_FAIL'
-            ? this.setState({dirty: false, loading: false, errors: Object.assign(
-              {},
-              response.error.signup_email && {email: response.error.signup_email},
-              response.error.signup_username && {username: response.error.signup_username},
-              response.error.signup_password && {password: response.error.signup_password},
-            )})
-            : (id && router.push(`/email-verification?i=${id}`))
+              ? this.setState({dirty: false, loading: false, errors: Object.assign(
+                {},
+                response.error.signup_email && {email: response.error.signup_email},
+                response.error.signup_username && {username: response.error.signup_username},
+                response.error.signup_password && {password: response.error.signup_password},
+              )})
+              : (id && router.push(`/email-verification?i=${id}`))
           }) 
+      })
     }
   }
+
 
   renderField({name, label, type, ...rest}) {
     const { classes } = this.props

@@ -78,7 +78,9 @@ router.post('/logout', (req, res, next) => {
 })
 
 router.post('/adminupdates', (req, res, next) => {
-  adminHelpers.admin1()
+  adminHelpers.admin1(req.body.id)
+    .then(() => console.log('complete'))
+    .catch((err) => console.log(err))
 })
 
 router.post('/forgotpassword', (req, res, next) => {

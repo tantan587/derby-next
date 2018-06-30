@@ -13,7 +13,7 @@ import Snackbar from '@material-ui/core/Snackbar'
 import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
 import CircularProgress from '@material-ui/core/CircularProgress'
-
+import Router from 'next/router'
 import LayoutUser from '../common/components/LayoutUser'
 import withRoot from '../common/components/withRoot'
 import {isVerified, doVerify, doResend} from '../common/actions/auth-actions'
@@ -188,7 +188,7 @@ class EmailVerification extends Component {
         />
         <Typography
           align="center"
-          color={hasError ? "error" : "default"}
+          color={hasError ? 'error' : 'default'}
           paragraph={true}
           children={hasError ? `Your code does not match. Please try again. Attempt ${number_of_tries} / 5` : `Attempt ${number_of_tries} / 5`}
         />
@@ -266,18 +266,18 @@ class EmailVerification extends Component {
       <Grid
         item
         md={6}
-        children={this.headingSubheading('Nothing to do here 404', 'Unfortunately, this link is dead :(')}
+        children={this.headingSubheading('Nothing to do here', 'Unfortunately, this link is not active')}
       />
     )
   }
 
   showComplete() {
-    setTimeout(() => this.props.url.push('/login'), 5000)
+    setTimeout(() => Router.push('/login'), 5000)
     return (
       <Grid
         item
         md={6}
-        children={this.headingSubheading('Success!', 'You should be redirected to login page in a sec.')}
+        children={this.headingSubheading('Success!', 'You should be redirected to login page momentarily.')}
       />
     )
 
