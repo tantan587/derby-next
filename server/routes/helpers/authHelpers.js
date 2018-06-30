@@ -196,7 +196,7 @@ const sendSignupEmail = (user) => {
 
   return knex('users.email_auth')
     .select('*')
-    .where('application', (dev ? 'forgotpassword' : 'forgotpassword-dev'))
+    .where('application', (dev ? 'forgotpassword-dev' : 'forgotpassword'))
     .first()
     .then(({api_key: apiKey, domain, email}) => {
       const mailGun = mailer({apiKey, domain})
@@ -224,8 +224,6 @@ const sendEmail = (user, {subject, body, inline} = {}) => {
     .where('application', (dev ? 'forgotpassword-dev' : 'forgotpassword'))
     .first()
     .then(({api_key: apiKey, domain, email}) => {
-      console.log('dev', dev)
-      console.log(dev, apiKey,domain,email)
       const mailGun = mailer({apiKey, domain})
       const mgConfig = {
         from: email,
