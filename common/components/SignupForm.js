@@ -55,7 +55,7 @@ class SignupForm extends React.Component {
   constructor(props) {
     super(props)
     autobind(this)
-    this.state = {username:'', password:'', first_name:'', last_name:'', email:'', dirty: false}
+    this.state = {username:'', password:'', first_name:'', last_name:'', email:'', dirty: false, loading: false}
   }
 
   handleChange(e) {
@@ -72,18 +72,20 @@ class SignupForm extends React.Component {
     e.preventDefault()
     if (this.handleValidate()) {
       const {onSignup, router} = this.props
-      onSignup(...R.props(['username', 'first_name', 'last_name', 'email', 'password'], this.state))
-        .then((response) => {
-          const {id} = this.props.user
-          response.type === 'SIGNUP_FAIL'
-          ? this.setState({dirty: false, errors: Object.assign(
-            {},
-            response.error.signup_email && {email: response.error.signup_email},
-            response.error.signup_username && {username: response.error.signup_username},
-            response.error.signup_password && {password: response.error.signup_password},
-          )})
-          : (id && router.push(`/email-verification?i=${id}`))
-        }) 
+      this.setState({loading: true}, () => {
+        onSignup(...R.props(['username', 'first_name', 'last_name', 'email', 'password'], this.state))
+          .then((response) => {
+            const {id} = this.props.user
+            response.type === 'SIGNUP_FAIL'
+            ? this.setState({dirty: false, loading: false, errors: Object.assign(
+              {},
+              response.error.signup_email && {email: response.error.signup_email},
+              response.error.signup_username && {username: response.error.signup_username},
+              response.error.signup_password && {password: response.error.signup_password},
+            )})
+            : (id && router.push(`/email-verification?i=${id}`))
+          }) 
+      })
     }
   }
 
@@ -131,7 +133,8 @@ class SignupForm extends React.Component {
           className={classes.submit}
           raised
           type="submit"
-          children="SUBMIT"
+          disabled={this.state.loading}
+          children={this.state.loading ? 'LOADING...' : 'SUBMIT'}
         />
         <Button raised color="accent">
           <Link href="/login">ALREADY HAVE AN ACCOUNT? LOGIN.</Link>

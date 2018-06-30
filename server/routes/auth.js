@@ -24,10 +24,10 @@ router.post('/signup', authHelpers.loginRedirect, (req, res, next)  => {
           .sendEmail(newUser, signupTemplates)
           .then(() => handleReduxResponse(res, 200, {
             type: C.SIGNUP_SUCCESS,
-            id: user.user_id,
-            last_name : user.last_name,
-            first_name : user.first_name,
-            username : user.username
+            id: newUser.user_id,
+            last_name : newUser.last_name,
+            first_name : newUser.first_name,
+            username : newUser.username
           }))
       } else {
         return handleReduxResponse(res, 400, {type: C.SIGNUP_FAIL});
