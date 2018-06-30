@@ -35,7 +35,7 @@ class Login extends Component {
 }
 
 export default R.compose(
-  withRoot,
   withRedux(initStore),
-  withSnackbar
+  withRoot,
+  withSnackbar,
 )(Login)

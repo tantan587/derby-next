@@ -2,6 +2,7 @@ const R = require('ramda')
 const knex = require('../../db/connection')
 const {sendEmail} = require('./authHelpers')
 const EMAIL_VERIFICATION = require('../../../common/constants/email_verification')
+const signupTemplates = require('../../email-templates/signup')
 
 module.exports.getById = (user_id) => knex('users.users')
   .where('user_id', user_id)
@@ -38,13 +39,13 @@ module.exports.verify = (user_id, verification_code) => knex('users.users')
     .where({user_id, verified: false})
     .update({
       verification_code: Math.floor(1000 + Math.random() * 9000),
-      expires_at: knex.raw("now() + INTERVAL '15 minutes'"),
+      expires_at: knex.raw("now() + INTERVAL '24 hours'"),
       number_of_tries: 0,
     })
     .returning('*')
     .then(([userObj]) => {
       if (userObj) {
-        return sendSignupEmail(userObj)
+        return sendEmail(userObj, signupTemplates)
       }
       else return false
     })

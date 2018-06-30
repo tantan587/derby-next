@@ -45,6 +45,7 @@ const styles = (theme) => ({
 const FIELDS = [
   {name: 'username', label: 'Username'},
   {name: 'password', label: 'Password', type: 'password'},
+  {name: 'confirm_password', label: 'Confirm Password', type: 'password'},
   {name: 'email', label: 'Email Address'},
   {name: 'confirm_email', label: 'Confirm Email Address'},
   {name: 'first_name', label: 'First Name'},
@@ -55,7 +56,7 @@ class SignupForm extends React.Component {
   constructor(props) {
     super(props)
     autobind(this)
-    this.state = {username:'', password:'', first_name:'', last_name:'', email:'', dirty: false}
+    this.state = {username:'', password:'', confirm_password: '', first_name:'', last_name:'', email:'', dirty: false, loading: false}
   }
 
   handleChange(e) {
@@ -63,27 +64,28 @@ class SignupForm extends React.Component {
   }
 
   handleValidate() {
-    return this.state.email !== this.state.confirm_email
-      ? this.setState({errors: {confirm_email: 'Email does not match!'}})
-      : true
+    if (this.state.email !== this.state.confirm_email) return this.setState({errors: {confirm_email: 'Email does not match!'}, dirty: false})
+    if (this.state.password !== this.state.confirm_password) return this.setState({errors: {confirm_password: 'Passwords does not match!'}, dirty: false})
+    return true
   }
 
   handleSubmit(e) {
     e.preventDefault()
     if (this.handleValidate()) {
       const {onSignup, router} = this.props
-      onSignup(...R.props(['username', 'first_name', 'last_name', 'email', 'password'], this.state))
-        .then((response) => {
-          const {id} = this.props.user
-          response.type === 'SIGNUP_FAIL'
-            ? this.setState({dirty: false, errors: Object.assign(
+      this.setState({loading: true}, () => {
+        onSignup(...R.props(['username', 'first_name', 'last_name', 'email', 'password'], this.state))
+          .then((response) => {
+            const {id} = this.props.user
+            response.type === 'SIGNUP_FAIL'
+            ? this.setState({dirty: false, loading: false, errors: Object.assign(
               {},
               response.error.signup_email && {email: response.error.signup_email},
               response.error.signup_username && {username: response.error.signup_username},
               response.error.signup_password && {password: response.error.signup_password},
             )})
             : (id && router.push(`/email-verification?i=${id}`))
-        }) 
+          }) 
     }
   }
 
@@ -131,7 +133,8 @@ class SignupForm extends React.Component {
         <Button
           className={classes.submit}
           type="submit"
-          children="SUBMIT"
+          disabled={this.state.loading}
+          children={this.state.loading ? 'LOADING...' : 'SUBMIT'}
         />
         <Button>
           <Link href="/login">ALREADY HAVE AN ACCOUNT? LOGIN.</Link>

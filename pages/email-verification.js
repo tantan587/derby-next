@@ -12,6 +12,7 @@ import {withStyles} from '@material-ui/core/styles'
 import Snackbar from '@material-ui/core/Snackbar'
 import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
+import CircularProgress from '@material-ui/core/CircularProgress'
 
 import LayoutUser from '../common/components/LayoutUser'
 import withRoot from '../common/components/withRoot'
@@ -80,7 +81,7 @@ class EmailVerification extends Component {
   constructor(props) {
     super(props)
     autobind(this)
-    this.state = {code: '', timeLeft: 60, status: STATUS.INITIALIZING, snackbar: true, serverResponse: {}}
+    this.state = {code: '', timeLeft: 60, status: STATUS.INITIALIZING, snackbar: true, serverResponse: {}, loading: false}
   }
 
   componentDidMount() {
@@ -100,7 +101,7 @@ class EmailVerification extends Component {
         status: isExpired ? STATUS.EXPIRED : STATUS.VALID, 
         serverResponse: Object.assign(
           {number_of_tries: number_of_tries}, 
-          number_of_tries >= 5 && {type: EMAIL_VERIFICATION.LIMIT_EXCEEDED}
+          number_of_tries > 4 && {type: EMAIL_VERIFICATION.LIMIT_EXCEEDED}
         ),
       })
     } else {
@@ -109,11 +110,18 @@ class EmailVerification extends Component {
   }
 
   async handleDoVerify(user_id, verification_code) {
-    const serverResponse = await this.props.doVerify(user_id, verification_code.replace(/\s/g, ''))
-    if (serverResponse.ok) {
+    const response = await this.props.doVerify(user_id, verification_code.replace(/\s/g, ''))
+    if (response.ok) {
       this.setState({status: STATUS.COMPLETE})
     } else {
-      serverResponse.json().then(payload => this.setState({meta: META.FAILURE, serverResponse: payload}))
+      const serverResponse = await response.json()
+      this.setState({
+        meta: META.FAILURE,
+        serverResponse: Object.assign(
+          serverResponse,
+          serverResponse.number_of_tries > 4 && {type: EMAIL_VERIFICATION.LIMIT_EXCEEDED
+        }),
+      })
     }
   }
 
@@ -130,8 +138,11 @@ class EmailVerification extends Component {
 
   async handleResend() {
     const {i: user_id} = this.props.url.query
-    const response = await this.props.doResend(user_id).then()
-    if (response.ok) window.location.reload()
+    this.setState({loading: true}, async () => {
+      const response = await this.props.doResend(user_id).then()  
+      if (response.ok) window.location.reload()
+      else this.setState({loading: false})
+    })
   }
 
   determineStatus() {
@@ -151,8 +162,8 @@ class EmailVerification extends Component {
   showInitializing() {
     return (
       this.state.meta === META.FAILURE
-      ? 'Code has expired.'
-      : 'Loading.'
+      ? this.showExpired()
+      : <CircularProgress size={50} />
     )
   }
 
@@ -236,8 +247,14 @@ class EmailVerification extends Component {
       >
         {this.headingSubheading('False Start', 'For security, your verification code has timed out. Please click below to send a new code:')}
         <Typography align="center" paragraph={true}>
-          <Button onClick={this.handleResend} className={this.props.classes.resubmit} color="default">
-            Resend Email
+          <Button
+            onClick={this.handleResend}
+            className={this.props.classes.resubmit}
+            variant="contained"
+            color="default"
+            disabled={this.state.loading}
+          >
+            {this.state.loading ? 'Loading...' : 'Resend Email'}
           </Button>
         </Typography>
       </Grid>

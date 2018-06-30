@@ -10,7 +10,6 @@ const server = require('http').Server(app)
 const io = require('socket.io')(server)
 const next = require('next')
 const session = require('express-session')
-const FileStore = require('session-file-store')(session)
 const sslRedirect = require('heroku-ssl-redirect')
 
 const dev = process.env.NODE_ENV !== 'production'
@@ -25,10 +24,16 @@ nextApp.prepare()
 
     app.use(bodyParser.json())
     app.use(require('cookie-parser')())
-    app.use(session(Object.assign(
-      { secret: 'keyboard cat' }, 
-      !dev && { store: new FileStore() }
-    )))
+    app.use(session({
+      store: new (require('connect-pg-simple')(session))({
+        conString: require('../knexfile.js')[process.env.NODE_ENV].connection,
+        schemaName: 'users',
+        tableName : 'session',
+      }),
+      secret: 'keyboard cat',
+      resave: false,
+      cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 },
+    }))
     
     app.use(sslRedirect())
     app.use(passport.initialize())
