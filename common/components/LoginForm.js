@@ -1,139 +1,151 @@
-import React from 'react'
+const R = require('ramda')
+import React, {Component} from 'react'
 import Link from 'next/link'
-import Router from 'next/router'
-import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography'
+import {connect} from 'react-redux'
+import {withRouter} from 'next/router'
+import autobind from 'react-autobind'
+import {withStyles} from '@material-ui/core/styles'
+import Grid from '@material-ui/core/Grid'
 import Button from '@material-ui/core/Button'
+import Typography from '@material-ui/core/Typography'
 import TextField from '@material-ui/core/TextField'
 import {clickedLogin} from '../actions/auth-actions'
 
-import { connect } from 'react-redux'
-
-const styles = theme => ({
+const styles = (theme) => ({
   container: {
-    left: '50%',
-    textAlign: 'center',
-    marginTop : '100px'
+    maxWidth: 450,
+    padding: '3em',
+    margin: '0 auto',
+    '& a': {
+      textDecoration: 'none',
+      color: theme.palette.grey['800']
+    }
   },
-  field: {
-    textAlign: 'center',
+  title: {
+    fontFamily: 'HorsebackSlab',
+    color: theme.palette.primary.main,
   },
-  button : {
-    //fontFamily: 'Titillium Web',
-    backgroundColor: theme.palette.secondary.A700,
-    color: theme.palette.tertiary.A700,
+  textField: {
+    marginBottom: '0.5em',
+  },
+  submit: {
+    margin: '2em 1em 1.5em',
+    padding: '1em 3em',
+    background: '#E9AA45',
+    color: 'white',
+    borderRadius: 0,
+    alignSelf: 'center'
+  },
+  actions: {
+    buttons: {
+      textAlign: 'center'
+    }
   }
 })
 
-class LoginForm extends React.Component {
-  state = {
-    username: '',
-    password: '',
-    fireRedirect:false
+const FIELDS = [
+  {name: 'username', label: 'Username'},
+  {name: 'password', label: 'Password', type: 'password'},
+]
+
+class LoginForm extends Component {
+  constructor(props) {
+    super(props)
+    autobind(this)
+    this.state = {username: '', password: '', error: '', loading: false, dirty: false}
   }
 
-  handleChange = name => event => {
-    this.setState({
-      [name]: event.target.value,
+  handleChange(e) {
+    this.setState({[e.target.name]: e.target.value, dirty: true})
+  }
+
+  handleSubmit(e) {
+    e.preventDefault()
+    const {onLogin, router} = this.props
+    this.setState({loading: true}, () => {
+      onLogin(...R.props(['username', 'password'], this.state))
+        .then((response) => {
+          if (response.type === 'LOGIN_FAIL') {
+            this.setState({error: response.error.form || '', loading: false, dirty: false})
+          } else {
+            setTimeout(() => (this.props.user.loggedIn && router.push('/')), 1)
+          }
+        })
     })
   }
 
-  myLogin(e)
-  {
-    const { onLogin } = this.props
-    this.setState({fireRedirect: true})
-    e.preventDefault()
-    onLogin(this.state.username, this.state.password)
-  }
-
-  submit(e) {
-    this.myLogin(e)
-  }
-
-  keypress(e) {
-    if (e.key === 'Enter') { 
-      this.myLogin(e)
-    }
-  }
-  render() {
+  renderField({name, label, type, ...rest}) {
     const { classes } = this.props
-    if(this.state.fireRedirect && this.props.user.loggedIn === true){
-      if(this.props.redirectInd)
-      {
-        Router.push('/'+this.props.previousPage)
-      }
-      else{
-        Router.push('/')
-      }
+    const errorMessage = R.path(['user', 'error', `login_${name}`], this.props) || R.path(['errors', name], this.state)
+    return (
+      <TextField
+        key={name}
+        className={classes.textField}
+        name={name}
+        error={R.not(R.isNil(errorMessage))}
+        helperText={errorMessage}
+        label={label}
+        type={type || 'text'}
+        value={this.state[name]}
+        onChange={this.handleChange}
+        {...rest}
+      />
+    )
+  }
 
-      return(<div></div>)
-    }
-    else{
-      
-      return (
-        <form className={classes.container} noValidate autoComplete="off"
-          onKeyPress={(event) => this.keypress(event)}>
-          <Typography variant="display2" style={{color:'black'}} gutterBottom>
-            Login
-          </Typography>
-          <TextField
-            id="name"
-            error={typeof this.props.user.error.login_username !== 'undefined'}
-            className={classes.field}
-            helperText = {this.props.user.error.login_username}
-            label="Username"
-            className={classes.textField}
-            value={this.state.username}
-            margin="normal"
-            onChange = {this.handleChange('username')}/>
-          <br/>
-          <TextField
-            error={typeof this.props.user.error.login_password !== 'undefined'}
-            id="password"
-            label="Password"
-            helperText = {this.props.user.error.login_password}
-            className={classes.field}
-            value={this.state.password}
-            type="password"
-            margin="normal"
-            onChange = {this.handleChange('password')}/>
-          <br/>
-          <br/>
-          <Typography variant="subheading" style={{color:'black'}} gutterBottom>
-          Don't have an account? <Link href="/signup"><a>Signup.</a></Link>
-          </Typography>
-          <br/>
-          <Typography variant="subheading" style={{color:'black'}} gutterBottom>
-          Forgot your Username / <Link href="/forgotpassword"><a>Password</a></Link>?
-          </Typography>
-          <br/>
-          <Button className={classes.button} onClick={(event) => this.submit(event)}>
-            Submit
-          </Button>
-         
-        </form>
-      )
-    }
+  render() {
+    const {classes} = this.props
+    return (
+      <Grid 
+        className={classes.container}
+        component="form"
+        direction="column"
+        onSubmit={this.handleSubmit}
+        noValidate
+        autoComplete="off"
+        container
+      >
+        <Typography
+          className={classes.title}
+          variant="display1"
+          gutterBottom
+          align="center"
+        >
+          Login
+        </Typography>
+        {FIELDS.map(this.renderField)}
+        <Button
+          className={classes.submit}
+          type="submit"
+          children={this.state.loading ? 'LOADING...' : 'LOGIN'}
+          disabled={this.state.loading}
+        />
+        <Grid container>
+          <Grid className={classes.actions.button} item xs={12} component={Button}>
+            <Link href="/signup">DON'T HAVE AN ACCOUNT? SIGNUP.</Link>
+          </Grid>
+          <Grid className={classes.actions.button} item xs={6} component={Button}>
+            <Link href="/forgotusername">FORGOT USERNAME</Link>
+          </Grid>
+          <Grid className={classes.actions.button} item xs={6} component={Button}>
+            <Link href="/forgotpassword">FORGOT PASSWORD</Link>
+          </Grid>
+        </Grid>
+        {!!this.state.error.length && !this.state.dirty && (
+          <Typography
+            paragraph={true}
+            color="error"
+            align="center"
+            dangerouslySetInnerHTML={{__html: this.state.error}}
+          />
+        )}
+      </Grid>
+    )
   }
 }
 
-LoginForm.propTypes = {
-  classes: PropTypes.object.isRequired,
-}
-
-export default connect(
-  state =>
-    ({
-      user : state.user,
-      previousPage : state.previousPage
-    }),
-  dispatch =>
-    ({
-      onLogin(username, password) {
-        dispatch(
-          clickedLogin(username,password))
-      }
-    }))(withStyles(styles)(LoginForm))
-
-
+export default R.compose(
+  withRouter,
+  withStyles(styles),
+  connect(R.pick(['user', 'previousPage']), {onLogin: clickedLogin})
+)(LoginForm)
