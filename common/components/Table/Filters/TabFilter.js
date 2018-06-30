@@ -9,7 +9,7 @@ import { Scrollbars } from 'react-custom-scrollbars'
 
 const styles = theme => ({
   button : {
-    color:'black',
+    color:'#48311A',
     borderRadius: '0px',
   },
   appBar : {

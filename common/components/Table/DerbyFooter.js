@@ -6,7 +6,7 @@ import  TablePagination   from '@material-ui/core/TablePagination'
 class DerbyFooter extends React.Component {
 
   render() {
-    const { styleProps, only10 } = this.props
+    const { styleProps, only20 } = this.props
 
     return (
       <TableFooter style={styleProps && styleProps.TableFooter}>
@@ -18,7 +18,7 @@ class DerbyFooter extends React.Component {
             page={this.props.page}
             onChangePage={this.props.handleChangePage}
             onChangeRowsPerPage={this.props.handleChangeRowsPerPage}
-            rowsPerPageOptions={only10 ? [10] : [5,10,20,40,80]}
+            rowsPerPageOptions={only20 ? [20] : [5,10,20,40,80]}
           />
         </TableRow>
       </TableFooter>

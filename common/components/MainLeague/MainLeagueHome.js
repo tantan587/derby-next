@@ -2,11 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { withStyles } from '@material-ui/core/styles'
-
 import { handleOpenDialog } from '../../actions/dialog-actions'
-import silksAndColors from '../../../data/silksAndColors'
-import upcomingGames from '../../../data/upcomingGames'
-
 import Title from '../Navigation/Title'
 import Owner from '../Home/Owner'
 import Card from '../Home/Card'
@@ -38,44 +34,64 @@ const styles = {
 }
 
 class MainLeagueHome extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      startTime: Math.round((new Date(this.props.activeLeague.draft_start_time)-new Date())/1000)
+    }
+  }
 
-  state = {
-    startTime: Math.round((new Date(this.props.activeLeague.draft_start_time)-new Date())/1000)
+  componentDidMount() {
+    this.tick()
+    this.timerID = setInterval(
+      () => this.tick(),
+      5000
+    )
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timerID)
+  }
+
+  tick() {
+    this.setState({
+      startTime: Math.round((new Date(this.props.activeLeague.draft_start_time)-new Date())/1000)
+    })
   }
 
   render() {
-    const { classes, activeLeague, sportLeagues, schedules } = this.props
+    const { classes, activeLeague, sportLeagues, teams } = this.props
     const { startTime } = this.state
 
-    let ownersWithColors = []
-    if (activeLeague.owners) {
-      ownersWithColors = activeLeague.owners.map((owner, i) => ({ ...owner, ...silksAndColors[i] }))
+    let owners = []
+    if (activeLeague.owners)
+    {
+      owners = activeLeague.owners
     }
 
-    const myOwner = ownersWithColors.find(owner => owner.owner_id === activeLeague.my_owner_id)
-
-    console.log('activeLeague', schedules)
+    const myOwner =owners.find(owner => owner.owner_id === activeLeague.my_owner_id)
     return (
       <div>
-        <Title color='white' backgroundColor='black' title={'Welcome Us'}/>
+        <Title color='white' backgroundColor='#EBAB38' title={'Welcome To The Stable'}/>
         <div className={classes.section1}>
           {/* <div className={classes.section1}/> */}
-          <Owner myOwner={myOwner} num={ownersWithColors.length} />
+          <Owner myOwner={myOwner} num={owners.length} />
           <div className={classes.cards}>
 
             <Card
               title="Upcoming Games"
-              Button={() => <StyledButton text="View Complete Schedules"/>}
+              Button={() => <StyledButton text="View Complete Schedules" link='/mainleagueschedule' />}
             >
               <Upcoming
-                thing="Thing"
-                upcomingGames={upcomingGames}
+                sportLeagues={sportLeagues}
+                upcomingGames={activeLeague.ownerGames}
+                teams={teams}
               />
             </Card>
 
             <Card
               title="Draft Countdown"
-              Button={() => <StyledButton text="Go to Draft Room"/>}
+              Button={() => <StyledButton text="Go to Draft Room" link='/livedraft'/>}
             >
               <Countdown
                 startTime={startTime}
@@ -85,9 +101,9 @@ class MainLeagueHome extends React.Component {
             <Card
               title="Standings"
               scroll
-              Button={() => <StyledButton text="View Complete Standings"/>}
+              Button={() => <StyledButton text="View Complete Standings" link='/mainleaguestandings'/>}
             >
-              <Standings owners={ownersWithColors.sort((a, b) => a.rank - b.rank)} />
+              <Standings owners={owners.sort((a, b) => a.rank - b.rank)} />
             </Card>
 
             <Card title="The Wire" scroll>
@@ -95,17 +111,17 @@ class MainLeagueHome extends React.Component {
                 {
                   headline: 'Headline placeholder copy here.',
                   body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-                  Button: () => <StyledButton text="Link" />
+                  Button: () => <StyledButton text="Link" link='/login'/>
                 },
                 {
                   headline: 'Headline placeholder copy here.',
                   body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-                  Button: () => <StyledButton text="Link" />
+                  Button: () => <StyledButton text="Link" link='/login'/>
                 },
                 {
                   headline: 'Headline placeholder copy here.',
                   body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-                  Button: () => <StyledButton text="Link" />
+                  Button: () => <StyledButton text="Link" link='/login'/>
                 },
               ]}/>
             </Card>
@@ -137,8 +153,7 @@ export default compose(
   connect(state => ({
     activeLeague: state.activeLeague,
     sportLeagues : state.sportLeagues,
-    teams: state.teams,
-    schedules: state.schedules
+    teams: state.teams
   }),
   mapDispatchToProps),
   withStyles(styles)

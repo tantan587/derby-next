@@ -29,7 +29,6 @@ const styles = {
 }
 
 const DerbyCard = withStyles(styles)(({ classes, title, children, scroll = false, Button }) => {
-  console.log(title)
   return (
     <Card className={classes.root}>
       <div className={classes.title}>

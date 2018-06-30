@@ -56,11 +56,11 @@ class ParticipateForm extends React.Component {
           <br/>
           <br/>
           <Typography variant="subheading" className={classes.text} gutterBottom>
-            Derby: Fantasy Wins League is a new type of league that has never been seen before.
-             Instead of drafting players, you are drafting teams.
-              Each team earns points based upon wins, 
-              and whoever earns the most points over the course of the season wins the race! 
-              Learn more about it here.
+          Pick your teams in this race and ride them to victory! 
+          In Derby Fantasy Wins League, compete with your friends
+           by drafting teams across multiple sports.
+            Earn points when your teams win throughout their entire seasons. 
+            The more games your teams win, the more points you earn.
           </Typography>
           <br/>
           <br/>

@@ -24,6 +24,7 @@ const getLeague = async (league_id, user_id, res, type) =>{
   const leagueInfo = await knex.raw(leagueInfoStr)
   const ownerInfo = await knex.raw(ownerInfoStr)
   const teamInfo = await knex.raw(teamInfoStr)
+  
 
   if (leagueInfo.rows.length === 1)
   {
@@ -56,11 +57,13 @@ const getLeague = async (league_id, user_id, res, type) =>{
         })
     })
 
+    const ownerGames = await getOwnersUpcomingGames(my_owner_id)
     teamInfo.rows.forEach(teamRow => {
       teams[teamRow.team_id] = {owner_id:teamRow.owner_id, points:parseFloat(teamRow.points)}
     })
 
     const draftOrder = GetDraftOrder(total_teams,owners.length)
+    
     return handleReduxResponse(res,200, {
       type: type,
       league_name : league_name,
@@ -72,13 +75,41 @@ const getLeague = async (league_id, user_id, res, type) =>{
       draft_start_time:start_time,
       my_owner_id:my_owner_id,
       draftOrder:draftOrder,
-      teams:teams
+      teams:teams,
+      ownerGames:ownerGames
     })
   }
   else
   {
     return handleReduxResponse(res,400, {})
   }
+}
+
+const getOwnersUpcomingGames = async (ownerId) =>
+{
+  var d = new Date()
+  //-60 for eastern time zone. 
+  var nd = new Date(d.getTime() - ((d.getTimezoneOffset()-60) * 60000))
+  const dayCount = getDayCountStr(nd.toJSON())
+
+  const str = `select a.team_id as my_team_id, b.*
+  from fantasy.rosters a, sports.schedule b, sports.results c
+   where (a.team_id = b.home_team_id or a.team_id = b.away_team_id) 
+   and b.global_game_id = c.global_game_id and c.status = 'Scheduled'
+   and day_count >= ` + dayCount + ' and owner_id = \'' + ownerId + '\'  order by day_count limit 7'
+
+  let resp = await knex.raw(str)
+
+  return resp.rows.map(x => {
+    let date = new Date(x.date_time)
+    return {
+      date:formatGameDateShort(date),
+      time:formatAMPM(date),
+      my_team_id : x.my_team_id,
+      home_team_id: x.home_team_id,
+      away_team_id: x.away_team_id,
+      sport_id:x.sport_id
+    }})
 }
 
 const GetDraftOrder = (totalTeams, totalOwners) =>
@@ -124,7 +155,7 @@ const updateTeamPointsTable = (newTeamPoints) =>
       {
         return Promise.all(updateList)
           .then(() => {
-            console.log("im done updating!")
+            console.log('im done updating!')
             return updateList.length
           })
       }
@@ -154,7 +185,7 @@ const updatePointsTable = (newPoints) =>
       {
         return Promise.all(updateList)
           .then(() => {
-            console.log("im done updating!")
+            console.log('im done updating!')
             return updateList.length
           })
       }
@@ -339,6 +370,14 @@ const formatGameDate = (date) => {
 
   return `${month}/${day}/${year}`
 }
+const formatGameDateShort = (date) => {
+  const month = date.getMonth() + 1
+  const day = date.getDate()
+  const year = date.getFullYear()
+
+  return `${month}/${day}/${year-2000}`
+}
+
 
 module.exports = {
   getLeague,
@@ -350,5 +389,5 @@ module.exports = {
   getDayCountStr,
   formatAMPM,
   formatGameDate,
-  GetDraftOrder
+  GetDraftOrder,
 }

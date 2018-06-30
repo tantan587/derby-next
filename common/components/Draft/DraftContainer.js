@@ -48,7 +48,6 @@ class DraftContainer extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      preDraft:true,
       countdownTime:0,
       startTime:Math.round((new Date(this.props.activeLeague.draft_start_time)-new Date())/1000),
       snackbarOpen:false,
@@ -94,7 +93,8 @@ class DraftContainer extends React.Component {
       ownerMap[owner.owner_id] =
        {draft_position:owner.draft_position, 
          owner_name:owner.owner_name,
-         here:here}
+         here:here,
+         avatar:owner.avatar}
     })
     this.setState({ownerMap:ownerMap, myDraftPosition:myDraftPosition})
   }
@@ -271,14 +271,9 @@ class DraftContainer extends React.Component {
     this.setState({ snackbarOpen: false })
   }
 
-  enterDraft()
-  {
-    this.setState({preDraft:false})
-  }
-
   render() {
     const { classes, activeLeague ,draft, teams } = this.props
-    const { preDraft, countdownTime, startTime,
+    const {countdownTime, startTime,
       snackbarOpen,snackbarMessage, ownerMap} = this.state
     
     
@@ -291,135 +286,124 @@ class DraftContainer extends React.Component {
 
     return (
 
-      preDraft
-        ?
-        <form className={classes.container}>
-          <Typography variant="subheading" className={classes.text} gutterBottom>
-            {'Some text explaining about the draft'}
-          </Typography>
-          <Button className={classes.button} onClick={() => this.enterDraft()}>
-            Enter Draft
-          </Button>
-        </form>
-        :
-        <div className={classes.root}>
-          <Title backgroundColor='#EBAB38' color='white' title={'Live Draft - ' + activeLeague.league_name }/>
-          <Grid container spacing={24} >
-            <Grid item xs={12}>
-              <Paper className={classes.paper}>
-                <Grid container alignItems={'stretch'} direction='row' style={{height:'100%'}}>
-                  <Grid item xs={12} sm={2} 
-                    style={{backgroundColor:'black'}}>
-                    <Grid container direction={'column'}>
-                      <Grid item xs={12} style={{backgroundColor:'black'}}>
-                        <Countdown 
-                          countdownTime={countdownTime}
-                          startTime={startTime}
-                          mode={draft.mode}/>
-                      </Grid>
-                      <Grid item xs={12}>
-                        <DraftOrder 
-                          owners={Object.values(ownerMap)}
-                          myOwnerName={ownerMap[activeLeague.my_owner_id].owner_name}  
-                          draftOrder={activeLeague.draftOrder}
-                          currPick={draft.pick}
-                          mode={draft.mode}/>
-                      </Grid>
-                      <Divider style={{backgroundColor:'white'}}/>
-                    </Grid>
-
-                  </Grid>
-                  <Grid item xs={12} sm={8} style={{backgroundColor:'white'}}>
-                    <Grid container direction={'column'}>
-                      <Grid item xs={12}>
-                        <Grid item xs={12}>
-                          {/* <DraftHeader 
-                            startTime={startTime} 
-                            mode={draft.mode}
-                            myTurn={myTurn}/> */}
-                          <Divider style={{backgroundColor:'white'}}/>
-                        </Grid>
-                        <CenteredTabs
-                          onUpdateQueue={this.onUpdateQueue}
-                          onAddQueue={this.onAddQueue}
-                          onDraftButton={this.onDraftButton}
-                          allowDraft={allowDraft}/>
-                      </Grid>
-                      <Button onClick={draft.mode === 'timeout' ? 
-                        this.onTimeIn : 
-                        draft.mode ==='live' ? 
-                          this.onTimeout : null}>
-                        {draft.mode === 'timeout' ? 'Continue' : 'Pause'}
-                      </Button>
-                      <Button onClick={this.onRestartDraft}>
-                        {'Restart Draft'}
-                      </Button>
-                      <form  noValidate>
-                        <TextField
-                          id="number"
-                          label="Draft Time (secs)"
-                          onChange={this.onTimeToDraftChange}
-                          type="number"
-                          defaultValue="5"
-                          InputLabelProps={{
-                            shrink: true,
-                          }}
-                        />
-                      </form>
-                      
-                      <Grid item xs={12} style={{backgroundColor:'white'}} >
-                      </Grid>
-                    </Grid>
-                  </Grid>
-                  <Grid item xs={12} sm={2}  style={{backgroundColor:'black'}}>
+      <div className={classes.root}>
+        <Title backgroundColor='#EBAB38' color='white' title={'Live Draft - ' + activeLeague.league_name }/>
+        <Grid container spacing={24} >
+          <Grid item xs={12}>
+            <Paper className={classes.paper}>
+              <Grid container alignItems={'stretch'} direction='row' style={{height:'100%'}}>
+                <Grid item xs={12} sm={2} 
+                  style={{backgroundColor:'black'}}>
+                  <Grid container direction={'column'}>
                     <Grid item xs={12} style={{backgroundColor:'black'}}>
-                      <Typography key={'head'} variant='subheading' 
-                        style={{fontFamily:'HorsebackSlab', color:'white', 
-                          paddingTop:15, paddingBottom:15}}>
-                          Draft Queue
-                      </Typography>
-                      <Divider style={{backgroundColor:'white'}}/>
+                      <Countdown 
+                        countdownTime={countdownTime}
+                        startTime={startTime}
+                        mode={draft.mode}/>
                     </Grid>
-                    <Grid container direction={'column'} style={{backgroundColor:'black'}}>
+                    <Grid item xs={12}>
+                      <DraftOrder 
+                        owners={Object.values(ownerMap)}
+                        myOwnerName={ ownerMap[activeLeague.my_owner_id]  ? ownerMap[activeLeague.my_owner_id].owner_name : ''}  
+                        draftOrder={activeLeague.draftOrder}
+                        currPick={draft.pick}
+                        mode={draft.mode}/>
+                    </Grid>
+                    <Divider style={{backgroundColor:'white'}}/>
+                  </Grid>
+
+                </Grid>
+                <Grid item xs={12} sm={8} style={{backgroundColor:'white'}}>
+                  <Grid container direction={'column'}>
+                    <Grid item xs={12}>
                       <Grid item xs={12}>
-                        <DraftQueue  items={draft.queue} teams={teams} updateOrder={this.onUpdateQueue}/>
+                        {/* <DraftHeader 
+                          startTime={startTime} 
+                          mode={draft.mode}
+                          myTurn={myTurn}/> */}
+                        <Divider style={{backgroundColor:'white'}}/>
                       </Grid>
-                      <Grid item xs={12} style={{marginBottom:5}}>
-                        <Button
-                          disabled={!allowDraft} 
-                          style={{fontSize:14, 
-                            backgroundColor:allowDraft ? '#EBAB38' : '#b2b2b2',
-                            fontStyle:allowDraft ? 'normal' : 'italic',
-                            marginTop:10, marginLeft:'-5%', color:'white', width:'90%'}} 
-                          onClick={() => this.onDraftButton()}>
-                          DRAFT #1 TEAM
-                        </Button>
-                      </Grid>
-                      <Divider style={{backgroundColor:'white'}}/>
-                      <Grid item xs={12}>
-                        <div style={{height:300, maxHeight:300}}>
-                          <div style={{color:'white'}}>
-                            
-                            {/* //viewBox="0 -10 24 34" style={{width:24,height:34}}/> */}
-                          </div>
-                          <img src={'/static/icons/Derby_Chat_Bubble.svg'} viewBox="0 -10 24 64" style={{marginTop:5, width:24,height:20}}/>
-                          <Typography key={'head'} variant='subheading' 
-                            style={{fontFamily:'HorsebackSlab', color:'white',marginTop:-0,
-                              paddingTop:0, paddingBottom:0, marginLeft:10,display:'inline-block'}}>
-                              Chat
-                          </Typography>
-                          <Chat onMessageSubmit={this.onMessageSubmit}/>
-                        </div>
-                      </Grid>
-                      <Divider style={{backgroundColor:'white'}}/>
+                      <CenteredTabs
+                        onUpdateQueue={this.onUpdateQueue}
+                        onAddQueue={this.onAddQueue}
+                        onDraftButton={this.onDraftButton}
+                        allowDraft={allowDraft}/>
+                    </Grid>
+                    <Button onClick={draft.mode === 'timeout' ? 
+                      this.onTimeIn : 
+                      draft.mode ==='live' ? 
+                        this.onTimeout : null}>
+                      {draft.mode === 'timeout' ? 'Continue' : 'Pause'}
+                    </Button>
+                    <Button onClick={this.onRestartDraft}>
+                      {'Restart Draft'}
+                    </Button>
+                    <form  noValidate>
+                      <TextField
+                        id="number"
+                        label="Draft Time (secs)"
+                        onChange={this.onTimeToDraftChange}
+                        type="number"
+                        defaultValue="5"
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                      />
+                    </form>
+                    
+                    <Grid item xs={12} style={{backgroundColor:'white'}} >
                     </Grid>
                   </Grid>
                 </Grid>
-              </Paper>
-            </Grid>
+                <Grid item xs={12} sm={2}  style={{backgroundColor:'black'}}>
+                  <Grid item xs={12} style={{backgroundColor:'black'}}>
+                    <Typography key={'head'} variant='subheading' 
+                      style={{fontFamily:'HorsebackSlab', color:'white', 
+                        paddingTop:15, paddingBottom:15}}>
+                        Draft Queue
+                    </Typography>
+                    <Divider style={{backgroundColor:'white'}}/>
+                  </Grid>
+                  <Grid container direction={'column'} style={{backgroundColor:'black'}}>
+                    <Grid item xs={12}>
+                      <DraftQueue  items={draft.queue} teams={teams} updateOrder={this.onUpdateQueue}/>
+                    </Grid>
+                    <Grid item xs={12} style={{marginBottom:5}}>
+                      <Button
+                        disabled={!allowDraft} 
+                        style={{fontSize:14, 
+                          backgroundColor:allowDraft ? '#EBAB38' : '#b2b2b2',
+                          fontStyle:allowDraft ? 'normal' : 'italic',
+                          marginTop:10, color:'white', width:'90%'}} 
+                        onClick={() => this.onDraftButton()}>
+                        DRAFT #1 TEAM
+                      </Button>
+                    </Grid>
+                    <Divider style={{backgroundColor:'white'}}/>
+                    <Grid item xs={12}>
+                      <div style={{height:300, maxHeight:300}}>
+                        <div style={{color:'white'}}>
+                          
+                          {/* //viewBox="0 -10 24 34" style={{width:24,height:34}}/> */}
+                        </div>
+                        <img src={'/static/icons/Derby_Chat_Bubble.svg'} viewBox="0 -10 24 64" style={{marginTop:5, width:24,height:20}}/>
+                        <Typography key={'head'} variant='subheading' 
+                          style={{fontFamily:'HorsebackSlab', color:'white',marginTop:-0,
+                            paddingTop:0, paddingBottom:0, marginLeft:10,display:'inline-block'}}>
+                            Chat
+                        </Typography>
+                        <Chat onMessageSubmit={this.onMessageSubmit}/>
+                      </div>
+                    </Grid>
+                    <Divider style={{backgroundColor:'white'}}/>
+                  </Grid>
+                </Grid>
+              </Grid>
+            </Paper>
           </Grid>
-          <SimpleSnackbar open={snackbarOpen} message={snackbarMessage} handleClose={this.onSnackbarClose}/>    
-        </div>
+        </Grid>
+        <SimpleSnackbar open={snackbarOpen} message={snackbarMessage} handleClose={this.onSnackbarClose}/>    
+      </div>
     )
   }
 }

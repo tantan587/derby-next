@@ -78,7 +78,7 @@ export const handleForceLogin = previousPage =>
 export const isVerified = (user_id) => () => Fetcher(`/api/verify-email?i=${user_id}`)
 
 export const doVerify = (user_id, verification_code) => () => Fetcher(
-  `/api/verify-email`,
+  '/api/verify-email',
   { method: 'POST', body: JSON.stringify({i:user_id, c:verification_code})}
 )
 

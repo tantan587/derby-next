@@ -5,10 +5,7 @@ import LogoIcon from '../Icons/LogoIcon'
 import Button from '@material-ui/core/Button'
 import Typography from '@material-ui/core/Typography'
 import Link from 'next/link'
-import HomeLogoIconSmall from '../Icons/HomeLogoIconSmall'
-import Patterns from '../Icons/Avatars/Patterns'
-import Silk from '../Icons/Avatars/Silk'
-import Horse from '../Icons/Avatars/Horse'
+import HomeLogoIcon from '../Icons/HomeLogoIcon'
 
 const styles = () => ({
   root: {
@@ -64,10 +61,8 @@ class BottomNav extends React.Component {
         </div>
         <div style={{float:'right', marginRight:100, marginTop:50}}>
           <a href='/' target="_blank">
-            <HomeLogoIconSmall color={'white'}/>
+            <HomeLogoIcon color={'white'} height={75} width={225} />
           </a>
-          <br/>
-          <br/>
           <br/>
           <br/>
           <div style={{marginLeft:0, display: 'inline-block'}}>

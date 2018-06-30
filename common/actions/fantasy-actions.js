@@ -20,4 +20,3 @@ export const clickedLeague = (league_id, user_id) => dispatch =>
     '/api/clickleague',
     'POST',
     JSON.stringify({league_id, user_id}))
-

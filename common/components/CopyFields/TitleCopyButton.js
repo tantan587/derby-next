@@ -7,7 +7,7 @@ class TitleCopyButton extends React.Component {
     const {title, copy, 
       buttonText, marginLeft, marginRight} = this.props
     return (
-      <div style={{width:325, display:'inline-block', marginLeft:marginLeft,
+      <div style={{width:250, display:'inline-block', marginLeft:marginLeft,
         marginRight:marginRight}}>
         <Typography 
           variant="title" style={{color:'white', fontFamily:'museo-slab-bold'}}>

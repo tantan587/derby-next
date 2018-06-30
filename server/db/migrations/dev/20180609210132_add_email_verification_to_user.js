@@ -13,4 +13,4 @@ exports.down = function(knex, Promise) {
     t.dropColumn('verification_code')
     t.dropColumn('expires_at')
   })
-};
+}

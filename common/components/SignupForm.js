@@ -86,7 +86,6 @@ class SignupForm extends React.Component {
             )})
             : (id && router.push(`/email-verification?i=${id}`))
           }) 
-      })
     }
   }
 
@@ -96,6 +95,7 @@ class SignupForm extends React.Component {
     const error = !this.state.dirty && errorMessage
     return (
       <TextField
+        key={name}
         className={classes.textField}
         name={name}
         error={error}
@@ -132,12 +132,11 @@ class SignupForm extends React.Component {
         {FIELDS.map(this.renderField)}
         <Button
           className={classes.submit}
-          raised
           type="submit"
           disabled={this.state.loading}
           children={this.state.loading ? 'LOADING...' : 'SUBMIT'}
         />
-        <Button raised color="accent">
+        <Button>
           <Link href="/login">ALREADY HAVE AN ACCOUNT? LOGIN.</Link>
         </Button>
       </Grid>

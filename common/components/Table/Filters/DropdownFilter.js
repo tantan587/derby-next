@@ -15,12 +15,12 @@ const styles = theme => ({
     pointerEvents: 'none',
   },
   menu: {
-    width: 300
+    width: 150
   },
   textField: {
     marginLeft: theme.spacing.unit,
     marginRight: theme.spacing.unit,
-    width: 300,
+    width: 150,
   },
 })
 

@@ -97,7 +97,7 @@ export default class DraftQueue extends React.Component {
                   ref={provided.innerRef}
                   style={getListStyle(snapshot.isDraggingOver)}
                 >
-                  {items.map((item, i) => (
+                  {items && items.map(item => (
                     <Draggable key={item} draggableId={item}>
                       {(provided, snapshot) => (
                         <div>

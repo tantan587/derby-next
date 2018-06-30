@@ -10,6 +10,7 @@ const server = require('http').Server(app)
 const io = require('socket.io')(server)
 const next = require('next')
 const session = require('express-session')
+const sslRedirect = require('heroku-ssl-redirect')
 
 const dev = process.env.NODE_ENV !== 'production'
 const nextApp = next({ dev })
@@ -34,6 +35,7 @@ nextApp.prepare()
       cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 },
     }))
     
+    app.use(sslRedirect())
     app.use(passport.initialize())
     app.use(passport.session())
     app.use('/api', authRoutes)

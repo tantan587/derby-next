@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { withStyles } from '@material-ui/core/styles'
 import { handleOpenDialog } from '../../actions/dialog-actions'
-
+import Title from '../Navigation/Title'
 import DerbyTableContainer from '../Table/DerbyTableContainer'
 import TeamsDialog from '../TeamsDialog/TeamsDialog'
 
@@ -40,12 +40,14 @@ class MainLeagueRoster extends React.Component {
         record:team.wins + '-' + team.losses + '-' + team.ties,
         percentage: (team.wins + team.ties + team.losses) === 0 ? 0.0.toFixed(3) : ((team.wins + 1/2*team.ties) / (team.wins + team.ties + team.losses)).toFixed(3),
         owner_name: owner ? owner.owner_name : 'N/A',
-        points:activeLeague.teams[team.team_id].points
+        //points:activeLeague.teams[team.team_id].points
       }
     })
 
     return (
       <div>
+        <Title color='white' backgroundColor='#EBAB38' title='Rosters'/>
+        {/* //tabStyles:{background:'#e3dac9', foreground:'white', text:'#229246'} */}
         <TeamsDialog />
         <DerbyTableContainer
           title='All Teams'
@@ -55,7 +57,7 @@ class MainLeagueRoster extends React.Component {
             {type:'tab', 
               values :this.props.activeLeague.owners.map(x => x.owner_name),
               column:'owner_name',
-              tabStyles:{background:'#E2E2E2', foreground:'white', text:'#229246', fontSize:12}
+              tabStyles:{background:'#e3dac9', foreground:'white', text:'#229246', fontSize:12}
             },
           ]}
           orderInd={true}
@@ -66,7 +68,7 @@ class MainLeagueRoster extends React.Component {
             {label: 'Conference', key: 'conference'},
             {label: 'Record', key: 'record', sortId:'percentage'},
             {label: 'Percentage', key: 'percentage'},
-            {label: 'Points', key: 'points'}
+            // {label: 'Points', key: 'points'}
           ]}/>
       </div>
     )

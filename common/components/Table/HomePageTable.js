@@ -9,11 +9,10 @@ import CheckIcon from '@material-ui/icons/Check'
 
 const headers = ['Leagues', 'Team Based', 'Draft Format',
   'No Roster Management', 'Social Competition', 'Includes Playoffs',
-  'Multi-Sport-Year-Round']
-const rows = [['Traditional Fantasy Leagues', false, true, false, true, false, false],
-  ['Daily Fantasy', false, true, false, false, true, false],
-  ['Sports Gambling', true, false, true, false, true, true],
-  ['DERBY', true, true, true, true, true, true]]
+  'Multi-Sport','Year-Round']
+const rows = [['Fantasy Leagues', false, true, false, true, false, false, false],
+  ['Daily Fantasy', false, false, false, false, true, false, false],
+  ['DERBY', true, true, true, true, true, true, true]]
 
 
 class HomePageTable extends React.Component {
@@ -30,7 +29,7 @@ class HomePageTable extends React.Component {
                 <TableCell
                   key={i}
                   padding='dense'
-                  style={{color:'white', fontSize:16, textAlign:'center'}}
+                  style={{color:'white', fontSize:16, textAlign:'center', fontFamily:'museo-slab-bold'}}
                 >
                   {column}
                 </TableCell>
