@@ -157,15 +157,10 @@ router.post('/verify-email', (req, res) => {
 router.get('/verify-email/resend', (req, res) => {
   const { i: user_id } = req.query
   return userHelpers
-    .getById(user_id)
-    .then((user) => {
-      if (user) {
-        return authHelpers
-          .sendEmail(user, signupTemplates)
-          .then(() => res.sendStatus(200))
-      } else {
-        return res.sendStatus(400)
-      }
+    .resendEmail(user_id)
+    .then((success) => {
+      if (success === false) return res.sendStatus(400)
+      else return res.sendStatus(200)
     })
 })
 

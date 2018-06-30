@@ -10,7 +10,6 @@ const server = require('http').Server(app)
 const io = require('socket.io')(server)
 const next = require('next')
 const session = require('express-session')
-const FileStore = require('session-file-store')(session)
 
 const dev = process.env.NODE_ENV !== 'production'
 const nextApp = next({ dev })
