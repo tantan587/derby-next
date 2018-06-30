@@ -138,9 +138,11 @@ class SignupForm extends React.Component {
           disabled={this.state.loading}
           children={this.state.loading ? 'LOADING...' : 'SUBMIT'}
         />
-        <Button>
-          <Link href="/login">ALREADY HAVE AN ACCOUNT? LOGIN.</Link>
-        </Button>
+        <Link href="/login">
+          <Button>
+            ALREADY HAVE AN ACCOUNT? LOGIN.
+          </Button>
+        </Link>
       </Grid>
     )
   }

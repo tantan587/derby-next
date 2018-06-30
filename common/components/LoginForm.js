@@ -121,14 +121,26 @@ class LoginForm extends Component {
           disabled={this.state.loading}
         />
         <Grid container>
-          <Grid className={classes.actions.button} item xs={12} component={Button}>
-            <Link href="/signup">DON'T HAVE AN ACCOUNT? SIGNUP.</Link>
+          <Grid  item xs={12} style={{textAlign:'center'}}>
+            <Link href="/signup">
+              <Button className={classes.actions.button}>
+                DON'T HAVE AN ACCOUNT? SIGNUP.
+              </Button>
+            </Link>
           </Grid>
-          <Grid className={classes.actions.button} item xs={6} component={Button}>
-            <Link href="/forgotusername">FORGOT USERNAME</Link>
+          <Grid  item xs={6}>
+            <Link href="/forgotusername">
+              <Button className={classes.actions.button}>
+                FORGOT USERNAME
+              </Button>
+            </Link>
           </Grid>
-          <Grid className={classes.actions.button} item xs={6} component={Button}>
-            <Link href="/forgotpassword">FORGOT PASSWORD</Link>
+          <Grid  item xs={6}>
+            <Link href="/forgotpassword">
+              <Button className={classes.actions.button}>
+                FORGOT PASSWORD
+              </Button>
+            </Link>
           </Grid>
         </Grid>
         {!!this.state.error.length && !this.state.dirty && (
