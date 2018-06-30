@@ -47,6 +47,7 @@
     "popper.js": "^1.14.3",
     "postcss-easy-import": "^3.0.0",
     "postcss-loader": "^2.0.10",
+    "ramda": "^0.25.0",
     "raw-loader": "^0.5.1",
     "react": "^16.4.0",
     "react-beautiful-dnd": "^3.0.0",

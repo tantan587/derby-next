@@ -2,7 +2,7 @@ import Link from 'next/link'
 import Button from '@material-ui/core/Button'
 import { withStyles } from '@material-ui/core/styles'
 
-const StyledButton = ({ classes, text, link, background, color, width, height, ...style}) =>
+const StyledButton = ({ classes, text, link, background, color, width, height, styles}) =>
   <Link to={link}>
     <Button
       variant="contained"
@@ -18,7 +18,7 @@ const StyledButton = ({ classes, text, link, background, color, width, height, .
         borderRadius: '0px',
         textAlign: 'center',
         verticalAlign: 'middle',
-        ...style
+        ...styles,
       }}
     >
       { text }
