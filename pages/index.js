@@ -1,3 +1,4 @@
+const R = require('ramda')
 import React from 'react'
 import PropTypes from 'prop-types'
 import Button from '@material-ui/core/Button'
@@ -206,4 +207,7 @@ Index.propTypes = {
   classes: PropTypes.object.isRequired,
 }
 
-export default withRedux(initStore, null, null)(withRoot(withStyles(styles)(Index)))
+export default R.compose(
+  withRoot,
+  withStyles(styles),
+)(Index)

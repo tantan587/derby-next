@@ -6,6 +6,7 @@ export default (state = {}, action={ type: null }) => {
   {
   case C.LOGIN_SUCCESS:
     return {
+      ...state,
       id: action.id,
       first_name: action.first_name,
       last_name: action.last_name,
@@ -15,6 +16,7 @@ export default (state = {}, action={ type: null }) => {
     }
   case C.SIGNUP_SUCCESS:
     return {
+      ...state,
       id: action.id,
       first_name: action.first_name,
       last_name: action.last_name,

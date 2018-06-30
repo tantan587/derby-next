@@ -68,8 +68,7 @@ class LoginForm extends Component {
           if (response.type === 'LOGIN_FAIL') {
             this.setState({error: response.error.form || '', loading: false, dirty: false})
           } else {
-            const {user: {loggedIn}, previousPage, router} = this.props
-            loggedIn && router.push('/')
+            setTimeout(() => (this.props.user.loggedIn && router.push('/')), 1)
           }
         })
     })
