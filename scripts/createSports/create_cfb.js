@@ -4,6 +4,7 @@ const knex = require('../../server/db/connection')
 
 let teamInfo = []
 let standings = []
+let playoff_standings = []
 db_helpers.getFantasyData(knex, 'CFB', 'https://api.fantasydata.net/v3/cfb/scores/JSON/LeagueHierarchy?', 'Key', 'ConferenceID')
   .then(result =>{ 
     result.map(team => 
@@ -14,7 +15,7 @@ db_helpers.getFantasyData(knex, 'CFB', 'https://api.fantasydata.net/v3/cfb/score
 
       standings.push({team_id: team.team_id, wins : 0, losses: 0, ties: 0})    
 
-      playoff_standings.push({team_id: team.team_id, wins : 0, losses: 0, byes: 0, bowl_wins: 0, playoff_status: 'tbd'})
+      playoff_standings.push({team_id: team.team_id, playoff_wins : 0, playoff_losses: 0, byes: 0, bowl_wins: 0, playoff_status: 'tbd'})
     })
     db_helpers.insertIntoTable(knex, 'sports', 'team_info', teamInfo)
       .then(() =>

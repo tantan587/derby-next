@@ -53,6 +53,7 @@ methods.getScheduleData = (knex, sportName, url) =>
         .then(teamIds => {
           let teamIdMap = {}
           teamIds.map(r => teamIdMap[r.global_team_id]= r.team_id)
+
           const options = {
             url: url,
             headers: {
@@ -100,12 +101,23 @@ methods.getFdata = async (knex, sportName,api, promiseToGet, year=false) =>
     return FantasyDataClient[api][promiseToGet]()
   }else{
     console.log('here4')
-    return FantasyDataClient[api][promiseToGet]('2017POST')
+    return FantasyDataClient[api][promiseToGet](year)
   }
   
 }
 
-methods.getFantasyData = async (knex, sportName, func, teamKeyField, confField, eplAreaIdInd = false) => 
+methods.getSData = async(knex, sportName, api, promiseToGet, year = false) => {
+  //const data = await methods.getFdata(knex, sportName, api, promiseToGet, year)
+  //let league = await methods.getSportId(knex, sportName)
+  //let teamIdMap = {}
+  //const teamIds = await methods.getTeamId(knex, sportId)
+         
+  //teamIds.forEach(r => teamIdMap[r.fantasydata_id]= r.team_id)
+
+
+}
+
+methods.getFantasyData = async (knex, sportName, url, teamKeyField, confField, eplAreaIdInd = false) => 
 {
   console.log(sportName)
   let league = await knex
@@ -122,16 +134,16 @@ methods.getFantasyData = async (knex, sportName, func, teamKeyField, confField, 
   const keys = {
       api:league[0].fantasy_data_key
   };
-  const FantasyDataClient = new fdClientModule(keys);
-  const fandata = FantasyDataClient.func
-  // const options = {
-  //   url: url,
-  //   headers: {
-  //     'User-Agent': 'request',
-  //     'Ocp-Apim-Subscription-Key':league[0].fantasy_data_key
-  //   },
-  //   json: true
-  // }
+  // const FantasyDataClient = new fdClientModule(keys);
+  // const fandata = FantasyDataClient.func
+  const options = {
+    url: url,
+    headers: {
+      'User-Agent': 'request',
+      'Ocp-Apim-Subscription-Key':league[0].fantasy_data_key
+    },
+    json: true
+  }
 
   let confMap = {}
   const conferences = await knex
@@ -157,7 +169,7 @@ methods.getFantasyData = async (knex, sportName, func, teamKeyField, confField, 
   //filter out only the conferences we are using
   //TODO: this needs to change as we need more info on all teams
   if (filterConferencesInd) {
-    fandata.filter(fd => fd.ConferenceID in confMap)
+    fdata.filter(fd => fd.ConferenceID in confMap)
       .map(conf => 
         conf.Teams.map(team => 
           teams.push({...team, 
@@ -168,7 +180,7 @@ methods.getFantasyData = async (knex, sportName, func, teamKeyField, confField, 
   // used for creation of epl leagues
   else if(eplAreaIdInd){
 
-    fandata.filter(fd => fd.AreaId === 68 || fd.TeamId === 523)
+    fdata.filter(fd => fd.AreaId === 68 || fd.TeamId === 523)
       .map(team =>
       {
         if(teamIdMap[team[teamKeyField]])
@@ -183,7 +195,7 @@ methods.getFantasyData = async (knex, sportName, func, teamKeyField, confField, 
   //used for everything else (nba, nhl, mlb, nfl and epl when not creating)   
   else{
 
-    fandata
+    fdata
       .map(team =>
         teams.push({...team, 
           sport_id:sportId,
@@ -194,15 +206,15 @@ methods.getFantasyData = async (knex, sportName, func, teamKeyField, confField, 
 
 }
 
-methods.updateSchedule = (knex,newResults) =>
+methods.updateSchedule = (knex, newResults) =>
 {
   return knex
     .withSchema('sports')
-    .table('results')
+    .table('schedule')
     .then(results => {
       let oldResults = {}
       var updateList =[]
-      results.map(result => oldResults[result.global_game_id] =result.updated_time)
+      results.forEach(result => oldResults[result.global_game_id] =result.updated_time)
       newResults.map(x =>
       {
         if(!(x.global_game_id in oldResults))
@@ -307,7 +319,7 @@ methods.insertOneResultRow = (knex, row) =>
 {
   return knex
     .withSchema('sports')
-    .table('results')
+    .table('schedule')
     .insert(row)
 }
 
@@ -315,7 +327,7 @@ methods.updateOneResultRow = (knex, global_game_id, row) =>
 {
 
   return knex.transaction(function (t) {
-    return knex.withSchema('sports').table('results')
+    return knex.withSchema('sports').table('schedule')
       .transacting(t)
       .where('global_game_id',global_game_id)
       .del()
@@ -324,7 +336,7 @@ methods.updateOneResultRow = (knex, global_game_id, row) =>
         return knex
           .transacting(t)
           .withSchema('sports')
-          .table('results')
+          .table('schedule')
           .insert(row)
       })
       .then(()=>{t.commit})

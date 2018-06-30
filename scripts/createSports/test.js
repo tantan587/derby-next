@@ -20,9 +20,15 @@ const knex = require('../../server/db/connection')
 //       })
 //     })
 
-const test = async () => {
-let s = await db_helpers.getSportId(knex, 'MLB')
-console.log(s)
+const t = {
+    tim: 7,
+    jon: 2
 }
 
-test()
+if(!('kim' in t)){
+    console.log('yes!')
+}else{
+    console.log('no')
+}
+
+
