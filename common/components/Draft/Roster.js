@@ -57,7 +57,7 @@ class Roster extends React.Component {
             {type:'tab', 
               values :this.props.activeLeague.owners.map(x => x.owner_name),
               column:'owner_name',
-              tabStyles:{background:'#E2E2E2', foreground:'white', text:'#229246', fontSize:10}
+              tabStyles:{background:'#e3dac9', foreground:'white', text:'#229246', fontSize:10}
             },
           ]}
           myHeaders = {[

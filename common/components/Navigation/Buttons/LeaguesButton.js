@@ -17,7 +17,7 @@ class LeaguesButton extends React.Component {
       return {
         text:league.league_name,
         id:league.league_id,
-        link:'/mainleaguestandings'} })
+        link:'/mainleaguehome'} })
 
     const items2 = []
 

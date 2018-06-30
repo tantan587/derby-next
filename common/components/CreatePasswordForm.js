@@ -1,124 +1,127 @@
-import React from 'react'
-import Router from 'next/router'
-import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography'
+const R = require('ramda')
+import React, {Component} from 'react'
+import Link from 'next/link'
+import { connect } from 'react-redux'
+import {withRouter} from 'next/router'
+import autobind from 'react-autobind'
+import {withStyles} from '@material-ui/core/styles'
+import Grid from '@material-ui/core/Grid'
 import Button from '@material-ui/core/Button'
-import DerbyTextField from './DerbyTextField'
+import Typography from '@material-ui/core/Typography'
+import TextField from '@material-ui/core/TextField'
 import {clickedCreatePassword} from '../actions/auth-actions'
 
-import { connect } from 'react-redux'
-
-const styles = theme => ({
+const styles = (theme) => ({
   container: {
-    left: '50%',
-    textAlign: 'center',
-    marginTop : '100px'
+    maxWidth: 450,
+    padding: '3em',
+    margin: '0 auto',
+    '& a': {
+      textDecoration: 'none',
+      color: theme.palette.grey['800']
+    }
   },
-  field: {
-    textAlign: 'center',
+  title: {
+    fontFamily: 'HorsebackSlab',
+    color: theme.palette.primary.main,
   },
-  button : {
-    backgroundColor: theme.palette.secondary.A700,
-    color: theme.palette.secondary.A100,
-  }
+  textField: {
+    marginBottom: '0.5em',
+  },
+  submit: {
+    margin: '2em 1em 1.5em',
+    padding: '1em 3em',
+    background: '#E9AA45',
+    color: 'white',
+    borderRadius: 0,
+    alignSelf: 'center'
+  },
 })
 
-class CreatePasswordForm extends React.Component {
-  state = {
-    username: '',
-    password: '',
-    newPassword: '',
+const FIELDS = [
+  {name: 'username', label: 'Username'},
+  {name: 'password', label: 'Temporary Password', type: 'password'},
+  {name: 'newPassword', label: 'New Password', type: 'password'},
+]
+
+class CreatePasswordForm extends Component {
+  constructor(props) {
+    super(props)
+    autobind(this)
+    this.state = {username: '', password: '', newPassword: '', loading: false, error: '', dirty: false}
   }
 
-  handleChange = name => event => {
-    this.setState({
-      [name]: event.target.value,
+  handleChange(e) {
+    this.setState({[e.target.name]: e.target.value, dirty: 'true'})
+  }
+
+  handleSubmit(e) {
+    e.preventDefault()
+    const {onCreatePassword, router} = this.props
+    this.setState({loading: true}, () => {
+      onCreatePassword(...R.props(['username', 'password', 'newPassword'], this.state))
+        .then(() => {
+          const {user: {error: {success1, create_password_password}}, router} = this.props
+          success1 && router.push('/login?SB=YHSCUPPL')
+          create_password_password && this.setState({loading: false, error: create_password_password, dirty: false})
+        })
     })
   }
 
-  myForgot(e)
-  {
-    const { onCreatePassword } = this.props
-    this.setState({fireRedirect: true})
-    e.preventDefault()
-    onCreatePassword(this.state.username, this.state.password, this.state.newPassword)
+  renderField({name, label, type, ...rest}) {
+    const { classes } = this.props
+    const errorMessage = R.path(['user', 'error', `create_password_${name}`], this.props) || R.path(['errors', name], this.state)
+    return (
+      <TextField
+        className={classes.textField}
+        name={name}
+        error={R.not(R.isNil(errorMessage))}
+        helperText={errorMessage}
+        label={label}
+        type={type || 'text'}
+        value={this.state[name]}
+        onChange={this.handleChange}
+        {...rest}
+      />
+    )
   }
 
-  submit(e) {
-    this.myForgot(e)
-  }
-
-  keypress(e) {
-    if (e.key === 'Enter') { 
-      this.myForgot(e)
-    }
-  }
   render() {
-    if(this.state.fireRedirect && this.props.user.error.success1 === true){
-      if (typeof document !== 'undefined'){
-        Router.push('/login')
-      }
-      return(<div></div>)
-    }
-    else{
-      const { classes } = this.props
-      return (
-        <form className={classes.container} noValidate autoComplete="off"
-          onKeyPress={(event) => this.keypress(event)}>
-          <Typography variant="display2" style={{color:'black'}} gutterBottom>
-            Create New Password
-          </Typography>
-          <Typography variant="subheading" className={classes.text} gutterBottom>
-            Some other text
-          </Typography>
-          <DerbyTextField
-            errorText={this.props.user.error.create_password_username}
-            label="Enter your username"
-            value={this.state.username}
-            onChange = {this.handleChange('username')}
-          />
-          <br/>
-          <DerbyTextField
-            errorText={this.props.user.error.create_password_password}
-            label="Enter your temporary password"
-            value={this.state.password}
-            onChange = {this.handleChange('password')}
-          />
-          <br/>
-          <DerbyTextField
-            errorText={this.props.user.error.forgot_password_newpassword}
-            label="Enter your new password"
-            value={this.state.newPassword}
-            type='password'
-            onChange = {this.handleChange('newPassword')}
-          />
-          <br/>
-          <br/>
-          <Button raised className={classes.button} onClick={(event) => this.submit(event)}>
-            Submit
-          </Button>
-        </form>
-      )
-    }
+    const {classes} = this.props
+    return (
+      <Grid 
+        className={classes.container}
+        component="form"
+        direction="column"
+        onSubmit={this.handleSubmit}
+        noValidate
+        autoComplete="off"
+        container
+      >
+        <Typography
+          className={classes.title}
+          variant="display1"
+          gutterBottom
+          align="center"
+        >
+          Create New Password
+        </Typography>
+        {FIELDS.map(this.renderField)}
+        <Button
+          className={classes.submit}
+          raised
+          type="submit"
+          children={this.state.loading ? 'LOADING...' : 'SUBMIT'}
+          disabled={this.state.loading}
+        />
+        {!!this.state.error.length && !this.state.dirty && <Typography align="center" color="error" children={this.state.error} paragraph/>}
+      </Grid>
+    )
   }
 }
 
-CreatePasswordForm.propTypes = {
-  classes: PropTypes.object.isRequired,
-}
-
-export default connect(
-  state =>
-    ({
-      user : state.user
-    }),
-  dispatch =>
-    ({
-      onCreatePassword(username,password,newPassword) {
-        dispatch(
-          clickedCreatePassword(username,password,newPassword))
-      }
-    }))(withStyles(styles)(CreatePasswordForm))
-
-
+export default R.compose(
+  withRouter,
+  withStyles(styles),
+  connect(R.pick(['user']), {onCreatePassword: clickedCreatePassword})
+)(CreatePasswordForm)

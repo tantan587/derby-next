@@ -1,4 +1,6 @@
+const R = require('ramda')
 import React from 'react'
+import {connect} from 'react-redux'
 import PropTypes from 'prop-types'
 import Button from '@material-ui/core/Button'
 import Link from 'next/link'
@@ -6,9 +8,7 @@ import Typography from '@material-ui/core/Typography'
 import { withStyles } from '@material-ui/core/styles'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import withRoot from '../common/components/withRoot'
-import withRedux from 'next-redux-wrapper'
 import '../styles/style.css'
-import initStore from '../common/store'
 import TopNavHome from '../common/components/Navigation/TopNavHome'
 import SportIconText from '../common/components/Icons/SportIconText'
 import HowToPlayIconText from '../common/components/Icons/HowToPlayIconText'
@@ -17,7 +17,7 @@ import HomeTitle from '../common/components/CopyFields/HomeTitle'
 import BottomNav from '../common/components/Navigation/BottomNav'
 import HomePageTable from '../common/components/Table/HomePageTable'
 import SportsSocket from '../common/components/Sockets/SportsSocket'
-
+import {clickedAdminUpdates} from '../common/actions/auth-actions'
 
 //https://github.com/zeit/next.js/tree/master/examples/with-global-stylesheet
 
@@ -43,9 +43,11 @@ const styles = {
     backgroundColor:'#229246',
     color:'white'},
   section3: {
-    textAlign: 'center',
     paddingTop: 50,
-    color:'white'},
+    display: 'flex',
+    justifyContent: 'center',
+    margin: '40px 15% 40px',
+    textAlign: 'center'},
   section4: {
     textAlign: 'center',
     paddingTop: 50,
@@ -54,24 +56,41 @@ const styles = {
 
 
 class Index extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {toggleResetEmail:false, firstClick:false}
+  }
+
+  firstClick = () =>
+  {
+    this.setState({firstClick:true})
+    setTimeout(() => { console.log('reset'); this.setState({firstClick:false,toggleResetEmail:false }) }, 5000)
+  }
+
+  toggleResetEmail = () =>
+  {
+    this.setState({toggleResetEmail:true})
+    
+  }
+  
 
   render() {
     const {classes} = this.props
     const sports = [
-      {name:'NFL', link:'/static/icons/SportIcons/sport_icon_football.svg'},
-      {name:'NCAA', link:'/static/icons/SportIcons/sport_icon_ncaa_football.svg'},
-      {name:'MLB', link:'/static/icons/SportIcons/sport_icon_baseball.svg'},
-      {name:'NBA', link:'/static/icons/SportIcons/sport_icon_basketball.svg'},
-      {name:'NCAAM', link:'/static/icons/SportIcons/sport_icon_ncaa_basketball.svg'},
-      {name:'NHL', link:'/static/icons/SportIcons/sport_icon_hockey.svg'},
-      {name:'EPL', link:'/static/icons/SportIcons/sport_icon_soccer.svg'}
+      {name:'NFL', src:'/static/icons/SportIcons/sport_icon_football.svg'},
+      {name:'NCAA', src:'/static/icons/SportIcons/sport_icon_basketball.svg'},
+      {name:'MLB', src:'/static/icons/SportIcons/sport_icon_baseball.svg'},
+      {name:'NHL', src:'/static/icons/SportIcons/sport_icon_hockey.svg'},
+      {name:'EPL', src:'/static/icons/SportIcons/sport_icon_soccer.svg'},
+      {name:'NCAAM', src:'/static/icons/SportIcons/sport_icon_ncaa_basketball.svg'},
+      {name:'NCAAF', src:'/static/icons/SportIcons/sport_icon_ncaa_football.svg'}
     ]
 
     const howToPlay = [
-      {name:'1. Create Your Free Acount', link:'/static/icons/HowToPlayIcons/CreateAccount.svg'},
-      {name:'2. Form a League of Friends', link:'/static/icons/HowToPlayIcons/DraftTeam.svg'},
-      {name:'3. Draft your Team', link:'/static/icons/HowToPlayIcons/FormLeague.svg'},
-      {name:'4. Watch and Win', link:'/static/icons/HowToPlayIcons/WatchWin.svg'}
+      {name:'1) Create Your Free Account', src:'/static/icons/HowToPlayIcons/CreateAccount.svg', link:'/signup'}, //create account
+      {name:'2) Join a League of Friends', src:'/static/icons/HowToPlayIcons/DraftTeam.svg', link:'/participate'}, //particpate form remove protection 
+      {name:'3) Draft your Teams', src:'/static/icons/HowToPlayIcons/FormLeague.svg', link:'/signup'}, //page of images
+      {name:'4) Watch and Win the Race', src:'/static/icons/HowToPlayIcons/WatchWin.svg', link:'/signup'} //page of images
     ]
 
     return (
@@ -86,22 +105,23 @@ class Index extends React.Component {
               A New Way to Play Fantasy Sports
               </div>
               <br/>
-              <div style={{fontFamily:'museo-slab', display: 'inline'}}>
-              Multi-Sport. Team Points. Playoff Bonuses
+              <div style={{fontFamily:'museo-slab', display: 'inline',  width:'80%'}}>
+              Cheer for Teams, Not Just Players. All Year Round.
               </div>
             </Typography>
             <br/>
             <Typography variant='headline'style={{color:'white',width:'60%', marginLeft:'20%', lineHeight:1.6}}>
-              Derby is the first of a new fantasy sports game: the multi-sport fantasy wins league.
-              Instead of drafting individual players in a single sport, friends compete by drafting
-              entire teams across multiple sports and earn points as the teams win games all the way to
-              the championship!
+            Pick your teams in this race and ride them to victory! 
+            In Derby Fantasy Wins League, compete with your friends
+             by drafting teams across multiple sports.
+              Earn points when your teams win throughout their entire seasons. 
+              The more games your teams win, the more points you earn.
             </Typography>
             <br/>
             <br/>
             {
               sports.map((x,i) => { 
-                return <SportIconText key={i} name={x.name} link={x.link}/>})
+                return <SportIconText key={i} name={x.name} src={x.src}/>})
             }
             <br/>
             <br/>
@@ -122,25 +142,25 @@ class Index extends React.Component {
             <ExpandMoreIcon style={{color:'white', fontSize: 50}}/>
           </div>
           <div className={classes.section2}>
-            <HomeTitle title='Why Derby Is Great' color='white'/>
+            <HomeTitle title='Why Enter the Derby' color='white'/>
             <br/>
             <TitleCopyButton 
-              title='Free To Join'
-              copy='Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod sed do eiusmod tempor incididunt ut labore etelit, do eiusmod tempor incididunt ut labore et dolore magna aliqua'
+              title='Play Like You Watch'
+              copy='Play fantasy sports the same way you watch live sports: by rooting for teams to win games and grabbing bragging rights along the way. Stay on track with our live scoreboard and fantasy scoring updates. With Derby, you will always have a favorite team to root for. And, yes, it’s free.'
               buttonText='Create An Account'
               marginRight={20}
               marginLeft={20}
             />
             <TitleCopyButton 
-              title='Unique Draft'
-              copy='Unique Draft Instead of drafting a roster players, Derby Leagues draft entire teams from seven different sports. Lorem ipsum dolor sit amet, consectetur adipiscing elit, do eiusmod tempor magna aliqua.'
+              title='Find Your Unicorn'
+              copy='Real teams are your horses in this race! Draft teams across multiple sports to create your own unique roster. Set the pace by showing off your strategy skills at both selecting the best odds-on favorites and finding dark horses while your friends get stuck in the mud with also-rans.'
               buttonText='More'
               marginRight={20}
               marginLeft={20}
             />
             <TitleCopyButton 
-              title='Simple To Play'
-              copy='Simple To Play With Derby, no roster maintenance is needed. Derby is great to play with friends who are casual sports fans or people who don’t have time to manage a team. Just Draft, Watch and Win!'
+              title=' Breeze Past the Field '
+              copy='From post to pole, saddle up and earn points as you watch your teams win. No roster setting or daily waiver scouring. No worrying about injuries or bad weather. And all the games count – even the playoffs. After a full cycle of seasons, whoever has the most points wins the race.'
               buttonText='View Rules'
               marginLeft={20}
             />
@@ -149,34 +169,33 @@ class Index extends React.Component {
             <br/>
           </div>
           <div className={classes.section3}>
-            <div  style={{display:'inline-block'}}>
-              <img src={'/static/icons/Pennant_Icon.svg'} style={{height:100, width:'auto'}} />
+            <div style={{ marginRight: -35 }}>
+              <img src={'/static/icons/Pennant_Icon.svg'} style={{height:100, width:'auto'}} onClick={() => this.firstClick()}/>
             </div>
-            <div style={{display:'inline-block', marginLeft:-250}}>
+            <div style={{ marginRight: 40 }}>
               <HomeTitle title='Root For Teams' color='#229246'/>
-              <Typography variant='headline'style={{color:'#229246', lineHeight:1.6,  width:'60%',marginLeft:'20%', fontWeight:'bold'}}>
-              Derby Focuses on Team Performance - Wins and Losses - Rather than Individual Play Performance
+              <Typography variant='headline'style={{color:'#229246', lineHeight:1.6, fontWeight:'bold'}}>
+              Root for teams, not just players. Win when your teams do!
               </Typography>
             </div>
-            <div  style={{display:'inline-block', marginLeft:-170, marginRight:60}}>
-              <img src={'/static/icons/Foam_Finger_Icon.svg'} style={{height:100, width:'auto'}} />
+            <div>
+              <img src={'/static/icons/Foam_Finger_Icon.svg'} style={{height:100, width:'auto'}} onClick={() => this.toggleResetEmail()} />
             </div>
-            <br/>
-            <br/>
-            <Typography variant='headline'style={{color:'#229246', width:'60%',marginLeft:'20%',lineHeight:1.6}}>
-                (Who doesn't hate losing a fantasy matchup because of the quarterback who chalks up a garbage-time passing yards
-                late in the 4th quarter, or the shooting guard chucking up hero-ball 3s when the game is already out of reach?)
-            </Typography>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
           </div>
+          <Typography variant='headline'style={{color:'#229246', width:'60%',marginLeft:'20%', marginBottom: 40,lineHeight:1.6, textAlign:'center'}}>
+          There’s nothing like being part of a team. How about being a part of 15 of them? In Derby Fantasy Wins League, 
+          you will build a bond with two NFL, two NBA, two MLB, two NHL, one EPL, three NCAA Football, 
+          and three NCAA Men’s Basketball soccer teams. When they win, you do!
+          </Typography>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
           <div className={classes.section2}>
             <HomeTitle title='The Derby Difference' color='white'/>
             <br/>
             <br/>
-            <div style={{marginLeft:'10%',marginRight:'10%', width:'auto'}}>
+            <div style={{marginLeft:'10%',marginRight:'10%', width:'auto', marginBottom:30}}>
               <HomePageTable/>
             </div>
             <br/>
@@ -187,12 +206,15 @@ class Index extends React.Component {
             <br/>
             {
               howToPlay.map((x,i) => { 
-                return <HowToPlayIconText key={i} name={x.name} link={x.link}/>})
+                return <HowToPlayIconText key={i} name={x.name} link={x.link} src={x.src}/>})
             }
             <br/>
           </div>
           <br/>
           <br/>
+
+          {this.state.toggleResetEmail ?
+            <Button onClick={() => this.props.clickedAdminUpdates(this.props.user.id)}>Invalidate Email</Button> : <div/>}
           <BottomNav/>
           {/* <img src={'/static/icons/racehorse_plain.svg'} alt="none" height={300} width={300}/> */}
         </SportsSocket>
@@ -206,4 +228,8 @@ Index.propTypes = {
   classes: PropTypes.object.isRequired,
 }
 
-export default withRedux(initStore, null, null)(withRoot(withStyles(styles)(Index)))
+export default R.compose(
+  withRoot,
+  withStyles(styles),
+  connect(R.pick(['user']), {clickedAdminUpdates})
+)(Index)

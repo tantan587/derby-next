@@ -1,3 +1,4 @@
+const R = require('ramda')
 import React from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import AppBar from '@material-ui/core/AppBar'
@@ -65,7 +66,7 @@ class TopNavHome extends React.Component {
               :
               <div>
                 <LogoutButton color='#707070' backgroundColor='#ffffff'/>
-                <AdminButton color='#707070' backgroundColor='#ffffff'/>
+                {/* <AdminButton color='#707070' backgroundColor='#ffffff'/> */}
               </div>
             }
             <br/>
@@ -86,5 +87,7 @@ class TopNavHome extends React.Component {
   }
 }
 
-export default connect(({ user}) => ({ user }),
-  null)(withStyles(styles)(TopNavHome))
+export default R.compose(
+  withStyles(styles),
+  connect(R.pick(['user'])),
+)(TopNavHome)

@@ -1,5 +1,5 @@
 import C from '../constants'
-import {FetchThenDispatch} from './actionHelpers'
+import {FetchThenDispatch, Fetcher} from './actionHelpers'
 
 export const loadSuccess = () => {
   return {type: C.DATA_LOAD_SUCCESS}
@@ -43,6 +43,14 @@ export const clickedForgotPassword = (email) => dispatch =>
     JSON.stringify({email})
   )
 
+export const clickedForgotUsername = (email) => dispatch =>
+  FetchThenDispatch(
+    dispatch,
+    '/api/forgotusername',
+    'POST',
+    JSON.stringify({email})
+  )  
+
 export const clickedCreatePassword = (username,password,newPassword) => dispatch =>
   FetchThenDispatch(
     dispatch,
@@ -51,13 +59,13 @@ export const clickedCreatePassword = (username,password,newPassword) => dispatch
     JSON.stringify({username,password,newPassword})
   )
 
-export const clickedAdminUpdates = () => dispatch =>
+export const clickedAdminUpdates = (id) => dispatch =>
 {
   FetchThenDispatch(
     dispatch,
     '/api/adminupdates',
     'POST',
-    JSON.stringify()
+    JSON.stringify({id})
   )
 }
 
@@ -67,5 +75,11 @@ export const handleForceLogin = previousPage =>
     previousPage : previousPage
   })
 
- 
+export const isVerified = (user_id) => () => Fetcher(`/api/verify-email?i=${user_id}`)
 
+export const doVerify = (user_id, verification_code) => () => Fetcher(
+  '/api/verify-email',
+  { method: 'POST', body: JSON.stringify({i:user_id, c:verification_code})}
+)
+
+export const doResend = (user_id) => () => Fetcher(`/api/verify-email/resend?i=${user_id}`)

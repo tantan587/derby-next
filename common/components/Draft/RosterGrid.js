@@ -4,9 +4,9 @@ import { connect } from 'react-redux'
 import TeamsDialog from '../TeamsDialog/TeamsDialog'
 
 const styleProps = {
-    Container:{
-      overflowY:'scroll',
-      maxHeight:600
+  Container:{
+    overflowY:'scroll',
+    maxHeight:600
   },
   Header: {
     TableCell: {
@@ -15,7 +15,7 @@ const styleProps = {
     }
   },
   Body: {
-    striped:'#d3d3d3',
+    striped:'#e3dac9',
     TableBody: {
       //backgroundColor: 'green'
     },

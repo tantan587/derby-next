@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { withStyles } from '@material-ui/core/styles'
 import { handleOpenDialog } from '../../actions/dialog-actions'
-
+import Title from '../Navigation/Title'
 import DerbyTableContainer from '../Table/DerbyTableContainer'
 import TeamsDialog from '../TeamsDialog/TeamsDialog'
 
@@ -30,25 +30,22 @@ class MainLeagueTeams extends React.Component {
     {
       let owner = null 
       if (activeLeague.teams[team.team_id])
-        owner = activeLeague.owners.filter(owner => owner.owner_id === activeLeague.teams[team.team_id].owner_id)[0]
-      else
-      {
-        console.log(team.team_id)
-      }
+        owner = activeLeague.owners.find(owner => owner.owner_id === activeLeague.teams[team.team_id].owner_id)
       return {
         ...team,
         record:team.wins + '-' + team.losses + '-' + team.ties,
         percentage: (team.wins + team.ties + team.losses) === 0 ? 0.0.toFixed(3) : ((team.wins + 1/2*team.ties) / (team.wins + team.ties + team.losses)).toFixed(3),
         owner_name: owner ? owner.owner_name : 'N/A',
-        points:activeLeague.teams[team.team_id].points
+        //points:activeLeague.teams[team.team_id].points
       }
     })
 
     return (
       <div>
         <TeamsDialog />
+
+        <Title color='white' backgroundColor='#EBAB38' title='All Teams'/>
         <DerbyTableContainer
-          title='All Teams'
           usePagination={true}
           myRows={myTeams}
           filters={[
@@ -56,7 +53,7 @@ class MainLeagueTeams extends React.Component {
               values :this.props.sportLeagues.map(x => x.sport),
               column:'sport',
               allInd:true,
-              tabStyles:{background:'#707070', foreground:'white', text:'#229246'}
+              tabStyles:{background:'#e3dac9', foreground:'white', text:'#229246'}
             },
             // {type:'checkbox',
             //   values :this.props.sportLeagues.map(x => x.sport),
@@ -67,11 +64,11 @@ class MainLeagueTeams extends React.Component {
             {label: 'Logo', key: 'logo_url', sortId:'team_name', imageInd:true},
             {label: 'Team Name', key: 'team_name'},
             {label: 'Owner Name', key: 'owner_name'},
-            {label: 'Sport League', key: 'sport'},
+            {label: 'Sport', key: 'sport'},
             {label: 'Conference', key: 'conference'},
             {label: 'Record', key: 'record', sortId:'percentage'},
-            {label: 'Percentage', key: 'percentage'},
-            {label: 'Points', key: 'points'}
+            {label: 'Win Percentage', key: 'percentage'},
+            // {label: 'Points', key: 'points'}
           ]}/>
       </div>
     )

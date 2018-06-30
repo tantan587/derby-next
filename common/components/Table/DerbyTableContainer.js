@@ -1,7 +1,6 @@
 import React from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import DerbyTable from './DerbyTable'
-import Title from '../Navigation/Title'
 import DerbyTableFilters from './DerbyTableFilters'
 
 
@@ -37,10 +36,6 @@ class DerbyTableContainer extends React.Component {
     const {myRows, allRows} = this.state
     return (
       <div>
-        {this.props.title
-          ? <Title color='white' backgroundColor='black' title={this.props.title}/>
-          : <div/>
-        }
         <DerbyTableFilters
           passUpFilterInfo={passUpFilterInfo}
           updateMyRows={this.updateMyRows}

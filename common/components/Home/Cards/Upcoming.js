@@ -30,10 +30,10 @@ const styles = {
   },
 }
 
-const Upcoming = withStyles(styles)(({ classes, upcomingGames }) =>
+const Upcoming = withStyles(styles)(({ classes, sportLeagues, upcomingGames, teams }) =>
   <div className={classes.root}>
     {
-      upcomingGames.map((game, idx) => <div key={idx} className={classes.game}>
+      upcomingGames ? upcomingGames.map((game, idx) => <div key={idx} className={classes.game}>
         <div className={classes.date}>
           {game.date}
         </div>
@@ -42,18 +42,19 @@ const Upcoming = withStyles(styles)(({ classes, upcomingGames }) =>
         </div>
         <div className={classes.place}>
           <span
-            style={ game.my_team === game.away ?  { color: '#2D934C', fontWeight: 600 } : {}}>
-            {game.away}
+            style={ game.my_team_id === game.away_team_id ?  { color: '#2D934C', fontWeight: 600 } : {}}>
+            {teams[game.away_team_id].key}
           </span>
           &nbsp;@&nbsp;
-          <span style={ game.my_team === game.home ?  { color: '#2D934C', fontWeight: 600 } : {}}>
-            {game.home}
+          <span style={ game.my_team_id === game.home_team_id ?  { color: '#2D934C', fontWeight: 600 } : {}}>
+            {teams[game.home_team_id].key}
           </span>
         </div>
         <div className={classes.conference}>
-          {game.conference}
+          {sportLeagues.filter(x => x.sport_id === game.sport_id)[0].sport}
         </div>
       </div>)
+        : <div/>
     }
   </div>)
 

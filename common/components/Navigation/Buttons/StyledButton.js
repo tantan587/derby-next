@@ -3,9 +3,9 @@ import Button from '@material-ui/core/Button'
 import { withStyles } from '@material-ui/core/styles'
 
 const StyledButton = ({ classes, text, link, background, color, width, height, ...style}) =>
-  <Link to={link}>
+  <Link href={link}>
     <Button
-      variant="contained"
+      variant="raised"
       className={classes.root}
       style={{
         backgroundColor: background || '#E9AA45',

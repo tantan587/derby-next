@@ -1,107 +1,130 @@
-import React from 'react'
-import Router from 'next/router'
-import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography'
+const R = require('ramda')
+import React, {Component} from 'react'
+import Link from 'next/link'
+import { connect } from 'react-redux'
+import {withRouter} from 'next/router'
+import autobind from 'react-autobind'
+import {withStyles} from '@material-ui/core/styles'
+import Grid from '@material-ui/core/Grid'
 import Button from '@material-ui/core/Button'
-import DerbyTextField from './DerbyTextField'
+import Typography from '@material-ui/core/Typography'
+import TextField from '@material-ui/core/TextField'
 import {clickedForgotPassword} from '../actions/auth-actions'
 
-import { connect } from 'react-redux'
-
-const styles = theme => ({
+const styles = (theme) => ({
   container: {
-    left: '50%',
-    textAlign: 'center',
-    marginTop : '100px'
+    maxWidth: 450,
+    padding: '3em',
+    margin: '0 auto',
+    '& a': {
+      textDecoration: 'none',
+      color: theme.palette.grey['800']
+    }
   },
-  field: {
-    textAlign: 'center',
+  title: {
+    fontFamily: 'HorsebackSlab',
+    color: theme.palette.primary.main,
   },
-  button : {
-    backgroundColor: theme.palette.secondary.A700,
-    color: theme.palette.secondary.A100,
+  textField: {
+    marginBottom: '0.5em',
+  },
+  submit: {
+    margin: '2em 1em 1.5em',
+    padding: '1em 3em',
+    background: '#E9AA45',
+    color: 'white',
+    borderRadius: 0,
+    alignSelf: 'center'
+  },
+  actions: {
+    buttons: {
+      textAlign: 'center'
+    }
   }
 })
 
-class ForgotPasswordForm extends React.Component {
-  state = {
-    email: ''
+const FIELDS = [
+  {name: 'email', label: 'Email'},
+]
+
+class ForgotPasswordForm extends Component {
+  constructor(props) {
+    super(props)
+    autobind(this)
+    this.state = {email: '', loading: false, error: ''}
   }
 
-  handleChange = () => event => {
-    this.setState({
-      email: event.target.value,
+  handleChange(e) {
+    this.setState({[e.target.name]: e.target.value, dirty: true})
+  }
+
+  handleSubmit(e) {
+    e.preventDefault()
+    const {onForgotPassword, router} = this.props
+    this.setState({loading: true}, () => {
+      onForgotPassword(...R.props(['email'], this.state))
+        .then(() => {
+          const {user: {error: {success, forgot_password_email}}, router} = this.props
+          success && router.push('/createpassword')
+          forgot_password_email && this.setState({error: forgot_password_email, loading: false, dirty: false})
+        })
     })
   }
 
-  myForgot(e)
-  {
-    const { onForgotPassword } = this.props
-    this.setState({fireRedirect: true})
-    e.preventDefault()
-    onForgotPassword(this.state.email)
+  renderField({name, label, type, ...rest}) {
+    const { classes } = this.props
+    const errorMessage = R.path(['user', 'error', `signup_${name}`], this.props) || R.path(['errors', name], this.state)
+    return (
+      <TextField
+        className={classes.textField}
+        name={name}
+        error={R.not(R.isNil(errorMessage))}
+        helperText={errorMessage}
+        label={label}
+        type={type || 'text'}
+        value={this.state[name]}
+        onChange={this.handleChange}
+        {...rest}
+      />
+    )
   }
-
-  submit(e) {
-    this.myForgot(e)
-  }
-
-  keypress(e) {
-    if (e.key === 'Enter') { 
-      this.myForgot(e)
-    }
-  }
+  
   render() {
-    if(this.state.fireRedirect && this.props.user.error.success === true){
-      if (typeof document !== 'undefined'){
-        Router.push('/createpassword')
-      }
-      return(<div></div>)
-    }
-    else{
-      const { classes } = this.props
-      return (
-        <form className={classes.container} noValidate autoComplete="off"
-          onKeyPress={(event) => this.keypress(event)}>
-          <Typography variant="display2" style={{color:'black'}} gutterBottom>
-            Forgot Password?
-          </Typography>
-          <Typography variant="subheading" className={classes.text} gutterBottom>
-            Some other text
-          </Typography>
-          <DerbyTextField
-            errorText={this.props.user.error.forgot_password_email}
-            label="Enter your email"
-            value={this.state.email}
-            onChange = {this.handleChange()}
-          />
-          <br/>
-          <br/>
-          <Button raised className={classes.button} onClick={(event) => this.submit(event)}>
-            Submit
-          </Button>
-        </form>
-      )
-    }
+    const {classes} = this.props
+    return (
+      <Grid 
+        className={classes.container}
+        component="form"
+        direction="column"
+        onSubmit={this.handleSubmit}
+        noValidate
+        autoComplete="off"
+        container
+      >
+        <Typography
+          className={classes.title}
+          variant="display1"
+          gutterBottom
+          align="center"
+        >
+          Forgot Password
+        </Typography>
+        {FIELDS.map(this.renderField)}
+        <Button
+          className={classes.submit}
+          raised
+          type="submit"
+          children={this.state.loading ? 'LOADING...' : 'SUBMIT'}
+          disabled={this.state.loading}
+        />
+        {!!this.state.error.length && !this.state.dirty && <Typography align="center" color="error" children={this.state.error} paragraph/>}
+      </Grid>
+    )
   }
 }
 
-ForgotPasswordForm.propTypes = {
-  classes: PropTypes.object.isRequired,
-}
-
-export default connect(
-  state =>
-    ({
-      user : state.user
-    }),
-  dispatch =>
-    ({
-      onForgotPassword(email) {
-        dispatch(
-          clickedForgotPassword(email))
-      }
-    }))(withStyles(styles)(ForgotPasswordForm))
-
-
+export default R.compose(
+  withRouter,
+  withStyles(styles),
+  connect(R.pick(['user']), {onForgotPassword: clickedForgotPassword})
+)(ForgotPasswordForm)

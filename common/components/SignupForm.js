@@ -1,136 +1,148 @@
+const R = require('ramda')
 import React from 'react'
-import Link from 'next/link'
-import Router from 'next/router'
 import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography'
+import autobind from 'react-autobind'
+import {connect} from 'react-redux'
+import Link from 'next/link'
+import {withRouter} from 'next/router'
+
+import {withStyles} from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
+import Grid from '@material-ui/core/Grid'
 import TextField from '@material-ui/core/TextField'
+import Typography from '@material-ui/core/Typography'
+
 import {clickedSignup} from '../actions/auth-actions'
 
-import { connect } from 'react-redux'
-
-const styles = {
+const styles = (theme) => ({
   container: {
-    left: '50%',
-    textAlign: 'center',
-    marginTop : '100px'
+    maxWidth: 450,
+    padding: '3em',
+    margin: '0 auto',
+    '& a': {
+      textDecoration: 'none',
+      color: theme.palette.grey['800']
+    }
   },
-  field: {
-    textAlign: 'center',
-  }
-}
+  title: {
+    fontFamily: 'HorsebackSlab',
+    color: theme.palette.primary.main,
+  },
+  textField: {
+    marginBottom: '0.5em',
+    // borderBottom: `1px solid ${theme.palette.primary.main}`,
+  },
+  submit: {
+    margin: '2em 1em 1.5em',
+    padding: '1em 3em',
+    background: '#E9AA45',
+    color: 'white',
+    borderRadius: 0,
+    alignSelf: 'center'
+  },
+})
+
+const FIELDS = [
+  {name: 'username', label: 'Username'},
+  {name: 'password', label: 'Password', type: 'password'},
+  {name: 'confirm_password', label: 'Confirm Password', type: 'password'},
+  {name: 'email', label: 'Email Address'},
+  {name: 'confirm_email', label: 'Confirm Email Address'},
+  {name: 'first_name', label: 'First Name'},
+  {name: 'last_name', label: 'Last Name'},
+]
 
 class SignupForm extends React.Component {
-  state = {
-    username:'',
-    password:'',
-    first_name:'',
-    last_name:'',
-    email:'',
-    fireRedirect:false
+  constructor(props) {
+    super(props)
+    autobind(this)
+    this.state = {username:'', password:'', confirm_password: '', first_name:'', last_name:'', email:'', dirty: false, loading: false}
   }
 
-  handleChange = name => event => {
-    this.setState({
-      [name]: event.target.value,
-    })
+  handleChange(e) {
+    this.setState({[e.target.name]: e.target.value, dirty: true})
   }
 
-  mySignup(e)
-  {
-    const { onSignup } = this.props
-    this.setState({fireRedirect: true})
+  handleValidate() {
+    if (this.state.email !== this.state.confirm_email) return this.setState({errors: {confirm_email: 'Email does not match!'}, dirty: false})
+    if (this.state.password !== this.state.confirm_password) return this.setState({errors: {confirm_password: 'Passwords does not match!'}, dirty: false})
+    return true
+  }
+
+  handleSubmit(e) {
     e.preventDefault()
-    onSignup(this.state.username,
-      this.state.first_name,
-      this.state.last_name,
-      this.state.email, 
-      this.state.password)
-  }
-
-  submit(e) {
-    this.mySignup(e)
-  }
-
-  keypress(e) {
-    if (e.key === 'Enter') { 
-      this.mySignup(e)
+    if (this.handleValidate()) {
+      const {onSignup, router} = this.props
+      this.setState({loading: true}, () => {
+        onSignup(...R.props(['username', 'first_name', 'last_name', 'email', 'password'], this.state))
+          .then((response) => {
+            const {id} = this.props.user
+            response.type === 'SIGNUP_FAIL'
+              ? this.setState({dirty: false, loading: false, errors: Object.assign(
+                {},
+                response.error.signup_email && {email: response.error.signup_email},
+                response.error.signup_username && {username: response.error.signup_username},
+                response.error.signup_password && {password: response.error.signup_password},
+              )})
+              : (id && router.push(`/email-verification?i=${id}`))
+          }) 
+      })
     }
+  }
+
+
+  renderField({name, label, type, ...rest}) {
+    const { classes } = this.props
+    const errorMessage = R.path(['errors', name], this.state)
+    const error = !this.state.dirty && errorMessage
+    return (
+      <TextField
+        key={name}
+        className={classes.textField}
+        name={name}
+        error={error}
+        helperText={error}
+        label={label}
+        type={type || 'text'}
+        value={this.state[name]}
+        onChange={this.handleChange}
+        {...rest}
+      />
+    )
   }
 
   render() {
-    if(this.state.fireRedirect && this.props.user.loggedIn === true){
-      Router.push('/')
-      return(<div></div>)
-    }
-    else{
-      const { classes } = this.props
-      return (
-        <form className={classes.container} noValidate autoComplete="off"
-          onKeyPress={(event) => this.keypress(event)}>
-          <Typography variant="display2" style={{color:'black'}} gutterBottom>
-            Signup
-          </Typography>
-          <TextField
-            id="name"
-            error={typeof this.props.user.error.signup_username !== 'undefined'}
-            className={classes.field}
-            helperText = {this.props.user.error.signup_username}
-            label="Enter A Username"
-            className={classes.textField}
-            value={this.state.username}
-            margin="normal"
-            onChange = {this.handleChange('username')}/>
-          <br/>
-          <TextField
-            error={typeof this.props.user.error.signup_password !== 'undefined'}
-            id="password"
-            label="Enter A Password"
-            helperText = {this.props.user.error.signup_password}
-            className={classes.field}
-            value={this.state.password}
-            type="password"
-            margin="normal"
-            onChange = {this.handleChange('password')}/>
-          <br/>
-          <TextField
-            id="first"
-            label="Enter your First Name"
-            className={classes.textField}
-            value={this.state.first_name}
-            margin="normal"
-            onChange = {this.handleChange('first_name')}/>
-          <br/>
-          <TextField
-            id="last"
-            label="Enter your Last Name"
-            className={classes.textField}
-            value={this.state.last_name}
-            margin="normal"
-            onChange = {this.handleChange('last_name')}/>
-          <br/>
-          <TextField
-            error={typeof this.props.user.error.signup_email !== 'undefined'}
-            id="email"
-            label="Enter your Email"
-            helperText = {this.props.user.error.signup_email}
-            className={classes.textField}
-            value={this.state.email}
-            margin="normal"
-            onChange = {this.handleChange('email')}/>
-          <br/>
-          <br/>
-          <Typography variant="subheading" style={{color:'black'}} gutterBottom>
-          Already have an account? <Link href="/login"><a>Login.</a></Link>
-          </Typography>
-          <br/>
-          <Button raised color="accent" onClick={(event) => this.submit(event)}>
-            Sign Up!
-          </Button>
-        </form>
-      )
-    }
+    const { classes } = this.props
+    return (
+      <Grid 
+        className={classes.container}
+        component="form"
+        direction="column"
+        onSubmit={this.handleSubmit}
+        noValidate
+        autoComplete="off"
+        container
+      >
+        <Typography
+          className={classes.title}
+          variant="display1"
+          gutterBottom
+          align="center"
+        >
+          Signup
+        </Typography>
+        {FIELDS.map(this.renderField)}
+        <Button
+          className={classes.submit}
+          type="submit"
+          disabled={this.state.loading}
+          children={this.state.loading ? 'LOADING...' : 'SUBMIT'}
+        />
+        <Button>
+          <Link href="/login">ALREADY HAVE AN ACCOUNT? LOGIN.</Link>
+        </Button>
+      </Grid>
+    )
   }
 }
 
@@ -138,25 +150,8 @@ SignupForm.propTypes = {
   classes: PropTypes.object.isRequired,
 }
 
-export default connect(
-  state =>
-    ({
-      user : state.user
-    }),
-  dispatch =>
-    ({
-      onSignup(username,
-        first_name,
-        last_name,
-        email, 
-        password) {
-        dispatch(
-          clickedSignup(username,
-            first_name,
-            last_name,
-            email, 
-            password))
-      }
-    }))(withStyles(styles)(SignupForm))
-
-
+export default R.compose(
+  withRouter,
+  withStyles(styles),
+  connect(R.pick(['user']), {onSignup: clickedSignup}),
+)(SignupForm)
