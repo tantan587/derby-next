@@ -71,11 +71,6 @@ class ManageEmails extends Component {
             />
           </Grid>
         </Grid>
-        <StyledButton
-          height={50}
-          styles={{ fontSize: 16, fontWeight: 600, marginTop: 40 }}
-          text="Save Settings"
-        />
       </div>
     )
   }
