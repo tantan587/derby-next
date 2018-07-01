@@ -49,7 +49,7 @@ class TeamDisplay extends React.Component {
 
       this.props.onFilterTab(newFilterInfo)
     }
-}
+  }
 
   render() {
     const {  draft,teams, allowDraft} = this.props
@@ -73,7 +73,7 @@ class TeamDisplay extends React.Component {
           teamsToShow = teamsToShow.filter(x => x[draft.filterInfo['tab'].key] === draft.filterInfo['tab'].value) :
           teamsToShow
 
-      confs= [...new Set(teamsToShow.map(x => x.conference))]
+      confs= [...new Set(teamsToShow.map(x => x.conference))].sort((a,b) => { return a > b})
 
       if (draft.filterInfo['dropdown'])
         teamsToShow = draft.filterInfo['dropdown'].value ?
@@ -112,6 +112,7 @@ class TeamDisplay extends React.Component {
               values :this.props.sportLeagues.map(x => x.sport),
               column:'sport',
               allInd:true,
+              defaultTab:6,
               tabStyles:{background:'#e3dac9', foreground:'white', text:'#229246'}
             },
             {type:'dropdown',
@@ -126,6 +127,8 @@ class TeamDisplay extends React.Component {
           myHeaders = {[
             {key: 'logo_url', sortId:'team_name',imageInd:true},
             {label: 'Team Name', key: 'team_name'},
+            {label: 'Sport', key: 'sport', imageInd:true},
+            {label: 'Conference', key: 'conference'},
             {key: 'team_id', sortId:'eligible', label:'Eligible Teams',
               button:{
                 disabledBackgroundColor:'#d3d3d3',
@@ -146,8 +149,6 @@ class TeamDisplay extends React.Component {
                 color:'white',
                 backgroundColor: '#EBAB38',
               }},
-            {label: 'Conference', key: 'conference'},
-            {label: 'Sport', key: 'sport'},
             {label: 'Record', key: 'record', sortId:'percentage'},
             {label: 'Win Percentage', key: 'percentage'},
             // {label: 'Points', key: 'points'}

@@ -40,6 +40,8 @@ class MainLeagueTeams extends React.Component {
       }
     })
 
+    let confs = [...new Set(myTeams.map(x => x.conference))].sort((a,b) => { return a > b})
+
     return (
       <div>
         <TeamsDialog />
@@ -55,16 +57,21 @@ class MainLeagueTeams extends React.Component {
               allInd:true,
               tabStyles:{background:'#e3dac9', foreground:'white', text:'#229246'}
             },
-            // {type:'checkbox',
-            //   values :this.props.sportLeagues.map(x => x.sport),
-            //   column:'sport'}
+            {type:'dropdown',
+              values:confs,
+              column:'conference',
+              name:'Conference'
+            },
+            {type:'search',
+              column:'team_name',
+            },
           ]}
           orderInd={true}
           myHeaders = {[
             {label: 'Logo', key: 'logo_url', sortId:'team_name', imageInd:true},
             {label: 'Team Name', key: 'team_name'},
+            {label: 'Sport', key: 'sport', imageInd:true},
             {label: 'Owner Name', key: 'owner_name'},
-            {label: 'Sport', key: 'sport'},
             {label: 'Conference', key: 'conference'},
             {label: 'Record', key: 'record', sortId:'percentage'},
             {label: 'Win Percentage', key: 'percentage'},
