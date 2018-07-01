@@ -223,7 +223,6 @@ methods.updateSchedule = (knex, newResults) =>
         }
         else if(oldResults[x.global_game_id] !== x.updated_time)
         { 
-          console.log(x.global_game_id) 
           updateList.push(Promise.resolve(methods.updateOneResultRow(knex, x.global_game_id, x)))
         }
       })

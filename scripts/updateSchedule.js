@@ -28,8 +28,7 @@ async function getNflData()
 {
   return db_helpers.getScheduleData(knex, 'NFL', 'https://api.fantasydata.net/v3/nfl/scores/JSON/Scores/2017')
     .then(result => { 
-      let newSchedule = []
-      console.log(result)
+
       result.map(game => 
       {
         
