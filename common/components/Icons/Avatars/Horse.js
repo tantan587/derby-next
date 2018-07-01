@@ -16,10 +16,10 @@ const Horse = ({ primary, secondary, style, pattern }) =>
       {
         pattern.type === 'd' ?
           pattern.str.map((str,i) => {
-            return <path key={i} fill={ secondary || '#555555' } d={str}/> 
+            return <path key={i} fill={ secondary || '#555555' } d={str}/>
           }) : pattern.type==='points'?
             pattern.str.map((str,i) => {
-              return <polygon key={i} fill={ secondary || '#555555' } points={str}/> 
+              return <polygon key={i} fill={ secondary || '#555555' } points={str}/>
             }) : pattern.type === 'circle' ?
               <circle fill={ secondary || '#555555' } cx="74.17" cy="28.15" r="9.19"/>
               : null
