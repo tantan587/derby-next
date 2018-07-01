@@ -62,7 +62,6 @@ class MainLeagueHome extends React.Component {
           {/* <div className={classes.section1}/> */}
           <Owner myOwner={myOwner} num={ownersWithColors.length} />
           <div className={classes.cards}>
-
             <Card
               title="Upcoming Games"
               Button={() => <StyledButton text="View Complete Schedules"/>}
@@ -109,11 +108,6 @@ class MainLeagueHome extends React.Component {
                 },
               ]}/>
             </Card>
-
-            {/* <Card title="Standings">
-              <Standings owners={ownersWithColors.sort((a, b) => a.rank - b.rank)} />
-            </Card> */}
-
           </div>
         </div>
       </div>
@@ -125,14 +119,6 @@ const mapDispatchToProps = (dispatch) => ({
   openDialog: () => dispatch(handleOpenDialog)
 })
 
-// export default connect(
-//   state => ({
-//     activeLeague: state.activeLeague,
-//     sportLeagues : state.sportLeagues,
-//     teams: state.teams,
-//   }),
-//   mapDispatchToProps,
-// )(withStyles(styles)(MainLeagueHome))
 export default compose(
   connect(state => ({
     activeLeague: state.activeLeague,
