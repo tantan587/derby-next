@@ -2,6 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { withStyles } from '@material-ui/core/styles'
+import Grid from '@material-ui/core/Grid'
 
 import { handleOpenDialog } from '../../actions/dialog-actions'
 import silksAndColors from '../../../data/silksAndColors'
@@ -17,7 +18,7 @@ import Upcoming from '../Home/Cards/Upcoming'
 import StyledButton from '../Navigation/Buttons/StyledButton'
 
 
-const styles = {
+const styles = theme => ({
   section1: {
     paddingTop: 100,
     color:'white',
@@ -31,11 +32,18 @@ const styles = {
   },
   'cards': {
     display: 'flex',
+    flexWrap: 'wrap',
     justifyContent: 'space-between',
     width: '90%',
-    margin: '50px 5% 0px 5%'
+    margin: '0px 5% 0px 5%',
+    [theme.breakpoints.down('sm')]: {
+      justifyContent: 'center',
+      '& > *': {
+        margin: 'auto' // this is a HACK. Might not look great if card width is changed
+      }
+    },
   }
-}
+})
 
 class MainLeagueHome extends React.Component {
 
@@ -61,7 +69,7 @@ class MainLeagueHome extends React.Component {
         <div className={classes.section1}>
           {/* <div className={classes.section1}/> */}
           <Owner myOwner={myOwner} num={ownersWithColors.length} />
-          <div className={classes.cards}>
+          <Grid container className={classes.cards}>
             <Card
               title="Upcoming Games"
               Button={() => <StyledButton text="View Complete Schedules"/>}
@@ -108,7 +116,7 @@ class MainLeagueHome extends React.Component {
                 },
               ]}/>
             </Card>
-          </div>
+          </Grid>
         </div>
       </div>
     )
