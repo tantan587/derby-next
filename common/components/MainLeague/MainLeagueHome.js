@@ -38,7 +38,7 @@ const styles = theme => ({
     margin: '0px 5% 0px 5%',
     [theme.breakpoints.down('sm')]: {
       justifyContent: 'center',
-      '& > *': {
+      '& > *': { // for all children when screen is sm or smaller
         margin: 'auto' // this is a HACK. Might not look great if card width is changed
       }
     },
