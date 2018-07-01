@@ -1,20 +1,17 @@
-import Silk from '../../Icons/Avatars/Silk'
-import Horse from '../../Icons/Avatars/Horse'
+import OwnerSilk from '../../Icons/Avatars/OwnerSilk'
+import OwnerHorse from '../../Icons/Avatars/OwnerHorse'
 
 const TeamView = ({ className, primary, secondary, pattern }) =>
+
   <div className={className}>
-    <Silk
-      primary={primary}
-      secondary={secondary}
-      pattern={pattern && pattern.silk}
-      style={{ height: 100 }}
-    />
-    <Horse
+    {OwnerSilk({primary, secondary, pattern},{ height: 100 })}
+    {OwnerHorse({primary, secondary, pattern},{ height: 30 })}
+    {/* <OwnerHorse
       primary={primary}
       secondary={secondary}
       pattern={pattern && pattern.horse}
       style={{ height: 30 }}
-    />
+    /> */}
   </div>
 
 export default TeamView

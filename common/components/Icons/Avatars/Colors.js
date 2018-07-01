@@ -1,4 +1,5 @@
 const Colors = {
+  'Default' : '#CCCCCC',
   'Maroon' : '#990033',
   'Red' : '#FF0000',
   'Orange' : '#FF6633',

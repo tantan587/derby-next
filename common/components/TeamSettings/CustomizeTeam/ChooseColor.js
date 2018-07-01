@@ -40,6 +40,7 @@ const ChooseColor = withStyles(styles)(({ classes, handleColorClick }) =>
   <Card style={{ paddingTop: 10, paddingBottom: 10 }}>
     <Grid container justify="space-between">
       {R.pipe(
+        R.omit(['Default']),
         R.toPairs,
         mapItems([classes.colorContainer, classes.container], handleColorClick)
       )(Colors)}

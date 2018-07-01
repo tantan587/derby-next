@@ -17,8 +17,10 @@ class MainLeagueSettings extends React.Component {
           title="Welcome"
           subheading={activeLeague.league_name}
         />
-        { console.log(activeLeague) }
         <TeamSettings />
+        <br/>
+        <br/>
+        <br/>
       </div>
     )
   }

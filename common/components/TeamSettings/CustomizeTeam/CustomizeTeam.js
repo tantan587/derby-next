@@ -67,8 +67,8 @@ class CustomizeTeam extends Component {
   state = {
     teamName: '',
     pattern: '',
-    patternColor: '',
-    jerseyColor: ''
+    primary: '',
+    secondary: ''
   }
 
   handleChange = name => event => {
@@ -77,25 +77,46 @@ class CustomizeTeam extends Component {
     })
   }
 
-  handleColorClick = (type, color) => this.setState({ [type]: color })
+  handleColorClick = (type, color) => 
+  {
+    
+    let changeColor = true
+    if(type === 'primary')
+    {
+      changeColor = this.state.secondary !== color
+    }
+    if(type === 'secondary')
+    {
+      changeColor = this.state.primary !== color
+    }
+    if(changeColor)
+    {
+      this.setState({
+        [type]: color,
+      })
+    }
+  }
   handlePatternClick = pattern => {
     console.log(pattern)
     this.setState({ pattern })}
 
   render() {
-    const { teamName, pattern, patternColor, jerseyColor } = this.state
+    const { teamName, pattern, primary, secondary } = this.state
     const { classes } = this.props
 
-    const teamCopy = 'Jockeys wear elaborate “silks” when riding horses in a race. Receiving silks is a rite of passage for jockeys entering their first ride. Below, select your pattern and colors that will identify you throughout your league season. Note: you can change your silks up to the beginning of the first games in your league, but they lock in once play starts.'
-    console.log(this.state)
+    const teamCopy =`Jockeys wear elaborate “silks” when riding horses in a race.
+     Receiving silks is a rite of passage for jockeys entering their first ride.
+      Below, select your pattern and colors that will identify you throughout your 
+      league season. Note: you can change your silks up to the beginning of the
+       first games in your league, but they lock in once play starts.`
     return (
       <Grid container justify="space-between" className={classes.root}>
         <Grid item sm={12} style={{ marginBottom: 30 }}>
           <div className={classes.top}>
             <TeamView
               className={classes.teamView}
-              primary={jerseyColor}
-              secondary={patternColor}
+              primary={primary}
+              secondary={secondary}
               pattern={pattern}
             />
             <div className={classes.nameForm}>
@@ -123,13 +144,13 @@ class CustomizeTeam extends Component {
         <Grid item sm={12} md={3} className={classes.gridMargins}>
           <div>
             <div className={classes.title}>Choose Jersey Color</div>
-            <ChooseColor handleColorClick={this.handleColorClick.bind(null, 'jerseyColor')} />
+            <ChooseColor handleColorClick={this.handleColorClick.bind(null, 'primary')} />
           </div>
         </Grid>
         <Grid item sm={12} md={3} className={classes.gridMargins}>
           <div>
             <div className={classes.title}>Choose Pattern Color</div>
-            <ChooseColor handleColorClick={this.handleColorClick.bind(null, 'patternColor')} />
+            <ChooseColor handleColorClick={this.handleColorClick.bind(null, 'secondary')} />
           </div>
         </Grid>
         <StyledButton

@@ -47,7 +47,7 @@ const styleProps = {
       borderLeft: '1px solid white'
     }),
     TableCellComponent: (i, n) => i === 0 ? <td 
-      style={{ height: 80, width: 80, borderBottom: '1px solid white' }}>{OwnerSilk(n, {height:90})}</td> : false,
+      style={{ height: 80, width: 80, borderBottom: '1px solid white' }}>{OwnerSilk(n.avatar, {height:90})}</td> : false,
     TableRow: {
       borderRight: '1px solid white'
     }

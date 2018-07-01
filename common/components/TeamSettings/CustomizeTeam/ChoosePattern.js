@@ -23,7 +23,7 @@ const mapItems = (cls, handler) => arr => arr.map(pattern =>
   <Grid item xs={4} sm={3} key={pattern[0]} className={cls[1]}>
     <div
       className={cls[0]}
-      onClick={() => handler(Patterns[pattern[0]])}
+      onClick={() => handler(pattern[0])}
     >
       <Silk
         pattern={pattern[1].silk}
