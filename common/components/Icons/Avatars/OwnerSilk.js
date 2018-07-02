@@ -13,14 +13,12 @@ const OwnerSilk = (avatar, style) => {
     secondary = avatar.secondary ? Colors[avatar.secondary] : secondary
     pattern = avatar.pattern ? Patterns[avatar.pattern].silk : pattern
   }
-
-  console.log(primary,secondary,pattern)
   return <Silk 
     primary={primary}
     secondary={secondary}
     style={style} 
     pattern={pattern} 
-    darkPrimaryColorInd={avatar.primary==='Black'}/>
+    darkPrimaryColorInd={primary==='Black'}/>
 
 }
 

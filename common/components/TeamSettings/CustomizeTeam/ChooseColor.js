@@ -2,7 +2,6 @@ const R = require('ramda')
 import { withStyles } from '@material-ui/core/styles'
 import Card from '@material-ui/core/Card'
 import Grid from '@material-ui/core/Grid'
-
 import Colors from '../../Icons/Avatars/Colors'
 
 const styles = {
@@ -20,8 +19,8 @@ const styles = {
   }
 }
 
-const mapItems = (cls, handler) => arr => arr.map(color =>
-  <Grid item xs={4} sm={2} md={4} style={{ display: 'flex', justifyContent: 'center' }}>
+const mapItems = (cls, handler) => arr => arr.map((color,i) =>
+  <Grid key={i} item xs={4} sm={2} md={4} style={{ display: 'flex', justifyContent: 'center' }}>
     <div
       className={cls[1]}
       onClick={() => handler(color[0])}

@@ -29,6 +29,21 @@ router.post('/joinleague', authHelpers.loginRequired, (req, res, next)  => {
       handleResponse(res, 500, err) })
 })
 
+router.post('/saveownersettings', authHelpers.loginRequired, async (req, res, next)  => {
+  const resp = await handleOwnerSettingsErrors(req)
+  if (resp.success){
+    await updateOwnerSettings(req)
+    return handleReduxResponse(res,200,
+      {type:C.SAVE_OWNER_SETTINGS_SUCCESS, 
+        owner_name:req.body.ownerName,
+        owner_id:req.body.owner_id, avatar:req.body.avatar})
+  } 
+  else{
+    return handleReduxResponse(res,401,{type:C.SAVE_OWNER_SETTINGS_FAIL, error: resp.error})
+  } 
+  
+})
+
 router.post('/clickleague', authHelpers.loginRequired, (req, res, next)  => {
   return fantasyHelpers.getLeague(req.body.league_id,req.body.user_id,res, C.CLICKED_LEAGUE)
 })
@@ -192,6 +207,16 @@ function joinLeague(req, res) {
     })
 }
 
+const updateOwnerSettings =  async (req) =>
+{
+  return knex.withSchema('fantasy').table('owners')
+    .update({
+      avatar:req.body.avatar,
+      owner_name: req.body.ownerName
+    })
+    .where('owner_id', req.body.owner_id)
+}
+
 function getSportsData(req, league_id)
 {
   return new Promise((resolve) => {
@@ -305,6 +330,42 @@ function handleJoinErrors(req) {
         })
     }
   })
+}
+
+const handleOwnerSettingsErrors = async (req) => {
+  console.log(req.body)
+  const resp = await knex.withSchema('fantasy')
+    .table('owners')
+    .where('league_id', req.body.league_id)
+
+  let allOwnersButMe = resp.filter(x => x.owner_id != req.body.owner_id)
+  let ownerNames = allOwnersButMe.map(x => x.owner_name)
+  let silkColors = allOwnersButMe.map(x => x.avatar.primary + ';' + x.avatar.secondary)
+  console.log(ownerNames)
+  let errorText = new ErrorText()
+  if (!req.body.ownerName || req.body.ownerName.length < 5) {
+    errorText.addError('ownerName','Owner name must be longer than five characters')
+  }
+  
+  if (req.body.ownerName && req.body.ownerName.length > 15) {
+    errorText.addError('ownerName','Owner name must be shorter than fifteen characters')
+  }
+  if (ownerNames.includes(req.body.ownerName)) {
+    errorText.addError('ownerName','Owner name must be unique')
+  }
+  if (silkColors.includes(req.body.avatar.primary + ';' + req.body.avatar.secondary)) {
+    errorText.addError('color','This color combo has already been chosen. You must choose a unique set of colors.')
+  }
+   
+  if (errorText.foundError()) {
+    return {
+      success: false,
+      error: errorText
+    }
+  }
+  else
+    return {success: true}
+
 }
 
 const getSimpleLeague = (league_id, res, type) =>{

@@ -1,12 +1,17 @@
 import { Component } from 'react'
 import { withStyles } from '@material-ui/core/styles'
+import {withRouter} from 'next/router'
 import TextField from '@material-ui/core/TextField'
 import Grid from '@material-ui/core/Grid'
-
+const R = require('ramda')
 import TeamView from './TeamView'
 import ChoosePattern from './ChoosePattern'
 import ChooseColor from './ChooseColor'
 import StyledButton from '../../Navigation/Buttons/StyledButton'
+import {connect} from 'react-redux'
+import {clickedSaveSilks} from '../../../actions/fantasy-actions'
+import Typography from '@material-ui/core/Typography/Typography';
+
 
 const styles = theme => ({
   root: {
@@ -65,16 +70,37 @@ const styles = theme => ({
 
 class CustomizeTeam extends Component {
   state = {
-    teamName: '',
-    pattern: '',
-    primary: '',
-    secondary: ''
+    ownerName: '',
+    pattern: 'Star',
+    primary: 'Gray',
+    secondary: 'White'
+  }
+
+  componentDidMount() {
+    let active = this.props.activeLeague
+    const myOwner = active.owners.filter(x => x.owner_id === active.my_owner_id)[0]
+    console.log(myOwner)
+    if (myOwner.avatar)
+    {
+      let myAvatar = myOwner.avatar
+      this.setState({pattern:myAvatar.pattern, primary:myAvatar.primary, secondary:myAvatar.secondary})
+    }
+    if(myOwner.owner_name)
+    {
+      this.setState({ownerName:myOwner.owner_name})
+    }
   }
 
   handleChange = name => event => {
     this.setState({
       [name]: event.target.value,
     })
+  }
+
+  onSave = () =>
+  {
+    this.props.onSaveSilks(...R.props(['ownerName','pattern', 'primary', 'secondary'], this.state), 
+      this.props.activeLeague.league_id, this.props.activeLeague.my_owner_id)
   }
 
   handleColorClick = (type, color) => 
@@ -101,7 +127,7 @@ class CustomizeTeam extends Component {
     this.setState({ pattern })}
 
   render() {
-    const { teamName, pattern, primary, secondary } = this.state
+    const { ownerName, pattern, primary, secondary } = this.state
     const { classes } = this.props
 
     const teamCopy =`Jockeys wear elaborate “silks” when riding horses in a race.
@@ -122,12 +148,14 @@ class CustomizeTeam extends Component {
             <div className={classes.nameForm}>
               <div className={classes.teamForm}>
                 <div className={classes.teamName}>
-                  Team Name
+                  Owner Name
                 </div>
                 <TextField
-                  value={teamName}
-                  onChange={this.handleChange('teamName')}
-                  placeholder="Team Name Here"
+                  value={ownerName}
+                  onChange={this.handleChange('ownerName')}
+                  placeholder="Owner Name Here"
+                  error={this.props.activeLeague.error.ownerName}
+                  helperText={this.props.activeLeague.error.ownerName}
                 />
               </div>
               <div className={classes.yourSilk}>Your Silk</div>
@@ -140,6 +168,9 @@ class CustomizeTeam extends Component {
             <div className={classes.title}>Choose Pattern</div>
             <ChoosePattern handlePatternClick={this.handlePatternClick} />
           </div>
+          <Typography style={{textAlign:'center', marginTop:20, color:'red'}}>
+            {this.props.activeLeague.error.color}
+          </Typography>
         </Grid>
         <Grid item sm={12} md={3} className={classes.gridMargins}>
           <div>
@@ -157,10 +188,15 @@ class CustomizeTeam extends Component {
           height={50}
           styles={{ fontSize: 16, fontWeight: 600, marginTop: 40 }}
           text="Save Settings"
+          onClick={this.onSave}
         />
       </Grid>
     )
   }
 }
 
-export default withStyles(styles)(CustomizeTeam)
+export default R.compose(
+  withRouter,
+  withStyles(styles),
+  connect(R.pick(['activeLeague']), {onSaveSilks: clickedSaveSilks})
+)(CustomizeTeam)

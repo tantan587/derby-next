@@ -27,7 +27,7 @@ const mapItems = (cls, handler) => arr => arr.map(pattern =>
     >
       <Silk
         pattern={pattern[1].silk}
-        style={{ height: 80, margin: 5, marginBottom: 0 }}
+        style={{ height: 80, width:75, margin: 5, marginBottom: 0 }}
       />
     </div>
   </Grid>
