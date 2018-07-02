@@ -35,12 +35,10 @@ class Chat extends React.Component {
 
   componentDidUpdate() {
     this.scrollToBottom(false)
-    console.log('componentDidChange')
   }
 
   componentDidMount() {
     this.scrollToBottom()
-    console.log('componentDidMount')
   }
 
   onTextChange = event => {

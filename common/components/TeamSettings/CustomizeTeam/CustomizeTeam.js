@@ -79,7 +79,6 @@ class CustomizeTeam extends Component {
   componentDidMount() {
     let active = this.props.activeLeague
     const myOwner = active.owners.filter(x => x.owner_id === active.my_owner_id)[0]
-    console.log(myOwner)
     if (myOwner.avatar)
     {
       let myAvatar = myOwner.avatar

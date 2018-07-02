@@ -16,14 +16,14 @@ const styles = {
     width: '80%'
   },
   title: {
-    fontFamily: 'HorsebackSlab',
+    fontFamily: 'museo-slab-bold',
     fontSize: 32,
     color: '#299149'
   }
 }
 
 const myTabs = [
-  { label: 'Customize Team', Component: <CustomizeTeam /> },
+  { label: 'Customize Owner', Component: <CustomizeTeam /> },
   { label: 'Manage Emails', Component: <ManageEmails /> }
 ]
 
@@ -35,7 +35,7 @@ class TeamSettings extends React.Component {
     return (
       <div className={classes.root}>
         <div className={classes.content}>
-          <div className={classes.title}>Team Settings</div>
+          <div className={classes.title}>OWNER SETTINGS</div>
           <DerbyTabs tabsList={myTabs} />
         </div>
       </div>

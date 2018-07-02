@@ -341,7 +341,7 @@ const handleOwnerSettingsErrors = async (req) => {
   let allOwnersButMe = resp.filter(x => x.owner_id != req.body.owner_id)
   let ownerNames = allOwnersButMe.map(x => x.owner_name)
   let silkColors = allOwnersButMe.map(x => x.avatar.primary + ';' + x.avatar.secondary)
-  console.log(ownerNames)
+
   let errorText = new ErrorText()
   if (!req.body.ownerName || req.body.ownerName.length < 5) {
     errorText.addError('ownerName','Owner name must be longer than five characters')

@@ -11,7 +11,7 @@ const styles = {
     backgroundColor: '#E2E2E2'
   },
   tabsRoot: {
-    fontFamily: 'HorsebackSlab',
+    fontFamily: 'museo-slab-bold',
     color: '#299149'
   },
   tabsIndicator: {
@@ -19,7 +19,7 @@ const styles = {
   },
   tabRoot: {
     width: 200,
-    fontFamily: 'HorsebackSlab',
+    fontFamily: 'museo-slab-bold',
     color: '#E2E2E2',
     backgroundColor: '#999999',
   },
