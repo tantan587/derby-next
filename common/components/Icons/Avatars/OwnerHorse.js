@@ -2,19 +2,23 @@ import Horse from './Horse'
 import Patterns from './Patterns'
 import Colors from './Colors'
 
-const OwnerHorse = (ownerObj, style) => {
-  
-  let primary = Colors[ownerObj.avatar.primary]
-  let secondary = Colors[ownerObj.avatar.secondary]
-  let pattern = Patterns[ownerObj.avatar.pattern].horse
-  if (pattern)
+const OwnerHorse = (avatar, style) => {
+  let primary = Colors['Default']
+  let secondary = Colors['Default']
+  let pattern = Patterns['Default']
+
+  if (avatar)
   {
-    return <Horse primary={primary} secondary={secondary} style={style} pattern={pattern}/>
+    primary = avatar.primary ? Colors[avatar.primary] : primary
+    secondary = avatar.secondary ? Colors[avatar.secondary] : secondary
+    pattern = avatar.pattern ? Patterns[avatar.pattern].horse : pattern
   }
-  else
-  {
-    return <Horse primary={primary} secondary={secondary} style={style} pattern={Patterns['Default'].horse}/>
-  }
+
+  return <Horse 
+    primary={primary}
+    secondary={secondary}
+    style={style} 
+    pattern={pattern}/>
 }
 
 export default OwnerHorse

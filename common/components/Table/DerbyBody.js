@@ -42,6 +42,13 @@ class DerbyBody extends React.Component {
   rowRender = (classes, columns, n) =>
   {
     const {handleOpenDialog, clickedOneTeam, activeLeague, styleProps} = this.props
+    let sportsIcons = {'NFL':'/static/icons/SportIcons/sport_icon_football_black.svg',
+      'NBA':'/static/icons/SportIcons/sport_icon_basketball_black.svg',
+      'MLB':'/static/icons/SportIcons/sport_icon_baseball_black.svg',
+      'NHL':'/static/icons/SportIcons/sport_icon_hockey_black.svg',
+      'EPL':'/static/icons/SportIcons/sport_icon_soccer_black.svg',
+      'CBB':'/static/icons/SportIcons/sport_icon_ncaa_basketball_black.svg',
+      'CFB':'/static/icons/SportIcons/sport_icon_ncaa_football_black.svg'}
     return (
 
       columns.filter(
@@ -50,16 +57,18 @@ class DerbyBody extends React.Component {
           <TableCell
             key={i}
             classes={{root: classes.deepAlign}}
-            style={styleProps && styleProps.TableCell && styleProps.TableCell(i, n)}
+            style={styleProps && styleProps.TableCell && styleProps.TableCell(i, n) }
             padding={header.disablePadding ? 'none' : 'default'}
             numeric={header.numeric}
             component={
               (styleProps && styleProps.TableCellComponent && styleProps.TableCellComponent(i, n)) ?
                 styleProps.TableCellComponent.bind(null, i, n) : ''
             }
-            >
+          >
             {header.imageInd === true && n[header.id] && n[header.id] !== 'none'
-              ?  <img src={n[header.id]} preserveAspectRatio='true'  style={{maxWidth:'40px', maxHeight:'40px'}}/>
+              ?  header.id === 'sport' 
+                ? <img src={sportsIcons[n[header.id]]} preserveAspectRatio='true'  style={{width:25, height:'auto'}}/> 
+                :  <img src={n[header.id]} preserveAspectRatio='true'  style={{maxWidth:'40px', maxHeight:'40px'}}/>
               : header.button
                 ? <Button
                   key={i}

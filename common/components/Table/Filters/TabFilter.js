@@ -22,13 +22,18 @@ class TabFilter extends React.Component {
     super(props, context)
 
     this.state = {
-      index: 0,
+      index: props.defaultTab ? props.defaultTab : 0,
     }
   }
 
   componentWillMount() {
     this.filterRows(this.state.index)
   }
+
+  // componentDidMount() {
+  //   if(this.props.defaultTab)
+  //     this.setState({index:this.props.defaultTab})
+  // }
 
   handleTabClick = index => () =>
   {

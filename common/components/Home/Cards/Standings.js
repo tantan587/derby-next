@@ -43,7 +43,7 @@ const Standings = withStyles(styles)(({ classes, owners }) =>
     {
       owners.map((owner,i) => <div  key={i} id={owner.owner_id} className={classes.owner}>
         <div key={i} style={{ display: 'flex' }}>
-          { OwnerSilk(owner, { height: 50, margin: '8px 0px' }) }
+          { OwnerSilk(owner.avatar, { height: 50, margin: '8px 0px' }) }
           <div className={classes.names}>
             <div className={classes.ownerName}>{owner.owner_name}</div>
             <div className={classes.username}>{owner.username}</div>

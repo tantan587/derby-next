@@ -47,7 +47,7 @@ const Owner = withStyles(styles)(({ classes, myOwner, num }) => {
   return (
     <div className={classes.root}>
       <div className={classes.silkContainer}>
-        { myOwner && OwnerSilk(myOwner, { height: 125, width: 125 }) }
+        { myOwner && OwnerSilk(myOwner.avatar, { height: 125, width: 125 }) }
       </div>
       <div className={classes.data}>
         <div>{myOwner && myOwner.owner_name}</div>

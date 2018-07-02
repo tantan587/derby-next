@@ -15,12 +15,12 @@ const styles = theme => ({
     pointerEvents: 'none',
   },
   menu: {
-    width: 150
+    width: '100%'
   },
   textField: {
     marginLeft: theme.spacing.unit,
     marginRight: theme.spacing.unit,
-    width: 150,
+    width: '100%',
   },
 })
 
@@ -55,7 +55,7 @@ class DropdownFilter extends React.Component {
     
     return (
 
-      <div style={{display: 'inline', float:'left'}}>
+      <div style={{width:'20%', float:'left'}}>
         <TextField
           id="drowndown"
           select

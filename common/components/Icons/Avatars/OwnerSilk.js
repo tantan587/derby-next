@@ -2,28 +2,24 @@ import Silk from './Silk'
 import Patterns from './Patterns'
 import Colors from './Colors'
 
-const OwnerSilk = (ownerObj, style) => {
+const OwnerSilk = (avatar, style) => {
+  let primary = Colors['Default']
+  let secondary = Colors['Default']
+  let pattern = Patterns['Default']
 
-  if (!ownerObj.avatar)
+  if (avatar)
   {
-    return <Silk style={style} pattern={Patterns['Default'].silk}/>
+    primary = avatar.primary ? Colors[avatar.primary] : primary
+    secondary = avatar.secondary ? Colors[avatar.secondary] : secondary
+    pattern = avatar.pattern ? Patterns[avatar.pattern].silk : pattern
   }
-  let primary = Colors[ownerObj.avatar.primary]
-  let secondary = Colors[ownerObj.avatar.secondary]
-  let pattern = Patterns[ownerObj.avatar.pattern].silk
-  if (pattern)
-  {
-    return <Silk 
-      primary={primary}
-      secondary={secondary}
-      style={style} 
-      pattern={pattern} 
-      darkPrimaryColorInd={ownerObj.avatar.primary==='Black'}/>
-  }
-  else
-  {
-    return <Silk primary={primary} secondary={secondary} style={style} pattern={Patterns['Default'].silk}/>
-  }
+  return <Silk 
+    primary={primary}
+    secondary={secondary}
+    style={style} 
+    pattern={pattern} 
+    darkPrimaryColorInd={primary==='Black'}/>
+
 }
 
 export default OwnerSilk

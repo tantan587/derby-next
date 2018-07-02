@@ -30,7 +30,7 @@ router.post('/signup', authHelpers.loginRedirect, (req, res, next)  => {
             username : newUser.username
           }))
       } else {
-        return handleReduxResponse(res, 400, {type: C.SIGNUP_FAIL});
+        return handleReduxResponse(res, 400, {type: C.SIGNUP_FAIL})
       }
     })
 })
@@ -174,7 +174,7 @@ function handleResponse(res, code, statusMsg) {
 
 function handleReduxResponse(res, code, action)
 {
-  res.status(code).json(action);
+  res.status(code).json(action)
 }
 
 module.exports = router

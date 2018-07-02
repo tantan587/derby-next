@@ -27,8 +27,6 @@ function SportsManager(io) {
       this.GameInfo[game.dayCount][game.global_game_id] = game
     }) 
 
-    console.log(gameInfoHash)
-
     setTeamUpdateTime()
     setGameUpdateTime()
     waitToGetNewData()
@@ -47,7 +45,6 @@ function SportsManager(io) {
       let gameInfoDiff = await calculateDiffForGames()
       if(Object.keys(gameInfoDiff).length > 0)
       {
-        console.log(gameInfoDiff)
         setGameUpdateTime()
         io.emit('serverDiffGameData', 
           {diff:gameInfoDiff, 

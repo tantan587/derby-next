@@ -1,6 +1,6 @@
 const Silk = ({ primary, secondary, style, pattern, darkPrimaryColorInd }) =>
 {
-  return <svg
+  return (<svg
     version="1.1"
     id="Layer_1"
     xmlns="http://www.w3.org/2000/svg"
@@ -15,17 +15,17 @@ const Silk = ({ primary, secondary, style, pattern, darkPrimaryColorInd }) =>
       {
         pattern.type === 'd' ?
           pattern.str.map((str,i) => {
-            return <path key={i} fill={ secondary || '#555555' } d={str}/> 
+            return <path key={i} fill={ secondary || '#555555' } d={str}/>
           }) : pattern.type==='points'?
             pattern.str.map((str,i) => {
-              return <polygon key={i} fill={ secondary || '#555555' } points={str}/> 
+              return <polygon key={i} fill={ secondary || '#555555' } points={str}/>
             }) : pattern.type === 'circle' ?
               <circle fill={ secondary || '#555555' } cx="36" cy="30.4" r="12.11"/>
               : null
-  
+
       }
     </g>
-  </svg>
+  </svg>)
 }
 
 export default Silk
