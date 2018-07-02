@@ -14,19 +14,14 @@ async function createSchedule()
   let NFL_schedPO = await getSchedInfo(knex, 'NFL', 'NFLv3ScoresClient', 'getScoresBySeasonPromise','2017POST')
   let CFB_schedPO = await getSchedInfo(knex, 'CFB', 'CFBv3ScoresClient', 'getSchedulesPromise','2017POST')
   //let CBB_schedPO = await getSchedInfo(knex, 'CFB', 'CBBv3ScoresClient', 'getSchedulesPromise','2017POST')
-  // let data = MLB_schedPO.concat(NBA_schedPO).concat(NHL_schedPO).concat(NFL_schedPO).concat(CFB_schedPO).concat(EPL_schedPO).concat(CBB_schedPO)
+  let data = MLB_schedPO.concat(NBA_schedPO).concat(NHL_schedPO).concat(NFL_schedPO)//.concat(CFB_schedPO).concat(CBB_schedPO)
 
-  console.log(MLB_schedPO[0])
-  console.log(CBB_schedPO[0])
-  console.log(NBA_schedPO[0])
-  console.log(NHL_schedPO[0])
-  console.log(NFL_schedPO[0])
-  console.log(CFB_schedPO[0])
-  /* db_helpers.insertIntoTable(knex, 'sports', 'schedule', data)
+  //still needs to be fixed for non null values
+  db_helpers.insertIntoTable(knex, 'sports', 'schedule', data)
     .then(result => {
       console.log('Number of Schedules Updated: ' + result)
       process.exit()
-    }) */
+    })
 }
 
 
