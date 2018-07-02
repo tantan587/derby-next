@@ -90,7 +90,8 @@ methods.getFdata = async (knex, sportName,api, promiseToGet, year=false) =>
   const keys = {}
   keys[api] = league[0].fantasy_data_key
   const sport_id = league[0].sport_id
-
+  console.log(keys)
+  console.log(sport_id)
   const FantasyDataClient = new fdClientModule(keys);
   //const fandata = FantasyDataClient.func()
   //console.log('test')

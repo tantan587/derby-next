@@ -174,7 +174,8 @@ async function getCbbData()
               + ':' + 
               (game.TimeRemainingSeconds < 10 ? '0' + game.TimeRemainingSeconds : game.TimeRemainingSeconds),
             period: game.TimeRemainingMinutes !== null ? game.Period : myNull,
-            updated_time:game.Updated ? game.Updated: myNull, home_team_id : game.home_team_id, 
+            updated_time:game.Updated ? game.Updated: myNull, 
+            home_team_id : game.home_team_id, 
             away_team_id : game.away_team_id,
             date_time: game.date_time,
             day_count: fantasyHelpers.getDayCountStr(game.date_time),
