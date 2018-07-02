@@ -107,14 +107,33 @@ methods.getFdata = async (knex, sportName,api, promiseToGet, year=false) =>
   
 }
 
-methods.getSData = async(knex, sportName, api, promiseToGet, year = false) => {
-  //const data = await methods.getFdata(knex, sportName, api, promiseToGet, year)
-  //let league = await methods.getSportId(knex, sportName)
-  //let teamIdMap = {}
-  //const teamIds = await methods.getTeamId(knex, sportId)
-         
-  //teamIds.forEach(r => teamIdMap[r.fantasydata_id]= r.team_id)
+methods.createSport = async (knex, sport_id, sportName, api, promiseToGet) => {
 
+  let teams = await methods.getFdata(knex, sportName, api, promiseToGet)
+  let teamIds = await methods.getTeamAndGlobalId(knex, sport_id) 
+  let teamIdMap = {}
+  teamIds.forEach(team=> teamIdMap[team.global_team_id] = team.team_id)
+  
+  const conferences = await knex
+    .withSchema('sports')
+    .table('conferences')
+    .leftOuterJoin('conferences_link', 'conferences.conference_id', 'conferences_link.conference_id')
+    .where('sport_id',sport_id)
+    .select('conferences.conference_id', 'conferences.name', 'display_name', 'fantasy_data_key')
+  
+  let confMap = {}
+  conferences.forEach(conf => {
+    if(conf.fantasy_data_key !== null){
+      confMap[conf.fantasy_data_key] = conf.conference_id
+    }else{
+      confMap[conf.name] = conf.conference_id
+    }
+    })
+
+
+  let cleanTeams = JSON.parse(teams)
+
+  return [cleanTeams, teamIdMap, confMap]
 
 }
 
@@ -127,10 +146,11 @@ methods.getFantasyData = async (knex, sportName, url, teamKeyField, confField, e
     .where('sport_name', sportName)
   const sportId = league[0].sport_id
   
+
   let teamIdMap = {}
   const teamIds = await methods.getTeamId(knex, sportId)
          
-  teamIds.forEach(r => teamIdMap[r.fantasydata_id]= r.team_id)
+  teamIds.forEach(r => teamIdMap[r.global_team_id]= r.team_id)
   
   const keys = {
       api:league[0].fantasy_data_key
@@ -156,6 +176,7 @@ methods.getFantasyData = async (knex, sportName, url, teamKeyField, confField, e
   
   //checks to see if the conference has a fantasy data representation (used for college sports)
   let filterConferencesInd = conferences[0].fantasy_data_key !== null
+
   if(filterConferencesInd)
   {
     conferences.forEach(conf => confMap[conf.fantasy_data_key] = conf.conference_id)
@@ -176,7 +197,7 @@ methods.getFantasyData = async (knex, sportName, url, teamKeyField, confField, e
           teams.push({...team, 
             sport_id:sportId,
             conference_id:confMap[conf[confField]], 
-            team_id:teamIdMap[team[teamKeyField]]})))
+            team_id:teamIdMap[team['GlobalTeamID']]})))
   }
   // used for creation of epl leagues
   else if(eplAreaIdInd){
@@ -189,7 +210,7 @@ methods.getFantasyData = async (knex, sportName, url, teamKeyField, confField, e
           teams.push({...team, 
             sport_id:sportId,
             conference_id: confMap[sportName], 
-            team_id:teamIdMap[team[teamKeyField]]})
+            team_id:teamIdMap[team['GlobalTeamId']]})
         }
       })
   } 
@@ -201,7 +222,7 @@ methods.getFantasyData = async (knex, sportName, url, teamKeyField, confField, e
         teams.push({...team, 
           sport_id:sportId,
           conference_id: sportName === 'EPL' ? confMap[sportName] : confMap[team[confField]], 
-          team_id:teamIdMap[team[teamKeyField]]}))
+          team_id:teamIdMap[team['GlobalTeamID']]}))
   }
   return teams
 
