@@ -26,7 +26,6 @@ methods.getSportId = async function(knex, sportName)
     .where('sport_name', sportName) 
     .select('sport_id')
     .then((x)=>{
-      console.log(x)
       return x[0].sport_id
     })
 }
@@ -39,6 +38,7 @@ methods.getTeamAndGlobalId =  async function(knex, sportId)
     .where('sport_id', sportId)
     .select('team_id', 'global_team_id')
 }
+
 
 methods.getScheduleData = (knex, sportName, url) => 
 {
@@ -79,7 +79,7 @@ methods.getScheduleData = (knex, sportName, url) =>
     })
 }
 
-methods.getFdata = async (knex, sportName,api, promiseToGet, year=false) =>
+methods.getFdata = async (knex, sportName,api, promiseToGet, parameters=false) =>
 {
   //console.log('this')
   let league = await knex
@@ -90,19 +90,16 @@ methods.getFdata = async (knex, sportName,api, promiseToGet, year=false) =>
   const keys = {}
   keys[api] = league[0].fantasy_data_key
   const sport_id = league[0].sport_id
-  console.log(keys)
-  console.log(sport_id)
   const FantasyDataClient = new fdClientModule(keys);
   //const fandata = FantasyDataClient.func()
   //console.log('test')
   //console.log(FantasyDataClient[api][promiseToGet]())
   //return [FantasyDataClient[api][promiseToGet](), sport_id]
   
-  if(year===false){
+  if(parameters===false){
     return FantasyDataClient[api][promiseToGet]()
   }else{
-    console.log('here4')
-    return FantasyDataClient[api][promiseToGet](year)
+    return FantasyDataClient[api][promiseToGet](parameters)
   }
   
 }
@@ -273,10 +270,13 @@ methods.updatePlayoffStandings = (knex,newStandings) =>
 
       newStandings.map(teamRec =>
       {
-        if(oldStandings[teamRec.team_id].playoff_wins !== teamRec.wins)  
-          updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'wins', teamRec.wins )))
-        if(oldStandings[teamRec.team_id].playoff_losses !== teamRec.losses)  
-          updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'losses', teamRec.losses )))
+        console.log(teamRec.team_id)
+        if(oldStandings[teamRec.team_id].playoff_wins !== teamRec.playoff_wins)  
+          updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'playoff_wins', teamRec.playoff_wins, true )))
+        if(oldStandings[teamRec.team_id].playoff_losses !== teamRec.playoff_losses)  
+          updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'playoff_losses', teamRec.playoff_losses, true )))
+        if(oldStandings[teamRec.team_id].playoff_status !== teamRec.playoff_status)  
+          updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'playoff_status', teamRec.playoff_status, true )))
       })
       if (updateList.length > 0)
       {
@@ -291,7 +291,7 @@ methods.updatePlayoffStandings = (knex,newStandings) =>
     })
 }
 
-methods.updateStandings = (knex,newStandings) =>
+methods.updateStandings = (knex,newStandings, playoffs = false) =>
 {
   return knex
     .withSchema('sports')
@@ -323,11 +323,12 @@ methods.updateStandings = (knex,newStandings) =>
     })
 }
 
-methods.updateOneStandingRow = (knex, team_id, column, value) =>
+methods.updateOneStandingRow = (knex, team_id, column, value, playoffs=false) =>
 {
+  let table = playoffs ? 'playoff_standings' : 'standings'
   return knex
     .withSchema('sports')
-    .table('standings')
+    .table(table)
     .where('team_id',team_id)
     .update(column, value)
     .then(() =>

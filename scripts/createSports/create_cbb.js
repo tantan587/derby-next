@@ -2,6 +2,7 @@
 const knex = require('../../server/db/connection')
 const createSport = require('./create_sport_helpers')
 
+//tested and works!
 
 
 createSport.createCollegeSport(knex, '106', 'CBB', 'CBBv3StatsClient', 'getLeagueHierarchyPromise')

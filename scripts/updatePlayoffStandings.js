@@ -1,60 +1,66 @@
+
 const db_helpers = require('./helpers').data
 const fantasyHelpers = require('../server/routes/helpers/fantasyHelpers')
 const knex = require('../server/db/connection')
 
-//
+//this still needs to deal with college bball, football, and epl. Putting those on hold for now.
 
 async function createStandingsPO () {
     
-    let MLB_standPO = await getStandInfo(knex, 'MLB','MLBv3ScoresClient','getStandingsPromise', '2017POST')
-    //let NBA_standPO = await getStandInfo(knex, 'NBA','NBAv3ScoresClient','getStandingsPromise', '2017POST')
-    //let NHL_standPO = await getStandInfo(knex, 'NHL','NHLv3ScoresClient','getStandingsPromise', '2017POST')
-    //let NFL_standPO = await getStandInfo(knex, 'NFL','NFLv3ScoresClient','getStandingsPromise', '2017POST')
+    let MLB_standPO = await getStandingsInfo(knex, 'MLB','MLBv3ScoresClient','getStandingsPromise', '2017POST')
+    let NBA_standPO = await getStandingsInfo(knex, 'NBA','NBAv3ScoresClient','getStandingsPromise', '2018POST')
+    let NHL_standPO = await getStandingsInfo(knex, 'NHL','NHLv3ScoresClient','getStandingsPromise', '2018POST')
+    let NFL_standPO = await getStandingsInfo(knex, 'NFL','NFLv3StatsClient','getStandingsPromise', '2017POST')
     //let CFB_standPO = await getStandInfo(knex, 'CFB','CFBv3ScoresClient','getStandingsPromise', '2017POST')
-    //let CBB_standPO = await getStandInfo(knex, 'CBB','CBBv3ScoresClient','getStandingsPromise', '2017POST')
+    //let CBB_standPO = await getStandInfo(knex, 'CBB','CBBv3ScoresClient','getTournamentHierarchyPromise', '2018POST')
     //let EPL_standPO = await getStandInfo(knex, 'EPL','EPLv3ScoresClient','getStandingsPromise', '144')
     
-    let data = MLB_standPO//.concat(NBA_standPO).concat(NHL_standPO).concat(NFL_standPO).concat(CFB_standPO).concat(CBB_standPO)//.concat(EPL_standPO)
-    db_helpers.insertIntoTable(knex, 'sports', 'playoff_standings', data)
+    let data = MLB_standPO.concat(NBA_standPO).concat(NHL_standPO).concat(NFL_standPO)//.concat(CBB_standPO).concat(CFB_standPO)//.concat(EPL_standPO)
+    db_helpers.updatePlayoffStandings(knex, data)
         .then(()=>{
-      // sport id+ 100+ stadium id
-  //   console.log('done! - Matt is the best')
-  //   process.exit()
-        console.log('done')
-        process.exit()
+
+          console.log('done')
+          process.exit()
 })}
 
-const getStandInfo = async (knex, sportName, api, promiseToGet, year) => {
+const getStandingsInfo = async (knex, sportName, api, promiseToGet, year) => {
     let standData = await db_helpers.getFdata (knex, sportName, api, promiseToGet, year)
-    console.log('test1')
     let sport_id = await db_helpers.getSportId(knex, sportName)
-    console.log('test2')
-    console.log(sport_id)
     let teamIds = await db_helpers.getTeamAndGlobalId(knex, sport_id)
-    console.log('test3')
     let cleanStand = JSON.parse(standData)
     let teamIdMap = {}
     const idSpelling = sportName === 'EPL' ? 'Id' : 'ID'
     teamIds.forEach(team => teamIdMap[team.global_team_id] = team.team_id)
+    cleanStand.filter(team=> team.Wins<17)
     let standInfo = cleanStand.map(team =>
     {
-      return {team_id: teamIdMap[team['GlobalTeam' + idSpelling]], playoff_wins: team.Wins, 
+      let f_team_id = sportName !== 'NFL' ? Number(team.TeamID)<10 ? "0"+String(team.TeamID) : team.TeamID : team.TeamID
+      let global_team_id = fantasy_2_global[sport_id]+f_team_id
+      return {team_id: teamIdMap[global_team_id], playoff_wins: team.Wins, 
         playoff_losses : team.Losses, byes: 0, playoff_status: 'in_playoffs' 
         }
   }
   )
-  console.log(sport_id)
   //this needs to log if teams have a bye:
   //there is a couple of ways to do this. Either it can check if a team "clinched"
   //it could also be done in the update Standings: will look for that there
-  let sport_ids_with_byes = ['102', '103', '106']
-  if(sport_ids_with_byes.includes(sport_id)){
-    let y = 0
+  // let sport_ids_with_byes = ['102', '103', '106']
+  // if(sport_ids_with_byes.includes(sport_id)){
+  //   let y = 0
     
-  }
+  // }
   //console.log('here')
   //console.log(stadiumInfo[0])
   return standInfo
 }
 
+const fantasy_2_global = {
+  101: '200000',
+  102: '',
+  103: '100000',
+  104: '300000',
+  105: '500000',
+  106: '600000',
+  107: '900000'
+}
 createStandingsPO()
