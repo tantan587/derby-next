@@ -1,7 +1,14 @@
-const db_helpers = require('../helpers').data
+//const db_helpers = require('../helpers').data
 const knex = require('../../server/db/connection')
+const createSport = require('./create_sport_helpers')
 
 
+
+createSport.createCollegeSport(knex, '106', 'CBB', 'CBBv3StatsClient', 'getLeagueHierarchyPromise')
+
+
+//below is the first way I created: with much of work being done here.
+/* 
 let teamInfo = []
 let standings = []
 let playoff_standings = []
@@ -56,8 +63,9 @@ const getSport = async () => {
     })
 }
 
-getSport()
+getSport() */
 
+//this is how it initially was, as done by Yoni
   
 /* 
 db_helpers.getFantasyData(knex, 'CBB', 'https://api.fantasydata.net/v3/cbb/scores/JSON/LeagueHierarchy?', 'Key', 'ConferenceID')

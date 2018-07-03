@@ -1,8 +1,12 @@
-const db_helpers = require('../helpers').data
+//const db_helpers = require('../helpers').data
 const knex = require('../../server/db/connection')
+const createSport = require('./create_sport_helpers')
+
+createSport.createCollegeSport(knex, '105', 'CFB', 'CFBv3ScoresClient', 'getConferenceHierarchyPromise')
 
 
-let teamInfo = []
+//below was my first go at a new way, before streamlining
+/* let teamInfo = []
 let standings = []
 let playoff_standings = []
 
@@ -41,7 +45,9 @@ const createCFB = async () => {
     })
 }
 
-createCFB()
+createCFB() */
+
+//old way
 
 /* db_helpers.getFantasyData(knex, 'CFB', 'https://api.fantasydata.net/v3/cfb/scores/JSON/LeagueHierarchy?', 'Key', 'ConferenceID')
   .then(result =>{ 

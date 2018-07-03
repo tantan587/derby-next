@@ -1,8 +1,12 @@
-const db_helpers = require('../helpers').data
+//const db_helpers = require('../helpers').data
+const createSport = require('./create_sport_helpers')
+//const db_helpers = require('../helpers').data
 const knex = require('../../server/db/connection')
 
+createSport.createSoccerLeague(knex, '107', 'EPL', 'Soccerv3StatsClient', 'getCompetitionFixturesLeagueDetailsPromise', 1)
 
-let teamInfo = []
+
+/* let teamInfo = []
 let standings = []
 db_helpers.getFantasyData(knex, 'EPL', 'https://api.fantasydata.net/v3/soccer/scores/json/Teams', 'Name', '', true)
   .then(result =>{ 
@@ -28,6 +32,6 @@ db_helpers.getFantasyData(knex, 'EPL', 'https://api.fantasydata.net/v3/soccer/sc
             })
       })
   })
-})
+}) */
 
   

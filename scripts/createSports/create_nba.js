@@ -1,6 +1,11 @@
-const db_helpers = require('../helpers').data
+//const db_helpers = require('../helpers').data
 const knex = require('../../server/db/connection')
+const createSport = require('./create_sport_helpers')
 
+createSport.createProfessionalSport(knex, '101', 'NBA', 'NBAv3StatsClient', 'getTeamsActivePromise')
+
+//old way below
+/* 
 let teamInfo = []
 let standings = []
 db_helpers.getFantasyData(knex, 'NBA', 'https://api.fantasydata.net/v3/nba/scores/JSON/teams', 'Key', 'Conference')
@@ -33,6 +38,6 @@ db_helpers.getFantasyData(knex, 'NBA', 'https://api.fantasydata.net/v3/nba/score
     
   
   
-
+ */
 
   

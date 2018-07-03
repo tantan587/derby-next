@@ -107,9 +107,9 @@ methods.getFdata = async (knex, sportName,api, promiseToGet, year=false) =>
   
 }
 
-methods.createSport = async (knex, sport_id, sportName, api, promiseToGet) => {
+methods.createSportData = async (knex, sport_id, sportName, api, promiseToGet, detail = false) => {
 
-  let teams = await methods.getFdata(knex, sportName, api, promiseToGet)
+  let teams = await methods.getFdata(knex, sportName, api, promiseToGet, detail)
   let teamIds = await methods.getTeamAndGlobalId(knex, sport_id) 
   let teamIdMap = {}
   teamIds.forEach(team=> teamIdMap[team.global_team_id] = team.team_id)

@@ -4,7 +4,24 @@
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
-
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Random Schedule",
+      "program": "${workspaceFolder}/scripts/Analysis/randomSchedules.js"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Update Elos Launch Program",
+      "program": "${workspaceFolder}/scripts/Analysis/updatePastElos.js"
+    },
+{
+  "type": "node",
+  "request": "launch",
+  "name": "Simulation Launch Program",
+  "program": "${workspaceFolder}/scripts/Analysis/simulation.js"
+},
     {
       "type": "node",
       "request": "launch",
