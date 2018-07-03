@@ -214,7 +214,7 @@ class Team {
                 bonus_win = 0
               }
 
-              if(this.sport_id === '105'){bonus_win+= this.average_bowl_wins * sport_points.playoffs.bowl_wins}
+              if(this.sport_id === '105'){bonus_win+= this.average_bowl_wins * sport_points.playoffs.bowl_win}
 
             this.fantasy_points_projected.push(
                 this.average_wins * sport_points.regular_season.win +

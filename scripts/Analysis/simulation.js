@@ -11,6 +11,7 @@ const getDayCount = require('./dayCount.js')
 const db_helpers = require('../helpers.js').data
 const points = require('./getPointsStructure.js') //this pulls all the differnet point strtuctures
 const randomSchedules = require('./randomSchedules.js')
+const math = require('mathjs')
 
 //this is the overall simulate function - runs for each sport
 //eventually needs to add in how it detects if in the middle of a season
@@ -38,13 +39,13 @@ async function simulate(knex)
     //.then(games => {
 
     //these are the functions for each individual season. 
-    const mlb_teams = [[],[]]//simulateProfessionalLeague(games, all_teams, '103', all_points, simulations)
-    const nba_teams = [[],[]] //simulateProfessionalLeague(games, all_teams, '101', all_points, simulations)
-    const nfl_teams = [[],[]] //simulateProfessionalLeague(games, all_teams, '102', all_points, simulations)
-    const nhl_teams = [[],[]] //simulateProfessionalLeague(games, all_teams, '104', all_points, simulations)
+    const mlb_teams = simulateProfessionalLeague(games, all_teams, '103', all_points, simulations)
+    const nba_teams = simulateProfessionalLeague(games, all_teams, '101', all_points, simulations)
+    const nfl_teams = simulateProfessionalLeague(games, all_teams, '102', all_points, simulations)
+    const nhl_teams = simulateProfessionalLeague(games, all_teams, '104', all_points, simulations)
     const cfb_teams = simulateCFB(games, all_teams, all_points, simulations)
     const cbb_teams = [[],[]] //simulateCBB(games, all_teams, all_points, simulations)
-    const epl_teams = [[],[]] //simulateEPL(games, all_teams, all_points, simulations)
+    const epl_teams = simulateEPL(games, all_teams, all_points, simulations)
     
     //team variables contain team projections as first object, game projections as second.
     //the following three functions find the team projections, game projections, and then find fantasy.projections
@@ -127,6 +128,7 @@ const simulateCFB = (all_games_list, teams, points, simulations = 10) => {
             team.calculateCFBValue(champ_boost)})
         cfb_teams.sort(function(a,b){return b.cfb_value - a.cfb_value})
         let playoffs = cfb_teams.slice(0,4)
+
         playoffs.forEach(team=>{team.playoffs++})
         //find finalists, add finalist value, play championship, add champ value
         let finalist_1 = simulateHelpers.Series(playoffs[0],playoffs[3],1,'105',1, true)
@@ -141,21 +143,20 @@ const simulateCFB = (all_games_list, teams, points, simulations = 10) => {
         let non_playoff_teams = cfb_teams.slice(4)
         //next find bowl eligible teams, be sure it is an even number
         let bowl_eligible_teams = non_playoff_teams.filter(team => team.wins>5)
-        if(bowl_eligible_teams.length%2 === 1){bowl_eligible_teams.pop}
-        let tim = 0
+        if(bowl_eligible_teams.length%2 === 1){bowl_eligible_teams.pop()}
+        
         //matches up each bowl team against one within rank 7 of them. Is this the right amount of difference? tbd
         //we want to use array.splice - splice returns an array
-        bowl_eligible_teams.forEach(team => {
-            console.log(team.name, team.elo)
-        })
+        
+        let tot = 0
         while(bowl_eligible_teams.length !== 0){
             let team_1 = bowl_eligible_teams.shift()
-            let index_other_team = Math.round(Math.random()*7)
-            let ind = index_other_team > bowl_eligible_teams.length ? bowl_eligible_teams.length : index_other_team
+            let max = tot > 12 ? 8:5
+            let index_other_team = math.randomInt(0,max)
+            let ind = bowl_eligible_teams.length > index_other_team ? index_other_team : 0
             let team_2 = bowl_eligible_teams.splice(ind, 1)
-            console.log(tim)
             simulateHelpers.simulateBowlGame(team_1, team_2[0])
-            tim++
+            tot++
         }
 
         all_games_list['105'].forEach(game=>{
@@ -264,7 +265,7 @@ const simulateEPL = (all_games_list, teams, points, simulations = 10) => {
     const epl_teams = individualSportTeams(teams, '107')
     //console.log(leagues)
     for(let x=0; x<simulations; x++){
-        all_games_list[sport_id].forEach(game => {
+        all_games_list['107'].forEach(game => {
             //console.log(game)
            game.play_EPL_game()})
         

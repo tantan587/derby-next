@@ -78,7 +78,7 @@ rp(options)
             console.log('done!')
             process.exit()
         })
-        //db_helpers.insertIntoTable(knex, 'analysis', 'current_elo')
+       
         //console.log('User has %d repos', repos.length);
     })
     .catch(function (err) {

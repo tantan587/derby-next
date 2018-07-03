@@ -115,7 +115,7 @@ const updateProjections = (teams, day) => {
         //console.log(playoff_json)
         return {team_id: team.team_id, wins: team.average_wins,
              losses: team.average_losses, ties: 0, day_count: day, 
-             playoff: {wins: team.average_playoff_wins, playoffs: team.average_playoff_appearances, finalists: team.average_finalists, champions: team.average_champions}}
+             playoff: {wins: team.average_playoff_wins, playoffs: team.average_playoff_appearances, finalists: team.average_finalists, champions: team.average_champions, bowl_wins: team.average_bowl_wins}}
     })
     console.log(rows.length)
     return rows
@@ -167,7 +167,7 @@ const fantasyProjections = (all_teams, day, points) => {
         array_for_copy.push([])
     })
     //i should be dividing this up by conference and not just by league
-    let sport_ids = ['101', '102', '103', '104', '106'] //['101', '102', '103', '104', '105', '106', '107']
+    let sport_ids = ['101', '102', '103', '104', '105', '107']//['101', '102', '103', '104', '105', '106', '107']
     sport_ids.forEach(sport => {
         let sport_teams = Object.keys(all_teams[sport]).map(team => {return all_teams[sport][team]})
         let x = 0
@@ -178,6 +178,7 @@ const fantasyProjections = (all_teams, day, points) => {
             x = 0
             team.fantasy_points_projected.forEach(point_total => {
                 points_array[x].push(point_total)
+                x++
             })
         })
         let averages = []
@@ -228,4 +229,4 @@ const fantasyProjections = (all_teams, day, points) => {
     }
 }
 
-module.exports = {Series, moreWins, simulateGame, updateProjections, simulateNHLGame, createImpactArray, fantasyProjections, simulateBowlGame}
+module.exports = {Series, moreWins, simulateGame, updateProjections, simulateNHLGame, createImpactArray, fantasyProjections, simulateBowlGame, simulateEPLGame}

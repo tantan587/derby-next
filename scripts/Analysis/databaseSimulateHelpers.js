@@ -20,10 +20,7 @@ const pullFutureGames = (knex, day) =>
 {
     return knex('sports.schedule')
         .where('sports.schedule.day_count', ">", day) //need to test if want to go past today, or include this day count
-        .innerJoin('sports.results','sports.results.global_game_id','sports.schedule.global_game_id')
-        .select('sports.results.global_game_id', 'sports.schedule.home_team_id', 
-        'sports.results.home_team_score','sports.schedule.away_team_id', 'sports.results.away_team_score',
-        'sports.results.winner','sports.schedule.sport_id')
+        .select('*')
         .then(game => {
             //console.log(game)
             return game})
