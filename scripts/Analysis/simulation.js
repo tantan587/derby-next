@@ -50,7 +50,8 @@ async function simulate(knex)
     //team variables contain team projections as first object, game projections as second.
     //the following three functions find the team projections, game projections, and then find fantasy.projections
     const projection_team_list = [...nba_teams[0], ...nfl_teams[0], ...mlb_teams[0], ...nhl_teams[0], ...cbb_teams[0], ...cfb_teams[0], ...epl_teams[0]]
-    const game_projections = [...nba_teams[1], ...mlb_teams[1], ...nfl_teams[1], ...nhl_teams[1], ...cbb_teams[1], ...cfb_teams[1], ...epl_teams[1]]
+    //inserting cbb game projections separately since too large
+    const game_projections = [...nba_teams[1], ...mlb_teams[1], ...nfl_teams[1], ...nhl_teams[1], ...cfb_teams[1], ...epl_teams[1]]
     const projections = simulateHelpers.updateProjections(projection_team_list, day_count)
     const fantasy_projections = simulateHelpers.fantasyProjections(all_teams, day_count, all_points)
 
@@ -60,10 +61,14 @@ async function simulate(knex)
         //the insert for game_projections should be the second value of each array
         return db_helpers.insertIntoTable(knex, 'fantasy', 'projections', fantasy_projections)
         .then(() => {
+            //breaking up inserting game projections into two: college basketball and everything but college basketball
             return db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', game_projections)
             .then(()=> {
-                console.log('done')
-                process.exit()
+                return db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', cbb_teams[1])
+                .then(() =>{
+                    console.log('done')
+                    process.exit()
+                })
             })
         })
     })
