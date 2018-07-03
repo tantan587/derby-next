@@ -44,7 +44,7 @@ async function simulate(knex)
     const nfl_teams = simulateProfessionalLeague(games, all_teams, '102', all_points, simulations)
     const nhl_teams = simulateProfessionalLeague(games, all_teams, '104', all_points, simulations)
     const cfb_teams = simulateCFB(games, all_teams, all_points, simulations)
-    const cbb_teams = [[],[]] //simulateCBB(games, all_teams, all_points, simulations)
+    const cbb_teams = simulateCBB(games, all_teams, all_points, simulations)
     const epl_teams = simulateEPL(games, all_teams, all_points, simulations)
     
     //team variables contain team projections as first object, game projections as second.
@@ -177,7 +177,6 @@ const simulateCFB = (all_games_list, teams, points, simulations = 10) => {
 //function to simulate CBB - also figures out most likely march madness teams using formula
 const simulateCBB = (all_games_list, teams, points, simulations = 10) => {
     const cbb_teams = individualSportTeams(teams, '106')
-    console.log(simulations)
     for(var x=0; x<simulations; x++){
         //console.log('test')
         all_games_list['106'].forEach(game => {game.play_CBB_game()})
@@ -203,13 +202,11 @@ const simulateCBB = (all_games_list, teams, points, simulations = 10) => {
         cbb_teams.sort(function(a,b){return b.cbb_value - a.cbb_value})
         //conf champs automatically qualify. This filters those out.
         let non_conf_champs = cbb_teams.filter(team => conference_champions.includes(team) === false)
-        //s
+        //this grabs the rest of the tournament teams: at large teams, the last 4 at large, and then the last four conference champions who don't receive byes
         let at_large = non_conf_champs.slice(0,32)
         let last_four = non_conf_champs.slice(32,36)
-        //this needs to be checked that splice was done properlyl
-        let last_four_conference_champions = conference_champions.splice(29,4)
-        //why did I do the below this way?
-        //for(y=0;y<4;y++){last_four_conference_champions.unshift(conference_champions.pop())}
+        let last_four_conference_champions = conference_champions.splice(28,4)
+
         //each team that made tournament and received by scores one playoff win for first round, equivalent to bye
         conference_champions.forEach(team => {team.playoff_wins[0]++})
         at_large.forEach(team=>{

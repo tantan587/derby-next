@@ -167,7 +167,7 @@ const fantasyProjections = (all_teams, day, points) => {
         array_for_copy.push([])
     })
     //i should be dividing this up by conference and not just by league
-    let sport_ids = ['101', '102', '103', '104', '105', '107']//['101', '102', '103', '104', '105', '106', '107']
+    let sport_ids = ['101', '102', '103', '104', '105', '106', '107']
     sport_ids.forEach(sport => {
         let sport_teams = Object.keys(all_teams[sport]).map(team => {return all_teams[sport][team]})
         let x = 0
