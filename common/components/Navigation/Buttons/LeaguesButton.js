@@ -36,7 +36,7 @@ class LeaguesButton extends React.Component {
       link:'/livedraft'})
     items2.push({
       text:'League Settings',
-      link:'/livedraft'})
+      link:'/mainleaguesettings'})
     items2.push({
       text:'Commish Tools',
       link:'/livedraft'})

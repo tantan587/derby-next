@@ -18,11 +18,17 @@ export default (state = {}, action={ type: null }) => {
       my_owner_id:action.my_owner_id,
       draftOrder:action.draftOrder,
       teams:action.teams,
-      ownerGames:action.ownerGames
+      ownerGames:action.ownerGames,
+      error : {}
     }
 
   case C.UPDATE_DRAFT_ORDER:
     return {...state, owners : owners(state.owners, action) }
+
+  case C.SAVE_OWNER_SETTINGS_FAIL:
+    return {...state, error : action.error } 
+  case C.SAVE_OWNER_SETTINGS_SUCCESS:
+    return {...state, error : {}, owners: owners(state, action) } 
   case C.LOGOUT:
     return {
       success : false,
@@ -36,10 +42,15 @@ export const owners = (state = [], action={ type: null }) => {
   switch (action.type){
   case C.UPDATE_DRAFT_ORDER:
   {
-    //let owners = []
     action.draftOrder.map((order,i) => state.filter(owner => owner.user_id === order.id)[0].draft_position = i)
-    //action.draftOrder.map(order => owners.push(state.filter(owner => owner.user_id === order.id)[0]))
     return state
+  }
+  case C.SAVE_OWNER_SETTINGS_SUCCESS:
+  {
+    let myOwner = state.owners.filter(owner => owner.owner_id === action.owner_id)[0]
+    myOwner.avatar = action.avatar
+    myOwner.owner_name = action.owner_name
+    return state.owners
   }
   default:
     return state

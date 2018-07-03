@@ -20,3 +20,13 @@ export const clickedLeague = (league_id, user_id) => dispatch =>
     '/api/clickleague',
     'POST',
     JSON.stringify({league_id, user_id}))
+
+export const clickedSaveSilks = (ownerName, pattern, primary, secondary, league_id, owner_id) => dispatch =>
+{
+  let avatar = {primary,secondary,pattern}
+  FetchThenDispatch(
+    dispatch,
+    '/api/saveownersettings',
+    'POST',
+    JSON.stringify({ownerName, avatar, league_id, owner_id}))
+}

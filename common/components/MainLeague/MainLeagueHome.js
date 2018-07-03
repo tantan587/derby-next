@@ -2,6 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { withStyles } from '@material-ui/core/styles'
+import Grid from '@material-ui/core/Grid'
 import { handleOpenDialog } from '../../actions/dialog-actions'
 import Title from '../Navigation/Title'
 import Owner from '../Home/Owner'
@@ -13,7 +14,7 @@ import Upcoming from '../Home/Cards/Upcoming'
 import StyledButton from '../Navigation/Buttons/StyledButton'
 
 
-const styles = {
+const styles = theme => ({
   section1: {
     paddingTop: 100,
     color:'white',
@@ -27,11 +28,18 @@ const styles = {
   },
   'cards': {
     display: 'flex',
+    flexWrap: 'wrap',
     justifyContent: 'space-between',
     width: '90%',
-    margin: '50px 5% 0px 5%'
+    margin: '0px 5% 0px 5%',
+    [theme.breakpoints.down('sm')]: {
+      justifyContent: 'center',
+      '& > *': { // for all children when screen is sm or smaller
+        margin: 'auto' // this is a HACK. Might not look great if card width is changed
+      }
+    },
   }
-}
+})
 
 class MainLeagueHome extends React.Component {
   constructor(props) {
@@ -76,8 +84,7 @@ class MainLeagueHome extends React.Component {
         <div className={classes.section1}>
           {/* <div className={classes.section1}/> */}
           <Owner myOwner={myOwner} num={owners.length} />
-          <div className={classes.cards}>
-
+          <Grid container className={classes.cards}>
             <Card
               title="Upcoming Games"
               Button={() => <StyledButton text="View Complete Schedules" link='/mainleagueschedule' />}
@@ -125,12 +132,7 @@ class MainLeagueHome extends React.Component {
                 },
               ]}/>
             </Card>
-
-            {/* <Card title="Standings">
-              <Standings owners={ownersWithColors.sort((a, b) => a.rank - b.rank)} />
-            </Card> */}
-
-          </div>
+          </Grid>
         </div>
       </div>
     )
@@ -141,14 +143,6 @@ const mapDispatchToProps = (dispatch) => ({
   openDialog: () => dispatch(handleOpenDialog)
 })
 
-// export default connect(
-//   state => ({
-//     activeLeague: state.activeLeague,
-//     sportLeagues : state.sportLeagues,
-//     teams: state.teams,
-//   }),
-//   mapDispatchToProps,
-// )(withStyles(styles)(MainLeagueHome))
 export default compose(
   connect(state => ({
     activeLeague: state.activeLeague,

@@ -1,11 +1,13 @@
 import { withStyles } from '@material-ui/core/styles'
 import Card from '@material-ui/core/Card'
+import Grid from '@material-ui/core/Grid'
 
 const styles = {
   root: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
+    marginTop: 50,
     height: 350,
     width: 300,
     backgroundColor: 'white',
@@ -30,17 +32,19 @@ const styles = {
 
 const DerbyCard = withStyles(styles)(({ classes, title, children, scroll = false, Button }) => {
   return (
-    <Card className={classes.root}>
-      <div className={classes.title}>
-        {title}
-      </div>
-      <div className={classes.container} style={{ overflowY: scroll && 'scroll' }}>
-        {children}
-      </div>
-      <div className={classes.button}>
-        {Button && <Button />}
-      </div>
-    </Card>
+    <Grid item>
+      <Card className={classes.root}>
+        <div className={classes.title}>
+          {title}
+        </div>
+        <div className={classes.container} style={{ overflowY: scroll && 'scroll' }}>
+          {children}
+        </div>
+        <div className={classes.button}>
+          {Button && <Button />}
+        </div>
+      </Card>
+    </Grid>
   )
 })
 

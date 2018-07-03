@@ -135,7 +135,7 @@ class DraftOrder extends React.Component {
                   {/* <Avatar>
                     <ImageIcon />
                   </Avatar> */}
-                  {OwnerSilk(owner, { height: 35, width:'35', marginLeft:-20 })}
+                  {OwnerSilk(owner.avatar, { height: 35, width:'35', marginLeft:-20 })}
                   <ListItemText disableTypography 
                     primary=
                       {<Typography variant="body1" style={{   color: owner.owner_name===myOwnerName  ? '#EBAB38' :  'white' }}>

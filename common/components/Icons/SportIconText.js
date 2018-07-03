@@ -4,6 +4,7 @@ class SportIconText extends React.Component {
 
   render() {
     const {src, name} = this.props
+    
     return (
       <div style={{width:80, display:'inline-block'}}> 
         <img src={src} alt="none" width={30}  height='auto'/>

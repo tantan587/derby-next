@@ -3,8 +3,6 @@ import { withStyles } from '@material-ui/core/styles'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
-// import Avatar from @material-ui/core/Avatar'
-// import ImageIcon from '@material-ui/icons/Image'
 import Typography from '@material-ui/core/Typography'
 import Paper from '@material-ui/core/Paper'
 import TextField from '@material-ui/core/TextField'
@@ -37,12 +35,10 @@ class Chat extends React.Component {
 
   componentDidUpdate() {
     this.scrollToBottom(false)
-    console.log('componentDidChange')
   }
 
   componentDidMount() {
     this.scrollToBottom()
-    console.log('componentDidMount')
   }
 
   onTextChange = event => {

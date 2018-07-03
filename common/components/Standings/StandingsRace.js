@@ -50,7 +50,7 @@ class StandingsRace extends React.Component {
                   }}>
                     <span style={{ color: 'grey' }}> ▮ </span> {owner.owner_name}
                     <div style={{ position: 'relative', top: -20, height: 20, width: `calc(${currentDifference * 100}% - 53px)`}}>
-                      { OwnerHorse(owner, { position: 'absolute', left: `calc(${horseWidth(owner)}%)` }) }
+                      { OwnerHorse(owner.avatar, { position: 'absolute', left: `calc(${horseWidth(owner)}%)` }) }
                     </div>
                   </div>
                 </div>
