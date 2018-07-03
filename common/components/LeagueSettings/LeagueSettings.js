@@ -2,8 +2,8 @@ import React from 'react'
 import { withStyles } from '@material-ui/core/styles'
 
 import DerbyTabs from '../Tabs/DerbyTabs'
-import CustomizeTeam from './CustomizeTeam/CustomizeTeam'
-import ManageEmails from './ManageEmails/ManageEmails'
+import CustomizeTeam from './LeagueInfo/CustomizeTeam'
+import ManageEmails from './ManageLeague/ManageEmails'
 
 const styles = {
   root: {
@@ -16,18 +16,18 @@ const styles = {
     width: '80%'
   },
   title: {
-    fontFamily: 'museo-slab-bold',
+    fontFamily: 'HorsebackSlab',
     fontSize: 32,
     color: '#299149'
   }
 }
 
 const myTabs = [
-  { label: 'Customize Owner', Component: <CustomizeTeam /> },
-  { label: 'Manage Emails', Component: <ManageEmails /> }
+  { label: 'League Info & Draft', Component: <CustomizeTeam /> },
+  { label: 'Manage League Members', Component: <ManageEmails /> }
 ]
 
-class TeamSettings extends React.Component {
+class LeagueSettings extends React.Component {
 
   render() {
     const { classes } = this.props
@@ -35,7 +35,7 @@ class TeamSettings extends React.Component {
     return (
       <div className={classes.root}>
         <div className={classes.content}>
-          <div className={classes.title}>OWNER SETTINGS</div>
+          <div className={classes.title}>League Settings</div>
           <DerbyTabs tabsList={myTabs} />
         </div>
       </div>
@@ -43,4 +43,4 @@ class TeamSettings extends React.Component {
   }
 }
 
-export default withStyles(styles)(TeamSettings)
+export default withStyles(styles)(LeagueSettings)

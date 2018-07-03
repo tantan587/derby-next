@@ -2,9 +2,9 @@ import React from 'react'
 import { connect } from 'react-redux'
 
 import Title from '../Navigation/Title'
-import LeagueSettings from '../LeagueSettings/LeagueSettings'
+import TeamSettings from '../TeamSettings/TeamSettings'
 
-class MainLeagueSettings extends React.Component {
+class MainLeagueTeamSettings extends React.Component {
 
   render () {
     const { activeLeague } = this.props
@@ -17,7 +17,7 @@ class MainLeagueSettings extends React.Component {
           title="Welcome"
           subheading={activeLeague.league_name}
         />
-        <LeagueSettings />
+        <TeamSettings />
       </div>
     )
   }
@@ -27,4 +27,4 @@ export default connect(state => ({
   sportLeagues: state.sportLeagues,
   teams: state.teams,
   schedules: state.schedules
-}))(MainLeagueSettings)
+}))(MainLeagueTeamSettings)
