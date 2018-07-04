@@ -1,11 +1,11 @@
 import { Component } from 'react'
 import { withStyles } from '@material-ui/core/styles'
-import TextField from '@material-ui/core/TextField'
+// import TextField from '@material-ui/core/TextField'
 import Grid from '@material-ui/core/Grid'
 
-import TeamView from './TeamView'
-import ChoosePattern from './ChoosePattern'
-import ChooseColor from './ChooseColor'
+// import TeamView from './TeamView'
+import BasicInformation from './BasicInformation'
+import DraftSettings from './DraftSettings'
 import StyledButton from '../../Navigation/Buttons/StyledButton'
 
 const styles = theme => ({
@@ -57,6 +57,7 @@ const styles = theme => ({
     color: '#299149'
   },
   title: {
+    marginBottom: 18,
     fontFamily: 'HorsebackSlab',
     fontSize: 15,
     color: '#299149'
@@ -87,23 +88,23 @@ class CustomizeTeam extends Component {
 
     return (
       <Grid container justify="space-between" className={classes.root}>
-        <Grid item sm={12} md={7}>
+        <Grid item sm={12} md={6}>
           <div>
-            <div className={classes.title}>Choose Pattern</div>
-            <ChoosePattern handlePatternClick={this.handlePatternClick} />
+            <div className={classes.title}>Basic League Information</div>
+            <BasicInformation />
           </div>
         </Grid>
         <Grid item sm={12} md={5} className={classes.gridMargins}>
           <div>
-            <div className={classes.title}>Choose Jersey Color</div>
-            <ChooseColor handleColorClick={this.handleColorClick.bind(null, 'jerseyColor')} />
+            <div className={classes.title}>Draft Settings</div>
+            <DraftSettings />
           </div>
         </Grid>
-        {/* <StyledButton
+        <StyledButton
           height={50}
           styles={{ fontSize: 16, fontWeight: 600, marginTop: 40 }}
           text="Save Settings"
-        /> */}
+        />
       </Grid>
     )
   }

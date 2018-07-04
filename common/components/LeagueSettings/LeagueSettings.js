@@ -2,7 +2,7 @@ import React from 'react'
 import { withStyles } from '@material-ui/core/styles'
 
 import DerbyTabs from '../Tabs/DerbyTabs'
-import CustomizeTeam from './LeagueInfo/CustomizeTeam'
+import LeagueInfo from './LeagueInfo/LeagueInfo'
 import ManageEmails from './ManageLeague/ManageEmails'
 
 const styles = {
@@ -23,7 +23,7 @@ const styles = {
 }
 
 const myTabs = [
-  { label: 'League Info & Draft', Component: <CustomizeTeam /> },
+  { label: 'League Info & Draft', Component: <LeagueInfo /> },
   { label: 'Manage League Members', Component: <ManageEmails /> }
 ]
 
