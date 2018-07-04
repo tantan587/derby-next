@@ -81,7 +81,7 @@ methods.getScheduleData = (knex, sportName, url) =>
 
 methods.getFdata = async (knex, sportName,api, promiseToGet, parameters=false, second_parameter=false) =>
 {
-  //console.log('this')
+
   let league = await knex
   .withSchema('sports')
   .table('leagues')
@@ -91,10 +91,7 @@ methods.getFdata = async (knex, sportName,api, promiseToGet, parameters=false, s
   keys[api] = league[0].fantasy_data_key
   const sport_id = league[0].sport_id
   const FantasyDataClient = new fdClientModule(keys);
-  //const fandata = FantasyDataClient.func()
-  //console.log('test')
-  //console.log(FantasyDataClient[api][promiseToGet]())
-  //return [FantasyDataClient[api][promiseToGet](), sport_id]
+
   
   if(parameters===false){
     return FantasyDataClient[api][promiseToGet]()
@@ -313,7 +310,6 @@ methods.updatePlayoffStandings = (knex,newStandings) =>
 
       newStandings.map(teamRec =>
       {
-        console.log(teamRec.team_id)
         if(oldStandings[teamRec.team_id].playoff_wins !== teamRec.playoff_wins)  
           updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'playoff_wins', teamRec.playoff_wins, true )))
         if(oldStandings[teamRec.team_id].playoff_losses !== teamRec.playoff_losses)  
