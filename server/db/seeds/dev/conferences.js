@@ -1,14 +1,14 @@
 
 var data = 
 [
-  {sport_id:101, conference_id:10101, name: 'Eastern', display_name: 'NBA East'},
-  {sport_id:101, conference_id:10102, name: 'Western', display_name: 'NBA West'},
+  {sport_id:101, conference_id:10101, name: 'Eastern', display_name: 'East'},
+  {sport_id:101, conference_id:10102, name: 'Western', display_name: 'West'},
   {sport_id:102, conference_id:10201, name: 'AFC', display_name: 'AFC'},
   {sport_id:102, conference_id:10202, name: 'NFC', display_name: 'NFC'},
   {sport_id:103, conference_id:10301, name: 'AL', display_name: 'AL'},
   {sport_id:103, conference_id:10302, name: 'NL', display_name: 'NL'},
-  {sport_id:104, conference_id:10401, name: 'Eastern', display_name: 'NHL East'},
-  {sport_id:104, conference_id:10402, name: 'Western', display_name: 'NHL West'},
+  {sport_id:104, conference_id:10401, name: 'Eastern', display_name: 'Eastern'},
+  {sport_id:104, conference_id:10402, name: 'Western', display_name: 'Western'},
   {sport_id:105, conference_id:10501, name: 'Atlantic Coast', display_name: 'ACC'},
   {sport_id:105, conference_id:10502, name: 'Big 12', display_name: 'Big 12'},
   {sport_id:105, conference_id:10503, name: 'Big Ten', display_name: 'Big Ten'},
