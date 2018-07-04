@@ -55,12 +55,12 @@ const getStandingsInfo = async (knex, sportName, api, promiseToGet, year) => {
 }
 
 const fantasy_2_global = {
-  101: '200000',
-  102: '',
-  103: '100000',
-  104: '300000',
-  105: '500000',
-  106: '600000',
-  107: '900000'
+  'NBA': '200000',
+  'NFL': '',
+  'MLB': '100000',
+  'NHL': '300000',
+  'CBB': '500000',
+  'CFB': '600000',
+  'EPL': '900000'
 }
 createStandingsPO()

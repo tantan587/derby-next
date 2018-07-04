@@ -79,7 +79,7 @@ methods.getScheduleData = (knex, sportName, url) =>
     })
 }
 
-methods.getFdata = async (knex, sportName,api, promiseToGet, parameters=false) =>
+methods.getFdata = async (knex, sportName,api, promiseToGet, parameters=false, second_parameter=false) =>
 {
   //console.log('this')
   let league = await knex
@@ -98,10 +98,53 @@ methods.getFdata = async (knex, sportName,api, promiseToGet, parameters=false) =
   
   if(parameters===false){
     return FantasyDataClient[api][promiseToGet]()
-  }else{
+  }else if(second_parameter===false){
     return FantasyDataClient[api][promiseToGet](parameters)
+  }else{
+    return FantasyDataClient[api][promiseToGet](parameters, second_parameter)
   }
   
+}
+
+methods.createStandingsData = async (knex, sportName, api, promiseToGet, year) =>{
+  let standData = await methods.getFdata (knex, sportName, api, promiseToGet, year)
+  let sport_id = await methods.getSportId(knex, sportName)
+  let teamIds = await methods.getTeamAndGlobalId(knex, sport_id)
+  let cleanStand = JSON.parse(standData)
+  let teamIdMap = {}
+  const idSpelling = sportName === 'EPL' ? 'Id' : 'ID'
+  teamIds.forEach(team => teamIdMap[team.global_team_id] = team.team_id)
+  let standInfo = []
+  if(sportName !== ('CBB'||'CFB')){
+    standInfo = cleanStand.map(team =>
+    {
+      let f_team_id = sportName !== 'NFL' ? Number(team['Team'+idSpelling])<10 ? "0"+String(team.TeamID) : team.TeamID : team.TeamID
+      let global = fantasy_2_global[sportName]+f_team_id
+      return {...team, team_id: teamIdMap[global]}
+    })
+  }else if(sportName === 'CBB'){
+    cleanStand.forEach(league => {
+      league.forEach(team =>{
+        standInfo.push({...team, team_id: teamIdMap[team.GlobalTeamID]})
+      })
+    })
+  }else{
+    cleanStand.forEach(team => {
+      standInfo.push({...team, team_id: teamIdMap[team.GlobalTeamID]})
+  })
+}
+
+  return standInfo
+}
+
+const fantasy_2_global = {
+  'NBA': '200000',
+  'NFL': '',
+  'MLB': '100000',
+  'NHL': '300000',
+  'CBB': '500000',
+  'CFB': '600000',
+  'EPL': '900000'
 }
 
 methods.createSportData = async (knex, sport_id, sportName, api, promiseToGet, detail = false) => {
