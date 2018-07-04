@@ -24,23 +24,29 @@ async function createStandingsPO () {
 })}
 
 const getStandingsInfo = async (knex, sportName, api, promiseToGet, year) => {
-    let standData = await db_helpers.getFdata (knex, sportName, api, promiseToGet, year)
-    let sport_id = await db_helpers.getSportId(knex, sportName)
-    let teamIds = await db_helpers.getTeamAndGlobalId(knex, sport_id)
-    let cleanStand = JSON.parse(standData)
-    let teamIdMap = {}
-    const idSpelling = sportName === 'EPL' ? 'Id' : 'ID'
-    teamIds.forEach(team => teamIdMap[team.global_team_id] = team.team_id)
-    cleanStand.filter(team=> team.Wins<17)
-    let standInfo = cleanStand.map(team =>
-    {
-      let f_team_id = sportName !== 'NFL' ? Number(team.TeamID)<10 ? "0"+String(team.TeamID) : team.TeamID : team.TeamID
-      let global_team_id = fantasy_2_global[sport_id]+f_team_id
-      return {team_id: teamIdMap[global_team_id], playoff_wins: team.Wins, 
-        playoff_losses : team.Losses, byes: 0, playoff_status: 'in_playoffs' 
-        }
-  }
-  )
+    let standings_info = await db_helpers.createStandingsData(knex, sportName, api, promiseToGet, year)
+    let newStandings = standings_info.map(team=>{
+      return {team_id: team.team_id, playoff_wins: team.Wins, playoff_losses: team.Losses, byes: 0, playoff_status: 'in_playoffs'}
+    })
+    return newStandings
+
+  //   let standData = await db_helpers.getFdata (knex, sportName, api, promiseToGet, year)
+  //   let sport_id = await db_helpers.getSportId(knex, sportName)
+  //   let teamIds = await db_helpers.getTeamAndGlobalId(knex, sport_id)
+  //   let cleanStand = JSON.parse(standData)
+  //   let teamIdMap = {}
+  //   const idSpelling = sportName === 'EPL' ? 'Id' : 'ID'
+  //   teamIds.forEach(team => teamIdMap[team.global_team_id] = team.team_id)
+  //   cleanStand.filter(team=> team.Wins<17)
+  //   let standInfo = cleanStand.map(team =>
+  //   {
+  //     let f_team_id = sportName !== 'NFL' ? Number(team.TeamID)<10 ? "0"+String(team.TeamID) : team.TeamID : team.TeamID
+  //     let global_team_id = fantasy_2_global[sport_id]+f_team_id
+  //     return {team_id: teamIdMap[global_team_id], playoff_wins: team.Wins, 
+  //       playoff_losses : team.Losses, byes: 0, playoff_status: 'in_playoffs' 
+  //       }
+  // }
+  // )
   //this needs to log if teams have a bye:
   //there is a couple of ways to do this. Either it can check if a team "clinched"
   //it could also be done in the update Standings: will look for that there
@@ -51,7 +57,7 @@ const getStandingsInfo = async (knex, sportName, api, promiseToGet, year) => {
   // }
   //console.log('here')
   //console.log(stadiumInfo[0])
-  return standInfo
+  //return standInfo
 }
 
 const fantasy_2_global = {

@@ -3,7 +3,7 @@
 module.exports = {
   development: {
     client: 'postgresql',
-    connection: 'postgres://koperman:derbyapp123@localhost:5432/derby',
+    connection: 'postgres://postgres:camila12@localhost:5432/derby',
     migrations: {
       directory: __dirname + '/server/db/migrations/dev'
     },
@@ -26,4 +26,3 @@ module.exports = {
     }
   }
 }
-
