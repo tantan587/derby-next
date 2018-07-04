@@ -19,15 +19,15 @@ const knex = require('../server/db/connection')
 //additionally, it includes nit wins in with the regular season as well
 async function updateStandings()
 {
-  //let cfbData = await getCFBstandings(knex, 'CFB', 'CFBv3ScoresClient', 'getTeamSeasonStatsStandingsPromise', '2017')
+  let cfbData = await getCFBstandings(knex, 'CFB', 'CFBv3ScoresClient', 'getTeamSeasonStatsStandingsPromise', '2017')
   let nhlData = await standingsBySport(knex, 'NHL', 'NHLv3StatsClient', 'getStandingsPromise', '2018')
   let nbaData = await standingsBySport(knex, 'NBA', 'NBAv3StatsClient', 'getStandingsPromise', '2018')
   //let cbbData = await standingsBySport(knex, 'CBB', 'CBBv3StatsClient', 'get')
   //let cfbData = await getCfbData()
   let mlbData = await standingsBySport(knex, 'MLB', 'MLBv3StatsClient', 'getStandingsPromise', '2018')
   let nflData = await standingsBySport(knex, 'NFL', 'NFLv3StatsClient', 'getStandingsPromise', '2017')
-  let eplData = await standingsBySport(knex, 'EPL', 'Soccerv3StatsClient', 'getStandingsPromise', '144')
-  let data = nhlData.concat(nbaData).concat(mlbData).concat(nflData).concat(eplData)//.concat(cfbData).concat(cbbData)
+  //let eplData = await standingsBySport(knex, 'EPL', 'Soccerv3StatsClient', 'getStandingsPromise', '144')
+  let data = nhlData.concat(nbaData).concat(mlbData).concat(nflData).concat(cfbData)//.concat(eplData)//.concat(cfbData).concat(cbbData)
 
   db_helpers.updateStandings(knex, data)
     .then(result => {
@@ -88,7 +88,7 @@ const getCFBstandings = async (knex, sportName, api, promiseToGet, year) =>{
     playoff_games.forEach(game=>{
       if(game.Status[0] === 'F'){
         let results = game.HomeTeamScore > game.AwayTeamScore ? [teamIdMap[game.GlobalHomeTeamID], teamIdMap[game.GlobalAwayTeamID]] : [teamIdMap[game.GlobalAwayTeamID], teamIdMap[game.GlobalHomeTeamID]]
-        if(results[0] != undefined || results[1] !== undefined){
+        if(results[0] != undefined && results[1] !== undefined){
           standings_by_team_id[results[0]].wins--
           standings_by_team_id[results[1]].losses--
           bowl_wins.push({team_id: results[0], bowl_wins: 1})
