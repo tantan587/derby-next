@@ -16,7 +16,7 @@ async function createSchedule()
   let eplData = await getEplData()
 
   let data = nhlData.concat(nbaData).concat(cbbData).concat(cfbData).concat(mlbData).concat(nflData).concat(eplData)
-
+  console.log(data)
   db_helpers.updateSchedule(knex, data)
     .then(result => {
       console.log('Number of Schedules Updated: ' + result)
@@ -42,7 +42,13 @@ async function getNflData()
             winner: status[0] === 'F' ? game.HomeTeam > game.AwayTeam ? 'H' :'A' : myNull,
             time: game.TimeRemaining === null ? myNull : game.TimeRemaining,
             period: game.Quarter === null || game.Quarter[0] === 'F' ? myNull : game.Querter,
-            updated_time:game.LastUpdated ? game.LastUpdated: myNull}) 
+            updated_time:game.LastUpdated ? game.LastUpdated: myNull,
+            home_team_id : game.home_team_id, 
+            away_team_id : game.away_team_id,
+            date_time: game.date_time,
+            day_count: fantasyHelpers.getDayCountStr(game.date_time),
+            sport_id: game.sport_id, season_type: game.SeasonType
+          }) 
         }
       })
       console.log(newSchedule.length)
@@ -67,7 +73,12 @@ async function getMlbData()
             winner: game.Status[0] === 'F' ? game.HomeTeamRuns > game.AwayTeamRuns ? 'H' :'A' : myNull,
             time: game.Outs === null ? myNull : game.Outs,
             period: game.Inning === null ? myNull : game.InningHalf + game.Inning,
-            updated_time:game.Status === 'InProcess' ? game.InningHalf + game.Inning+'-'+ game.Outs+':'+game.Balls+':'+game.Strikes : game.Status}) 
+            updated_time:game.Status === 'InProcess' ? game.InningHalf + game.Inning+'-'+ game.Outs+':'+game.Balls+':'+game.Strikes : game.Status,
+            home_team_id : game.home_team_id, 
+            away_team_id : game.away_team_id,
+            date_time: game.date_time,
+            day_count: fantasyHelpers.getDayCountStr(game.date_time),
+            sport_id: game.sport_id, season_type: game.SeasonType}) 
         }
       })
       console.log(newSchedule.length)
@@ -96,7 +107,12 @@ async function getNbaData()
               + ':' + 
               (game.TimeRemainingSeconds < 10 ? '0' + game.TimeRemainingSeconds : game.TimeRemainingSeconds),
             period: game.Quarter === null ? myNull : game.Quarter,
-            updated_time:game.Updated ? game.Updated: myNull}) 
+            updated_time:game.Updated ? game.Updated: myNull,
+            home_team_id : game.home_team_id, 
+            away_team_id : game.away_team_id,
+            date_time: game.date_time,
+            day_count: fantasyHelpers.getDayCountStr(game.date_time),
+            sport_id: game.sport_id, season_type: game.SeasonType}) 
         }
       })
       console.log(newSchedule.length)
@@ -125,7 +141,12 @@ async function getNhlData()
               + ':' + 
               (game.TimeRemainingSeconds < 10 ? '0' + game.TimeRemainingSeconds : game.TimeRemainingSeconds),
             period: game.Period === null ? myNull : game.Period,
-            updated_time:game.Updated ? game.Updated: myNull}) 
+            updated_time:game.Updated ? game.Updated: myNull,
+            home_team_id : game.home_team_id, 
+            away_team_id : game.away_team_id,
+            date_time: game.date_time,
+            day_count: fantasyHelpers.getDayCountStr(game.date_time),
+            sport_id: game.sport_id, season_type: game.SeasonType}) 
         }
       })
       console.log(newSchedule.length)
@@ -153,7 +174,12 @@ async function getCbbData()
               + ':' + 
               (game.TimeRemainingSeconds < 10 ? '0' + game.TimeRemainingSeconds : game.TimeRemainingSeconds),
             period: game.TimeRemainingMinutes !== null ? game.Period : myNull,
-            updated_time:game.Updated ? game.Updated: myNull}) 
+            updated_time:game.Updated ? game.Updated: myNull, 
+            home_team_id : game.home_team_id, 
+            away_team_id : game.away_team_id,
+            date_time: game.date_time,
+            day_count: fantasyHelpers.getDayCountStr(game.date_time),
+            sport_id: game.sport_id, season_type: game.SeasonType}) 
         }
       })
       console.log(newSchedule.length)
@@ -181,7 +207,12 @@ async function getCfbData()
               + ':' + 
               (game.TimeRemainingSeconds < 10 ? '0' + game.TimeRemainingSeconds : game.TimeRemainingSeconds),
             period: game.TimeRemainingMinutes !== null ? game.Period : myNull,
-            updated_time:game.Updated ? game.Updated: myNull}) 
+            updated_time:game.Updated ? game.Updated: myNull,
+            home_team_id : game.home_team_id, 
+            away_team_id : game.away_team_id,
+            date_time: game.date_time,
+            day_count: fantasyHelpers.getDayCountStr(game.date_time),
+            sport_id: game.sport_id, season_type: game.SeasonType}) 
         }
       })
       console.log(newSchedule.length)
@@ -206,7 +237,12 @@ async function getEplData()
             winner: game.Status[0] === 'F' ? game.HomeTeamScore > game.AwayTeamScore ? 'H' : game.HomeTeamScore < game.AwayTeamScore ? 'A' : 'T' : myNull,
             time: game.Clock === null ? myNull : game.Clock,
             period: game.Clock === null ? myNull : game.Clock < 45 ? 1 : 2,
-            updated_time:game.Updated ? game.Updated: myNull}
+            updated_time:game.Updated ? game.Updated: myNull,
+            home_team_id : game.home_team_id, 
+            away_team_id : game.away_team_id,
+            date_time: game.date_time,
+            day_count: fantasyHelpers.getDayCountStr(game.date_time),
+            sport_id: game.sport_id, season_type: game.SeasonType}
           
           if (display && entry.home_team_score === -1 && entry.status === 'Final')
           {
