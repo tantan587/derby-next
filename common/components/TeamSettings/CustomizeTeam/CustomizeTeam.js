@@ -98,13 +98,13 @@ class CustomizeTeam extends Component {
 
   onSave = () =>
   {
-    this.props.onSaveSilks(...R.props(['ownerName','pattern', 'primary', 'secondary'], this.state), 
+    this.props.onSaveSilks(...R.props(['ownerName','pattern', 'primary', 'secondary'], this.state),
       this.props.activeLeague.league_id, this.props.activeLeague.my_owner_id)
   }
 
-  handleColorClick = (type, color) => 
+  handleColorClick = (type, color) =>
   {
-    
+
     let changeColor = true
     if(type === 'primary')
     {
@@ -131,7 +131,7 @@ class CustomizeTeam extends Component {
 
     const teamCopy =`Jockeys wear elaborate “silks” when riding horses in a race.
      Receiving silks is a rite of passage for jockeys entering their first ride.
-      Below, select your pattern and colors that will identify you throughout your 
+      Below, select your pattern and colors that will identify you throughout your
       league season. Note: you can change your silks up to the beginning of the
        first games in your league, but they lock in once play starts.`
     return (
@@ -153,8 +153,8 @@ class CustomizeTeam extends Component {
                   value={ownerName}
                   onChange={this.handleChange('ownerName')}
                   placeholder="Owner Name Here"
-                  error={this.props.activeLeague.error.ownerName}
-                  helperText={this.props.activeLeague.error.ownerName}
+                  error={this.props.activeLeague.error && this.props.activeLeague.error.ownerName}
+                  helperText={this.props.activeLeague.error && this.props.activeLeague.error.ownerName}
                 />
               </div>
               <div className={classes.yourSilk}>Your Silk</div>
@@ -168,7 +168,7 @@ class CustomizeTeam extends Component {
             <ChoosePattern handlePatternClick={this.handlePatternClick} />
           </div>
           <Typography style={{textAlign:'center', marginTop:20, color:'red'}}>
-            {this.props.activeLeague.error.color}
+            {this.props.activeLeague.error && this.props.activeLeague.error.color}
           </Typography>
         </Grid>
         <Grid item sm={12} md={3} className={classes.gridMargins}>
