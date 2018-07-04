@@ -91,10 +91,12 @@ const createSoccerLeague = async (knex, sport_id, sportName, api, promiseToGet, 
     let teamIdMap = teams_and_info[1]
     let soccer_teams = teams_and_info[0]
     let confMap = teams_and_info[2]
-    
-    soccer_teams[0].Teams.forEach(team => {
+
+    soccer_teams.Teams.forEach(team => {
+        console.log(team.GlobalTeamId)
         let team_id = teamIdMap[team.GlobalTeamId]
         let team_conference = confMap[sportName]
+        console.log(team_id)
         
         teamInfo.push({sport_id: sport_id, team_id: team_id, key: team.Key, city: team.City, 
             name: team.Name, conference_id: team_conference, 
