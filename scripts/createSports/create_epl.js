@@ -5,33 +5,3 @@ const knex = require('../../server/db/connection')
 
 createSport.createSoccerLeague(knex, '107', 'EPL', 'Soccerv3StatsClient', 'getCompetitionFixturesLeagueDetailsPromise', 1)
 
-
-/* let teamInfo = []
-let standings = []
-db_helpers.getFantasyData(knex, 'EPL', 'https://api.fantasydata.net/v3/soccer/scores/json/Teams', 'Name', '', true)
-  .then(result =>{ 
-    result.map(team => 
-    {
-      teamInfo.push({sport_id: team.sport_id, team_id: team.team_id, key: team.Key, city: team.City, 
-        name: team.Name, conference_id: team.conference_id,
-        logo_url:team.WikipediaLogoUrl ? team.WikipediaLogoUrl : 'none', global_team_id:team.GlobalTeamId})
-
-      standings.push({team_id: team.team_id, wins : 0, losses: 0, ties: 0})    
-
-      playoff_standings.push({team_id: team.team_id, wins : 0, losses: 0, byes: 0, bowl_wins: 0, playoff_status: 'tbd'})
-    })
-    db_helpers.insertIntoTable(knex, 'sports', 'team_info', teamInfo)
-      .then(() =>
-      {
-        db_helpers.insertIntoTable(knex, 'sports', 'standings', standings)
-          .then(() =>
-          {
-            db_helpers.insertIntoTable(knex, 'sports', 'playoff_standings', playoff_standings)
-            .then(()=> {
-            process.exit()
-            })
-      })
-  })
-}) */
-
-  
