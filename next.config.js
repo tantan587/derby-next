@@ -31,6 +31,8 @@ module.exports = {
         ]
       }
     )
+    config.externals = []
+    config.externals.push('fs')
     return config
   }
 }

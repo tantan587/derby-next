@@ -77,7 +77,7 @@ class TabFilter extends React.Component {
                     onClick={this.handleTabClick(i)}
                   >{x}</Button> :
                   <Button key={i}
-                    style={{fontSize:tabStyles.fontSize}}
+                    style={{fontSize:tabStyles.fontSize, color:tabStyles.color}}
                     className={classes.button}
                     onClick={this.handleTabClick(i)}
                   >{x}</Button>
