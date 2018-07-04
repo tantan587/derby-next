@@ -78,10 +78,13 @@ const getCFBstandings = async (knex, sportName, api, promiseToGet, year) =>{
     let playoff_stadium_ids =[114, 70, 148, 55, 163, 79]
     let finalist_stadium_ids_by_year = {
       2017: [114, 148],
-      2018: []
+      2018: [70, 55],
+      2019: [163, 79]
     }
     let playoff_teams = []
     let bowl_wins = []
+    let finalist_team_ids = []
+    let new_playoff_teams = []
     playoff_games.forEach(game=>{
       if(game.Status[0] === 'F'){
         let results = game.HomeTeamScore > game.AwayTeamScore ? [teamIdMap[game.GlobalHomeTeamID], teamIdMap[game.GlobalAwayTeamID]] : [teamIdMap[game.GlobalAwayTeamID], teamIdMap[game.GlobalHomeTeamID]]
@@ -96,16 +99,38 @@ const getCFBstandings = async (knex, sportName, api, promiseToGet, year) =>{
         console.log(split[2])
         console.log(game.StadiumID)
         if(split[2] >29 || split[2]<10){
-          playoff_teams.push({team_id: teamIdMap[game.GlobalHomeTeamID], playoff_status: 'in_playoffs'}, {team_id: teamIdMap[game.GlobalAwayTeamID], playoff_status: 'in_playoffs'})
           //next year playoff stadiums are orange, cotton: ids are 70, 
+          if(finalist_stadium_ids_by_year[year].includes(game.StadiumID)){//||(split[1]==1 && split[2]>3)){
+            let playoff_result = [0, 0]
+            if(game.Status[0] === 'F'){
+              playoff_result = game.HomeTeamScore > game.AwayTeamScore ? [1,0] : [0,1]
+            }
+            playoff_teams.push(
+              {team_id: teamIdMap[game.GlobalHomeTeamID], playoff_wins: playoff_result[0], playoff_losses: playoff_result[1], playoff_status: 'finalist', bowl_wins: 0},
+              {team_id: teamIdMap[game.GlobalAwayTeamID], playoff_wins: playoff_result[1], playoff_losses: playoff_result[0], playoff_status: 'finalist', bowl_wins: 0}
+            )
+            finalist_team_ids.push(teamIdMap[game.GlobalHomeTeamID], teamIdMap[game.GlobalAwayTeamID])
+          }else if(split[1]==1 && split[2]>3){
+            if(game.Status[0] === 'F'){
+              let finalists = game.HomeTeamScore > game.AwayTeamScore ? [teamIdMap[game.GlobalHomeTeamID], teamIdMap[game.GlobalAwayTeamID]] : [teamIdMap[game.GlobalAwayTeamID], teamIdMap[game.GlobalHomeTeamID]]
+              new_playoff_teams = playoff_teams.filter(team => finalists.includes(team.team_id) === false)
+              new_playoff_teams.push(
+                {team_id: finalists[0], playoff_wins: 2, playoff_losses: 0, playoff_status: 'champions'},
+                {team_id: finalists[1], playoff_wins: 1, playoff_losses: 1, playoff_status: 'finalist'},)
+            }
+          }else
+          {
+            playoff_teams.push({team_id: teamIdMap[game.GlobalHomeTeamID], playoff_status: 'in_playoffs', playoff_wins: 0, playoff_losses: 0}, {team_id: teamIdMap[game.GlobalAwayTeamID], playoff_status: 'in_playoffs', playoff_wins: 0, playoff_losses: 0})
+          }
         }
         //note: still need to figure out a way to differentiate between playoff wins and normal bowl wins. NY6 teams all get playoff appearance points
       }
-      
+    
     })
+    let new_bowl_wins = bowl_wins.filter(team => finalist_team_ids.includes(team.team_id)===false)
     let new_standings = Object.keys(standings_by_team_id).map(key => standings_by_team_id[key])
     
-    let playoff_updated = await db_helpers.updateBowlWins(knex, bowl_wins, playoff_teams)
+    let playoff_updated = await db_helpers.updateBowlWins(knex, new_bowl_wins, new_playoff_teams)
 
     return new_standings
   }

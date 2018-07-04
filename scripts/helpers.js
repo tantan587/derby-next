@@ -321,6 +321,10 @@ methods.updateBowlWins = async (knex, bowl_wins, playoff_wins) => {
   playoff_wins.forEach(teamRec => {
     if(oldStandings[teamRec.team_id].playoff_status !== teamRec.playoff_status)  
         updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'playoff_status', teamRec.playoff_status, true )))
+    if(oldStandings[teamRec.team_id].playoff_wins !== teamRec.playoff_wins)  
+        updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'playoff_wins', teamRec.playoff_wins, true )))
+    if(oldStandings[teamRec.team_id].playoff_losses !== teamRec.playoff_losses)  
+        updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'playoff_losses', teamRec.playoff_losses, true )))
   })
 
   if (updateList.length > 0)
