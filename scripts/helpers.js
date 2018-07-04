@@ -112,7 +112,8 @@ methods.createStandingsData = async (knex, sportName, api, promiseToGet, year) =
   const idSpelling = sportName === 'EPL' ? 'Id' : 'ID'
   teamIds.forEach(team => teamIdMap[team.global_team_id] = team.team_id)
   let standInfo = []
-  if(sportName !== ('CBB'||'CFB')){
+  console.log(sportName)
+  if(sportName !== ('CBB'&&'CFB')){
     standInfo = cleanStand.map(team =>
     {
       let f_team_id = sportName !== 'NFL' ? Number(team['Team'+idSpelling])<10 ? "0"+String(team.TeamID) : team.TeamID : team.TeamID
@@ -127,7 +128,9 @@ methods.createStandingsData = async (knex, sportName, api, promiseToGet, year) =
     })
   }else{
     cleanStand.forEach(team => {
-      standInfo.push({...team, team_id: teamIdMap[team.GlobalTeamID]})
+      if(teamIdMap[team.GlobalTeamID]!== undefined){
+        standInfo.push({...team, team_id: teamIdMap[team.GlobalTeamID]})
+      }
   })
 }
 
@@ -298,7 +301,41 @@ methods.updateSchedule = (knex, newResults) =>
     })
 }
 
-methods.updatePlayoffStandings = (knex,newStandings) =>
+methods.updateBowlWins = async (knex, bowl_wins, playoff_wins) => {
+  let results = 
+    await knex
+    .withSchema('sports')
+    .table('playoff_standings')
+    .where('team_id', '>', 105000)
+    .andWhere('team_id','<', 105999)
+  
+  let oldStandings = {}
+  var updateList = []
+  results.forEach(result => oldStandings[result.team_id] = result)
+
+  bowl_wins.forEach(teamRec => {
+    if(oldStandings[teamRec.team_id].bowl_wins !== teamRec.bowl_wins)  
+        updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'bowl_wins', teamRec.bowl_wins, true )))
+  })
+
+  playoff_wins.forEach(teamRec => {
+    if(oldStandings[teamRec.team_id].playoff_status !== teamRec.playoff_status)  
+        updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'playoff_status', teamRec.playoff_status, true )))
+  })
+
+  if (updateList.length > 0)
+  {
+    return Promise.all(updateList)
+      .then(() => { 
+        //console.log("im done updating!")
+        return updateList.length
+      })
+  }
+  else
+    return 0
+}
+
+methods.updatePlayoffStandings = (knex, newStandings) =>
 {
   return knex
     .withSchema('sports')

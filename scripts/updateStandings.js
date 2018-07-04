@@ -27,7 +27,7 @@ async function updateStandings()
   let mlbData = await standingsBySport(knex, 'MLB', 'MLBv3StatsClient', 'getStandingsPromise', '2018')
   let nflData = await standingsBySport(knex, 'NFL', 'NFLv3StatsClient', 'getStandingsPromise', '2017')
   //let eplData = await getEplData()
-  let data = nhlData.concat(nbaData).concat(mlbData).concat(nflData)//.concat(cbbData).concat(cfbData).concat(eplData)
+  let data = nhlData.concat(nbaData).concat(mlbData).concat(nflData).concat(cfbData)//.concat(cbbData).concat(eplData)
 
   db_helpers.updateStandings(knex, data)
     .then(result => {
@@ -68,82 +68,48 @@ const getCFBstandings = async (knex, sportName, api, promiseToGet, year) =>{
     teamIds.forEach(team => teamIdMap[team.global_team_id] = team.team_id)
 
     let standings_by_team_id = {}
-    console.log(standings)
+    console.log(standings[1])
     standings.forEach(team => standings_by_team_id[team.team_id]={...team})
     //below are the stadiums where playoffs are played
     //in order: rose bowl, cotton bowl, sugar bowl, orange bowl, peach bowl, fiesta bowl
     //note these stadiums have multiple games played there, often, so will need to figure that out
     //3 year hosting cycle: rose/sugar, orange/cotton, fiesta/peach. 2017 was rose/sugar
-    playoff_stadium_ids =[114, 138, 163, 55, 163, 79]
+
+    let playoff_stadium_ids =[114, 70, 148, 55, 163, 79]
+    let finalist_stadium_ids_by_year = {
+      2017: [114, 148],
+      2018: []
+    }
+    let playoff_teams = []
+    let bowl_wins = []
     playoff_games.forEach(game=>{
       if(game.Status[0] === 'F'){
-        let results = game.HomeTeamScore > game.AwayTeamScore ? [teamIdMap[game.GlobalHomeTeamID], teamIdMap[game.GlobalAwayTeamID]] : [teamIdMap[team.GlobalAwayTeamID], teamIdMap[team.GlobalHomeTeamID]]
-        standings_by_team_id[result[0]].wins--
-        standings_by_team_id[result[1]].losses--
+        let results = game.HomeTeamScore > game.AwayTeamScore ? [teamIdMap[game.GlobalHomeTeamID], teamIdMap[game.GlobalAwayTeamID]] : [teamIdMap[game.GlobalAwayTeamID], teamIdMap[game.GlobalHomeTeamID]]
+        if(results[0] != undefined && results[1] !== undefined){
+          standings_by_team_id[results[0]].wins--
+          standings_by_team_id[results[1]].losses--
+          bowl_wins.push({team_id: results[0], bowl_wins: 1})
+        }
       }
       if(playoff_stadium_ids.includes(game.StadiumID)){
-        let date = game.Day.split("-")
-        
+        let split = game.Day.split('T')[0].split('-')
+        console.log(split[2])
+        console.log(game.StadiumID)
+        if(split[2] >29 || split[2]<10){
+          playoff_teams.push({team_id: teamIdMap[game.GlobalHomeTeamID], playoff_status: 'in_playoffs'}, {team_id: teamIdMap[game.GlobalAwayTeamID], playoff_status: 'in_playoffs'})
+          //next year playoff stadiums are orange, cotton: ids are 70, 
+        }
+        //note: still need to figure out a way to differentiate between playoff wins and normal bowl wins. NY6 teams all get playoff appearance points
       }
       
     })
-    console.log(standings[2])
-  
+    let new_standings = Object.keys(standings_by_team_id).map(key => standings_by_team_id[key])
+    
+    let playoff_updated = await db_helpers.updateBowlWins(knex, bowl_wins, playoff_teams)
 
-    process.exit()
+    return new_standings
   }
 
-}
-async function getNhlData()
-{
-  return db_helpers.getFantasyData(knex, 'NHL', 'https://api.fantasydata.net/v3/nhl/scores/JSON/Standings/2018?', 'Key', 'Conference')
-    .then(result => { 
-      let newStandings = []
-      result.map(team => 
-      {
-        newStandings.push({team_id: team.team_id, wins : team.Wins, losses: team.Losses, ties: team.OvertimeLosses})    
-      })
-      return newStandings
-    })
-}
-
-async function getNbaData()
-{
-  return db_helpers.getFantasyData(knex, 'NBA', 'https://api.fantasydata.net/v3/nba/scores/JSON/Standings/2018?', 'Key', 'Conference')
-    .then(result => { 
-      let newStandings = []
-      result.map(team => 
-      {
-        newStandings.push({team_id: team.team_id, wins : team.Wins, losses: team.Losses, ties: 0})    
-      })
-      return newStandings
-    })
-}
-
-async function getMlbData()
-{
-  return db_helpers.getFantasyData(knex, 'MLB', 'https://api.fantasydata.net/v3/mlb/scores/JSON/Standings/2018?', 'Key', 'League')
-    .then(result => { 
-      let newStandings = []
-      result.map(team => 
-      {
-        newStandings.push({team_id: team.team_id, wins : team.Wins, losses: team.Losses, ties: 0})    
-      })
-      return newStandings
-    })
-}
-
-async function getNflData()
-{
-  return db_helpers.getFantasyData(knex, 'NFL', 'https://api.fantasydata.net/v3/nfl/scores/JSON/Standings/2017?', 'Team', 'Conference')
-    .then(result => { 
-      let newStandings = []
-      result.map(team => 
-      {
-        newStandings.push({team_id: team.team_id, wins : team.Wins, losses: team.Losses, ties: team.Ties})    
-      })
-      return newStandings
-    })
 }
 
 async function getCbbData()
