@@ -113,13 +113,21 @@ methods.createStandingsData = async (knex, sportName, api, promiseToGet, year) =
   teamIds.forEach(team => teamIdMap[team.global_team_id] = team.team_id)
   let standInfo = []
   console.log(sportName)
-  if(sportName !== ('CBB'&&'CFB')){
+  if(sportName !== ('CBB'&&'CFB'&&'EPL')){
     standInfo = cleanStand.map(team =>
     {
-      let f_team_id = sportName !== 'NFL' ? Number(team['Team'+idSpelling])<10 ? "0"+String(team.TeamID) : team.TeamID : team.TeamID
-      let global = fantasy_2_global[sportName]+f_team_id
+      //let f_team_id = sportName !== 'NFL' ? Number(team['Team'+idSpelling])<10 ? "0"+String(team.TeamID) : team.TeamID : team.TeamID
+      //let global = fantasy_2_global[sportName]+f_team_id
+      let global = fantasy_2_global[sportName] + Number(team['Team'+idSpelling])
       return {...team, team_id: teamIdMap[global]}
     })
+  }else if(sportName==='EPL'){
+    let newStand = cleanStand.filter(standings => standings.Scope === 'Total')
+    standInfo = newStand.map(team=>
+      {
+        let global = fantasy_2_global[sportName] + Number(team['Team'+idSpelling])
+        return {...team, team_id: teamIdMap[global]}
+      })
   }else if(sportName === 'CBB'){
     cleanStand.forEach(league => {
       league.forEach(team =>{
@@ -138,13 +146,13 @@ methods.createStandingsData = async (knex, sportName, api, promiseToGet, year) =
 }
 
 const fantasy_2_global = {
-  'NBA': '200000',
-  'NFL': '',
-  'MLB': '100000',
-  'NHL': '300000',
-  'CBB': '500000',
-  'CFB': '600000',
-  'EPL': '900000'
+  'NBA': 20000000,
+  'NFL': 0,
+  'MLB': 10000000,
+  'NHL': 30000000,
+  'CBB': 50000000,
+  'CFB': 60000000,
+  'EPL': 90000000
 }
 
 methods.createSportData = async (knex, sport_id, sportName, api, promiseToGet, detail = false) => {

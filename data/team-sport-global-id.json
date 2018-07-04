@@ -478,4 +478,7 @@
     {"team_id": 106451, "global_team_id": 60000155, "sport_id": 106}, 
     {"team_id": 106452, "global_team_id": 60000001, "sport_id": 106}, 
     {"team_id": 106453, "global_team_id": 60000002, "sport_id": 106},
-    {"team_id": 106441, "global_team_id": 60000202, "sport_id": 106}]
+    {"team_id": 106441, "global_team_id": 60000202, "sport_id": 106},
+    {"team_id": 107121, "global_team_id": 90001461, "sport_id": 107},
+    {"team_id": 107122, "global_team_id": 90001462, "sport_id": 107},
+    {"team_id": 107123, "global_team_id": 90001463, "sport_id": 107}]
