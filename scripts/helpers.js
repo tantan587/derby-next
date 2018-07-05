@@ -109,39 +109,35 @@ methods.createStandingsData = async (knex, sportName, api, promiseToGet, year) =
   let teamIds = await methods.getTeamAndGlobalId(knex, sport_id)
   let cleanStand = JSON.parse(standData)
   let teamIdMap = {}
-  const idSpelling = sportName === 'EPL' ? 'Id' : 'ID'
   teamIds.forEach(team => teamIdMap[team.global_team_id] = team.team_id)
   let standInfo = []
   console.log(sportName)
   if(sportName === 'CFB'){
-    console.log(4)
     cleanStand.forEach(team => {
       if(teamIdMap[team.GlobalTeamID]!== undefined){
         standInfo.push({...team, team_id: teamIdMap[team.GlobalTeamID]})
       }
       })
   }else if(sportName==='EPL'){
-    console.log(2)
     let newStand = cleanStand.filter(standings => standings.Scope === 'Total')
+    console.log(newStand.length)
     standInfo = newStand.map(team=>
       {
-        let global = fantasy_2_global[sportName] + Number(team['Team'+idSpelling])
+        let global = fantasy_2_global[sportName] + Number(team.TeamId)
         return {...team, team_id: teamIdMap[global]}
       })
   }else if(sportName === 'CBB'){
-    console.log(3)
     cleanStand.forEach(league => {
       league.forEach(team =>{
         standInfo.push({...team, team_id: teamIdMap[team.GlobalTeamID]})
       })
     })
   }else{
-      console.log(1)
       standInfo = cleanStand.map(team =>
       {
         //let f_team_id = sportName !== 'NFL' ? Number(team['Team'+idSpelling])<10 ? "0"+String(team.TeamID) : team.TeamID : team.TeamID
         //let global = fantasy_2_global[sportName]+f_team_id
-        let global = fantasy_2_global[sportName] + Number(team['Team'+idSpelling])
+        let global = fantasy_2_global[sportName] + Number(team.TeamID)
         return {...team, team_id: teamIdMap[global]}
       })
     }

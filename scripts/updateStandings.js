@@ -26,8 +26,8 @@ async function updateStandings()
   //let cfbData = await getCfbData()
   let mlbData = await standingsBySport(knex, 'MLB', 'MLBv3StatsClient', 'getStandingsPromise', '2018')
   let nflData = await standingsBySport(knex, 'NFL', 'NFLv3StatsClient', 'getStandingsPromise', '2017')
-  //let eplData = await standingsBySport(knex, 'EPL', 'Soccerv3StatsClient', 'getStandingsPromise', '144')
-  let data = nhlData.concat(nbaData).concat(mlbData).concat(nflData).concat(cfbData)//.concat(eplData)//.concat(cfbData).concat(cbbData)
+  let eplData = await standingsBySport(knex, 'EPL', 'Soccerv3StatsClient', 'getStandingsPromise', '144')
+  let data = nhlData.concat(nbaData).concat(mlbData).concat(nflData).concat(cfbData).concat(eplData)//.concat(cfbData).concat(cbbData)
 
   db_helpers.updateStandings(knex, data)
     .then(result => {
@@ -96,8 +96,6 @@ const getCFBstandings = async (knex, sportName, api, promiseToGet, year) =>{
       }
       if(playoff_stadium_ids.includes(game.StadiumID)){
         let split = game.Day.split('T')[0].split('-')
-        console.log(split[2])
-        console.log(game.StadiumID)
         if(split[2] >29 || split[2]<10){
           //next year playoff stadiums are orange, cotton: ids are 70, 
           if(finalist_stadium_ids_by_year[year].includes(game.StadiumID)){//||(split[1]==1 && split[2]>3)){
@@ -142,6 +140,7 @@ const getCBBstandings = async (knex, sportName, api, promiseToGet, year) =>{
 
 const getEPLstandings = async (knex, sportName, api, promiseToGet, year) =>{
   const standings = await standingsBySport(knex, sportName, api, promiseToGet, year)
+  let new_
   const round_year = {
     2018: 144,
     2019: 274
