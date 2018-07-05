@@ -33,4 +33,6 @@ const getStandingsInfo = async (knex, sportName, api, promiseToGet, year) => {
     return newStandings
 }
 
+
+
 createStandingsPO()

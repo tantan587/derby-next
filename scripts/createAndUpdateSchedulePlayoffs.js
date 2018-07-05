@@ -3,6 +3,7 @@ const fantasyHelpers = require('../server/routes/helpers/fantasyHelpers')
 const knex = require('../server/db/connection')
 const myNull = '---'
 
+//need to change cbb to tournament hiearchy
 
 async function createSchedule()
 {
@@ -30,13 +31,14 @@ const getSchedInfo = async (knex, sportName, api, promiseToGet, year) => {
   let schedData = await db_helpers.getFdata (knex, sportName, api, promiseToGet, year)
   console.log()
   let sport_id = await db_helpers.getSportId(knex,sportName)
-  let teamIds = await db_helpers.getTeamAndGlobalId(knex, sport_id)
-  //there is no EPL for playoffs, so don't need to distingusih tdifferent id spelling
-  let teamIdMap = {}
-  teamIds.forEach(team => teamIdMap[team.global_team_id] = team.team_id)
-/*   .then((FantasyDataClient) => {
+  let teamIdMap = await db_helpers.getTeamIdMap(knex, sport_id)
+ /*   .then((FantasyDataClient) => {
     FantasyDataClient.MLBv3ScoresClient.getStadiumsPromise() */
   let cleanSched = JSON.parse(schedData)
+  if(sportName === 'CBB'){
+    let second_sched = cleanSched.Games
+    cleanSched = second_sched
+  }
   //let schedInfo = sportSchedFunctions[sport_id](cleanSched, teamIdMap)
   let schedInfo = cleanSched.map(game =>
     {
@@ -80,6 +82,23 @@ const getSchedInfo = async (knex, sportName, api, promiseToGet, year) => {
     let playoff = schedInfo.findIndex(game => team === (game.home_team_id || game.away_team_id))
     playoff>-1 ? playoff_ids.push(team) : 0
   })
+  if(sportName === 'CBB'){
+    let completed_tournament_games = schedInfo.filter(game => game.status[0]==='F')
+    if(completed_tournament_games.length !== 0){
+      let playoff_standings = {}
+      completed_tournament_games.forEach(game =>{
+        if(!(game.home_team_id in playoff_standings)){
+          playoff_standings[game.home_team_id] = {team_id: game.home_team_id, playoff_wins: 0, playoff_losses: 0, playoff_status: 'in_playoffs'}
+        }
+        if(!(game.away_team_id in playoff_standings)){
+          playoff_standings[game.away_team_id] = {team_id: game.away_team_id, playoff_wins: 0, playoff_losses: 0, playoff_status: 'in_playoffs'}
+        }
+        let results = game.winner === 'H' ? [game.home_team_id, game.away_team_id] : [game.away_team_id, game.home_team_id]
+        playoff_standings[results[0]].playoff_wins++
+        playoff_standings[results[1]].playoff_losses++
+      })
+    }
+  }
   //console.log('here')
   //console.log(stadiumInfo[0])
   return schedInfo
