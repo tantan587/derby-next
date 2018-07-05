@@ -2,19 +2,6 @@ const db_helpers = require('./helpers').data
 const fantasyHelpers = require('../server/routes/helpers/fantasyHelpers')
 const knex = require('../server/db/connection')
 
-// db_helpers.getFantasyData(knex, 'NHL', 'https://api.fantasydata.net/v3/nhl/scores/JSON/Standings/2018?', 'Key', 'Conference')
-//   .then(result =>{ 
-//     result.map(team => 
-//     {
-//       newStandings.push({team_id: team.team_id, wins : team.Wins, losses: team.Losses, ties: team.OvertimeLosses})    
-//     })
-//     db_helpers.updateStandings(knex, newStandings)
-//       .then(result => {
-//         console.log('Number of Standings Updated: ' + result)
-//         process.exit()
-//       })
-//   })
-
 //note: college basketball does not differentiate anywhere that i can tell between post and regular season
 //additionally, it includes nit wins in with the regular season as well
 async function updateStandings()
@@ -138,28 +125,11 @@ const getCBBstandings = async (knex, sportName, api, promiseToGet, year) =>{
   const standings = await standingsBySport(knex, sportName, api, promiseToGet, year)
 }
 
-const getEPLstandings = async (knex, sportName, api, promiseToGet, year) =>{
-  const standings = await standingsBySport(knex, sportName, api, promiseToGet, year)
-  let new_
-  const round_year = {
-    2018: 144,
-    2019: 274
-  }
-}
-
-
-
-async function getEplData()
-{
-  return db_helpers.getFantasyData(knex, 'EPL', 'https://api.fantasydata.net/v3/soccer/scores/json/Standings/144?', 'Name')
-    .then(result => { 
-      let newStandings = []
-      result.filter(team => team.Scope === 'Total').map(team => 
-      {
-        newStandings.push({team_id: team.team_id, wins : team.Wins, losses: team.Losses, ties: team.Draws})    
-      })
-      return newStandings
-    })
+//this I'm saving for later, to keep track of for EPL when we need it.
+//this is the round for each year, when we end up only using the year that is needed.
+const round_year = {
+  2018: 144,
+  2019: 274
 }
 
 
