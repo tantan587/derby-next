@@ -18,6 +18,13 @@ methods.getTeamId =  function(knex, sportId)
     .where('sport_id', sportId)
 }
 
+methods.getTeamIdMap = async function(knex, sport_id) {
+  let teamIds = await db_helpers.getTeamAndGlobalId(knex, sport_id)
+  let teamIdMap = {}
+  teamIds.forEach(team => teamIdMap[team.global_team_id] = team.team_id)
+  return teamIdMap
+}
+
 methods.getSportId = async function(knex, sportName)
 {
   return knex
@@ -106,10 +113,9 @@ methods.getFdata = async (knex, sportName,api, promiseToGet, parameters=false, s
 methods.createStandingsData = async (knex, sportName, api, promiseToGet, year) =>{
   let standData = await methods.getFdata (knex, sportName, api, promiseToGet, year)
   let sport_id = await methods.getSportId(knex, sportName)
-  let teamIds = await methods.getTeamAndGlobalId(knex, sport_id)
   let cleanStand = JSON.parse(standData)
-  let teamIdMap = {}
-  teamIds.forEach(team => teamIdMap[team.global_team_id] = team.team_id)
+  let teamIdMap = await methods.getTeamIdMap(knex, sport_id)
+  
   let standInfo = []
   console.log(sportName)
   if(sportName === 'CFB'){
@@ -158,10 +164,8 @@ const fantasy_2_global = {
 methods.createSportData = async (knex, sport_id, sportName, api, promiseToGet, detail = false) => {
 
   let teams = await methods.getFdata(knex, sportName, api, promiseToGet, detail)
-  let teamIds = await methods.getTeamAndGlobalId(knex, sport_id) 
-  let teamIdMap = {}
-  teamIds.forEach(team=> teamIdMap[team.global_team_id] = team.team_id)
-  
+  let teamIdMap = await methods.getTeamIdMap(knex, sport_id)
+    
   const conferences = await knex
     .withSchema('sports')
     .table('conferences')

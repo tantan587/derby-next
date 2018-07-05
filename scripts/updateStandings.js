@@ -44,15 +44,18 @@ const standingsBySport = async (knex, sportName, api, promiseToGet, year) => {
 
 const getCFBstandings = async (knex, sportName, api, promiseToGet, year) =>{
   const standings = await standingsBySport(knex, sportName, api, promiseToGet, year)
-
+  //check if current week is after the start of the post season, or is null. 
+  //This could also be done with dates and season status table, as had been discussed
+  //table hasn't yet been created
   let current_week = await db_helpers.getFdata(knex, sportName, api, 'getCurrentWeekPromise')
   if(current_week !== "" && current_week < 16){
     return standings
   }else{
+    //pull, and then make readable, playoff games (including bowl games)
     let non_parse_games = await db_helpers.getFdata(knex, sportName, api, 'getGamesByWeekPromise', '2017POST', 1)
     let playoff_games = JSON.parse(non_parse_games)
 
-    let teamIdMap = await getTeamIdMap(knex, '105');
+    let teamIdMap = await db_helpers.getTeamIdMap(knex, '105')
 
     let standings_by_team_id = {}
     console.log(standings[1])
@@ -133,19 +136,22 @@ const getCBBstandings = async (knex, sportName, api, promiseToGet, year) =>{
   if(today_day_count<1667){
     return standings
   }else{
+    //pull ALL postseason games (includes NIT)
     const post_year = year.concat("POST")
     const unparsed_post_season_games = await db_helpers.getFdata(knex, sportName, api, "getSchedulesPromise", post_year)
     const post_season_games = JSON.parse(unparsed_post_season_games)
-    let teamIdMap = await getTeamIdMap(knex, '106')
+    let teamIdMap = await db_helpers.getTeamIdMap(knex, '106')
+    //break standings up by teamID, into object
     let standings_by_team_id = {}
     standings.forEach(team => standings_by_team_id[team.team_id]={...team})
+    //for each postseason game: take results away from standings
     post_season_games.forEach(game =>{
 
       let results = game.HomeTeamScore > game.AwayTeamScore ? [teamIdMap[game.GlobalHomeTeamID],teamIdMap[game.GlobalAwayTeamID]] : [teamIdMap[game.GlobalAwayTeamID],teamIdMap[game.GlobalHomeTeamID]]
       standings_by_team_id[results[0]].wins--
       standings_by_team_id[results[1]].losses--
     })
-
+    //put standings back together into object
     let new_standings = Object.keys(standings_by_team_id).map(key => standings_by_team_id[key])
 
     return new_standings
@@ -161,14 +167,3 @@ const round_year = {
 
 
 updateStandings()
-
-  
-
-
-async function getTeamIdMap(knex, sport_id) {
-  let teamIds = await db_helpers.getTeamAndGlobalId(knex, sport_id)
-  let teamIdMap = {}
-  teamIds.forEach(team => teamIdMap[team.global_team_id] = team.team_id)
-  return teamIdMap
-}
-  
