@@ -6,7 +6,8 @@ import { handleOpenDialog } from '../../actions/dialog-actions'
 import Title from '../Navigation/Title'
 import DerbyTableContainer from '../Table/DerbyTableContainer'
 import TeamsDialog from '../TeamsDialog/TeamsDialog'
-
+import sportLeagues from '../../../data/sportLeagues.json'
+const R = require('ramda')
 
 const styles = {
   container: {
@@ -25,7 +26,8 @@ class MainLeagueTeams extends React.Component {
 
   render() {
     const {teams, activeLeague} = this.props
-    const sportLeagueIds = this.props.sportLeagues.map(x => x.sport_id)
+    const sportLeagueIds = R.keys(sportLeagues)
+    console.log(sportLeagueIds)
     let myTeams = Object.values(teams).filter(team => sportLeagueIds.includes(team.sport_id)).map(team => 
     {
       let owner = null 
@@ -52,7 +54,7 @@ class MainLeagueTeams extends React.Component {
           myRows={myTeams}
           filters={[
             {type:'tab',
-              values :this.props.sportLeagues.map(x => x.sport),
+              values :R.values(sportLeagues).map(x => x.sport),
               column:'sport',
               allInd:true,
               tabStyles:{background:'#e3dac9', foreground:'white', text:'#229246'}
@@ -92,7 +94,6 @@ const mapDispatchToProps = (dispatch) => ({
 
 export default connect(
   state => ({
-    sportLeagues : state.sportLeagues,
     teams: state.teams,
     activeLeague : state.activeLeague
   }),

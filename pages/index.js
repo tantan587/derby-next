@@ -18,6 +18,7 @@ import BottomNav from '../common/components/Navigation/BottomNav'
 import HomePageTable from '../common/components/Table/HomePageTable'
 import SportsSocket from '../common/components/Sockets/SportsSocket'
 import {clickedAdminUpdates} from '../common/actions/auth-actions'
+import sportLeagues from '../data/sportLeagues.json'
 
 //https://github.com/zeit/next.js/tree/master/examples/with-global-stylesheet
 
@@ -76,16 +77,6 @@ class Index extends React.Component {
 
   render() {
     const {classes} = this.props
-    const sports = [
-      {name:'NFL', src:'/static/icons/SportIcons/sport_icon_football.svg'},
-      {name:'NCAA', src:'/static/icons/SportIcons/sport_icon_basketball.svg'},
-      {name:'MLB', src:'/static/icons/SportIcons/sport_icon_baseball.svg'},
-      {name:'NHL', src:'/static/icons/SportIcons/sport_icon_hockey.svg'},
-      {name:'EPL', src:'/static/icons/SportIcons/sport_icon_soccer.svg'},
-      {name:'NCAAM', src:'/static/icons/SportIcons/sport_icon_ncaa_basketball.svg'},
-      {name:'NCAAF', src:'/static/icons/SportIcons/sport_icon_ncaa_football.svg'}
-    ]
-
     const howToPlay = [
       {name:'1) Create Your Free Account', src:'/static/icons/HowToPlayIcons/CreateAccount.svg', link:'/signup'}, //create account
       {name:'2) Join a League of Friends', src:'/static/icons/HowToPlayIcons/DraftTeam.svg', link:'/participate'}, //particpate form remove protection 
@@ -119,8 +110,8 @@ class Index extends React.Component {
             <br/>
             <br/>
             {
-              sports.map((x,i) => { 
-                return <SportIconText key={i} name={x.name} src={x.src}/>})
+              R.values(sportLeagues).sort((a,b) => a.order > b.order).map((x,i) => { 
+                return <SportIconText key={i} name={x.displayName} src={x.src}/>})
             }
             <br/>
             <br/>

@@ -13,7 +13,6 @@ import Countdown from '../Home/Cards/Countdown'
 import Upcoming from '../Home/Cards/Upcoming'
 import StyledButton from '../Navigation/Buttons/StyledButton'
 
-
 const styles = theme => ({
   section1: {
     paddingTop: 100,
@@ -68,7 +67,7 @@ class MainLeagueHome extends React.Component {
   }
 
   render() {
-    const { classes, activeLeague, sportLeagues, teams } = this.props
+    const { classes, activeLeague, teams } = this.props
     const { startTime } = this.state
 
     let owners = []
@@ -90,7 +89,6 @@ class MainLeagueHome extends React.Component {
               Button={() => <StyledButton text="View Complete Schedules" link='/mainleagueschedule' />}
             >
               <Upcoming
-                sportLeagues={sportLeagues}
                 upcomingGames={activeLeague.ownerGames}
                 teams={teams}
               />
@@ -146,7 +144,6 @@ const mapDispatchToProps = (dispatch) => ({
 export default compose(
   connect(state => ({
     activeLeague: state.activeLeague,
-    sportLeagues : state.sportLeagues,
     teams: state.teams
   }),
   mapDispatchToProps),

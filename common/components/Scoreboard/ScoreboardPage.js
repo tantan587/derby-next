@@ -7,7 +7,9 @@ import { handleOpenDialog } from '../../actions/dialog-actions'
 import Title from '../Navigation/Title'
 import {GetDayCountStr} from '../../lib/time'
 import TabFilter from '../Table/Filters/TabFilter' 
+import sportLeagues from '../../../data/sportLeagues.json'
 const R = require('ramda')
+
 
 
 
@@ -56,8 +58,8 @@ class ScoreboardPage extends React.Component {
   }
 
   render() {
-    const { classes, liveGames, sportLeagues} = this.props
-      const sports = sportLeagues.map(x => x.sport)
+    const { classes, liveGames} = this.props
+      const sports = R.values(sportLeagues).map(x => x.sport)
       return (
           <div>
         <Title color='white' backgroundColor='#EBAB38' title={'Scoreboard'}/>
@@ -88,7 +90,6 @@ class ScoreboardPage extends React.Component {
 
 export default compose(
   connect(state => ({
-    sportLeagues : state.sportLeagues,
     teams: state.teams,
     liveGames: state.liveGames,
     activeLeague: state.activeLeague

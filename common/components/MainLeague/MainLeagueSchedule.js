@@ -12,7 +12,7 @@ import { connect } from 'react-redux'
 import Typography from '@material-ui/core/Typography'
 import {clickedDateChange} from '../../actions/sport-actions'
 import {GetLocalDateStr, GetNextDay, GetFullDateStr} from '../../lib/time'
-
+import sportLeagues from '../../../data/sportLeagues.json'
 
 const styles = theme => ({
   container: {
@@ -98,7 +98,7 @@ class MainLeagueSchedule extends React.Component {
   }
 
   render() {
-    const { classes, sportLeagues, activeLeague, teams, schedule} = this.props
+    const { classes, activeLeague, teams, schedule} = this.props
     const {sport, day, owner, goodDay} = this.state
 
     const myOwnerName = activeLeague.owners.filter(x => x.owner_id === activeLeague.my_owner_id)[0].owner_name
@@ -106,9 +106,7 @@ class MainLeagueSchedule extends React.Component {
     ownersArr.unshift({owner_name:'League Only'})
     ownersArr.unshift({owner_name:'All'})
 
-    const idToSport = {}
-    sportLeagues.map(x => idToSport[x.sport_id] = x.sport)
-    const sportLeaguesArr  = [...new Set(schedule.map(item => idToSport[item.sport_id]))]
+    const sportLeaguesArr  = [...new Set(schedule.map(item => sportLeagues[item.sport_id].sport))]
     
     sportLeaguesArr.unshift('All')
 
@@ -240,7 +238,6 @@ export default connect(
       user: state.user,
       activeLeague : state.activeLeague,
       teams: state.teams,
-      sportLeagues : state.sportLeagues,
       schedule : state.schedule,
     }),
   dispatch =>

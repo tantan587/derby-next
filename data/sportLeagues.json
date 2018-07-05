@@ -1,0 +1,51 @@
+{
+    "101":{"sport_id": 101, 
+        "sport": "NBA",
+        "displayName":"NBA", 
+        "src":"/static/icons/SportIcons/sport_icon_basketball.svg", 
+        "darkSrc":"/static/icons/SportIcons/sport_icon_basketball_black.svg",
+        "order":2
+    },
+    "102":{"sport_id": 102, 
+        "sport": "NFL",
+        "displayName":"NFL", 
+        "src":"/static/icons/SportIcons/sport_icon_football.svg", 
+        "darkSrc":"/static/icons/SportIcons/sport_icon_football_black.svg",
+        "order":1
+    },
+    "103":{"sport_id": 103, 
+        "sport": "MLB",
+        "displayName":"MLB", 
+        "src":"/static/icons/SportIcons/sport_icon_baseball.svg", 
+        "darkSrc":"/static/icons/SportIcons/sport_icon_baseball_black.svg",
+        "order":3
+    },
+    "104":{"sport_id": 104, 
+        "sport": "NHL",
+        "displayName":"NHL", 
+        "src":"/static/icons/SportIcons/sport_icon_hockey.svg", 
+        "darkSrc":"/static/icons/SportIcons/sport_icon_hockey_black.svg",
+        "order":4
+    },
+    "105":{"sport_id": 105, 
+        "sport": "CFB",
+        "displayName":"NCAAF", 
+        "src":"/static/icons/SportIcons/sport_icon_ncaa_football.svg", 
+        "darkSrc":"/static/icons/SportIcons/sport_icon_ncaa_football_black.svg",
+        "order":7
+    },
+    "106":{"sport_id": 106, 
+        "sport": "CBB",
+        "displayName":"NCAAM", 
+        "src":"/static/icons/SportIcons/sport_icon_ncaa_basketball.svg", 
+        "darkSrc":"/static/icons/SportIcons/sport_icon_ncaa_basketball_black.svg",
+        "order":6
+    },
+    "107":{"sport_id": 107, 
+        "sport": "EPL",
+        "displayName":"EPL", 
+        "src":"/static/icons/SportIcons/sport_icon_soccer.svg", 
+        "darkSrc":"/static/icons/SportIcons/sport_icon_soccer_black.svg",
+        "order":5
+    }
+}
