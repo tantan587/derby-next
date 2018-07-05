@@ -17,7 +17,7 @@ async function createSchedule()
   let data = MLB_schedPO.concat(NBA_schedPO).concat(NHL_schedPO).concat(NFL_schedPO)//.concat(CFB_schedPO).concat(CBB_schedPO)
 
   //still needs to be fixed for non null values
-  db_helpers.insertIntoTable(knex, 'sports', 'schedule', data)
+  db_helpers.updateSchedule(knex, data)
     .then(result => {
       console.log('Number of Schedules Updated: ' + result)
       process.exit()

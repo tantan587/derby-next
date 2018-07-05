@@ -1,16 +1,18 @@
 const db_helpers = require('./helpers').data
 const fantasyHelpers = require('../server/routes/helpers/fantasyHelpers')
 const knex = require('../server/db/connection')
+const getDayCount = require('./dayCount.js')
 
 //note: college basketball does not differentiate anywhere that i can tell between post and regular season
 //additionally, it includes nit wins in with the regular season as well
+
+//for CFB - this function also updates the post season standings.
 async function updateStandings()
 {
   let cfbData = await getCFBstandings(knex, 'CFB', 'CFBv3ScoresClient', 'getTeamSeasonStatsStandingsPromise', '2017')
   let nhlData = await standingsBySport(knex, 'NHL', 'NHLv3StatsClient', 'getStandingsPromise', '2018')
   let nbaData = await standingsBySport(knex, 'NBA', 'NBAv3StatsClient', 'getStandingsPromise', '2018')
-  //let cbbData = await standingsBySport(knex, 'CBB', 'CBBv3StatsClient', 'get')
-  //let cfbData = await getCfbData()
+  let cbbData = await getCBBstandings(knex, 'CBB', 'CBBv3StatsClient', 'getTeamSeasonStatsPromise', '2018')
   let mlbData = await standingsBySport(knex, 'MLB', 'MLBv3StatsClient', 'getStandingsPromise', '2018')
   let nflData = await standingsBySport(knex, 'NFL', 'NFLv3StatsClient', 'getStandingsPromise', '2017')
   let eplData = await standingsBySport(knex, 'EPL', 'Soccerv3StatsClient', 'getStandingsPromise', '144')
@@ -50,9 +52,7 @@ const getCFBstandings = async (knex, sportName, api, promiseToGet, year) =>{
     let non_parse_games = await db_helpers.getFdata(knex, sportName, api, 'getGamesByWeekPromise', '2017POST', 1)
     let playoff_games = JSON.parse(non_parse_games)
 
-    let teamIds = await db_helpers.getTeamAndGlobalId(knex, '105')
-    let teamIdMap = {}
-    teamIds.forEach(team => teamIdMap[team.global_team_id] = team.team_id)
+    let teamIdMap = await getTeamIdMap(knex, '105');
 
     let standings_by_team_id = {}
     console.log(standings[1])
@@ -123,6 +123,33 @@ const getCFBstandings = async (knex, sportName, api, promiseToGet, year) =>{
 
 const getCBBstandings = async (knex, sportName, api, promiseToGet, year) =>{
   const standings = await standingsBySport(knex, sportName, api, promiseToGet, year)
+  var today = new Date()
+  let today_day_count = getDayCount(today)
+
+  //note: below is an approximation of date count of start of post season
+  //this should be pulled from table, with start dates
+  //we can create this table using get current season, which is a pull from fantasy data
+  //will want to create that
+  if(today_day_count<1667){
+    return standings
+  }else{
+    const post_year = year.concat("POST")
+    const unparsed_post_season_games = await db_helpers.getFdata(knex, sportName, api, "getSchedulesPromise", post_year)
+    const post_season_games = JSON.parse(unparsed_post_season_games)
+    let teamIdMap = await getTeamIdMap(knex, '106')
+    let standings_by_team_id = {}
+    standings.forEach(team => standings_by_team_id[team.team_id]={...team})
+    post_season_games.forEach(game =>{
+
+      let results = game.HomeTeamScore > game.AwayTeamScore ? [teamIdMap[game.GlobalHomeTeamID],teamIdMap[game.GlobalAwayTeamID]] : [teamIdMap[game.GlobalAwayTeamID],teamIdMap[game.GlobalHomeTeamID]]
+      standings_by_team_id[results[0]].wins--
+      standings_by_team_id[results[1]].losses--
+    })
+
+    let new_standings = Object.keys(standings_by_team_id).map(key => standings_by_team_id[key])
+
+    return new_standings
+  }
 }
 
 //this I'm saving for later, to keep track of for EPL when we need it.
@@ -137,4 +164,11 @@ updateStandings()
 
   
 
+
+async function getTeamIdMap(knex, sport_id) {
+  let teamIds = await db_helpers.getTeamAndGlobalId(knex, sport_id)
+  let teamIdMap = {}
+  teamIds.forEach(team => teamIdMap[team.global_team_id] = team.team_id)
+  return teamIdMap
+}
   
