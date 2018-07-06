@@ -1,7 +1,7 @@
 const db_helpers = require('./helpers').data
 const fantasyHelpers = require('../server/routes/helpers/fantasyHelpers')
 const knex = require('../server/db/connection')
-const getDayCount = require('./dayCount.js')
+const getDayCount = require('./Analysis/dayCount.js')
 
 //note: college basketball does not differentiate anywhere that i can tell between post and regular season
 //additionally, it includes nit wins in with the regular season as well
@@ -9,14 +9,14 @@ const getDayCount = require('./dayCount.js')
 //for CFB - this function also updates the post season standings.
 async function updateStandings()
 {
+  let cbbData = await getCBBstandings(knex, 'CBB', 'CBBv3StatsClient', 'getTeamSeasonStatsPromise', '2018')
   let cfbData = await getCFBstandings(knex, 'CFB', 'CFBv3ScoresClient', 'getTeamSeasonStatsStandingsPromise', '2017')
   let nhlData = await standingsBySport(knex, 'NHL', 'NHLv3StatsClient', 'getStandingsPromise', '2018')
   let nbaData = await standingsBySport(knex, 'NBA', 'NBAv3StatsClient', 'getStandingsPromise', '2018')
-  let cbbData = await getCBBstandings(knex, 'CBB', 'CBBv3StatsClient', 'getTeamSeasonStatsPromise', '2018')
   let mlbData = await standingsBySport(knex, 'MLB', 'MLBv3StatsClient', 'getStandingsPromise', '2018')
   let nflData = await standingsBySport(knex, 'NFL', 'NFLv3StatsClient', 'getStandingsPromise', '2017')
   let eplData = await standingsBySport(knex, 'EPL', 'Soccerv3StatsClient', 'getStandingsPromise', '144')
-  let data = nhlData.concat(nbaData).concat(mlbData).concat(nflData).concat(cfbData).concat(eplData)//.concat(cfbData).concat(cbbData)
+  let data = nhlData.concat(nbaData).concat(mlbData).concat(nflData).concat(cfbData).concat(eplData).concat(cbbData)
 
   db_helpers.updateStandings(knex, data)
     .then(result => {
@@ -128,6 +128,7 @@ const getCBBstandings = async (knex, sportName, api, promiseToGet, year) =>{
   const standings = await standingsBySport(knex, sportName, api, promiseToGet, year)
   var today = new Date()
   let today_day_count = getDayCount(today)
+  console.log(today_day_count)
 
   //note: below is an approximation of date count of start of post season
   //this should be pulled from table, with start dates
@@ -153,7 +154,6 @@ const getCBBstandings = async (knex, sportName, api, promiseToGet, year) =>{
     })
     //put standings back together into object
     let new_standings = Object.keys(standings_by_team_id).map(key => standings_by_team_id[key])
-
     return new_standings
   }
 }
