@@ -323,7 +323,7 @@ methods.updatePlayoffStandings = (knex, newStandings) =>
     })
 }
 
-methods.updateStandings = (knex,newStandings, playoffs = false) =>
+methods.updateStandings = (knex,newStandings) =>
 {
   return knex
     .withSchema('sports')
