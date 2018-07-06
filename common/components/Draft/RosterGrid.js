@@ -19,7 +19,7 @@ const styleProps = {
     TableBody: {
       //backgroundColor: 'green'
     },
-    TableCell: (i, n) => ({
+    TableCell: (i) => ({
       width: i === 0 ? 100: 40,
       color: 'black',
       borderLeft: '0.1em solid #b2b2b2',
@@ -32,10 +32,10 @@ const styleProps = {
 class RosterGrid extends React.Component {
   
   render() {
-    const { sportLeagues, draft, teams, activeLeague } = this.props
+    const {  draft, teams, activeLeague } = this.props
     const headers = [{label: 'Owner', key: 'owner_name'}]
     const nonStrictLeagueCount = {}
-    sportLeagues.forEach(sport => {
+    activeLeague.rules.forEach(sport => {
       //we need to display it by conference
       if(sport.conf_strict && sport.num === sport.conferences.length)
       {
@@ -91,5 +91,4 @@ export default connect(
       draft : state.draft,
       teams:state.teams,
       activeLeague:state.activeLeague,
-      sportLeagues:state.sportLeagues
     }),  null)(RosterGrid)
