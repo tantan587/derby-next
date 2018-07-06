@@ -48,22 +48,39 @@ const getSchedInfo = async (knex, sportName, api, promiseToGet, year) => {
   //   playoff>-1 ? playoff_ids.push(team) : 0
   // })
   if(sportName === 'CBB'){
-    let completed_tournament_games = schedInfo.filter(game => game.status[0]==='F')
-    if(completed_tournament_games.length !== 0){
-      let playoff_standings = {}
-      completed_tournament_games.forEach(game =>{
-        if(!(game.home_team_id in playoff_standings)){
-          playoff_standings[game.home_team_id] = {team_id: game.home_team_id, playoff_wins: 0, playoff_losses: 0, playoff_status: 'in_playoffs'}
-        }
-        if(!(game.away_team_id in playoff_standings)){
-          playoff_standings[game.away_team_id] = {team_id: game.away_team_id, playoff_wins: 0, playoff_losses: 0, playoff_status: 'in_playoffs'}
-        }
-        let results = game.winner === 'H' ? [game.home_team_id, game.away_team_id] : [game.away_team_id, game.home_team_id]
+    let playoff_standings = {}
+    cleanSched.forEach(game => 
+    {
+      let home_id = teamIdMap[game.GlobalHomeTeamID]
+      let away_id = teamIdMap[game.GlobalAwayTeamID]
+      if(!(home_id in playoff_standings)){
+        playoff_standings[game.home_team_id] = {team_id: home_id, playoff_wins: 0, playoff_losses: 0, playoff_status: 'in_playoffs', byes: 1}
+      }
+      if(!(away_id in playoff_standings)){
+        playoff_standings[away_id] = {team_id: away_id, playoff_wins: 0, playoff_losses: 0, playoff_status: 'in_playoffs', byes: 1}
+      }
+      if(game.Round == null){
+        playoff_standings[home_id].byes--
+        playoff_standings[away_id].byes--
+      }
+      if(game.Status[0] === 'F'){
+        let results = game.winner === 'H' ? [home_id, away_id] : [away_id, home_id]
         playoff_standings[results[0]].playoff_wins++
         playoff_standings[results[1]].playoff_losses++
+      }
+    })
+    let non_bye_games = cleanSched.filter(game => game.Round === null)
+    non_bye_games.forEach(game => {
+      let home_id = teamIdMap[game.GlobalHomeTeamID]
+      let away_id = teamIdMap[game.GlobalAwayTeamID]
+      if(!(home_id in playoff_standings)){
+        playoff_standings[game.home_team_id] = {team_id: home_id, playoff_wins: 0, playoff_losses: 0, playoff_status: 'in_playoffs', byes: 1}
+        }
+      if(!(away_id in playoff_standings)){
+        playoff_standings[away_id] = {team_id: away_id, playoff_wins: 0, playoff_losses: 0}
+        }
       })
     }
-  }
   //console.log('here')
   //console.log(stadiumInfo[0])
   return schedInfo
