@@ -49,7 +49,7 @@ const getSchedInfo = async (knex, sportName, api, promiseToGet, year) => {
   // })
   if(sportName === 'CBB'){
     let playoff_standings = {}
-    cleanSched.forEach(game => 
+    new_clean_sched.forEach(game => 
     {
       let home_id = teamIdMap[game.GlobalHomeTeamID]
       let away_id = teamIdMap[game.GlobalAwayTeamID]
@@ -69,21 +69,16 @@ const getSchedInfo = async (knex, sportName, api, promiseToGet, year) => {
         playoff_standings[results[1]].playoff_losses++
       }
     })
-    let non_bye_games = cleanSched.filter(game => game.Round === null)
-    non_bye_games.forEach(game => {
-      let home_id = teamIdMap[game.GlobalHomeTeamID]
-      let away_id = teamIdMap[game.GlobalAwayTeamID]
-      if(!(home_id in playoff_standings)){
-        playoff_standings[game.home_team_id] = {team_id: home_id, playoff_wins: 0, playoff_losses: 0, playoff_status: 'in_playoffs', byes: 1}
-        }
-      if(!(away_id in playoff_standings)){
-        playoff_standings[away_id] = {team_id: away_id, playoff_wins: 0, playoff_losses: 0}
-        }
-      })
-    }
+    let standings_for_insert = Object.keys(playoff_standings).map(key => playoff_standings[key])
+    return db_helpers.updatePlayoffStandings(knex, standings_for_insert)
+    .then(()=>{
+      return schedInfo
+    })
+  }else{
   //console.log('here')
   //console.log(stadiumInfo[0])
   return schedInfo
+  }
 }
 
 
