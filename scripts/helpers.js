@@ -1,6 +1,7 @@
 var methods = {}
 const rp = require('request-promise')
-const fdClientModule = require('fantasydata-node-client');
+const fdClientModule = require('fantasydata-node-client')
+
 
 
 methods.insertIntoTable = function(knex, schema, table, data) {
@@ -19,7 +20,7 @@ methods.getTeamId =  function(knex, sportId)
 }
 
 methods.getTeamIdMap = async function(knex, sport_id) {
-  let teamIds = await db_helpers.getTeamAndGlobalId(knex, sport_id)
+  let teamIds = await methods.getTeamAndGlobalId(knex, sport_id)
   let teamIdMap = {}
   teamIds.forEach(team => teamIdMap[team.global_team_id] = team.team_id)
   return teamIdMap
@@ -46,7 +47,43 @@ methods.getTeamAndGlobalId =  async function(knex, sportId)
     .select('team_id', 'global_team_id')
 }
 
-
+methods.createScheduleForInsert = function(cleanSched, sport_id, idSpelling, teamIdMap, fantasyHelpers, myNull) {
+  return cleanSched.map(game => {
+    let date_time = game.DateTime ? game.DateTime : game.Day;
+    let status = sport_id !== '102' ? game.Status :
+      game.IsOver ? game.IsOvertime ? 'F/OT' : 'Final' : game.IsInProgress ? 'InProgress' : game.Canceled ? 'Canceled' : 'Scheduled';
+    let home_score = sport_id === '103' ? game.HomeTeamRuns : sport_id === '102' ? game.HomeScore : game.HomeTeamScore;
+    let away_score = sport_id === '103' ? game.AwayTeamRuns : sport_id === '102' ? game.AwayScore : game.AwayTeamScore;
+    return {
+    global_game_id: game['GlobalGame' + idSpelling],
+      home_team_id: teamIdMap[game['GlobalHomeTeam' + idSpelling]],
+      away_team_id: teamIdMap[game['GlobalAwayTeam' + idSpelling]],
+      date_time: date_time,
+      day_count: fantasyHelpers.getDayCountStr(date_time),
+      status: status,
+      sport_id: sport_id,
+      home_team_score: home_score !== null ? home_score : -1,
+      away_team_score: away_score !== null ? away_score : -1,
+      winner: status[0] === 'F' ? home_score > away_score ? 'H' : away_score < home_score ? 'A' : 'T' : myNull,
+      time: sport_id === '103' ? game.Outs === null ? myNull : game.Outs :
+        sport_id === '107' ? game.Clock === null ? myNull : game.Clock :
+          sport_id === '102' ? game.TimeRemaining === null ? myNull : game.TimeRemaining :
+            game.TimeRemainingMinutes === null
+              ? myNull
+              : (game.TimeRemainingMinutes < 10 ? '0' + game.TimeRemainingMinutes : game.TimeRemainingMinutes)
+              + ':' + (game.TimeRemainingSeconds < 10 ? '0' + game.TimeRemainingSeconds : game.TimeRemainingSeconds),
+      period: sport_id === '103' ? game.Inning === null ? myNull : game.InningHalf + game.Inning :
+        sport_id === '104' ? game.Period === null ? myNull : game.Period :
+          sport_id === ('105' || '106') ? game.TimeRemainingMinutes !== null ? game.Period : myNull :
+            sport_id === '107' ? game.Clock === null ? myNull : game.Clock < 45 ? 1 : 2 :
+              game.Quarter === null || status[0] === 'F' ? myNull : game.Quarter,
+      updated_time: sport_id === '103' ? game.Status === 'InProcess' ? game.InningHalf + game.Inning + '-' + game.Outs + ':' + game.Balls + ':' + game.Strikes : game.Status :
+        sport_id === '102' ? game.LastUpdated ? game.LastUpdated : myNull :
+          game.Updated ? game.Updated : myNull,
+      season_type: game.SeasonType
+    }
+  })
+}
 methods.getScheduleData = (knex, sportName, url) => 
 {
   return knex
@@ -118,7 +155,7 @@ methods.createStandingsData = async (knex, sportName, api, promiseToGet, year) =
   
   let standInfo = []
   console.log(sportName)
-  if(sportName === 'CFB'){
+  if(sportName === 'CFB'||sportName ==='CBB'){
     cleanStand.forEach(team => {
       if(teamIdMap[team.GlobalTeamID]!== undefined){
         standInfo.push({...team, team_id: teamIdMap[team.GlobalTeamID]})
@@ -132,12 +169,6 @@ methods.createStandingsData = async (knex, sportName, api, promiseToGet, year) =
         let global = fantasy_2_global[sportName] + Number(team.TeamId)
         return {...team, team_id: teamIdMap[global]}
       })
-  }else if(sportName === 'CBB'){
-    cleanStand.forEach(league => {
-      league.forEach(team =>{
-        standInfo.push({...team, team_id: teamIdMap[team.GlobalTeamID]})
-      })
-    })
   }else{
       standInfo = cleanStand.map(team =>
       {
