@@ -27,7 +27,6 @@ class MainLeagueSettings extends React.Component {
 }
 export default connect(state => ({
   activeLeague: state.activeLeague,
-  sportLeagues: state.sportLeagues,
   teams: state.teams,
   schedules: state.schedules
 }))(MainLeagueSettings)

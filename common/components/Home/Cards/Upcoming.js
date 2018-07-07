@@ -1,4 +1,5 @@
 import { withStyles } from '@material-ui/core/styles'
+import sportLeagues from '../../../../data/sportLeagues.json'
 
 const styles = {
   root: {
@@ -30,7 +31,7 @@ const styles = {
   },
 }
 
-const Upcoming = withStyles(styles)(({ classes, sportLeagues, upcomingGames, teams }) =>
+const Upcoming = withStyles(styles)(({ classes, upcomingGames, teams }) =>
   <div className={classes.root}>
     {
       upcomingGames ? upcomingGames.map((game, idx) => <div key={idx} className={classes.game}>
@@ -51,10 +52,7 @@ const Upcoming = withStyles(styles)(({ classes, sportLeagues, upcomingGames, tea
           </span>
         </div>
         <div className={classes.conference}>
-          {
-            sportLeagues.filter(x => x.sport_id === game.sport_id)[0] 
-            ? sportLeagues.filter(x => x.sport_id === game.sport_id)[0].sport 
-            : ''}
+          {sportLeagues[game.sport_id].sport}
         </div>
       </div>)
         : <div/>

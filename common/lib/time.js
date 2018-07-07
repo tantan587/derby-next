@@ -82,6 +82,25 @@ export const GetCountdownTimeObj = (num) =>
   return obj
 }
 
+export const GetDayCount = (year, month, day) => {
+
+  const date = new Date(year + ' ' + month + ' ' + day + ' ' + '00:00:00 GMT-04:00')
+  // The number of milliseconds in one day
+  var ONE_DAY = 1000 * 60 * 60 * 24
+
+  //my starting point 08/25/2013 12AM EST
+  var startingDate = 1377403200000
+  var date_ms = date.getTime()
+
+  // Convert back to days and return
+  return Math.floor((date_ms - startingDate)/ONE_DAY)
+}
+
+export const GetDayCountStr = (date) => {
+  var split = date.split('T')[0].split('-')
+  return GetDayCount(split[0],split[1],split[2])
+}
+
 export const GetNextDay = (inputDay, forward) =>
 {
   const date = new Date(inputDay+'T00:00:00')

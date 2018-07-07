@@ -7,7 +7,7 @@ const styleProps = {
   Container:{
     overflowY:'scroll',
     maxHeight:600
-},
+  },
 }
 
 class DraftResults extends React.Component {
@@ -44,8 +44,6 @@ class DraftResults extends React.Component {
       }
       return rtnObj
     })
-
-    console.log(draftResults)
 
     let extraTableRow = {}
     extraTableRow.freq = 8

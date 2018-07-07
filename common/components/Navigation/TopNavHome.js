@@ -78,6 +78,7 @@ class TopNavHome extends React.Component {
               {this.setHoverToButton('default', 1, user.loggedIn, '/participate', 'Create/Join League')}
               {this.setHoverToButton('default', 2, user.loggedIn, '', 'Rules')}
               {this.setHoverToButton('default', 3, user.loggedIn, '', 'FAQ')}
+              {this.setHoverToButton('default', 4, user.loggedIn, '/scoreboard', 'Scoreboard')}
             </div>
           </Toolbar>
         </AppBar>

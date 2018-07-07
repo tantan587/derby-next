@@ -6,7 +6,8 @@ import { handleOpenDialog } from '../../actions/dialog-actions'
 import Title from '../Navigation/Title'
 import DerbyTableContainer from '../Table/DerbyTableContainer'
 import TeamsDialog from '../TeamsDialog/TeamsDialog'
-
+import sportLeagues from '../../../data/sportLeagues.json'
+const R = require('ramda')
 
 const styles = {
   container: {
@@ -25,16 +26,13 @@ class MainLeagueRoster extends React.Component {
 
   render() {
     const {teams, activeLeague} = this.props
-    const sportLeagueIds = this.props.sportLeagues.map(x => x.sport_id)
+    const sportLeagueIds = R.keys(sportLeagues)
     let myTeams = Object.values(teams).filter(team => sportLeagueIds.includes(team.sport_id)).map(team => 
     {
       let owner = null 
       if (activeLeague.teams[team.team_id])
         owner = activeLeague.owners.filter(owner => owner.owner_id === activeLeague.teams[team.team_id].owner_id)[0]
-      else
-      {
-        console.log(team.team_id)
-      }
+
       return {
         ...team,
         record:team.wins + '-' + team.losses + '-' + team.ties,
@@ -55,9 +53,12 @@ class MainLeagueRoster extends React.Component {
           myRows={myTeams}
           filters={[
             {type:'tab', 
-              values :this.props.activeLeague.owners.map(x => x.owner_name),
+              values :this.props.activeLeague.owners.map(x => x.owner_name).sort((a,b) => a > b),
               column:'owner_name',
-              tabStyles:{background:'#e3dac9', foreground:'white', text:'#229246', fontSize:12}
+              tabStyles:{backgroundColor:'#e3dac9',
+                color:'#48311A',
+                selectedBackgroundColor:'white', 
+                selectedColor:'#229246', fontSize:12}
             },
           ]}
           orderInd={true}
@@ -85,7 +86,6 @@ const mapDispatchToProps = (dispatch) => ({
 
 export default connect(
   state => ({
-    sportLeagues : state.sportLeagues,
     teams: state.teams,
     activeLeague : state.activeLeague
   }),

@@ -1,15 +1,13 @@
 import React from 'react'
 import {clickedLeague} from '../../../actions/fantasy-actions'
-import {clickedSportLeagues} from '../../../actions/sport-actions'
 import { connect } from 'react-redux'
 import MenuBase from './MenuBase'
 
 
 class LeaguesButton extends React.Component {
   handleClick = (league_id) => {
-    const { onClickedLeague, onSportLeagues } = this.props
+    const { onClickedLeague } = this.props
     onClickedLeague(league_id, this.props.user.id)
-    onSportLeagues(league_id)
   };
   render() {
     const { color, backgroundColor, leagues, useItems2 } = this.props
@@ -58,9 +56,5 @@ export default connect(({ user, leagues }) => ({ user, leagues }),
       onClickedLeague(league_id, user_id) {
         dispatch(
           clickedLeague(league_id, user_id))
-      },
-      onSportLeagues(league_id) {
-        dispatch(
-          clickedSportLeagues(league_id))
       },
     }))(LeaguesButton)

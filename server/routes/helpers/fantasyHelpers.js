@@ -5,7 +5,7 @@ function handleReduxResponse(res, code, action){
   res.status(code).json(action)
 }
 
-const getLeague = async (league_id, user_id, res, type) =>{
+const getLeague = async (league_id, user_id, res, type) => {
 
   var leagueInfoStr = `select a.league_name, a.max_owners, a.league_id, b.room_id, b.start_time, b.draft_position, c.total_teams 
   from fantasy.leagues a, draft.settings b, (
@@ -24,7 +24,7 @@ const getLeague = async (league_id, user_id, res, type) =>{
   const leagueInfo = await knex.raw(leagueInfoStr)
   const ownerInfo = await knex.raw(ownerInfoStr)
   const teamInfo = await knex.raw(teamInfoStr)
-  
+  const rules = await getSportLeagues(league_id)
 
   if (leagueInfo.rows.length === 1)
   {
@@ -76,13 +76,38 @@ const getLeague = async (league_id, user_id, res, type) =>{
       my_owner_id:my_owner_id,
       draftOrder:draftOrder,
       teams:teams,
-      ownerGames:ownerGames
+      ownerGames:ownerGames,
+      rules:rules
     })
   }
   else
   {
     return handleReduxResponse(res,400, {})
   }
+}
+
+const getSportLeagues = (league_id) =>{
+
+  var str = `select a.sport_id, a.conference_id, a.number_teams as num_in_conf, b.number_teams as num_of_conf,
+   b.conf_strict, c.sport_name, d.display_name from fantasy.conferences a, fantasy.sports b,
+    sports.leagues c, sports.conferences d where a.league_id = '` + league_id +
+    '\' and a.league_id = b.league_id and a.sport_id = b.sport_id and a.sport_id = c.sport_id and a.conference_id = d.conference_id'
+  return knex.raw(str)
+    .then(result =>
+    {
+      const leaguesToConferenceMap = {}
+      result.rows.map(row =>
+      {
+        if(!leaguesToConferenceMap[row.sport_id])
+        {
+          leaguesToConferenceMap[row.sport_id] =
+          {sport_id:row.sport_id, sport:row.sport_name, conf_strict:row.conf_strict, num:row.num_of_conf, conferences:[]}
+        }
+        leaguesToConferenceMap[row.sport_id].conferences.push({conference_id:row.conference_id, conference:row.display_name, num:row.num_in_conf})
+
+      })
+      return Object.values(leaguesToConferenceMap)
+    })
 }
 
 const getOwnersUpcomingGames = async (ownerId) =>

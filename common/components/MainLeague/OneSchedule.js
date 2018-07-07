@@ -91,9 +91,7 @@ class OneSchedule extends React.Component {
         status = 'H' + result.period + ' ' + result.game_time
       }
     }
-    
-    //const date = fantasyHelpers.getDayCountStr(dateTime)
-    //const time = fantasyHelpers.formatAMPM(new Date(dateTime))
+
     return(
       <div style={{left:'50%', position:'relative', marginLeft:-300}}>
         <div className={classes.con1} style={{width:200}} >

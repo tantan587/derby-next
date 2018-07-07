@@ -1,14 +1,6 @@
 import C from '../constants'
 import {FetchThenDispatch} from './actionHelpers'
 
-export const clickedSportLeagues = (league_id) => dispatch =>
-  FetchThenDispatch(
-    dispatch,
-    '/api/sportleagues',
-    'POST',
-    JSON.stringify({league_id})
-  )
-
 export const clickedSaveDraft = (league_id, allTeams) => dispatch =>
   FetchThenDispatch(
     dispatch,
