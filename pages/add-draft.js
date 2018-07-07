@@ -14,7 +14,7 @@ class AddDraft extends React.Component {
       <div>
         <LayoutLeague >
           <RouteProtector 
-            ProtectedRoute={() => 
+            ProtectedRoute={() => {}
               //<AddOfflineDraftForm />
             }
             previousPage={'add-draft'}/>
