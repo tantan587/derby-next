@@ -51,7 +51,10 @@ const Upcoming = withStyles(styles)(({ classes, sportLeagues, upcomingGames, tea
           </span>
         </div>
         <div className={classes.conference}>
-          {sportLeagues.filter(x => x.sport_id === game.sport_id)[0].sport}
+          {
+            sportLeagues.filter(x => x.sport_id === game.sport_id)[0] 
+            ? sportLeagues.filter(x => x.sport_id === game.sport_id)[0].sport 
+            : ''}
         </div>
       </div>)
         : <div/>
