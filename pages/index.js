@@ -111,7 +111,8 @@ class Index extends React.Component {
             <br/>
             {
               R.values(sportLeagues).sort((a,b) => a.order > b.order).map((x,i) => { 
-                return <SportIconText key={i} name={x.displayName} src={x.src}/>})
+                return <SportIconText key={i} sportId={x.sport_id}/>
+              })
             }
             <br/>
             <br/>

@@ -9,7 +9,7 @@ const styleProps = {
   Container:{
     overflowY:'scroll',
     maxHeight:600
-},
+  },
 }
 
 class Roster extends React.Component {
@@ -57,7 +57,10 @@ class Roster extends React.Component {
             {type:'tab', 
               values :this.props.activeLeague.owners.map(x => x.owner_name),
               column:'owner_name',
-              tabStyles:{background:'#e3dac9', foreground:'white', text:'#229246', fontSize:10}
+              tabStyles:{backgroundColor:'#e3dac9',
+                color:'#48311A',
+                selectedBackgroundColor:'white', 
+                selectedColor:'#229246',fontSize:10}
             },
           ]}
           myHeaders = {[

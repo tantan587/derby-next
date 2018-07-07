@@ -55,7 +55,10 @@ class MainLeagueRoster extends React.Component {
             {type:'tab', 
               values :this.props.activeLeague.owners.map(x => x.owner_name).sort((a,b) => a > b),
               column:'owner_name',
-              tabStyles:{background:'#e3dac9', foreground:'white', text:'#229246', fontSize:12}
+              tabStyles:{backgroundColor:'#e3dac9',
+                color:'#48311A',
+                selectedBackgroundColor:'white', 
+                selectedColor:'#229246', fontSize:12}
             },
           ]}
           orderInd={true}

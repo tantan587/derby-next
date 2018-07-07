@@ -4,13 +4,14 @@ import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
 import Button from '@material-ui/core/Button'
 import { Scrollbars } from 'react-custom-scrollbars'
+import SportIconText from '../../Icons/SportIconText'
 
 
-
-const styles = theme => ({
+const styles = () => ({
   button : {
-    color:'#48311A',
+    color:'black',
     borderRadius: '0px',
+    position:'relative'
   },
   appBar : {
     height:'50px',
@@ -57,31 +58,28 @@ class TabFilter extends React.Component {
   }
 
   render() {
-    const {tabs, allInd, classes, tabStyles} = this.props
+    const {tabs, allInd, sportImageInd, classes, tabStyles} = this.props
     const {index} = this.state
     let localTabs = allInd ? tabs.concat('All') : tabs
-
+    let height = sportImageInd ? 90 : 50
     return (
       <div style={{width: '96%'}}>
         <AppBar position="static"
           className={classes.appBar}
-          style={{backgroundColor:tabStyles.background, marginLeft:'2%'}} >
+          style={{backgroundColor:tabStyles.backgroundColor, marginLeft:'2%', height:height }} >
           <Scrollbars autoHide autoHeight style={{ width: '100%'}}>
-            <Toolbar>
-              {localTabs.map((x,i) =>
-                i === index ?
-                  <Button key={i}
-                    className={classes.button}
-                    style={{backgroundColor:tabStyles.foreground,
-                      color:tabStyles.text, fontSize:tabStyles.fontSize}}
-                    onClick={this.handleTabClick(i)}
-                  >{x}</Button> :
-                  <Button key={i}
-                    style={{fontSize:tabStyles.fontSize, color:tabStyles.color}}
-                    className={classes.button}
-                    onClick={this.handleTabClick(i)}
-                  >{x}</Button>
-              )}
+            <Toolbar style={{}}>
+              {localTabs.map((x,i) => {
+                let style = i === index ? {backgroundColor:tabStyles.selectedBackgroundColor,
+                  color:tabStyles.selectedColor} : {color:tabStyles.color}
+                let display = sportImageInd ? <SportIconText tabInd={true} color={style.color} sportId={x}/> : x
+                return <Button key={i}
+                  className={classes.button}
+                  style={{...style,fontSize:tabStyles.fontSize, height:height, width:80}}
+                  onClick={this.handleTabClick(i)}>
+                  {display}
+                </Button>
+              })}
             </Toolbar>
           </Scrollbars>
         </AppBar>

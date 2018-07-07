@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { withStyles } from '@material-ui/core/styles'
-import Grid from '@material-ui/core/Grid'
+//import Grid from '@material-ui/core/Grid'
 import { handleOpenDialog } from '../../actions/dialog-actions'
 import Title from '../Navigation/Title'
 import {GetDayCountStr} from '../../lib/time'
@@ -58,35 +58,39 @@ class ScoreboardPage extends React.Component {
   }
 
   render() {
-    const { classes, liveGames} = this.props
-      const sports = R.values(sportLeagues).map(x => x.sport)
-      return (
-          <div>
+    //const { classes, liveGames} = this.props
+    const sports = R.values(sportLeagues).sort((x,y) => x.order > y.order).map(x => x.sport_id)
+    return (
+      <div>
         <Title color='white' backgroundColor='#EBAB38' title={'Scoreboard'}/>
-        <TabFilter 
-            allInd={true}
-            tabs={sports} 
-            rows={R.values(this.props.liveGames[this.state.dayCount])} 
-            updateMyRows={this.updateMyRows}
-            tabStyles={{background:'#392007', color:'white', text:'#EBAB38'}}/>
-        </div>
+        <TabFilter
+          sportImageInd={true} 
+          allInd={false}
+          tabs={sports} 
+          rows={R.values(this.props.liveGames[this.state.dayCount])} 
+          updateMyRows={this.updateMyRows}
+          tabStyles={{backgroundColor:'#392007', color:'white',
+            selectedBackgroundColor:'#392007', 
+            selectedColor:'#EBAB38'}}/>
+          }
+      </div>
 
-      )
+    )
 
         
-//     const { startTime } = this.state
-//     //const myOwner =owners.find(owner => owner.owner_id === activeLeague.my_owner_id)
-//     return (
-//       <div>
-//         <Title color='white' backgroundColor='#EBAB38' title={'Scoreboard'}/>
-//       </div>
-//     )
+    //     const { startTime } = this.state
+    //     //const myOwner =owners.find(owner => owner.owner_id === activeLeague.my_owner_id)
+    //     return (
+    //       <div>
+    //         <Title color='white' backgroundColor='#EBAB38' title={'Scoreboard'}/>
+    //       </div>
+    //     )
   }
- }
+}
 
- const mapDispatchToProps = (dispatch) => ({
+const mapDispatchToProps = (dispatch) => ({
   openDialog: () => dispatch(handleOpenDialog)
- })
+})
 
 export default compose(
   connect(state => ({
