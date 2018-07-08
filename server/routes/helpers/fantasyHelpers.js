@@ -282,6 +282,24 @@ const updateTeamPoints = async () =>
     })
 }
 
+const updateLeagueProjectedPoints = async () => {
+  let fantasy_leagues = await knex.withSchema('fantasy').table('leagues').select('league_id', 'scoring_type_id')
+  let fantasy_rosters = await knex.withSchema('fantasy').table('rosters').select('*')
+  let fantasy_projections = await knex.withSchema('fantasy').table('projections').select('*')
+  let fantasy_owners = await knex.withSchema('fantasy').table('owners').select('*')
+  console.log(leagues)
+  let league_scoring_type = {}
+  leagues.forEach(league => league_scoring_type[league.league_id]=league.scoring_type_id)
+  'select a.reg_points, a.bonus_points, a.playoff_points, b.league_id from fantasy.team_points a, fantasy.rosters b, fantasy.leagues c where a.team_id = b.team_id and c.league_id = b.league_id and c.scoring_type_id = a.scoring_type_id and a.league_id = \'' + league_id + '\''
+
+  let rosters = await knex('fantasy.rosters')
+    .leftJoin('fantasy.')
+
+  let owner_id_points = {}
+  fantasy_rosters
+  process.exit()
+}
+
 //runs for each league to run points
 //not sure if this is set up to run for each and every league - this hsould match up leagues with scoring type
 const updateLeaguePoints = (league_id) =>
@@ -417,5 +435,6 @@ module.exports = {
   getDayCountStr,
   formatAMPM,
   formatGameDate,
-  GetDraftOrder
+  GetDraftOrder,
+  updateLeagueProjectedPoints
 }
