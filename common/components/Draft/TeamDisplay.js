@@ -111,9 +111,10 @@ class TeamDisplay extends React.Component {
           styleProps={styleProps}
           filters={[
             {type:'tab',
-              values :R.map(x => x.sport, R.values(sportLeagues)),
-              column:'sport',
+              values :R.map(x => x.sport_id, R.values(sportLeagues)),
+              column:'sport_id',
               allInd:true,
+              sportInd:true,
               defaultTab:6,
               tabStyles:{backgroundColor:'#e3dac9',
                 color:'#48311A',
@@ -132,7 +133,7 @@ class TeamDisplay extends React.Component {
           myHeaders = {[
             {key: 'logo_url', sortId:'team_name',imageInd:true},
             {label: 'Team Name', key: 'team_name'},
-            {label: 'Sport', key: 'sport', imageInd:true},
+            {label: 'Sport', key: 'sport_id', imageInd:true},
             {label: 'Conference', key: 'conference'},
             {key: 'team_id', sortId:'eligible', label:'Eligible Teams',
               button:{

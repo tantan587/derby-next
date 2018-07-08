@@ -65,7 +65,7 @@ class MainLeagueRoster extends React.Component {
           myHeaders = {[
             {label: 'Logo', key: 'logo_url', sortId:'team_name', imageInd:true},
             {label: 'Team Name', key: 'team_name'},
-            {label: 'Sport League', key: 'sport', imageInd:true},
+            {label: 'Sport League', key: 'sport_id', imageInd:true},
             {label: 'Conference', key: 'conference'},
             {label: 'Record', key: 'record', sortId:'percentage'},
             {label: 'Percentage', key: 'percentage'},

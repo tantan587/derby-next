@@ -7,8 +7,9 @@ import Button from '@material-ui/core/Button'
 import { withStyles } from '@material-ui/core/styles'
 import { handleOpenDialog } from '../../actions/dialog-actions.js'
 import { clickedOneTeam } from '../../actions/sport-actions.js'
+import SportIcon from '../Icons/SportIcon'
 
-const styles = theme => ({
+const styles = () => ({
   deeppadding: {
     padding: '5px 20px 5px 5px'
   },
@@ -42,13 +43,6 @@ class DerbyBody extends React.Component {
   rowRender = (classes, columns, n) =>
   {
     const {handleOpenDialog, clickedOneTeam, activeLeague, styleProps} = this.props
-    let sportsIcons = {'NFL':'/static/icons/SportIcons/sport_icon_football_black.svg',
-      'NBA':'/static/icons/SportIcons/sport_icon_basketball_black.svg',
-      'MLB':'/static/icons/SportIcons/sport_icon_baseball_black.svg',
-      'NHL':'/static/icons/SportIcons/sport_icon_hockey_black.svg',
-      'EPL':'/static/icons/SportIcons/sport_icon_soccer_black.svg',
-      'CBB':'/static/icons/SportIcons/sport_icon_ncaa_basketball_black.svg',
-      'CFB':'/static/icons/SportIcons/sport_icon_ncaa_football_black.svg'}
     return (
 
       columns.filter(
@@ -66,8 +60,8 @@ class DerbyBody extends React.Component {
             }
           >
             {header.imageInd === true && n[header.id] && n[header.id] !== 'none'
-              ?  header.id === 'sport' 
-                ? <img src={sportsIcons[n[header.id]]} preserveAspectRatio='true'  style={{width:25, height:'auto'}}/> 
+              ?  header.id === 'sport_id' 
+                ? <SportIcon sportId={n[header.id]} style={{width:25, height:'auto'}} color='#392007'/> 
                 :  <img src={n[header.id]} preserveAspectRatio='true'  style={{maxWidth:'40px', maxHeight:'40px'}}/>
               : header.button
                 ? <Button

@@ -43,7 +43,6 @@ class MainLeagueTeams extends React.Component {
     })
 
     let confs = [...new Set(myTeams.map(x => x.conference))].sort((a,b) => { return a > b})
-
     return (
       <div>
         <TeamsDialog />
@@ -54,9 +53,10 @@ class MainLeagueTeams extends React.Component {
           myRows={myTeams}
           filters={[
             {type:'tab',
-              values :R.values(sportLeagues).map(x => x.sport),
-              column:'sport',
+              values :R.values(sportLeagues).map(x => x.sport_id),
+              column:'sport_id',
               allInd:true,
+              sportInd:true,
               tabStyles:{backgroundColor:'#e3dac9',
                 color:'#48311A',
                 selectedBackgroundColor:'white', 
@@ -75,7 +75,7 @@ class MainLeagueTeams extends React.Component {
           myHeaders = {[
             {label: 'Logo', key: 'logo_url', sortId:'team_name', imageInd:true},
             {label: 'Team Name', key: 'team_name'},
-            {label: 'Sport', key: 'sport', imageInd:true},
+            {label: 'Sport', key: 'sport_id', imageInd:true},
             {label: 'Owner Name', key: 'owner_name'},
             {label: 'Conference', key: 'conference'},
             {label: 'Record', key: 'record', sortId:'percentage'},

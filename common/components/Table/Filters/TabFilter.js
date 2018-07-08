@@ -5,7 +5,7 @@ import Toolbar from '@material-ui/core/Toolbar'
 import Button from '@material-ui/core/Button'
 import { Scrollbars } from 'react-custom-scrollbars'
 import SportIconText from '../../Icons/SportIconText'
-
+import SportText from '../../Icons/SportText'
 
 const styles = () => ({
   button : {
@@ -47,8 +47,7 @@ class TabFilter extends React.Component {
     const {rows, column, tabs, updateMyRows, passUpFilterInfo} = this.props
 
     const filter = index === tabs.length ? 0 : tabs[index]
-
-    const localRows = filter ? rows.filter(row => row[column] === filter) : rows
+    const localRows = filter ? rows.filter(row => row[column] == filter) : rows
     updateMyRows(localRows)
     if (passUpFilterInfo)
     {
@@ -58,10 +57,10 @@ class TabFilter extends React.Component {
   }
 
   render() {
-    const {tabs, allInd, sportImageInd, classes, tabStyles} = this.props
+    const {tabs, allInd, sportInd, imageInd, classes, tabStyles} = this.props
     const {index} = this.state
     let localTabs = allInd ? tabs.concat('All') : tabs
-    let height = sportImageInd ? 90 : 50
+    let height = sportInd && imageInd ? 90 : 50
     return (
       <div style={{width: '96%'}}>
         <AppBar position="static"
@@ -72,7 +71,11 @@ class TabFilter extends React.Component {
               {localTabs.map((x,i) => {
                 let style = i === index ? {backgroundColor:tabStyles.selectedBackgroundColor,
                   color:tabStyles.selectedColor} : {color:tabStyles.color}
-                let display = sportImageInd ? <SportIconText tabInd={true} color={style.color} sportId={x}/> : x
+                let display = sportInd ? 
+                  imageInd ? 
+                    <SportIconText tabInd={true} color={style.color} sportId={x}/> 
+                    : <SportText color={style.color} sportId={x}/>
+                  : x
                 return <Button key={i}
                   className={classes.button}
                   style={{...style,fontSize:tabStyles.fontSize, height:height, width:80}}

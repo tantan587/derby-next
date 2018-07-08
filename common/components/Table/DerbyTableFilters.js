@@ -27,6 +27,7 @@ class DerbyTableFilters extends React.Component {
                 passUpFilterInfo={passUpFilterInfo}
                 updateMyRows={updateMyRows} 
                 key={i} 
+                sportInd={filter.sportInd}
                 tabs={filter.values} 
                 rows={rows} 
                 allInd={filter.allInd}
