@@ -40,10 +40,12 @@ async function getData(league, url)
           date_time: game.date_time,
           day_count: fantasyHelpers.getDayCountStr(game.date_time),
           sport_id:game.sport_id,
-          home_team_score: -1, away_team_score = -1,
+          home_team_score: -1, 
+          away_team_score: -1,
           status: "Scheduled", period: myNull, updated_time: myNull,
           time: myNull, winner: myNull,
-          season_type: game.SeasonType
+          season_type: game.SeasonType,
+          stadium_id: game.stadium_id
         })    
       })
       newSchedule = newSchedule.filter(x => x.away_team_id && x.home_team_id)
