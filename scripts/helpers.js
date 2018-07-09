@@ -254,10 +254,12 @@ methods.updateSchedule = (knex, newResults) =>
           { 
             updateList.push(Promise.resolve(methods.updateOneResultRow(knex, x.global_game_id, x)))
           }
-          else if(oldResults[x.global_game_id].year !== x.year){
+          //this is only needed to add in years the first time
+/*           else if(oldResults[x.global_game_id].year !== x.year){
             updateList.push(Promise.resolve(methods.updateOneResultRow(knex, x.global_game_id, x)))
+}
+ */
 
-          }
       }
       })
       gameErrors.forEach(game => console.log(game))

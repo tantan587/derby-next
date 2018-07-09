@@ -3,7 +3,7 @@ const fantasyHelpers = require('../server/routes/helpers/fantasyHelpers')
 const knex = require('../server/db/connection')
 const myNull = '---'
 
-//need to change cbb to tournament hiearchy
+
 
 async function createSchedule()
 {
