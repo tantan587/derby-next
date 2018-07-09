@@ -300,7 +300,7 @@ methods.updatePlayoffStandings = (knex, newStandings) =>
       let oldStandings = {}
       var updateList =[]
       results.map(result => oldStandings[result.team_id] =result)
-
+      
       newStandings.map(teamRec =>
       {
         if(oldStandings[teamRec.team_id].playoff_wins !== teamRec.playoff_wins)  

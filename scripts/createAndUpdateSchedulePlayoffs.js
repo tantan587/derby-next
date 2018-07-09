@@ -33,8 +33,9 @@ const getSchedInfo = async (knex, sportName, api, promiseToGet, year) => {
 
   const idSpelling = sportName === 'EPL' ? 'Id' : 'ID'
   let schedInfo = []
+  let new_clean_sched =[]
   if(sportName === 'CBB'){
-    let new_clean_sched = cleanSched['Games']
+    new_clean_sched = cleanSched['Games']
     schedInfo = db_helpers.createScheduleForInsert(new_clean_sched, sport_id, idSpelling, teamIdMap, fantasyHelpers, myNull)
   }else{
     schedInfo = db_helpers.createScheduleForInsert(cleanSched, sport_id, idSpelling, teamIdMap, fantasyHelpers, myNull)
@@ -51,10 +52,11 @@ const getSchedInfo = async (knex, sportName, api, promiseToGet, year) => {
     let playoff_standings = {}
     new_clean_sched.forEach(game => 
     {
+      console.log(game)
       let home_id = teamIdMap[game.GlobalHomeTeamID]
       let away_id = teamIdMap[game.GlobalAwayTeamID]
       if(!(home_id in playoff_standings)){
-        playoff_standings[game.home_team_id] = {team_id: home_id, playoff_wins: 0, playoff_losses: 0, playoff_status: 'in_playoffs', byes: 1}
+        playoff_standings[home_id] = {team_id: home_id, playoff_wins: 0, playoff_losses: 0, playoff_status: 'in_playoffs', byes: 1}
       }
       if(!(away_id in playoff_standings)){
         playoff_standings[away_id] = {team_id: away_id, playoff_wins: 0, playoff_losses: 0, playoff_status: 'in_playoffs', byes: 1}
