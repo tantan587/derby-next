@@ -58,7 +58,6 @@ const getCFBstandings = async (knex, sportName, api, promiseToGet, year) =>{
     let teamIdMap = await db_helpers.getTeamIdMap(knex, '105')
 
     let standings_by_team_id = {}
-    console.log(standings[1])
     standings.forEach(team => standings_by_team_id[team.team_id]={...team})
     //below are the stadiums where playoffs are played
     //in order: rose bowl, cotton bowl, sugar bowl, orange bowl, peach bowl, fiesta bowl

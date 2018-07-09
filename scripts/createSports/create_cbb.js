@@ -5,7 +5,7 @@ const createSport = require('./create_sport_helpers')
 //tested and works!
 
 
-createSport.createCollegeSport(knex, '106', 'CBB', 'CBBv3StatsClient', 'getLeagueHierarchyPromise')
+createSport.createCollegeSport(knex, '106', 'CBB', 'CBBv3StatsClient', 'getTeamsPromise')
 
 
 

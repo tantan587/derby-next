@@ -18,7 +18,6 @@ async function createSchedule()
   
 
   let data = nhlData.concat(nbaData).concat(cbbData).concat(cfbData).concat(mlbData).concat(nflData).concat(eplData)
-  console.log(data)
   db_helpers.updateSchedule(knex, data)
     .then(result => {
       console.log('Number of Schedules Updated: ' + result)
@@ -33,7 +32,7 @@ const getSchedInfo = async (knex, sportName, api, promiseToGet, year) => {
   let cleanSched = JSON.parse(schedData)
   const idSpelling = sportName === 'EPL' ? 'Id' : 'ID'
 
-  let schedInfo = db_helpers.createScheduleForInsert(new_clean_sched, sport_id, idSpelling, teamIdMap, fantasyHelpers, myNull)
+  let schedInfo = db_helpers.createScheduleForInsert(cleanSched, sport_id, idSpelling, teamIdMap, fantasyHelpers, myNull)
 
   return schedInfo
 }

@@ -52,7 +52,6 @@ const getSchedInfo = async (knex, sportName, api, promiseToGet, year) => {
     let playoff_standings = {}
     new_clean_sched.forEach(game => 
     {
-      console.log(game)
       let home_id = teamIdMap[game.GlobalHomeTeamID]
       let away_id = teamIdMap[game.GlobalAwayTeamID]
       if(!(home_id in playoff_standings)){

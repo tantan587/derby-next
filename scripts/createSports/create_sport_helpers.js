@@ -1,5 +1,7 @@
 const db_helpers = require('../helpers').data
 
+//currently setting conference if none to 999, so don't run conf tournament, etc. - i guess for now
+
 const createCollegeSport = async (knex, sport_id, sportName, api, promiseToGet) => {
     let teamInfo = []
     let standings = []
@@ -8,22 +10,22 @@ const createCollegeSport = async (knex, sport_id, sportName, api, promiseToGet) 
     let teamIdMap = teams_and_info[1]
     let college_teams = teams_and_info[0]
     let confMap = teams_and_info[2]
-    college_teams.forEach(conference => {
-        let conf_id = confMap[conference.ConferenceID]
-        conference.Teams.forEach(team=>{
-            let team_id = teamIdMap[team.GlobalTeamID]
-            let team_division = sport_id == 105 ? team.Conference : "---"
 
-            teamInfo.push({sport_id: sport_id, team_id: team_id, key: team.Key, city: team.School, 
-                name: team.Name, conference_id: conf_id, 
-                logo_url:team.TeamLogoUrl,
-                global_team_id:team.GlobalTeamID, division: team_division})
+    college_teams.forEach(team=>{
+        let team_id = teamIdMap[team.GlobalTeamID]
+        let team_division = sport_id == 105 ? team.Conference : "---"
+        let conf_id = confMap[team.ConferenceID] ? confMap[team.ConferenceID] : 999
 
-            standings.push({team_id: team_id, wins : 0, losses: 0, ties: 0})
-            
-            playoff_standings.push({team_id: team_id, playoff_wins : 0, playoff_losses: 0, byes: 0, bowl_wins: 0, playoff_status: 'tbd'})
-      
-        })
+        teamInfo.push({sport_id: sport_id, team_id: team_id, key: team.Key, city: team.School, 
+            name: team.Name, conference_id: conf_id, 
+            logo_url:team.TeamLogoUrl,
+            global_team_id:team.GlobalTeamID, division: team_division})
+
+        standings.push({team_id: team_id, wins : 0, losses: 0, ties: 0})
+        
+        playoff_standings.push({team_id: team_id, playoff_wins : 0, playoff_losses: 0, byes: 0, bowl_wins: 0, playoff_status: 'tbd'})
+    
+    
     })
 
 

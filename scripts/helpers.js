@@ -48,7 +48,17 @@ methods.getTeamAndGlobalId =  async function(knex, sportId)
 }
 
 methods.createScheduleForInsert = function(cleanSched, sport_id, idSpelling, teamIdMap, fantasyHelpers, myNull) {
+
   return cleanSched.map(game => {
+//below is commented out, and kept, becasue it was there to catch teams that didn't go through, and didn't have IDs
+    /*     if(sport_id==106 || sport_id==105){
+      if(!(game.GlobalHomeTeamID in teamIdMap)){
+        console.log(game.HomeTeam)
+      }
+      if(!(game.GlobalAwayTeamID in teamIdMap)){
+        console.log(game.AwayTeam)
+      }
+    } */
     let date_time = game.DateTime ? game.DateTime : game.Day;
     let status = sport_id !== '102' ? game.Status :
       game.IsOver ? game.IsOvertime ? 'F/OT' : 'Final' : game.IsInProgress ? 'InProgress' : game.Canceled ? 'Canceled' : 'Scheduled';
@@ -80,7 +90,7 @@ methods.createScheduleForInsert = function(cleanSched, sport_id, idSpelling, tea
       updated_time: sport_id === '103' ? game.Status === 'InProcess' ? game.InningHalf + game.Inning + '-' + game.Outs + ':' + game.Balls + ':' + game.Strikes : game.Status :
         sport_id === '102' ? game.LastUpdated ? game.LastUpdated : myNull :
           game.Updated ? game.Updated : myNull,
-      season_type: game.SeasonType
+      season_type: game.SeasonType, year: game.Season
     }
   })
 }
@@ -229,17 +239,29 @@ methods.updateSchedule = (knex, newResults) =>
       let oldResults = {}
       var updateList =[]
       results.forEach(result => oldResults[result.global_game_id] =result.updated_time)
-      newResults.map(x =>
+      let gameErrors = []
+      newResults.forEach(x =>
       {
-        if(!(x.global_game_id in oldResults))
-        {
-          updateList.push(Promise.resolve(methods.insertOneResultRow(knex, x)))
-        }
-        else if(oldResults[x.global_game_id] !== x.updated_time)
-        { 
-          updateList.push(Promise.resolve(methods.updateOneResultRow(knex, x.global_game_id, x)))
-        }
+
+        if(x.away_team_id==null || x.home_team_id ==null){
+          gameErrors.push([x.global_game_id, x.date_time])
+        }else{
+          if(!(x.global_game_id in oldResults))
+          {
+            updateList.push(Promise.resolve(methods.insertOneResultRow(knex, x)))
+          }
+          else if(oldResults[x.global_game_id] !== x.updated_time)
+          { 
+            updateList.push(Promise.resolve(methods.updateOneResultRow(knex, x.global_game_id, x)))
+          }
+          else if(oldResults[x.global_game_id].year !== x.year){
+            updateList.push(Promise.resolve(methods.updateOneResultRow(knex, x.global_game_id, x)))
+
+          }
+      }
       })
+      gameErrors.forEach(game => console.log(game))
+      console.log(gameErrors.length)
       if (updateList.length > 0)
       {
         return Promise.all(updateList)
@@ -300,7 +322,7 @@ methods.updatePlayoffStandings = (knex, newStandings) =>
       let oldStandings = {}
       var updateList =[]
       results.map(result => oldStandings[result.team_id] =result)
-      
+
       newStandings.map(teamRec =>
       {
         if(oldStandings[teamRec.team_id].playoff_wins !== teamRec.playoff_wins)  
