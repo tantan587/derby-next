@@ -1,6 +1,7 @@
 const knex = require('../../db/connection')
 const C = require('../../../common/constants')
 
+
 function handleReduxResponse(res, code, action){
   res.status(code).json(action)
 }
@@ -137,7 +138,7 @@ const updateTeamPointsTable = (newTeamPoints) =>
 }
 
 //total points for each owner in the league - be sure its correctly called
-const updatePointsTable = (newPoints) =>
+const updatePointsTable = (newPoints, projected=false) =>
 {
   return knex
     .withSchema('fantasy')
@@ -146,13 +147,14 @@ const updatePointsTable = (newPoints) =>
       let oldPoints = {}
       var updateList =[]
       results.map(result => oldPoints[result.owner_id] =result)
-
-      newPoints.map(owner =>
+      let points = projected ? 'total_projected_points' : 'total_points'
+      let rank = projected ? 'projected_rank': 'rank'
+      newPoints.forEach(owner =>
       {
-        if(oldPoints[owner.owner_id].total_points !== owner.total_points)
-          updateList.push(Promise.resolve(updateOneRow('fantasy','points','owner_id',owner.owner_id,'total_points',owner.total_points )))
-        if(oldPoints[owner.owner_id].rank !== owner.rank)
-          updateList.push(Promise.resolve(updateOneRow('fantasy','points','owner_id',owner.owner_id,'rank',owner.rank )))
+        if(oldPoints[owner.owner_id][points] !== owner[points])
+          updateList.push(Promise.resolve(updateOneRow('fantasy','points','owner_id',owner.owner_id,points,owner[points] )))
+        if(oldPoints[owner.owner_id][rank] !== owner[rank])
+          updateList.push(Promise.resolve(updateOneRow('fantasy','points','owner_id',owner.owner_id, rank ,owner[rank] )))
       })
       if (updateList.length > 0)
       {
@@ -283,21 +285,56 @@ const updateTeamPoints = async () =>
 }
 
 const updateLeagueProjectedPoints = async () => {
-  let fantasy_leagues = await knex.withSchema('fantasy').table('leagues').select('league_id', 'scoring_type_id')
-  let fantasy_rosters = await knex.withSchema('fantasy').table('rosters').select('*')
-  let fantasy_projections = await knex.withSchema('fantasy').table('projections').select('*')
-  let fantasy_owners = await knex.withSchema('fantasy').table('owners').select('*')
-  console.log(leagues)
-  let league_scoring_type = {}
-  leagues.forEach(league => league_scoring_type[league.league_id]=league.scoring_type_id)
-  'select a.reg_points, a.bonus_points, a.playoff_points, b.league_id from fantasy.team_points a, fantasy.rosters b, fantasy.leagues c where a.team_id = b.team_id and c.league_id = b.league_id and c.scoring_type_id = a.scoring_type_id and a.league_id = \'' + league_id + '\''
+  // let fantasy_leagues = await knex.withSchema('fantasy').table('leagues').select('league_id', 'scoring_type_id')
+  // let fantasy_rosters = await knex.withSchema('fantasy').table('rosters').select('*')
+  // let fantasy_projections = await knex.withSchema('fantasy').table('projections').select('*')
+  // let fantasy_owners = await knex.withSchema('fantasy').table('owners').select('*')
+  // console.log(leagues)
+  // let league_scoring_type = {}
+  // leagues.forEach(league => league_scoring_type[league.league_id]=league.scoring_type_id)
+  const math = require('mathjs')
 
   let rosters = await knex('fantasy.rosters')
-    .leftJoin('fantasy.')
+    .leftJoin('fantasy.leagues', 'fantasy.rosters.league_id', 'fantasy.leagues.league_id')
+    .leftJoin('fantasy.projections', function(){
+      this.on('fantasy.projections.team_id','=','fantasy.rosters.team_id').andOn('fantasy.leagues.scoring_type_id', '=', 'fantasy.projections.scoring_type_id')
+    })
+    .select('*')
+  
+  let m = math.max(rosters.map(team=>team.day_count))
 
-  let owner_id_points = {}
-  fantasy_rosters
-  process.exit()
+  let new_rosters = rosters.filter(team => team.day_count === m)
+
+  let byOwner = {}
+  new_rosters.forEach(roster => {
+    if(!(roster.owner_id in byOwner)){
+      byOwner[roster.owner_id] = {projected_points:0, league_id:roster.league_id, owner_id:roster.owner_id}
+    }
+    byOwner[roster.owner_id].projected_points += Number.parseFloat(roster.points)
+  })
+
+  let byLeague = {}
+  Object.values(byOwner).map(owner => {
+    if (!(owner.league_id in byLeague))
+    {
+      byLeague[owner.league_id] = []
+    }
+    byLeague[owner.league_id].push(owner)
+  })
+  let addingRank = Object.values(byLeague).map(league => {
+    league.sort(function(a,b) {return b.projected_points - a.projected_points})
+    return league.map( (owner, i) => {owner.rank = i+1; return owner})
+    
+  let fantasyPoints = [].concat.apply([], addingRank)
+
+  return updatePointsTable(fantasyPoints, true)
+          .then(result => {
+            console.log('Number of Fantasy Points Updated: ' + result)
+            return 0
+          })
+  })
+
+  
 }
 
 //runs for each league to run points
@@ -430,6 +467,7 @@ module.exports = {
   getDayCount,
   updateTeamPoints,
   updateLeaguePoints,
+  updateLeagueProjectedPoints,
   updateFantasy,
   updatePoints,
   getDayCountStr,

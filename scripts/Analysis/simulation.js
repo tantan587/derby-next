@@ -1,5 +1,5 @@
 const knex = require('../../server/db/connection')
-//const fantasyHelpers = require('../../server/routes/helpers/fantasyHelpers')
+const fantasyHelpers = require('../../server/routes/helpers/fantasyHelpers')
 //const leagues = require('./leagues.js')
 const Game = require('./GameClass.js')
 const Team = require('./TeamClass.js')
@@ -18,14 +18,14 @@ const math = require('mathjs')
 async function simulate(knex)
 {
     console.log('im in')
-    let simulations = 1000 //how many simulatoins to run
+    let simulations = 100 //how many simulatoins to run
     let all_teams = await dbSimulateHelpers.createTeams(knex)
     let all_points = await points.getPointsStructure(knex)
     var today = new Date()
     //this is the calculation of day count normally:
     let day_count = getDayCount(today)
     //this is the first day of the season of 2017
-    day_count = 1467
+    day_count = 1469
     /* this to be added back in later
     rpiHelpers.addRpiToTeamClass(knex,all_teams) */
     const games = await dbSimulateHelpers.createGamesArray(knex, all_teams,day_count)
@@ -39,11 +39,11 @@ async function simulate(knex)
     //.then(games => {
 
     //these are the functions for each individual season. 
+    const cfb_teams = simulateCFB(games, all_teams, all_points, simulations)
     const mlb_teams = simulateProfessionalLeague(games, all_teams, '103', all_points, simulations)
     const nba_teams = simulateProfessionalLeague(games, all_teams, '101', all_points, simulations)
     const nfl_teams = simulateProfessionalLeague(games, all_teams, '102', all_points, simulations)
     const nhl_teams = simulateProfessionalLeague(games, all_teams, '104', all_points, simulations)
-    const cfb_teams = simulateCFB(games, all_teams, all_points, simulations)
     const cbb_teams = simulateCBB(games, all_teams, all_points, simulations)
     const epl_teams = simulateEPL(games, all_teams, all_points, simulations)
     
@@ -66,8 +66,13 @@ async function simulate(knex)
             .then(()=> {
                 return db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', cbb_teams[1])
                 .then(() =>{
+                    return fantasyHelpers.updateLeagueProjectedPoints()
+                    .then(()=>{
+
+
                     console.log('done')
                     process.exit()
+                    })
                 })
             })
         })
@@ -122,7 +127,8 @@ const simulateProfessionalLeague = (all_games_list, teams, sport_id, points, sim
 const simulateCFB = (all_games_list, teams, points, simulations = 10) => {
     const cfb_teams = individualSportTeams(teams, '105')
     for(var x=0; x<simulations; x++){
-        all_games_list['105'].forEach(game => {game.play_game()})
+        all_games_list['105'].forEach(game => {
+            game.play_game()})
         cfb_teams.sort(function(a,b){return b.wins-a.wins})
         //play the conference championship games, add winners to array conference champions
         const conference_ids = ['10501', '10502', '10503', '10504', '10505']
