@@ -10,6 +10,7 @@ exports.up = function(knex, Promise) {
             t.string('period').notNullable()
             t.string('updated_time').notNullable()
             t.integer('season_type', 2,0).notNullable()
+            t.integer('year',4,0).notNullable()
         })
     ])     
 };
