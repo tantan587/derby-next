@@ -11,6 +11,7 @@ const fantasyHelpers = require('./helpers/fantasyHelpers')
 router.post('/createleague', authHelpers.loginRequired, (req, res, next)  => {
   return createLeague(req, res)
     .then((response) => { 
+      //this should be something different from update team points. Should just update league points, update league projected points
       return fantasyHelpers.updateTeamPoints(response.league_id)
         .then(() => {
           return getSimpleLeague(response.league_id, res, C.CREATE_LEAGUE_SUCCESS)})

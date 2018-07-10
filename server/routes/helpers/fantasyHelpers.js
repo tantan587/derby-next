@@ -284,7 +284,7 @@ const updateTeamPoints = async () =>
     })
 }
 
-const updateLeagueProjectedPoints = async () => {
+const updateLeagueProjectedPoints = async (league_id) => {
   // let fantasy_leagues = await knex.withSchema('fantasy').table('leagues').select('league_id', 'scoring_type_id')
   // let fantasy_rosters = await knex.withSchema('fantasy').table('rosters').select('*')
   // let fantasy_projections = await knex.withSchema('fantasy').table('projections').select('*')
@@ -303,7 +303,9 @@ const updateLeagueProjectedPoints = async () => {
   
   let m = math.max(rosters.map(team=>team.day_count))
 
-  let new_rosters = rosters.filter(team => team.day_count === m)
+  let new_rosters = league_id ? 
+    rosters.filter(team => {return (team.day_count === m && team.league_id === league_id)}) :
+    rosters.filter(team => team.day_count === m) 
 
   let byOwner = {}
   new_rosters.forEach(roster => {
