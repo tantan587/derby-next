@@ -6,33 +6,33 @@ import { withStyles } from '@material-ui/core/styles'
 const styles = {
   container: {
     left: '50%',
-    textAlign: 'center',
+    // textAlign: 'center',
     marginTop : '100px'
   },
   field: {
-    textAlign: 'center',
     width: 300,
   },
-  text: {color:'black',
+  text: {
+    color:'black',
     marginLeft:'10%',
     marginRight:'10%'
   },
   menu: {
     width: 200,
   },
-  centeredText: {
-    textAlign: 'center',
+  underline: {
+    // disableUnderline: true
+    // textAlign: 'center',
+    '&::before': {
+      borderBottom: '2px solid #299149'
+    }
+
   },
 }
 
 class DerbyTextField extends React.Component {
   render() {
     const { classes } = this.props
-    const InputProps = {
-      inputProps: {
-        className: classes.centeredText,
-      }
-    }
     const parsedErrorText = this.props.errorText || ''
     return (
       <TextField
@@ -45,7 +45,7 @@ class DerbyTextField extends React.Component {
         style={this.props.style}
         margin="normal"
         type={this.props.type}
-        InputProps={InputProps}
+        InputProps={{ classes: { underline: classes.underline } }}
         onChange = {this.props.onChange}/>
     )
   }
@@ -59,5 +59,3 @@ DerbyTextField.propTypes = {
 }
 
 export default withStyles(styles)(DerbyTextField)
-
-
