@@ -3,13 +3,13 @@ const fantasyHelpers = require('../server/routes/helpers/fantasyHelpers')
 const knex = require('../server/db/connection')
 const getDayCount = require('./Analysis/dayCount.js')
 
-//note: college basketball does not differentiate anywhere that i can tell between post and regular season
-//additionally, it includes nit wins in with the regular season as well
+//note: college basketball has an extra, old functino below: waiting to be sure we don't need this again
 
 //for CFB - this function also updates the post season standings.
 async function updateStandings()
 {
-  let cbbData = await getCBBstandings(knex, 'CBB', 'CBBv3StatsClient', 'getTeamSeasonStatsPromise', '2018')
+  //let cbbData = await getCBBstandings(knex, 'CBB', 'CBBv3StatsClient', 'getTeamSeasonStatsPromise', '2018')
+  let cbbData = await standingsBySport(knex, 'CBB', 'CBBv3StatsClient', 'getTeamSeasonStatsPromise', '2018')
   let cfbData = await getCFBstandings(knex, 'CFB', 'CFBv3ScoresClient', 'getTeamSeasonStatsStandingsPromise', '2017')
   let nhlData = await standingsBySport(knex, 'NHL', 'NHLv3StatsClient', 'getStandingsPromise', '2018')
   let nbaData = await standingsBySport(knex, 'NBA', 'NBAv3StatsClient', 'getStandingsPromise', '2018')
