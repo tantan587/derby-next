@@ -1,6 +1,4 @@
 import React from 'react'
-import AppBar from '@material-ui/core/AppBar'
-import Toolbar from '@material-ui/core//Toolbar'
 import Typography from '@material-ui/core/Typography'
 import { withStyles } from '@material-ui/core/styles'
 
@@ -8,7 +6,8 @@ const styles = () => ({
   title : {
     textAlign : 'left',
     color:'white',
-    fontFamily:'HorsebackSlab',
+    fontFamily:'museo-slab-bold',
+    textTransform: 'uppercase',
     zIndex:2,
     height:'45px',
     paddingTop:10,
@@ -28,13 +27,12 @@ const styles = () => ({
 class Title extends React.Component {
 
   render() {
-    const {backgroundColor, title, subheading, color, classes} = this.props
+    const {backgroundColor, title, subheading, color, classes, styles} = this.props
     return (
-
-          <Typography className={classes.title}  style={{backgroundColor:backgroundColor, color:color}} variant="display1">
-            {title}
-            <span className={classes.subheading}>{subheading}</span>
-          </Typography>
+      <Typography className={classes.title}  style={{backgroundColor:backgroundColor, color:color, ...styles}} variant="display1">
+        {title}
+        <span className={classes.subheading}>{subheading}</span>
+      </Typography>
     )
   }
 }

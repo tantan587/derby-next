@@ -2,29 +2,42 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
-import Button from '@material-ui/core/Button'
-import Link from 'next/link'
 import Router from 'next/router'
-import {isMobile} from '../lib/mobile'
 import { connect } from 'react-redux'
 
-const styles = {
+import StyledButton from './Navigation/Buttons/StyledButton'
+
+const styles = theme => ({
   container: {
-    left: '50%',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
     textAlign: 'center',
     marginTop : '100px'
   },
   field: {
     textAlign: 'center',
   },
-  text: {color:'black',
-    marginLeft:'10%',
-    marginRight:'10%'
-  }
-}
+  title: {
+    fontFamily: 'museo-slab-bold',
+    color: '#299149'
+  },
+  text: {
+    color: '#299149',
+    fontSize: 19,
+    fontWeight: 500,
+    margin: '0px 16%'
+  },
+  buttons: {
+    display: 'flex',
+    [theme.breakpoints.only('xs')]: {
+      flexDirection: 'column'
+    }
+  },
+})
 
 class ParticipateForm extends React.Component {
-  
+
   state = {
     fireRedirect : false
   }
@@ -42,7 +55,7 @@ class ParticipateForm extends React.Component {
 
   render() {
     const { classes } = this.props
-    
+
     if(this.state.fireRedirect){
       Router.push('/')
       return(<div></div>)
@@ -50,51 +63,26 @@ class ParticipateForm extends React.Component {
     else{
       return (
         <form className={classes.container} noValidate autoComplete="off">
-          <Typography variant="display2" className={classes.text} gutterBottom>
-            Derby: Fantasy Wins League
+          <Typography variant="display2" className={classes.title} gutterBottom>
+            Derby Fantasy Wins League
           </Typography>
-          <br/>
-          <br/>
           <Typography variant="subheading" className={classes.text} gutterBottom>
-          Pick your teams in this race and ride them to victory! 
-          In Derby Fantasy Wins League, compete with your friends
-           by drafting teams across multiple sports.
-            Earn points when your teams win throughout their entire seasons. 
-            The more games your teams win, the more points you earn.
+          Derby is the first of a new fantasy sports game: the multi-sport fantasy wins league. Instead of drafting individual players in a single sport, friends compete by drafting entire teams across multiple sports and earn points as your teams win games and earn playoff bonuses.
           </Typography>
-          <br/>
-          <br/>
-          {
-            isMobile() ?
-              <div>
-                <Link href ='/createleague'>
-                  <Button raised color="accent">
-                    Create New League
-                  </Button>
-                </Link>
-                <br/>
-                <br/>
-                <Link href ='/joinleague'>
-                  <Button  raised color="accent">
-                    Join Existing League
-                  </Button>
-                </Link>
-              </div> 
-              : 
-              <div>
-                <Link href ='/createleague'>
-                  <Button raised color="accent">
-                    Create New League
-                  </Button>
-                </Link>
-                <Link href ='/joinleague'>
-                  <Button style={{marginLeft:'20px'}} raised color="accent">
-                    Join Existing League
-                  </Button>
-                </Link>
-              </div> 
-          }
-          
+          <div className={classes.buttons}>
+            <StyledButton
+              link="/createleague"
+              text="Create New League"
+              height={36}
+              styles={{ fontSize: 13, fontWeight: 500, margin: '36px 22px 0px 22px' }}
+            />
+            <StyledButton
+              link="/joinleague"
+              text="Join Existing League"
+              height={36}
+              styles={{ fontSize: 13, fontWeight: 500, margin: '36px 22px 0px 22px' }}
+            />
+          </div>
         </form>
       )
     }
@@ -111,5 +99,3 @@ export default connect(
       user : state.user
     }),
   null)(withStyles(styles)(ParticipateForm))
-
-
