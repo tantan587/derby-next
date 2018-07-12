@@ -1,6 +1,7 @@
 const db_helpers = require('./helpers').data
 const fantasyHelpers = require('../server/routes/helpers/fantasyHelpers')
 const knex = require('../server/db/connection')
+const myNull = '---'
 
 
 
@@ -38,7 +39,12 @@ async function getData(league, url)
           away_team_id : game.away_team_id,
           date_time: game.date_time,
           day_count: fantasyHelpers.getDayCountStr(game.date_time),
-          sport_id:game.sport_id})    
+          sport_id:game.sport_id,
+          home_team_score: -1, away_team_score = -1,
+          status: "Scheduled", period: myNull, updated_time: myNull,
+          time: myNull, winner: myNull,
+          season_type: game.SeasonType
+        })    
       })
       newSchedule = newSchedule.filter(x => x.away_team_id && x.home_team_id)
       console.log(newSchedule.length)

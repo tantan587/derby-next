@@ -2,7 +2,8 @@ var methods = {}
 const rp = require('request-promise')
 const fdClientModule = require('fantasydata-node-client')
 
-//method to insert and create a table
+
+
 methods.insertIntoTable = function(knex, schema, table, data) {
   return knex
     .withSchema(schema)
@@ -10,7 +11,6 @@ methods.insertIntoTable = function(knex, schema, table, data) {
     .insert(data)
 }
 
-//method to find the Team ID?
 methods.getTeamId =  function(knex, sportId)
 {
   return knex
@@ -19,16 +19,26 @@ methods.getTeamId =  function(knex, sportId)
     .where('sport_id', sportId)
 }
 
-methods.getSportId =   function(knex, sportName)
+methods.getTeamIdMap = async function(knex, sport_id) {
+  let teamIds = await methods.getTeamAndGlobalId(knex, sport_id)
+  let teamIdMap = {}
+  teamIds.forEach(team => teamIdMap[team.global_team_id] = team.team_id)
+  return teamIdMap
+}
+
+methods.getSportId = async function(knex, sportName)
 {
   return knex
     .withSchema('sports')
     .table('leagues')
     .where('sport_name', sportName) 
     .select('sport_id')
+    .then((x)=>{
+      return x[0].sport_id
+    })
 }
-//method to find team and global id
-methods.getTeamAndGlobalId =  function(knex, sportId)
+
+methods.getTeamAndGlobalId =  async function(knex, sportId)
 {
   return knex
     .withSchema('sports')
@@ -37,102 +47,67 @@ methods.getTeamAndGlobalId =  function(knex, sportId)
     .select('team_id', 'global_team_id')
 }
 
-methods.getFantasyData = async (knex, sportName, url, teamKeyField, confField, eplAreaIdInd = false) => 
-{
-  console.log(sportName)
-  let league = await knex
-    .withSchema('sports')
-    .table('leagues')
-    .where('sport_name', sportName)
-  const sportId = league[0].sport_id
-  
-  let teamIdMap = {}
-  const teamIds = await methods.getTeamId(knex, sportId)
-         
-  teamIds.forEach(r => teamIdMap[r.fantasydata_id]= r.team_id)
+methods.createScheduleForInsert = function(cleanSched, sport_id, idSpelling, teamIdMap, fantasyHelpers, myNull) {
 
-  const options = {
-    url: url,
-    headers: {
-      'User-Agent': 'request',
-      'Ocp-Apim-Subscription-Key':league[0].fantasy_data_key
-    },
-    json: true
-  }
-
-  let confMap = {}
-  const conferences = await knex
-    .withSchema('sports')
-    .table('conferences')
-    .leftOuterJoin('conferences_link', 'conferences.conference_id', 'conferences_link.conference_id')
-    .where('sport_id',sportId)
-    .select('conferences.conference_id', 'conferences.name', 'display_name', 'fantasy_data_key')
-  
-  //checks to see if the conference has a fantasy data representation (used for college sports)
-  let filterConferencesInd = conferences[0].fantasy_data_key !== null
-  if(filterConferencesInd)
-  {
-    conferences.forEach(conf => confMap[conf.fantasy_data_key] = conf.conference_id)
-  }
-  else{
-    conferences.forEach(conf => confMap[conf.name] = conf.conference_id)
-  }
-
-  let fdata = await rp(options)
-  let teams = []
-
-  //filter out only the conferences we are using
-  //TODO: this needs to change as we need more info on all teams
-  if (filterConferencesInd) {
-    fdata.filter(fd => fd.ConferenceID in confMap)
-      .map(conf => 
-        conf.Teams.map(team => 
-          teams.push({...team, 
-            sport_id:sportId,
-            conference_id:confMap[conf[confField]], 
-            team_id:teamIdMap[team[teamKeyField]]})))
-  }
-  // used for creation of epl leagues
-  else if(eplAreaIdInd){
-
-    fdata.filter(fd => fd.AreaId === 68 || fd.TeamId === 523)
-      .map(team =>
-      {
-        if(teamIdMap[team[teamKeyField]])
-        {
-          teams.push({...team, 
-            sport_id:sportId,
-            conference_id: confMap[sportName], 
-            team_id:teamIdMap[team[teamKeyField]]})
-        }
-      })
-  } 
-  //used for everything else (nba, nhl, mlb, nfl and epl when not creating)   
-  else{
-    fdata
-      .map(team =>
-        teams.push({...team, 
-          sport_id:sportId,
-          conference_id: sportName === 'EPL' ? confMap[sportName] : confMap[team[confField]], 
-          team_id:teamIdMap[team[teamKeyField]]}))
-  }
-  return teams
-
+  return cleanSched.map(game => {
+//below is commented out, and kept, becasue it was there to catch teams that didn't go through, and didn't have IDs
+    /*     if(sport_id==106 || sport_id==105){
+      if(!(game.GlobalHomeTeamID in teamIdMap)){
+        console.log(game.HomeTeam)
+      }
+      if(!(game.GlobalAwayTeamID in teamIdMap)){
+        console.log(game.AwayTeam)
+      }
+    } */
+    let date_time = game.DateTime ? game.DateTime : game.Day;
+    let status = sport_id !== '102' ? game.Status :
+      game.IsOver ? game.IsOvertime ? 'F/OT' : 'Final' : game.IsInProgress ? 'InProgress' : game.Canceled ? 'Canceled' : 'Scheduled';
+    let home_score = sport_id === '103' ? game.HomeTeamRuns : sport_id === '102' ? game.HomeScore : game.HomeTeamScore;
+    let away_score = sport_id === '103' ? game.AwayTeamRuns : sport_id === '102' ? game.AwayScore : game.AwayTeamScore;
+    return {
+    global_game_id: game['GlobalGame' + idSpelling],
+      home_team_id: teamIdMap[game['GlobalHomeTeam' + idSpelling]],
+      away_team_id: teamIdMap[game['GlobalAwayTeam' + idSpelling]],
+      date_time: date_time,
+      day_count: fantasyHelpers.getDayCountStr(date_time),
+      status: status,
+      sport_id: sport_id,
+      home_team_score: home_score !== null ? home_score : -1,
+      away_team_score: away_score !== null ? away_score : -1,
+      winner: status[0] === 'F' ? home_score > away_score ? 'H' : away_score < home_score ? 'A' : 'T' : myNull,
+      time: sport_id === '103' ? game.Outs === null ? myNull : game.Outs :
+        sport_id === '107' ? game.Clock === null ? myNull : game.Clock :
+          sport_id === '102' ? game.TimeRemaining === null ? myNull : game.TimeRemaining :
+            game.TimeRemainingMinutes === null
+              ? myNull
+              : (game.TimeRemainingMinutes < 10 ? '0' + game.TimeRemainingMinutes : game.TimeRemainingMinutes)
+              + ':' + (game.TimeRemainingSeconds < 10 ? '0' + game.TimeRemainingSeconds : game.TimeRemainingSeconds),
+      period: sport_id === '103' ? game.Inning === null ? myNull : game.InningHalf + game.Inning :
+        sport_id === '104' ? game.Period === null ? myNull : game.Period :
+          sport_id === ('105' || '106') ? game.TimeRemainingMinutes !== null ? game.Period : myNull :
+            sport_id === '107' ? game.Clock === null ? myNull : game.Clock < 45 ? 1 : 2 :
+              game.Quarter === null || status[0] === 'F' ? myNull : game.Quarter,
+      updated_time: sport_id === '103' ? game.Status === 'InProcess' ? game.InningHalf + game.Inning + '-' + game.Outs + ':' + game.Balls + ':' + game.Strikes : game.Status :
+        sport_id === '102' ? game.LastUpdated ? game.LastUpdated : myNull :
+          game.Updated ? game.Updated : myNull,
+      season_type: game.SeasonType, year: game.Season
+    }
+  })
 }
-
 methods.getScheduleData = (knex, sportName, url) => 
 {
   return knex
     .withSchema('sports')
     .table('leagues')
-    .where('sport_name', sportName) //grabs the sport we are looking for from postgres
+    .where('sport_name', sportName)
     .then((league)=> {
       const sportId = league[0].sport_id
-      const idSpelling = sportName === 'EPL' ? 'Id' : 'ID' //EPL lists its ID as Id, so fix that
+      const idSpelling = sportName === 'EPL' ? 'Id' : 'ID'
       return methods.getTeamAndGlobalId(knex, sportId)
         .then(teamIds => {
           let teamIdMap = {}
           teamIds.map(r => teamIdMap[r.global_team_id]= r.team_id)
+
           const options = {
             url: url,
             headers: {
@@ -158,20 +133,218 @@ methods.getScheduleData = (knex, sportName, url) =>
     })
 }
 
-methods.getFdata = async (knex, sportName,api, promiseToGet) =>
+methods.getFdata = async (knex, sportName,api, promiseToGet, parameters=false, second_parameter=false) =>
 {
 
   let league = await knex
-    .withSchema('sports')
-    .table('leagues')
-    .where('sport_name', sportName)
+  .withSchema('sports')
+  .table('leagues')
+  .where('sport_name', sportName)
 
   const keys = {}
   keys[api] = league[0].fantasy_data_key
+  const sport_id = league[0].sport_id
+  const FantasyDataClient = new fdClientModule(keys);
 
-  const FantasyDataClient = new fdClientModule(keys)
-  return FantasyDataClient[api][promiseToGet]()
   
+  if(parameters===false){
+    return FantasyDataClient[api][promiseToGet]()
+  }else if(second_parameter===false){
+    return FantasyDataClient[api][promiseToGet](parameters)
+  }else{
+    return FantasyDataClient[api][promiseToGet](parameters, second_parameter)
+  }
+  
+}
+
+methods.createStandingsData = async (knex, sportName, api, promiseToGet, year) =>{
+  let standData = await methods.getFdata (knex, sportName, api, promiseToGet, year)
+  let sport_id = await methods.getSportId(knex, sportName)
+  let cleanStand = JSON.parse(standData)
+  let teamIdMap = await methods.getTeamIdMap(knex, sport_id)
+  
+  let standInfo = []
+  console.log(sportName)
+  if(sportName === 'CFB'||sportName ==='CBB'){
+    cleanStand.forEach(team => {
+      if(teamIdMap[team.GlobalTeamID]!== undefined){
+        standInfo.push({...team, team_id: teamIdMap[team.GlobalTeamID]})
+      }
+      })
+  }else if(sportName==='EPL'){
+    let newStand = cleanStand.filter(standings => standings.Scope === 'Total')
+    console.log(newStand.length)
+    standInfo = newStand.map(team=>
+      {
+        let global = fantasy_2_global[sportName] + Number(team.TeamId)
+        return {...team, team_id: teamIdMap[global]}
+      })
+  }else{
+      standInfo = cleanStand.map(team =>
+      {
+        //let f_team_id = sportName !== 'NFL' ? Number(team['Team'+idSpelling])<10 ? "0"+String(team.TeamID) : team.TeamID : team.TeamID
+        //let global = fantasy_2_global[sportName]+f_team_id
+        let global = fantasy_2_global[sportName] + Number(team.TeamID)
+        return {...team, team_id: teamIdMap[global]}
+      })
+    }
+
+  return standInfo
+}
+
+const fantasy_2_global = {
+  'NBA': 20000000,
+  'NFL': 0,
+  'MLB': 10000000,
+  'NHL': 30000000,
+  'CBB': 50000000,
+  'CFB': 60000000,
+  'EPL': 90000000
+}
+
+methods.createSportData = async (knex, sport_id, sportName, api, promiseToGet, detail = false) => {
+
+  let teams = await methods.getFdata(knex, sportName, api, promiseToGet, detail)
+  let teamIdMap = await methods.getTeamIdMap(knex, sport_id)
+    
+  const conferences = await knex
+    .withSchema('sports')
+    .table('conferences')
+    .leftOuterJoin('conferences_link', 'conferences.conference_id', 'conferences_link.conference_id')
+    .where('sport_id',sport_id)
+    .select('conferences.conference_id', 'conferences.name', 'display_name', 'fantasy_data_key')
+  
+  let confMap = {}
+  conferences.forEach(conf => {
+    if(conf.fantasy_data_key !== null){
+      confMap[conf.fantasy_data_key] = conf.conference_id
+    }else{
+      confMap[conf.name] = conf.conference_id
+    }
+    })
+
+
+  let cleanTeams = JSON.parse(teams)
+
+  return [cleanTeams, teamIdMap, confMap]
+
+}
+
+methods.updateSchedule = (knex, newResults) =>
+{
+  return knex
+    .withSchema('sports')
+    .table('schedule')
+    .then(results => {
+      let oldResults = {}
+      var updateList =[]
+      results.forEach(result => oldResults[result.global_game_id] =result.updated_time)
+      let gameErrors = []
+      newResults.forEach(x =>
+      {
+
+        if(x.away_team_id==null || x.home_team_id ==null){
+          gameErrors.push([x.global_game_id, x.date_time])
+        }else{
+          if(!(x.global_game_id in oldResults))
+          {
+            updateList.push(Promise.resolve(methods.insertOneResultRow(knex, x)))
+          }
+          else if(oldResults[x.global_game_id] !== x.updated_time)
+          { 
+            updateList.push(Promise.resolve(methods.updateOneResultRow(knex, x.global_game_id, x)))
+          }
+          //this is only needed to add in years the first time
+/*           else if(oldResults[x.global_game_id].year !== x.year){
+            updateList.push(Promise.resolve(methods.updateOneResultRow(knex, x.global_game_id, x)))
+}
+ */
+
+      }
+      })
+      gameErrors.forEach(game => console.log(game))
+      console.log(gameErrors.length)
+      if (updateList.length > 0)
+      {
+        return Promise.all(updateList)
+          .then(() => { 
+            //console.log("im done updating!")
+            return updateList.length
+          })
+      }
+      else
+        return 0
+    })
+}
+
+methods.updateBowlWins = async (knex, bowl_wins, playoff_wins) => {
+  let results = 
+    await knex
+    .withSchema('sports')
+    .table('playoff_standings')
+    .where('team_id', '>', 105000)
+    .andWhere('team_id','<', 105999)
+  
+  let oldStandings = {}
+  var updateList = []
+  results.forEach(result => oldStandings[result.team_id] = result)
+
+  bowl_wins.forEach(teamRec => {
+    if(oldStandings[teamRec.team_id].bowl_wins !== teamRec.bowl_wins)  
+        updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'bowl_wins', teamRec.bowl_wins, true )))
+  })
+
+  playoff_wins.forEach(teamRec => {
+    if(oldStandings[teamRec.team_id].playoff_status !== teamRec.playoff_status)  
+        updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'playoff_status', teamRec.playoff_status, true )))
+    if(oldStandings[teamRec.team_id].playoff_wins !== teamRec.playoff_wins)  
+        updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'playoff_wins', teamRec.playoff_wins, true )))
+    if(oldStandings[teamRec.team_id].playoff_losses !== teamRec.playoff_losses)  
+        updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'playoff_losses', teamRec.playoff_losses, true )))
+  })
+
+  if (updateList.length > 0)
+  {
+    return Promise.all(updateList)
+      .then(() => { 
+        //console.log("im done updating!")
+        return updateList.length
+      })
+  }
+  else
+    return 0
+}
+
+methods.updatePlayoffStandings = (knex, newStandings) =>
+{
+  return knex
+    .withSchema('sports')
+    .table('playoff_standings')
+    .then(results => {
+      let oldStandings = {}
+      var updateList =[]
+      results.map(result => oldStandings[result.team_id] =result)
+
+      newStandings.map(teamRec =>
+      {
+        if(oldStandings[teamRec.team_id].playoff_wins !== teamRec.playoff_wins)  
+          updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'playoff_wins', teamRec.playoff_wins, true )))
+        if(oldStandings[teamRec.team_id].playoff_losses !== teamRec.playoff_losses)  
+          updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'playoff_losses', teamRec.playoff_losses, true )))
+        if(oldStandings[teamRec.team_id].playoff_status !== teamRec.playoff_status)  
+          updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'playoff_status', teamRec.playoff_status, true )))
+      })
+      if (updateList.length > 0)
+      {
+        return Promise.all(updateList)
+          .then(() => { 
+            //console.log("im done updating!")
+            return updateList.length
+          })
+      }
+      else
+        return 0
+    })
 }
 
 methods.updateStandings = (knex,newStandings) =>
@@ -197,40 +370,6 @@ methods.updateStandings = (knex,newStandings) =>
       {
         return Promise.all(updateList)
           .then(() => { 
-            return updateList.length
-          })
-      }
-      else
-        return 0
-    })
-}
-
-methods.updateSchedule = (knex,newResults) =>
-{
-  return knex
-    .withSchema('sports')
-    .table('results')
-    .then(results => {
-      let oldResults = {}
-      var updateList =[]
-      //map all the old results into a dictionary, with the global game ID as key, and the time updated as what it pulls
-      results.map(result => oldResults[result.global_game_id] =result.updated_time)
-      newResults.map(x =>
-      {
-        if(!(x.global_game_id in oldResults)) //check to see if the game is in the old results - if its not:
-        {
-          updateList.push(Promise.resolve(methods.insertOneResultRow(knex, x))) //insert a new results row
-        }
-        else if(oldResults[x.global_game_id] !== x.updated_time) //if it is in old results, check to see if the time is same as last update
-        { 
-          console.log(x.global_game_id) 
-          updateList.push(Promise.resolve(methods.updateOneResultRow(knex, x.global_game_id, x))) //update result row
-        }
-      })
-      if (updateList.length > 0)
-      {
-        return Promise.all(updateList)
-          .then(() => { 
             //console.log("im done updating!")
             return updateList.length
           })
@@ -240,11 +379,12 @@ methods.updateSchedule = (knex,newResults) =>
     })
 }
 
-methods.updateOneStandingRow = (knex, team_id, column, value) =>
+methods.updateOneStandingRow = (knex, team_id, column, value, playoffs=false) =>
 {
+  let table = playoffs ? 'playoff_standings' : 'standings'
   return knex
     .withSchema('sports')
-    .table('standings')
+    .table(table)
     .where('team_id',team_id)
     .update(column, value)
     .then(() =>
@@ -257,7 +397,7 @@ methods.insertOneResultRow = (knex, row) =>
 {
   return knex
     .withSchema('sports')
-    .table('results')
+    .table('schedule')
     .insert(row)
 }
 
@@ -265,7 +405,7 @@ methods.updateOneResultRow = (knex, global_game_id, row) =>
 {
 
   return knex.transaction(function (t) {
-    return knex.withSchema('sports').table('results')
+    return knex.withSchema('sports').table('schedule')
       .transacting(t)
       .where('global_game_id',global_game_id)
       .del()
@@ -274,7 +414,7 @@ methods.updateOneResultRow = (knex, global_game_id, row) =>
         return knex
           .transacting(t)
           .withSchema('sports')
-          .table('results')
+          .table('schedule')
           .insert(row)
       })
       .then(()=>{t.commit})
