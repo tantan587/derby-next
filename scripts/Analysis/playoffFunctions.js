@@ -90,36 +90,37 @@ const simulateNHLconf = (conference, simulateHelpers) => {
     conference_champ.finalist++
     return conference_champ
 }
-const simulateEPLconf =(conference) => {return 1}
 
-const simulateCFBconf =(conference) => {
-    if (conference[0].conference_id != '10502'){
+const simulateCFBconf =(conference, simulateHelpers) => {
+    let conf_champ = []
+    if (conference[0].conference != '10502'){
         let division_1 = conference[0].division //this is one of the two divisions
-    //create an array of all the teams in each division
+        //create an array of all the teams in each division
         let list_division_1 = conference.filter(team => team.division === division_1)
-        let list_division_2 = conference.filter(team => team.division != division_1)
-        let conf_champ = simulateHelpers.simulateGame(list_division_1[0], list_division_2[0],'105',neutral=true)
+        let list_division_2 = conference.filter(team => team.division !== division_1)
+        conf_champ = simulateHelpers.simulateGame(list_division_1[0], list_division_2[0],'105',neutral=true)
     }else{
-        let conf_champ = simulateHelpers.simulateGame(conference[0], conference[1],'105',neutral=true)
+        conf_champ = simulateHelpers.simulateGame(conference[0], conference[1],'105',neutral=true)
     }
-    return conf_champ}
+    return conf_champ[0]}
     
 const simulateCBBconf = (conference, simulateHelpers) => {
     let total_teams = conference.length
-    console.log("total teams", total_teams)
-    console.log(conference[0].conference)
-    let rounds = total_teams === 8 ? 3: total_teams < 12 ? 4:5
+    //console.log("total teams", total_teams)
+    //console.log(conference[0].conference)
+    let rounds = total_teams === 8 ? 3: total_teams < 13 ? 4:5
     let tournament_teams_left = conference
-    let teams_left,non_byes = 0
+    let teams_left = 0
+    let byes = 0
     let this_round_teams = []
     let next_round_teams = []
     for(let x = 0; x<rounds; x++){
         teams_left = tournament_teams_left.length
-        non_byes = teams_left > 12 ? (teams_left-12)*2: teams_left>8 ? (teams_left-8)*2:0
-        this_round_teams = tournament_teams_left.slice((non_byes-1),teams_left)
-        next_round_teams = non_byes === 0 ? []:tournament_teams_left.slice(0, non_byes)
-        for(let y = 0; y<(non_byes/2); y++){
-            //console.log(y)
+        byes = teams_left > 12 ? 24-teams_left: teams_left>8 ? 16-teams_left:0
+        this_round_teams = tournament_teams_left.slice(byes)
+        next_round_teams = byes === 0 ? []:tournament_teams_left.slice(0, byes)
+        for(let y = 0; y<((teams_left-byes)/2); y++){
+            //console.log("game #",y)
             let team_1 = this_round_teams.shift()
             let team_2 = this_round_teams.pop()
             //console.log(team_1.name)

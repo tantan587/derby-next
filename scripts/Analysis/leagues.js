@@ -11,12 +11,12 @@ const MLB_margin_mod = (margin, elo_difference) =>
 
 const NFL_margin_mod = (margin, elo_difference) =>
 {
-    return Math.log(Math.abs(margin)+1, Math.E) * 2.2/((elo_diffence)*.001 + 2.2)
+    return Math.log(Math.abs(margin)+1, Math.E) * 2.2/((elo_difference)*.001 + 2.2)
 }
 
 const NBA_margin_mod = (margin, elo_difference) =>
 {
-    return (pow((margin+3),0.8))/(7.5+0.006*elo_difference)
+    return (Math.pow((Math.abs(margin)+3),0.8))/(7.5+0.006*elo_difference)
 }
 
 const NHL_margin_mod = (margin, elo_difference) =>
@@ -26,20 +26,29 @@ const NHL_margin_mod = (margin, elo_difference) =>
 
 const CFB_margin_mod = (margin, elo_difference) => 
 {
-    return 1 //tbd - not done yet
+    //same as NFL currently - maybe should eventually be changed
+    return Math.log(Math.abs(margin)+1, Math.E) * 2.2/((elo_difference)*.001 + 2.2) //tbd - not done yet
 }
 
 const CBB_margin_mod = (margin, elo_difference) => 
 {
-    return 1 //tbd - not done yet
+    //using the same as NBA for now - may change later
+    return (Math.pow((Math.abs(margin)+3),0.8))/(7.5+0.006*elo_difference)
 }
 
 const EPL_margin_mod = (margin, elo_difference) => 
 {
-    return 1 //tbd - not done yet
+    
+    //ΔElo_margin = ΔElo_1goal * sqrt(margin), where
+    //ΔElo_1goal = ΔElo_1X2 / sum(sqrt(margin)*p_margin/p_1X2)
+
+    //using same as NHL right now, since scoring is somewhat similar. We will see how it goes...
+    return Math.log(Math.abs(margin - (.85 * (elo_difference/100))) + Math.E - 1)
+    //return 1 //tbd - not done yet
 }
 
 //object with base information for each league
+//all the guesses for EPL are just that - guesses. Down line hope to build our own
 const leagues = {
     101: {sport_name: 'NBA', elo_adjust: 20, MOVmod: NBA_margin_mod, home_advantage: 100, conferences: ['10101', '10102']},
     102: {sport_name: 'NFL', elo_adjust: 20, MOVmod: NFL_margin_mod, home_advantage: 65, conferences: ['10201', '10202']},
@@ -47,7 +56,7 @@ const leagues = {
     104: {sport_name: 'NHL', elo_adjust: 8, MOVmod: NHL_margin_mod, home_advantage: 35, conference: ['10401', '10402']},
     105: {sport_name: 'CFB', elo_adjust: 30, MOVmod: CFB_margin_mod, home_advantage: 85},
     106: {sport_name: 'CBB', elo_adjust: 35, MOVmod: CBB_margin_mod, home_advantage: 50},
-    107: {sport_name: 'EPL', elo_adjust:'TBD', MOVmod: EPL_margin_mod, home_advantage: 'TBD'}
+    107: {sport_name: 'EPL', elo_adjust: 20, MOVmod: EPL_margin_mod, home_advantage: 25}
     }
 
 module.exports = leagues

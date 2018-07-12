@@ -11,6 +11,7 @@ const fantasyHelpers = require('./helpers/fantasyHelpers')
 router.post('/createleague', authHelpers.loginRequired, (req, res, next)  => {
   return createLeague(req, res)
     .then((response) => { 
+      //this should be something different from update team points. Should just update league points, update league projected points
       return fantasyHelpers.updateTeamPoints(response.league_id)
         .then(() => {
           return getSimpleLeague(response.league_id, res, C.CREATE_LEAGUE_SUCCESS)})
@@ -69,7 +70,7 @@ function createLeague(req, res) {
               .insert({
                 league_id : league_id,
                 league_name: req.body.leagueInfo.league_name,
-                year_starting : 2017,
+                year_starting : 2017, //this needs to be year independent, so that it can function
                 year_ending : 2018,
                 max_owners : req.body.leagueInfo.max_owners, 
                 league_password: req.body.leagueInfo.league_password,
@@ -116,6 +117,7 @@ function createLeague(req, res) {
                                   .insert(sportsData.conferences)
                                   .returning('conference_id')
                                   .then(()=>{
+                                    //this may need to be updated with the update to the team points
                                     return knex.withSchema('fantasy').table('team_points')
                                       .transacting(t)
                                       .insert(sportsData.teams)

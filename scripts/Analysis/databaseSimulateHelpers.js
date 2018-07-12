@@ -20,10 +20,7 @@ const pullFutureGames = (knex, day) =>
 {
     return knex('sports.schedule')
         .where('sports.schedule.day_count', ">", day) //need to test if want to go past today, or include this day count
-        .innerJoin('sports.results','sports.results.global_game_id','sports.schedule.global_game_id')
-        .select('sports.results.global_game_id', 'sports.schedule.home_team_id', 
-        'sports.results.home_team_score','sports.schedule.away_team_id', 'sports.results.away_team_score',
-        'sports.results.winner','sports.schedule.sport_id')
+        .select('*')
         .then(game => {
             //console.log(game)
             return game})
@@ -65,7 +62,7 @@ const createGamesArray = async (knex, all_teams, day) => {
     })}
 
 
-//creates an array of played games by sport, with the past games, to use either for updating elos or testing simulate functions
+//creates an array of played games by sport, with the past games, to use either for  testing simulate functions
 const createPastGamesArray = (all_teams, day) => {
     all_games = {101:[], 102:[],103:[],104:[],105:[],106:[],107:[]}
     return pullPastGames(knex, day)
@@ -76,8 +73,28 @@ const createPastGamesArray = (all_teams, day) => {
     return all_games
     })}
 
-const getCBBConferences = (knex) => {
+//creates an array of played games by sport, with the past games, to use either for updating elos
+const createPastGamesArrayWithScores = async (knex, all_teams, day) => {
+    all_games = {101:[], 102:[],103:[],104:[],105:[],106:[],107:[]}
+    return pullPastGames(knex, day)
+    .then(games => {
+        games.forEach(game => {
+            all_games[game.sport_id].push(new Game(game.global_game_id, all_teams[game.sport_id][game.home_team_id], all_teams[game.sport_id][game.away_team_id], game.sport_id, game.home_team_score, game.away_team_score))
+        })
+    return all_games
+    })}
+
+const getPointsStructure = async (knex, scoring_type = 1) => {
     return knex
-        .withSchema()
-}
-module.exports = {createGamesArray, createPastGamesArray, createTeams}
+        .withSchema('fantasy')
+        .table('scoring')
+        .where('scoring_type_id', scoring_type)
+        .then((points)=>{
+        let point_map = {}
+        points.forEach(structure => {
+            points_map[strucure.sport_id] = {...structure}
+        })
+        return point_map
+        })
+    }
+module.exports = {createGamesArray, createPastGamesArray, createTeams, createPastGamesArrayWithScores}
