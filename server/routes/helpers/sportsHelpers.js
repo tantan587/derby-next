@@ -60,16 +60,15 @@ const getNearSchedule = () => {
   //-60 for eastern time zone. 
   var nd = new Date(d.getTime() - ((d.getTimezoneOffset()-60) * 60000))
   const dayCount = fantasyHelpers.getDayCountStr(nd.toJSON())
-  var str =  `select * from sports.schedule a, sports.results b where
-         a.global_game_id = b.global_game_id
-          and day_count in(` + dayCount + ', ' + (dayCount + 1) + ', ' + (dayCount - 1) + ')'    
+  var str =  `select * from sports.schedule where
+   day_count in(` + dayCount + ', ' + (dayCount + 1) + ', ' + (dayCount - 1) + ')'    
   return getSchedule(str)
 }
 
 const getLeagueSchedule = (league_id, date, res) => {
   const dayCount = fantasyHelpers.getDayCountStr(date)
-  var str =  `select a.*, c.* from sports.schedule a, fantasy.sports b, sports.results c where
-          b.league_id = '` + league_id + `' and a.sport_id = b.sport_id and a.global_game_id = c.global_game_id
+  var str =  `select a.*, b.* from sports.schedule a, fantasy.sports b where
+          b.league_id = '` + league_id + `' and a.sport_id = b.sport_id
           and day_count = ` + dayCount
 
   return getSchedule(str)
@@ -168,9 +167,8 @@ const getOneTeam  = async(league_id, team_id, res) =>{
     on x.team_id = y.team_id `
 
   const str3 = `select *
-    from sports.schedule a, sports.results b
-    where a.global_game_id = b.global_game_id
-    and (a.home_team_id = `+ team_id + ' or a.away_team_id = ' + team_id + ' ) order by day_count'
+    from sports.schedule a
+    where (a.home_team_id = `+ team_id + ' or a.away_team_id = ' + team_id + ' ) order by day_count'
   let teamInfo = await knex.raw(str1)
   let fantasyInfo = await knex.raw(str2)
   let schedule = await knex.raw(str3)

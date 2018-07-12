@@ -24,8 +24,8 @@ const createCollegeSport = async (knex, sport_id, sportName, api, promiseToGet) 
         standings.push({team_id: team_id, wins : 0, losses: 0, ties: 0})
         
         playoff_standings.push({team_id: team_id, playoff_wins : 0, playoff_losses: 0, byes: 0, bowl_wins: 0, playoff_status: 'tbd'})
-    
-    
+
+
     })
 
 

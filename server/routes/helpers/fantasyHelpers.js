@@ -118,9 +118,9 @@ const getOwnersUpcomingGames = async (ownerId) =>
   const dayCount = getDayCountStr(nd.toJSON())
 
   const str = `select a.team_id as my_team_id, b.*
-  from fantasy.rosters a, sports.schedule b, sports.results c
+  from fantasy.rosters a, sports.schedule b,
    where (a.team_id = b.home_team_id or a.team_id = b.away_team_id) 
-   and b.global_game_id = c.global_game_id and c.status = 'Scheduled'
+   and b.status = 'Scheduled'
    and day_count >= ` + dayCount + ' and owner_id = \'' + ownerId + '\'  order by day_count limit 7'
 
   let resp = await knex.raw(str)
