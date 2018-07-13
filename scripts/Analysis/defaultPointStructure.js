@@ -1,5 +1,5 @@
 const knex = require('../../server/db/connection')
-
+//make this into a seed
 const data = [
     {sport_id:102, scoring_type_id: 1, name: "default", regular_season: {win: 15, tie: 0}, playoffs: {win: 15, bye: 15}, bonus: {championship: 20, finalist: 20, appearance: 20}},
     {sport_id:101, scoring_type_id: 1, name: "default", regular_season: {win: 3, tie: 0}, playoffs: {win: 3}, bonus: {championship: 20, finalist: 20, appearance: 20}},
