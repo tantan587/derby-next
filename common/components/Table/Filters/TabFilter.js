@@ -1,7 +1,6 @@
 import React from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import AppBar from '@material-ui/core/AppBar'
-import Toolbar from '@material-ui/core/Toolbar'
 import Button from '@material-ui/core/Button'
 import { Scrollbars } from 'react-custom-scrollbars'
 import SportIconText from '../../Icons/SportIconText'
@@ -14,7 +13,7 @@ const styles = () => ({
     position:'relative'
   },
   appBar : {
-    height:'50px',
+    //height:'50px',
     boxShadow: ['none']}
 })
 
@@ -23,11 +22,19 @@ class TabFilter extends React.Component {
     super(props, context)
 
     this.state = {
-      index: props.defaultTab ? props.defaultTab : 0,
+      index: props.defaultTab || 0,
+      localTabs: this.calculateTabs(props)
     }
   }
 
-  componentWillMount() {
+  calculateTabs = (props) => {
+    let localTabs = props.tabs
+    localTabs = props.allInd ? ['All'].concat(localTabs) : localTabs
+    localTabs = props.myOwnerName ? localTabs.concat('Mine') : localTabs
+    return localTabs
+  }
+
+  componentDidMount() {
     this.filterRows(this.state.index)
   }
 
@@ -36,7 +43,7 @@ class TabFilter extends React.Component {
   //     this.setState({index:this.props.defaultTab})
   // }
 
-  handleTabClick = index => () =>
+  handleTabClick = (index) => () =>
   {
     this.setState({ index: index })
     this.filterRows(index)
@@ -44,46 +51,57 @@ class TabFilter extends React.Component {
   }
 
   filterRows = (index) => {
-    const {rows, column, tabs, updateMyRows, passUpFilterInfo} = this.props
-
-    const filter = index === tabs.length ? 0 : tabs[index]
-    const localRows = filter ? rows.filter(row => row[column] == filter) : rows
-    updateMyRows(localRows)
-    if (passUpFilterInfo)
+    const {rows, column, tabs, myOwnerName, updateMyRows, passUpFilterInfo} = this.props
+    const {localTabs} = this.state
+    let localRows
+    if(localTabs && localTabs[index] === 'Mine')
     {
-      passUpFilterInfo({key:column, value:filter, type:'tab'})
+      localRows  = rows.filter(row => row['owner_name'] == myOwnerName)
     }
+    else{
+      //if localTabs exists and that tab 
+    //was passed in via props, (rather than added in the filter)
+    //then get the localTabs location (because it might have switched positions)
+    //else return null
+      const filter = localTabs && tabs.includes(localTabs[index]) ? localTabs[index] : null
+      localRows = filter ? rows.filter(row => row[column] == filter) : rows
+      if (passUpFilterInfo)
+      {
+        passUpFilterInfo({key:column, value:filter, type:'tab'})
+      }
+    }
+    updateMyRows(localRows)
+    
 
   }
 
   render() {
-    const {tabs, allInd, sportInd, imageInd, classes, tabStyles} = this.props
-    const {index} = this.state
-    let localTabs = allInd ? tabs.concat('All') : tabs
-    let height = sportInd && imageInd ? 90 : 50
+    const {sportInd, imageInd, classes, tabStyles} = this.props
+    const {index, localTabs} = this.state
+    let height = sportInd && imageInd ? 100 : 50
     return (
-      <div style={{width: '96%'}}>
+      <div style={{width:'96%'}}>
         <AppBar position="static"
           className={classes.appBar}
-          style={{backgroundColor:tabStyles.backgroundColor, marginLeft:'2%', height:height }} >
-          <Scrollbars autoHide autoHeight style={{ width: '100%'}}>
-            <Toolbar style={{}}>
+          style={{backgroundColor:tabStyles.backgroundColor, marginLeft:'2%', height:height, minHeight:height }} >
+          <Scrollbars autoHide style={{ width: '100%'}}>
+            <div style={{display:'flex', justifyContent:'center', alignItems:'flex-end',height:height }}>
               {localTabs.map((x,i) => {
                 let style = i === index ? {backgroundColor:tabStyles.selectedBackgroundColor,
                   color:tabStyles.selectedColor} : {color:tabStyles.color}
                 let display = sportInd ? 
                   imageInd ? 
-                    <SportIconText tabInd={true} color={style.color} sportId={x}/> 
-                    : <SportText color={style.color} sportId={x}/>
+                    <SportIconText color={style.color} sportId={x}/> 
+                    : <SportText color={style.color} sportId={x} fontSize={tabStyles.fontSize}/>
                   : x
                 return <Button key={i}
                   className={classes.button}
-                  style={{...style,fontSize:tabStyles.fontSize, height:height, width:80}}
-                  onClick={this.handleTabClick(i)}>
+                  style={{...style,fontSize:tabStyles.fontSize, minWidth:80 }}
+                  onClick={this.handleTabClick(i, localTabs)}>
                   {display}
                 </Button>
               })}
-            </Toolbar>
+            </div>
           </Scrollbars>
         </AppBar>
       </div>

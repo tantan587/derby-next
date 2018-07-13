@@ -110,9 +110,12 @@ class Index extends React.Component {
             <br/>
             <br/>
             {
-              R.values(sportLeagues).sort((a,b) => a.order > b.order).map((x,i) => { 
-                return <SportIconText key={i} sportId={x.sport_id}/>
-              })
+              <div style={{display:'flex', alignItems:'flex-end', justifyContent:'center', flexWrap:'wrap'}}>
+                {R.values(sportLeagues).sort((a,b) => a.order > b.order).map((x,i) => { 
+                  return <SportIconText key={i} sportId={x.sport_id}/>
+                })
+                }
+              </div>
             }
             <br/>
             <br/>

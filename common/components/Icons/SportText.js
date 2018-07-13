@@ -4,10 +4,10 @@ import sportLeagues from '../../../data/sportLeagues.json'
 class SportText extends React.Component {
 
   render() {
-    const {sportId, color} = this.props
+    const {sportId, color, fontSize} = this.props
     let sportLeague = sportLeagues[sportId]
     return (
-      <Typography style={{color:color ? color : 'white'}}>
+      <Typography style={{color:color || 'white', fontSize : fontSize || 14}}>
         {sportLeague && sportLeague.displayName ? sportLeague.displayName : sportId}
       </Typography>
     )

@@ -7,7 +7,7 @@ function handleReduxResponse(res, code, action){
 }
 
 const getLeague = async (league_id, user_id, res, type) => {
-
+  console.log('here')
   var leagueInfoStr = `select a.league_name, a.max_owners, a.league_id, b.room_id, b.start_time, b.draft_position, c.total_teams 
   from fantasy.leagues a, draft.settings b, (
     select league_id, sum(number_teams) as total_teams from fantasy.sports where league_id = '` + league_id + `' group by league_id) c
@@ -18,10 +18,12 @@ const getLeague = async (league_id, user_id, res, type) => {
   where a.user_id = b.user_id and a.owner_id = c.owner_id and a.league_id = '` + league_id + '\''
 
   var teamInfoStr = `select b.owner_id, a.team_id, a.reg_points as points
-   from fantasy.team_points a 
-   left outer join fantasy.rosters b on a.team_id = b.team_id 
-   where a.league_id = '` + league_id + '\''
-
+  from fantasy.team_points a
+  left outer join (select cc.* from fantasy.rosters cc, fantasy.owners dd where
+   cc.owner_id = dd.owner_id and dd.league_id = '` + league_id + '\'' +
+ `) b on a.team_id = b.team_id 
+  where a.league_id = '` + league_id + '\''
+   
   const leagueInfo = await knex.raw(leagueInfoStr)
   const ownerInfo = await knex.raw(ownerInfoStr)
   const teamInfo = await knex.raw(teamInfoStr)
@@ -62,9 +64,8 @@ const getLeague = async (league_id, user_id, res, type) => {
     teamInfo.rows.forEach(teamRow => {
       teams[teamRow.team_id] = {owner_id:teamRow.owner_id, points:parseFloat(teamRow.points)}
     })
-
     const draftOrder = GetDraftOrder(total_teams,owners.length)
-    
+
     return handleReduxResponse(res,200, {
       type: type,
       league_name : league_name,
@@ -119,7 +120,7 @@ const getOwnersUpcomingGames = async (ownerId) =>
   const dayCount = getDayCountStr(nd.toJSON())
 
   const str = `select a.team_id as my_team_id, b.*
-  from fantasy.rosters a, sports.schedule b,
+  from fantasy.rosters a, sports.schedule b
    where (a.team_id = b.home_team_id or a.team_id = b.away_team_id) 
    and b.status = 'Scheduled'
    and day_count >= ` + dayCount + ' and owner_id = \'' + ownerId + '\'  order by day_count limit 7'
@@ -261,11 +262,11 @@ const getPoints = async (knex, scoring_type = 1) => {
     .then((points)=>{
       let point_map = {}
       points.forEach(structure => {
-        points_map[structure.sport_id] = {...structure}
+        point_map[structure.sport_id] = {...structure}
       })
       return point_map
     })
-  }
+}
 
 const getPointsStructure = async (knex) => {
   return knex
@@ -281,7 +282,7 @@ const getPointsStructure = async (knex) => {
       })
       return point_map
     })
-  }
+}
   
 //this should be updated to do all the different team points structures
 //similar to the way i did that before with the update fantasy projected points
@@ -308,19 +309,20 @@ const updateTeamPoints = async () =>
               const team = data[fteam.team_id]
               //const league = points.filter(league => league.sport_id == fteam.sport_id)[0]
               let sport_id = fteam.sport_id
+              let bonus_win
               if(sport_id === ('103'||'104')){
                 let milestone_parameter = sport_id === '103' ? team.wins : team.wins+team.ties/2
                 let milestone_points = points[fteam.scoring_type_id][sport_id].regular_season.milestone_points
-                let bonus_win = milestone_parameter < points[fteam.scoring_type_id][sport_id].regular_season.milestone_1 ? 0 :
-                milestone_parameter < points[fteam.scoring_type_id][sport_id].regular_season.milestone_2 ? milestone_points :
-                milestone_parameter < points[fteam.scoring_type_id][sport_id].regular_season.milestone_3 ? milestone_points*2 : milestone_points*3
+                bonus_win = milestone_parameter < points[fteam.scoring_type_id][sport_id].regular_season.milestone_1 ? 0 :
+                  milestone_parameter < points[fteam.scoring_type_id][sport_id].regular_season.milestone_2 ? milestone_points :
+                    milestone_parameter < points[fteam.scoring_type_id][sport_id].regular_season.milestone_3 ? milestone_points*2 : milestone_points*3
               }else{
-                let bonus_win = 0
+                bonus_win = 0
               }
               let bonus_points = team.playoff.result === 'appearance' ? points[fteam.scoring_type_id][sport_id].bonus.appearance : 
-                                  team.playoff.result === 'finalist' ? points[fteam.scoring_type_id][sport_id].bonus.finalist + points[fteam.scoring_type_id][sport_id].bonus.appearance :
-                                  team.playoff.result === 'championship' ? points[fteam.scoring_type_id][sport_id].bonus.championship + points[fteam.scoring_type_id][sport_id].bonus.finalist + points[fteam.scoring_type_id][sport_id].bonus.appearance : 0
-              fteam.reg_points = points[f_team.scoring_type_id][sport_id].regular_season.wins * team.wins + points[fteam.scoring_type_id][sport_id].regular_season.tie * team.ties
+                team.playoff.result === 'finalist' ? points[fteam.scoring_type_id][sport_id].bonus.finalist + points[fteam.scoring_type_id][sport_id].bonus.appearance :
+                  team.playoff.result === 'championship' ? points[fteam.scoring_type_id][sport_id].bonus.championship + points[fteam.scoring_type_id][sport_id].bonus.finalist + points[fteam.scoring_type_id][sport_id].bonus.appearance : 0
+              fteam.reg_points = points[fteam.scoring_type_id][sport_id].regular_season.wins * team.wins + points[fteam.scoring_type_id][sport_id].regular_season.tie * team.ties
               fteam.playoff_points = points[fteam.scoring_type_id][sport_id].playoffs.wins * team.playoff_wins
               //below depends on how we format bowl wins
               sport_id === '105' ? fteam.playoff_points += (points[fteam.scoring_type_id][sport_id].playoffs.bowl_win * team.playoff.bowl_win) : 0
@@ -540,5 +542,4 @@ module.exports = {
   formatAMPM,
   formatGameDate,
   GetDraftOrder,
-  updateLeagueProjectedPoints
 }
