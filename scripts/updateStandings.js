@@ -21,10 +21,11 @@ async function updateStandings()
   db_helpers.updateStandings(knex, data)
     .then(result => {
       console.log('Number of Standings Updated: ' + result)
-      process.exit()
       //we will need to figure out if below needs to be added in, where this function updates fantasy points. Unclear, can't remember off top of head
-      //fantasyHelpers.updatePoints()
-        //.then(() =>{process.exit()})
+      fantasyHelpers.updatePoints()
+        .then(() =>{
+          process.exit()
+        })
       
     })
 }
@@ -36,7 +37,7 @@ const standingsBySport = async (knex, sportName, api, promiseToGet, year) => {
               sportName === 'NFL' ? team.Ties : 
               sportName === 'EPL' ? team.Draws : 0
 
-    return {team_id: team.team_id, wins: team.Wins, losses: team.Losses, ties: ties}
+    return {team_id: team.team_id, wins: team.Wins, losses: team.Losses, ties: ties, year: team.Season}
   })
 
   return newStandings
@@ -52,7 +53,8 @@ const getCFBstandings = async (knex, sportName, api, promiseToGet, year) =>{
     return standings
   }else{
     //pull, and then make readable, playoff games (including bowl games)
-    let non_parse_games = await db_helpers.getFdata(knex, sportName, api, 'getGamesByWeekPromise', '2017POST', 1)
+    let post_year = year.concat("POST")
+    let non_parse_games = await db_helpers.getFdata(knex, sportName, api, 'getGamesByWeekPromise', post_year, 1)
     let playoff_games = JSON.parse(non_parse_games)
 
     let teamIdMap = await db_helpers.getTeamIdMap(knex, '105')
@@ -102,12 +104,12 @@ const getCFBstandings = async (knex, sportName, api, promiseToGet, year) =>{
               let finalists = game.HomeTeamScore > game.AwayTeamScore ? [teamIdMap[game.GlobalHomeTeamID], teamIdMap[game.GlobalAwayTeamID]] : [teamIdMap[game.GlobalAwayTeamID], teamIdMap[game.GlobalHomeTeamID]]
               new_playoff_teams = playoff_teams.filter(team => finalists.includes(team.team_id) === false)
               new_playoff_teams.push(
-                {team_id: finalists[0], playoff_wins: 2, playoff_losses: 0, playoff_status: 'champions'},
-                {team_id: finalists[1], playoff_wins: 1, playoff_losses: 1, playoff_status: 'finalist'},)
+                {team_id: finalists[0], playoff_wins: 2, playoff_losses: 0, playoff_status: 'champions', year: game.Season},
+                {team_id: finalists[1], playoff_wins: 1, playoff_losses: 1, playoff_status: 'finalist', year: game.Season})
             }
           }else
           {
-            playoff_teams.push({team_id: teamIdMap[game.GlobalHomeTeamID], playoff_status: 'in_playoffs', playoff_wins: 0, playoff_losses: 0}, {team_id: teamIdMap[game.GlobalAwayTeamID], playoff_status: 'in_playoffs', playoff_wins: 0, playoff_losses: 0})
+            playoff_teams.push({team_id: teamIdMap[game.GlobalHomeTeamID], playoff_status: 'in_playoffs', playoff_wins: 0, playoff_losses: 0, year: game.Season}, {team_id: teamIdMap[game.GlobalAwayTeamID], playoff_status: 'in_playoffs', playoff_wins: 0, playoff_losses: 0, year: game.Season})
           }
         }
         //note: still need to figure out a way to differentiate between playoff wins and normal bowl wins. NY6 teams all get playoff appearance points
