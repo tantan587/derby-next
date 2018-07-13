@@ -252,21 +252,6 @@ const updateOneRowTeamPoints = (scoring_type_id,team_id, column, value ) =>
     })
 }
 
-//maybe this should be modified to grab all the different scoring structures
-const getPoints = async (knex, scoring_type = 1) => {
-  return knex
-    .withSchema('fantasy')
-    .table('scoring')
-    .where('scoring_type_id', scoring_type)
-    .then((points)=>{
-      let point_map = {}
-      points.forEach(structure => {
-        point_map[structure.sport_id] = {...structure}
-      })
-      return point_map
-    })
-}
-
 const getPointsStructure = async (knex) => {
   return knex
     .withSchema('fantasy')
@@ -342,13 +327,6 @@ const updateTeamPoints = async () =>
 }
 
 const updateLeagueProjectedPoints = async (league_id) => {
-  // let fantasy_leagues = await knex.withSchema('fantasy').table('leagues').select('league_id', 'scoring_type_id')
-  // let fantasy_rosters = await knex.withSchema('fantasy').table('rosters').select('*')
-  // let fantasy_projections = await knex.withSchema('fantasy').table('projections').select('*')
-  // let fantasy_owners = await knex.withSchema('fantasy').table('owners').select('*')
-  // console.log(leagues)
-  // let league_scoring_type = {}
-  // leagues.forEach(league => league_scoring_type[league.league_id]=league.scoring_type_id)
   const math = require('mathjs')
 
   let rosters = await knex('fantasy.rosters')
@@ -383,15 +361,17 @@ const updateLeagueProjectedPoints = async (league_id) => {
   let addingRank = Object.values(byLeague).map(league => {
     league.sort(function(a,b) {return b.projected_points - a.projected_points})
     return league.map( (owner, i) => {owner.rank = i+1; return owner})
+  })
+
     
   let fantasyPoints = [].concat.apply([], addingRank)
-
+  console.log(fantasyPoints)
+  process.exit()
   return updatePointsTable(fantasyPoints, true)
           .then(result => {
             console.log('Number of Fantasy Points Updated: ' + result)
             return 0
           })
-  })
 
   
 }
@@ -456,9 +436,7 @@ const getStandingData = () =>
 const getStandingDataPlayoffAndRegular = () =>
 {
   return new Promise((resolve) => {
-    return knex
-      .withSchema('sports')
-      .talbe('standings')
+    return knex('sports.standings')
       .leftOuterJoin('sports.playoff_standings', 'sports.standings.team_id', 'sports.playoff_standings.team_id')
       .select('*')
       .then(result => {

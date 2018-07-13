@@ -26,13 +26,10 @@ const getTodaysGames = (knex) =>
     let dayCount = getDayCount(today)
     return knex('sports.schedule')
         .where('sports.schedule.day_count', dayCount)
-        .innerJoin('sports.results','sports.results.global_game_id','sports.schedule.global_game_id')
         .innerJoin('analysis.current_elo as a', 'sports.schedule.home_team_id', 'a.team_id')
         .leftJoin('analysis.current_elo as b', 'sports.schedule.away_team_id', 'b.team_id')
         //.innerJoin('analysis.elo', 'sports.schedule.away_team_id', 'analysis.elo.team_id')
-        .select('sports.results.global_game_id', 'sports.schedule.home_team_id', 
-        'sports.results.home_team_score','sports.schedule.away_team_id', 'sports.results.away_team_score',
-        'sports.results.winner','sports.schedule.sport_id','a.elo as home_team_elo','b.elo as away_team_elo')
+        .select('sports.schedule.*', 'a.elo as home_team_elo','b.elo as away_team_elo')
         .then(game => {
             console.log(game)
             return game})
