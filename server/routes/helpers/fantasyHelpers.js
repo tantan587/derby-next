@@ -7,7 +7,6 @@ function handleReduxResponse(res, code, action){
 }
 
 const getLeague = async (league_id, user_id, res, type) => {
-  console.log('here')
   var leagueInfoStr = `select a.league_name, a.max_owners, a.league_id, b.room_id, b.start_time, b.draft_position, c.total_teams 
   from fantasy.leagues a, draft.settings b, (
     select league_id, sum(number_teams) as total_teams from fantasy.sports where league_id = '` + league_id + `' group by league_id) c

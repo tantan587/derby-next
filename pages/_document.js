@@ -68,7 +68,7 @@ MyDocument.getInitialProps = ctx => {
   const context = getContext()
   const page = ctx.renderPage(Component => props => (
     <JssProvider registry={context.sheetsRegistry} jss={context.jss}>
-        <Component {...props} />
+      <Component {...props} />
     </JssProvider>
   ))
 
