@@ -2,9 +2,6 @@ import { withStyles } from '@material-ui/core/styles'
 import Switch from '@material-ui/core/Switch'
 
 const styles = {
-  root: {
-    left: -13
-  },
   switchRoot: {
     height: 20,
     borderRadius: 3,

@@ -10,16 +10,33 @@ import DateRange from '@material-ui/icons/DateRange'
 
 import DerbySwitch from '../../UI/DerbySwitch'
 
-const styles = {
+const styles = theme => {console.log(theme); return{
   container: {
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
-    height: 400,
-    padding: 20
+    height: 700,
+    padding: 20,
+    [theme.breakpoints.only('sm')]: {
+      width: '75%',
+    }
   },
   formRoot: {
-    width: '60%'
+    width: '60%',
+    [theme.breakpoints.down('sm')]: {
+      width: '100%',
+      marginTop: 8
+    }
+  },
+  textField: {
+    width: '60%',
+    [theme.breakpoints.down('sm')]: {
+      width: '60%',
+      marginTop: 8
+    },
+    [theme.breakpoints.down('xs')]: {
+      width: '100%',
+    },
   },
   infoTool: {
     marginLeft: 8,
@@ -48,8 +65,53 @@ const styles = {
   time: {
     fontSize: 15,
     height: '100%'
-  }
-}
+  },
+  field: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    [theme.breakpoints.down('sm')]: {
+      flexDirection: 'column',
+      margin: '10px 0px'
+    }
+  },
+  switchField: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    margin: '-8px 0px',
+    height: 35,
+    [theme.breakpoints.down('sm')]: {
+      flexDirection: 'column',
+      marginBottom: 26
+    }
+  },
+  label: {
+    display: 'flex',
+    fontWeight: 600,
+    width: '37%',
+    [theme.breakpoints.down('sm')]: {
+      width: '100%'
+    }
+  },
+  switchLabel: {
+    display: 'flex',
+    alignSelf: 'flex-start',
+    paddingTop: 8,
+    fontWeight: 600,
+    width: '37%',
+    [theme.breakpoints.down('sm')]: {
+      width: '100%'
+    }
+  },
+  switchPosition: {
+    position: 'relative',
+    left: -13,
+    top: -10,
+    [theme.breakpoints.down('sm')]: {
+      top: 2,
+    }
+  },
+}}
 
 const InfoTool = ({ style }) =>
   <Tooltip id="tooltip-top" title="This gives you information" placement="top">
@@ -61,19 +123,19 @@ const InfoTool = ({ style }) =>
 
 const BasicInformation = withStyles(styles)(({ classes }) =>
   <Card className={classes.container}>
-    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-      <div style={{ display: 'flex', alignSelf: 'flex-end', fontWeight: 600, width: '40%' }}>
+    <div className={classes.field}>
+      <div className={classes.label}>
         <div>Commissioner:</div>
         <InfoTool style={classes.infoTool} />
       </div>
       {/* <TextField fullWidth label="Commissioner's Name" /> */}
-      <FormControl className={classes.formRoot}>
+      <FormControl className={classes.textField}>
         <Input placeholder="Commissioner's Name" />
       </FormControl>
     </div>
 
-    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-      <div style={{ display: 'flex', alignSelf: 'flex-end', fontWeight: 600, width: '40%' }}>
+    <div className={classes.field}>
+      <div className={classes.label}>
         <div>Amount of Members:</div>
         <InfoTool style={classes.infoTool} />
       </div>
@@ -86,8 +148,8 @@ const BasicInformation = withStyles(styles)(({ classes }) =>
       </div>
     </div>
 
-    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-      <div style={{ display: 'flex', alignSelf: 'flex-end', fontWeight: 600, width: '40%' }}>
+    <div className={classes.field}>
+      <div className={classes.label}>
         <div>Set Draft Date & Time:</div>
       </div>
       {/* <TextField fullWidth label="Commissioner's Name" /> */}
@@ -95,15 +157,15 @@ const BasicInformation = withStyles(styles)(({ classes }) =>
         <FormControl style={{ width: 164 }}>
           <Input className={classes.date} type="date" />
         </FormControl>
-        <DateRange style={{ height: 24, width: 24, alignSelf: 'flex-end', padding: '0px 5px' }} />
+        <DateRange style={{ height: 24, width: 24,  padding: '0px 5px' }} />
         <FormControl style={{ width: 114 }}>
           <Input className={classes.time} required type="time" />
         </FormControl>
       </div>
     </div>
 
-    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-      <div style={{ display: 'flex', alignSelf: 'flex-end', fontWeight: 600, width: '40%' }}>
+    <div className={classes.field}>
+      <div className={classes.label}>
         <div>Seconds Per Pick:</div>
       </div>
       {/* <TextField fullWidth label="Commissioner's Name" /> */}
@@ -118,24 +180,19 @@ const BasicInformation = withStyles(styles)(({ classes }) =>
       </div>
     </div>
 
-    <div style={{
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      margin: '-8px 0px',
-      height: 35
-    }}>
-      <div style={{ display: 'flex', alignSelf: 'center', paddingTop: 8, fontWeight: 600, width: '40%' }}>
+    <div className={classes.switchField}>
+      <div className={classes.switchLabel}>
         <div>Add Premier League:</div>
         <InfoTool style={classes.infoTool} />
       </div>
       {/* <TextField fullWidth label="Commissioner's Name" /> */}
-      <div className={classes.formRoot} style={{ display: 'flex' }}>
+      <div className={`${classes.formRoot} ${classes.switchPosition}`} style={{ alignSelf: 'flex-start' }}>
         <DerbySwitch />
       </div>
     </div>
-    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-      <div style={{ display: 'flex', alignSelf: 'flex-end', fontWeight: 600, width: '40%' }}>
+
+    <div className={classes.field}>
+      <div className={classes.label}>
         <div>Set Draft Date & Time:</div>
       </div>
       {/* <TextField fullWidth label="Commissioner's Name" /> */}
@@ -143,14 +200,15 @@ const BasicInformation = withStyles(styles)(({ classes }) =>
         <FormControl style={{ width: 164 }}>
           <Input className={classes.date} type="date" />
         </FormControl>
-        <DateRange style={{ height: 24, width: 24, alignSelf: 'flex-end', padding: '0px 5px' }} />
+        <DateRange style={{ height: 24, width: 24,  padding: '0px 5px' }} />
         <FormControl style={{ width: 114 }}>
           <Input className={classes.time} required type="time" />
         </FormControl>
       </div>
     </div>
-    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-      <div style={{ display: 'flex', alignSelf: 'flex-end', fontWeight: 600, width: '40%' }}>
+
+    <div className={classes.field}>
+      <div className={classes.label}>
         <div>Set Draft Date & Time:</div>
       </div>
       {/* <TextField fullWidth label="Commissioner's Name" /> */}
@@ -158,12 +216,13 @@ const BasicInformation = withStyles(styles)(({ classes }) =>
         <FormControl style={{ width: 164 }}>
           <Input className={classes.date} type="date" />
         </FormControl>
-        <DateRange style={{ height: 24, width: 24, alignSelf: 'flex-end', padding: '0px 5px' }} />
+        <DateRange style={{ height: 24, width: 24,  padding: '0px 5px' }} />
         <FormControl style={{ width: 114 }}>
           <Input className={classes.time} required type="time" />
         </FormControl>
       </div>
     </div>
-  </Card>)
+  </Card>
+)
 
 export default BasicInformation

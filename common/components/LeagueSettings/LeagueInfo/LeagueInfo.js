@@ -87,17 +87,17 @@ class CustomizeTeam extends Component {
     const { classes } = this.props
 
     return (
-      <Grid container justify="space-between" className={classes.root}>
-        <Grid item sm={12} md={6}>
+      <Grid container justify="space-between" className={classes.root} spacing={40}>
+        <Grid item xs={12} md={12} lg={6}>
           <div>
             <div className={classes.title}>Basic League Information</div>
             <BasicInformation />
           </div>
         </Grid>
-        <Grid item sm={12} md={5} className={classes.gridMargins}>
+        <Grid item xs={12} md={12} lg={6} className={classes.gridMargins}>
           <div>
             <div className={classes.title}>Draft Settings</div>
-            <DraftSettings />
+            <BasicInformation />
           </div>
         </Grid>
         <StyledButton
