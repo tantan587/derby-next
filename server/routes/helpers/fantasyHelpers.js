@@ -154,7 +154,7 @@ const GetDraftOrder = (totalTeams, totalOwners) =>
 }
 
 const updateTeamPointsTable = (newTeamPoints) =>
-{
+{ console.log('update Table Function')
   return knex
     .withSchema('fantasy')
     .table('team_points')
@@ -180,6 +180,7 @@ const updateTeamPointsTable = (newTeamPoints) =>
         if(oldTeamPoints[teamPoints.scoring_type_id][teamPoints.team_id].playoff_points != teamPoints.playoff_points){
           updateList.push(Promise.resolve(updateOneRowTeamPoints(teamPoints.scoring_type_id,teamPoints.team_id,'playoff_points',teamPoints.playoff_points )))}
       })
+      console.log(updateList.length)
       if (updateList.length > 0)
       {
         return Promise.all(updateList)
@@ -293,22 +294,22 @@ const updateTeamPoints = async () =>
               const team = data[fteam.team_id]
               //const league = points.filter(league => league.sport_id == fteam.sport_id)[0]
               let sport_id = fteam.sport_id
+              let bonus_win=0
               if(sport_id === ('103'||'104')){
                 let milestone_parameter = sport_id === '103' ? team.wins : team.wins+team.ties/2
                 let milestone_points = points[fteam.scoring_type_id][sport_id].regular_season.milestone_points
-                let bonus_win = milestone_parameter < points[fteam.scoring_type_id][sport_id].regular_season.milestone_1 ? 0 :
+                bonus_win = milestone_parameter < points[fteam.scoring_type_id][sport_id].regular_season.milestone_1 ? 0 :
                 milestone_parameter < points[fteam.scoring_type_id][sport_id].regular_season.milestone_2 ? milestone_points :
                 milestone_parameter < points[fteam.scoring_type_id][sport_id].regular_season.milestone_3 ? milestone_points*2 : milestone_points*3
-              }else{
-                let bonus_win = 0
               }
-              let bonus_points = team.playoff.result === 'appearance' ? points[fteam.scoring_type_id][sport_id].bonus.appearance : 
-                                  team.playoff.result === 'finalist' ? points[fteam.scoring_type_id][sport_id].bonus.finalist + points[fteam.scoring_type_id][sport_id].bonus.appearance :
-                                  team.playoff.result === 'championship' ? points[fteam.scoring_type_id][sport_id].bonus.championship + points[fteam.scoring_type_id][sport_id].bonus.finalist + points[fteam.scoring_type_id][sport_id].bonus.appearance : 0
-              fteam.reg_points = points[fteam.scoring_type_id][sport_id].regular_season.wins * team.wins + points[fteam.scoring_type_id][sport_id].regular_season.tie * team.ties
-              fteam.playoff_points = points[fteam.scoring_type_id][sport_id].playoffs.wins * team.playoff_wins
+              
+              let bonus_points = team.playoff_status > 2 ? points[fteam.scoring_type_id][sport_id].bonus.appearance : 
+                team.playoff_status > 4 ? points[fteam.scoring_type_id][sport_id].bonus.finalist + points[fteam.scoring_type_id][sport_id].bonus.appearance :
+                  team.playoff_status === 6 ? points[fteam.scoring_type_id][sport_id].bonus.championship + points[fteam.scoring_type_id][sport_id].bonus.finalist + points[fteam.scoring_type_id][sport_id].bonus.appearance : 0
+              fteam.reg_points = points[fteam.scoring_type_id][sport_id].regular_season.win * team.wins + points[fteam.scoring_type_id][sport_id].regular_season.tie * team.ties
+              fteam.playoff_points = points[fteam.scoring_type_id][sport_id].playoffs.win * team.playoff_wins
               //below depends on how we format bowl wins
-              sport_id === '105' ? fteam.playoff_points += (points[fteam.scoring_type_id][sport_id].playoffs.bowl_win * team.playoff.bowl_win) : 0
+              sport_id === '105' ? fteam.playoff_points += (points[fteam.scoring_type_id][sport_id].playoffs.bowl_win * team.bowl_wins) : 0
               fteam.bonus_points = bonus_win + bonus_points
               return fteam})
             updateTeamPointsTable(teamPoints)
@@ -382,7 +383,7 @@ const updateLeaguePoints = (league_id) =>
   //check the and part of this raw statement to be sure it works
   let str = league_id
     ? 'select a.reg_points, a.bonus_points, a.playoff_points, b.league_id from fantasy.team_points a, fantasy.rosters b, fantasy.leagues c where a.team_id = b.team_id and c.league_id = b.league_id and c.scoring_type_id = a.scoring_type_id and a.league_id = \'' + league_id + '\''
-    : 'select a.reg_points, a.bonus_points, a.playoff_points, b.league_id from fantasy.team_points a, fantasy.rosters b, fantasy.leagues c where a.team_id = b.team_id and c.league_id = b.league_id andWhere c.scoring_type_id = a.scoring_type_id'
+    : 'select a.reg_points, a.bonus_points, a.playoff_points, b.league_id from fantasy.team_points a, fantasy.rosters b, fantasy.leagues c where a.team_id = b.team_id and c.league_id = b.league_id and c.scoring_type_id = a.scoring_type_id'
 
   return knex.raw(str)
     .then(result =>
@@ -518,5 +519,6 @@ module.exports = {
   formatAMPM,
   formatGameDate,
   GetDraftOrder,
-  updateLeagueProjectedPoints
+  updateLeagueProjectedPoints,
+  getPointsStructure
 }
