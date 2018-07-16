@@ -1,5 +1,7 @@
 import React from 'react'
 import { withStyles, MuiThemeProvider } from '@material-ui/core/styles'
+import DateFnsUtils from 'material-ui-pickers/utils/date-fns-utils'
+import MuiPickersUtilsProvider from 'material-ui-pickers/utils/MuiPickersUtilsProvider'
 import wrapDisplayName from 'recompose/wrapDisplayName'
 import getContext from '../../styles/getContext'
 import storeFactory from '../store'
@@ -54,9 +56,11 @@ function withRoot(Component) {
           sheetsManager={this.styleContext.sheetsManager}
         >
           <Provider store={store}>
-            <AppWrapper>
-              <Component {...this.props} />
-            </AppWrapper>
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <AppWrapper>
+                <Component {...this.props} />
+              </AppWrapper>
+            </MuiPickersUtilsProvider>
           </Provider>
         </MuiThemeProvider>
       )

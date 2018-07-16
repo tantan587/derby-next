@@ -13,9 +13,9 @@ class Scoreboard extends React.Component {
     return (
       <div>
         <LayoutUser >
-          <ReloadProtector 
+        <ReloadProtector 
             ProtectedRoute={() => 
-              <ScoreboardPage redirectInd={true}/>}/>
+              <ScoreboardPage redirectInd={true}/>} />
         </LayoutUser>
       </div>
     )
