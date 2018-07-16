@@ -28,7 +28,7 @@ const getStandingsInfo = async (knex, sportName, api, promiseToGet, year) => {
     //this is only until they fix it so that the NBA data is correct
     standings_info.filter(team => team.Wins <17)
     let newStandings = standings_info.map(team=>{
-      return {team_id: team.team_id, playoff_wins: team.Wins, playoff_losses: team.Losses, byes: 0, playoff_status: 'in_playoffs', year: team.Season}
+      return {team_id: team.team_id, playoff_wins: team.Wins, playoff_losses: team.Losses, byes: 0, playoff_status: 3}
     })
     return newStandings
 }

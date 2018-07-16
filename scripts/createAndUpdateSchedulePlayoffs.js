@@ -55,10 +55,10 @@ const getSchedInfo = async (knex, sportName, api, promiseToGet, year) => {
       let home_id = teamIdMap[game.GlobalHomeTeamID]
       let away_id = teamIdMap[game.GlobalAwayTeamID]
       if(!(home_id in playoff_standings)){
-        playoff_standings[home_id] = {team_id: home_id, playoff_wins: 0, playoff_losses: 0, playoff_status: 'in_playoffs', byes: 1}
+        playoff_standings[home_id] = {team_id: home_id, playoff_wins: 0, playoff_losses: 0, playoff_status: 3, byes: 1}
       }
       if(!(away_id in playoff_standings)){
-        playoff_standings[away_id] = {team_id: away_id, playoff_wins: 0, playoff_losses: 0, playoff_status: 'in_playoffs', byes: 1}
+        playoff_standings[away_id] = {team_id: away_id, playoff_wins: 0, playoff_losses: 0, playoff_status: 3, byes: 1}
       }
       if(game.Round == null){
         playoff_standings[home_id].byes--
