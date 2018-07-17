@@ -1,0 +1,83 @@
+import React from 'react'
+import Grid from '@material-ui/core/Grid'
+
+export const LTB = ({L, T, B, classes = {}, ...rest}) => (
+  <Grid
+    container
+    {...rest}
+  >
+    <Grid
+      className={classes.L}
+      container
+      item
+      xs={4}
+      children={L}
+      alignItems="center"
+    />
+    <Grid
+      item
+      container
+      xs={8}
+      alignItems="center"
+    >
+      <Grid
+        item
+        xs={12}
+        children={T}
+      />
+      <Grid
+        item
+        xs={12}
+        children={B}
+      />
+    </Grid>
+  </Grid>
+)
+
+export const LRRR = ({L, R1, R2, R3, classes = {}, ...rest}) => (
+  <Grid
+    container
+    alignItems="center"
+    {...rest}
+  >
+    <Grid 
+      item
+      className={classes.L}
+      children={L}
+      variant="body2"
+      xs={7}
+    />
+    <Grid
+      item
+      className={classes.R}
+      container
+      variant="body2"
+      xs={5}
+    >
+      <Grid
+        container
+        item
+        className={classes.R1}
+        xs={4}
+        children={R1}
+        alignItems="center"
+      />
+      <Grid
+        container
+        item
+        className={classes.R2}
+        xs={4}
+        children={R2}
+        alignItems="center"
+      />
+      <Grid
+        container
+        item
+        className={classes.R3}
+        xs={4}
+        children={R3}
+        alignItems="center"
+      />
+    </Grid>
+  </Grid>
+)

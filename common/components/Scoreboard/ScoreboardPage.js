@@ -2,17 +2,14 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { withStyles } from '@material-ui/core/styles'
-//import Grid from '@material-ui/core/Grid'
 import { handleOpenDialog } from '../../actions/dialog-actions'
 import Title from '../Navigation/Title'
 import {GetDayCountStr} from '../../lib/time'
 import TabFilter from '../Table/Filters/TabFilter' 
 import sportLeagues from '../../../data/sportLeagues.json'
+import ScoreboardBody from './'
+
 const R = require('ramda')
-
-
-
-
 
 const styles = theme => ({
   section1: {
@@ -74,6 +71,7 @@ class ScoreboardPage extends React.Component {
           tabStyles={{backgroundColor:'#392007', color:'white',
             selectedBackgroundColor:'#392007', 
             selectedColor:'#EBAB38'}}/>
+        <ScoreboardBody />
       </div>
 
     )
