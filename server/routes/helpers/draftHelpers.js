@@ -32,8 +32,10 @@ const GetDraftRules = async (roomId) => {
 
 const GetTeamMap = async (roomId) =>{
   const teamMapStr = `select c.team_id, c.sport_id, c.conference_id 
-  from draft.settings a, fantasy.team_points b, sports.team_info c 
-  where a.league_id = b.league_id  and b.team_id = c.team_id and a.room_id = '` +  roomId + '\''
+  from draft.settings a, fantasy.team_points b, sports.team_info c, fantasy.leagues d
+  where a.league_id = d.league_id  
+  and d.scoring_type_id = b.scoring_type_id
+  and b.team_id = c.team_id and a.room_id = '` +  roomId + '\''
 
   const rtnObj = {}
   return knex.raw(teamMapStr)

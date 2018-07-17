@@ -383,7 +383,12 @@ const updateLeaguePoints = (league_id) =>
 
   //check the and part of this raw statement to be sure it works
   let str = league_id
-    ? 'select a.reg_points, a.bonus_points, a.playoff_points, b.league_id from fantasy.team_points a, fantasy.rosters b, fantasy.leagues c where a.team_id = b.team_id and c.league_id = b.league_id and c.scoring_type_id = a.scoring_type_id and a.league_id = \'' + league_id + '\''
+    ? `select a.reg_points, a.bonus_points, a.playoff_points, b.owner_id, b.league_id 
+    from fantasy.team_points a, fantasy.rosters b, fantasy.leagues c 
+    where a.team_id = b.team_id 
+    and c.league_id = b.league_id 
+    and c.scoring_type_id = a.scoring_type_id 
+    and b.league_id = '` + league_id + '\''
     : `select a.reg_points, a.bonus_points, a.playoff_points, b.owner_id, b.league_id
     from fantasy.team_points a, fantasy.rosters b, fantasy.leagues c 
     where a.team_id = b.team_id 
