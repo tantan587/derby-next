@@ -66,14 +66,14 @@ class ScoreboardPage extends React.Component {
         <TabFilter
           sportInd={true}
           imageInd={true} 
-          allInd={false}
+          allInd
+          myInd
           tabs={sports} 
           rows={R.values(this.props.liveGames[this.state.dayCount])} 
           updateMyRows={this.updateMyRows}
           tabStyles={{backgroundColor:'#392007', color:'white',
             selectedBackgroundColor:'#392007', 
             selectedColor:'#EBAB38'}}/>
-          }
       </div>
 
     )

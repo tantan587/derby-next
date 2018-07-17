@@ -41,7 +41,7 @@ class MainLeagueTeams extends React.Component {
         //points:activeLeague.teams[team.team_id].points
       }
     })
-
+    let ownerName = activeLeague.owners.find(x => x.owner_id = activeLeague.my_owner_id).owner_name
     let confs = [...new Set(myTeams.map(x => x.conference))].sort((a,b) => { return a > b})
     return (
       <div>
@@ -53,14 +53,16 @@ class MainLeagueTeams extends React.Component {
           myRows={myTeams}
           filters={[
             {type:'tab',
-              values :R.values(sportLeagues).map(x => x.sport_id),
+              values :R.map(x => x.sport_id, this.props.activeLeague.rules),
               column:'sport_id',
               allInd:true,
               sportInd:true,
+              myOwnerName:ownerName,
               tabStyles:{backgroundColor:'#e3dac9',
                 color:'#48311A',
                 selectedBackgroundColor:'white', 
-                selectedColor:'#229246'}
+                selectedColor:'#229246',
+                fontSize:16}
             },
             {type:'dropdown',
               values:confs,

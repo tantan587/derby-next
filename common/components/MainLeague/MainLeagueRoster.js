@@ -48,7 +48,6 @@ class MainLeagueRoster extends React.Component {
         {/* //tabStyles:{background:'#e3dac9', foreground:'white', text:'#229246'} */}
         <TeamsDialog />
         <DerbyTableContainer
-          title='All Teams'
           usePagination={true}
           myRows={myTeams}
           filters={[

@@ -31,6 +31,7 @@ class DerbyTableFilters extends React.Component {
                 tabs={filter.values} 
                 rows={rows} 
                 allInd={filter.allInd}
+                myOwnerName={filter.myOwnerName}
                 column={filter.column}
                 defaultTab={filter.defaultTab}
                 tabStyles={filter.tabStyles}/>

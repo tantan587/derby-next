@@ -3,7 +3,6 @@ import DerbyTableContainer from '../Table/DerbyTableContainer'
 import { connect } from 'react-redux'
 import {handleFilterTab} from '../../actions/draft-actions'
 import TeamsDialog from '../TeamsDialog/TeamsDialog'
-import sportLeagues from '../../../data/sportLeagues.json'
 const R = require('ramda')
 
 
@@ -111,15 +110,16 @@ class TeamDisplay extends React.Component {
           styleProps={styleProps}
           filters={[
             {type:'tab',
-              values :R.map(x => x.sport_id, R.values(sportLeagues)),
+              values :R.map(x => x.sport_id, this.props.activeLeague.rules),
               column:'sport_id',
               allInd:true,
               sportInd:true,
-              defaultTab:6,
+              defaultTab:0,
               tabStyles:{backgroundColor:'#e3dac9',
                 color:'#48311A',
                 selectedBackgroundColor:'white', 
-                selectedColor:'#229246'}
+                selectedColor:'#229246',
+                fontSize:16}
             },
             {type:'dropdown',
               values:confs,
