@@ -1,4 +1,3 @@
-import React from 'react'
 import Grid from '@material-ui/core/Grid'
 
 export const LTB = ({L, T, B, classes = {}, ...rest}) => (
@@ -34,7 +33,7 @@ export const LTB = ({L, T, B, classes = {}, ...rest}) => (
   </Grid>
 )
 
-export const LRRR = ({L, R1, R2, R3, classes = {}, ...rest}) => (
+export const LRRR = ({L, R, classes = {}, ...rest}) => (
   <Grid
     container
     alignItems="center"
@@ -54,30 +53,15 @@ export const LRRR = ({L, R1, R2, R3, classes = {}, ...rest}) => (
       variant="body2"
       xs={5}
     >
-      <Grid
-        container
-        item
-        className={classes.R1}
-        xs={4}
-        children={R1}
-        alignItems="center"
-      />
-      <Grid
-        container
-        item
-        className={classes.R2}
-        xs={4}
-        children={R2}
-        alignItems="center"
-      />
-      <Grid
-        container
-        item
-        className={classes.R3}
-        xs={4}
-        children={R3}
-        alignItems="center"
-      />
+      {R.map(oneR => {
+        return <Grid
+          container
+          item
+          className={classes.RContent}
+          xs={4}
+          children={oneR}
+          alignItems="center"
+        />})}
     </Grid>
   </Grid>
 )

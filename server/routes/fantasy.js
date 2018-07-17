@@ -8,7 +8,7 @@ const v4 = require('uuid/v4')
 const fantasyHelpers = require('./helpers/fantasyHelpers')
 
 
-router.post('/createleague', authHelpers.loginRequired, (req, res, next)  => {
+router.post('/createleague', authHelpers.loginRequired, (req, res)  => {
   return createLeague(req, res)
     .then((response) => { 
       //this should be something different from update team points. Should just update league points, update league projected points
@@ -21,7 +21,7 @@ router.post('/createleague', authHelpers.loginRequired, (req, res, next)  => {
       handleResponse(res, 500, err)})
 })
 
-router.post('/joinleague', authHelpers.loginRequired, (req, res, next)  => {
+router.post('/joinleague', authHelpers.loginRequired, (req, res)  => {
   return joinLeague(req, res)
     .then((league_id) => { 
       return getSimpleLeague(league_id,res, C.JOIN_LEAGUE_SUCCESS)
@@ -30,7 +30,7 @@ router.post('/joinleague', authHelpers.loginRequired, (req, res, next)  => {
       handleResponse(res, 500, err) })
 })
 
-router.post('/saveownersettings', authHelpers.loginRequired, async (req, res, next)  => {
+router.post('/saveownersettings', authHelpers.loginRequired, async (req, res)  => {
   const resp = await handleOwnerSettingsErrors(req)
   if (resp.success){
     await updateOwnerSettings(req)
@@ -45,7 +45,7 @@ router.post('/saveownersettings', authHelpers.loginRequired, async (req, res, ne
   
 })
 
-router.post('/clickleague', authHelpers.loginRequired, (req, res, next)  => {
+router.post('/clickleague', authHelpers.loginRequired, (req, res)  => {
   return fantasyHelpers.getLeague(req.body.league_id,req.body.user_id,res, C.CLICKED_LEAGUE)
 })
 
@@ -389,7 +389,7 @@ const getSimpleLeague = (league_id, res, type) =>{
       }
       else
       {
-        return handleReduxResponse(res,400, {});
+        return handleReduxResponse(res,400, {})
       }
     })
 }

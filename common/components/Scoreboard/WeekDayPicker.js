@@ -1,16 +1,11 @@
 const R = require('ramda')
-import React, {Component} from 'react'
+import {Component} from 'react'
 import classNames from 'classnames'
-import autobind from 'react-autobind'
 import {withStyles} from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
-import TextField from '@material-ui/core/TextField'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
-import DateRangeIcon from '@material-ui/icons/DateRange'
-import InputAdornment from '@material-ui/core/InputAdornment'
-import IconButton from '@material-ui/core/IconButton'
-
+import Button from '@material-ui/core/Button'
 import DAYS from './DAYS'
 
 const styles = (theme) => ({
@@ -45,10 +40,11 @@ const styles = (theme) => ({
   }
 })
 
-const Day = ({classes}) => (date, index) => {
+const Day = ({classes}, onUpdateDate) => (date, index) => {
   return (
     <li
       className={classNames(classes.day, {[classes.activeDay]: index === 3})}
+      onClick={() => onUpdateDate(date)}
     >
       <Typography
         variant="body2"
@@ -67,18 +63,27 @@ const Day = ({classes}) => (date, index) => {
 }
 
 class WeekDayPicker extends Component {
+
+  changeDateByOffset = (date,offset) => {
+    const tmp = new Date(date.getTime())
+    tmp.setDate(date.getDate() + offset)
+    return tmp
+  }
+
   render() {
-    const {classes, date} = this.props
+    const {classes, date, onUpdateDate} = this.props
     const DateRange = R.range(-3, 4).map((offset) => {
-      const tmp = new Date(date.getTime())
-      tmp.setDate(date.getDate() + offset)
-      return tmp
+      return this.changeDateByOffset(date,offset)
     })
     return (
       <ul className={classes.week}>
-        <li className={classes.arrow}><ChevronLeftIcon fontSize="inherit"/></li>
-        {DateRange.map(Day({classes}))}
-        <li className={classes.arrow}><ChevronRightIcon fontSize="inherit"/></li>
+        <li className={classes.arrow}
+          onClick={() => onUpdateDate(this.changeDateByOffset(date,-1))}>
+          <ChevronLeftIcon fontSize="inherit"/></li>
+        {DateRange.map(Day({classes}, onUpdateDate))}
+        <li className={classes.arrow}
+          onClick={() => onUpdateDate(this.changeDateByOffset(date,1))}>
+          <ChevronRightIcon fontSize="inherit"/></li>
       </ul>
     )
   }

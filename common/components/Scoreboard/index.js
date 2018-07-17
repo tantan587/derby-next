@@ -1,18 +1,13 @@
 const R = require('ramda')
-import React, {Component} from 'react'
+import {Component} from 'react'
 import {connect} from 'react-redux'
-import classNames from 'classnames'
 import {DatePicker} from 'material-ui-pickers'
 import {withStyles} from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper'
-import DateRangeIcon from '@material-ui/icons/DateRange'
-import IconButton from '@material-ui/core/IconButton'
-
-import DAYS from './DAYS'
 import MONTHS from './MONTHS'
-import {LTB, LRRR} from './ScoreCardLayouts'
+import {LRRR} from './ScoreCardLayouts'
 import WeekDayPicker from './WeekDayPicker'
 import TeamCard from './TeamCard'
 import MetaPB from './MetaPB'
@@ -40,7 +35,7 @@ const styles = (theme) => (console.log(theme), {
     margin: '0 3%',
   },
   title: {
-    fontFamily: 'HorsebackSlab',
+    fontFamily: 'museo-slab-bold',
     color: theme.palette.primary.main,
   },
   caption: {
@@ -94,9 +89,7 @@ const ScoreCard = withStyles((theme) => ({
   Header: {marginBottom: 30, borderBottom: `1px solid ${theme.palette.grey.A200}`, padding: '10px 10px 10px 10px'},
   Row: {marginBottom: 30, padding: '0 10px'},
   R: {color: '#555'},
-  R1: {justifyContent: 'center'},
-  R2: {justifyContent: 'center'},
-  R3: {justifyContent: 'center'},
+  RContent: {justifyContent: 'center'}
 }))(({
   classes,
 }) => (
@@ -116,37 +109,37 @@ const ScoreCard = withStyles((theme) => ({
     >
       <LRRR
         className={classes.Header}
-        classes={R.pick(['R', 'R1', 'R2', 'R3'], classes)}
+        classes={R.pick(['R', 'RContent'], classes)}
         L={<Typography children={<b>Top 8th</b>} variant="subheading" color="primary"/>}
-        R1={<Typography children="R" variant="caption" />}
-        R2={<Typography children="R" variant="caption" />}
-        R3={<Typography children="R" variant="caption" />}
+        R={[<Typography children="R" variant="caption" />,
+          <Typography children="H" variant="caption" />,
+          <Typography children="E" variant="caption" />]}
       />
       <LRRR
         className={classes.Row}
-        classes={R.pick(['R', 'R1', 'R2', 'R3'], classes)}
+        classes={R.pick(['R', 'RContent'], classes)}
         L={(
           <TeamCard
             team_name={FIXTURES.away_team}
             logo_url={FIXTURES.away_url}
           />
         )}
-        R1={<Typography children={FIXTURES.away_runs} variant="subheading" color="inherit" />}
-        R2={<Typography children={FIXTURES.away_hits} variant="subheading" color="inherit" />}
-        R3={<Typography children={FIXTURES.away_errors} variant="subheading" color="inherit" />}
+        R={[<Typography children={FIXTURES.away_runs} variant="subheading" color="inherit" />,
+          <Typography children={FIXTURES.away_hits} variant="subheading" color="inherit" />,
+          <Typography children={FIXTURES.away_errors} variant="subheading" color="inherit" />]}
       />
       <LRRR
         className={classes.Row}
-        classes={R.pick(['R', 'R1', 'R2', 'R3'], classes)}
+        classes={R.pick(['R', 'RContent'], classes)}
         L={(
           <TeamCard
             team_name={FIXTURES.home_team}
             logo_url={FIXTURES.home_url}
           />
         )}
-        R1={<Typography children={FIXTURES.home_runs} variant="subheading" color="inherit" />}
-        R2={<Typography children={FIXTURES.home_hits} variant="subheading" color="inherit" />}
-        R3={<Typography children={FIXTURES.home_errors} variant="subheading" color="inherit" />}
+        R={[<Typography children={FIXTURES.home_runs} variant="subheading" color="inherit" />,
+          <Typography children={FIXTURES.home_hits} variant="subheading" color="inherit" />,
+          <Typography children={FIXTURES.home_errors} variant="subheading" color="inherit" />]}
       />
       <Typography className={classes.venue} variant="caption"><b>Location</b>: AT&T Stadium</Typography>
     </Grid>
@@ -163,9 +156,18 @@ const ScoreCard = withStyles((theme) => ({
 ))
 
 class Scoreboard extends Component {
+
+  state = {date : new Date()}
+
+
+  onUpdateDate =  (date) => {
+    console.log('hello')
+    this.setState({date})
+  }
+
   render() {
-    const d = new Date()
     const {classes, teams} = this.props
+    const {date} = this.state
     return (
       <div className={classes.container}>
         <Typography
@@ -180,14 +182,15 @@ class Scoreboard extends Component {
           children={getCompleteDate(new Date())}
         />
         <WeekDayPicker
-          date={new Date()}
+          date={date}
+          onUpdateDate={this.onUpdateDate}
         />
         <DatePicker
           keyboard
           label="Or pick a date"
-          format="DD/MM/YYYY"
-          value={new Date()}
-          onChange={() => ({})}
+          format="MM/DD/YYYY"
+          value={date}
+          onChange={this.onUpdateDate}
           animateYearScrolling={false}
         />
         <Typography
