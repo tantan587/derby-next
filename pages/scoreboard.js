@@ -6,9 +6,7 @@ import withRedux from 'next-redux-wrapper'
 import storeFactory from '../common/store'
 import ReloadProtector from '../common/components/ReloadProtector'
 
-
 class Scoreboard extends React.Component {
-
   render() {
     return (
       <div>
@@ -23,3 +21,4 @@ class Scoreboard extends React.Component {
 }
 
 export default withRedux(storeFactory)(withRoot(Scoreboard))
+        // <Nav />

@@ -1,18 +1,31 @@
 import React from 'react'
-import { withStyles } from '@material-ui/core/styles'
+import {connect} from 'react-redux'
+import {withStyles} from '@material-ui/core/styles'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
-import { connect } from 'react-redux'
+import Button from '@material-ui/core/Button'
+import HamburgerIcon from '@material-ui/icons/Reorder'
+
 import MenuButton from './Buttons/MenuButton'
 import LeaguesButton from './Buttons/LeaguesButton'
+import {toggleMobileNav} from '../../actions/status-actions'
 
-const styles = () => ({
+const styles = (theme) => ({
   root: {
     flexGrow: 1,
-    backgroundColor:'white', 
+    backgroundColor:'white'
+  },
+  toolbar: {
+    display: 'flex',
+    [theme.breakpoints.down('sm')]: {
+      justifyContent: 'center',
+    },
   },
   flex: {
     flex: 1,
+    [theme.breakpoints.down('sm')]: {
+      display: 'none'
+    },
   },
   menuButton: {
     marginLeft: -12,
@@ -22,7 +35,15 @@ const styles = () => ({
   toolbarHeight :{
     height:30,
     maxHeight:30,
-  }
+  },
+  hamburger: {
+    position: 'absolute',
+    left: 0,
+    color: 'white',
+    [theme.breakpoints.up('md')]: {
+      display: 'none'
+    }
+  },
 })
 class TopNavUser extends React.Component {
   
@@ -53,15 +74,18 @@ class TopNavUser extends React.Component {
   }
 
   render() {
-    const {classes, user} = this.props
-    
+    const {classes, user, toggleMobileNav} = this.props
     return (
       <div className={classes.root}>
         <AppBar position="static" style={{backgroundColor:'229246', color:'white'}}>
           <div style={{backgroundColor:'#00642C', height:30}}/>
-          <Toolbar>
+          <Toolbar className={classes.toolbar}>
+            <Button className={classes.hamburger} variant="extendedFab" onClick={toggleMobileNav}>
+              <HamburgerIcon />
+            </Button>
+            
             {this.setHoverToButton('home', 0, user.loggedIn, '/')} 
-            <div  className={classes.flex}>
+            <div className={classes.flex}>
               {this.setHoverToButton('league', 1, user.loggedIn)}  
               {this.setHoverToButton('default', 2, user.loggedIn, '/participate', 'Create/Join League')}
               {this.setHoverToButton('default', 3, user.loggedIn, '', 'Rules')}
@@ -86,5 +110,5 @@ class TopNavUser extends React.Component {
   }
 }
 
-export default connect(({ user}) => ({ user }),
-  null)(withStyles(styles)(TopNavUser))
+export default connect(({ user }) => ({ user }),
+  {toggleMobileNav})(withStyles(styles)(TopNavUser))
