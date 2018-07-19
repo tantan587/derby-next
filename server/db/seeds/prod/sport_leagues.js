@@ -10,10 +10,12 @@ var data =
 
 exports.seed = function(knex, Promise) {
   // Deletes ALL existing entries
-  return  knex.withSchema('sports').table('leagues').del()
-    .then(function () {
-      // Inserts seed entries
-      return knex.withSchema('sports').table('leagues').insert(data)
-    })
+  return  null
+  
+  // knex.withSchema('sports').table('leagues').del()
+  //   .then(function () {
+  //     // Inserts seed entries
+  //     return knex.withSchema('sports').table('leagues').insert(data)
+  //   })
 }
 
