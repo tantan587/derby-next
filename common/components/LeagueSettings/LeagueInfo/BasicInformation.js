@@ -10,16 +10,19 @@ import DateRange from '@material-ui/icons/DateRange'
 
 import DerbySwitch from '../../UI/DerbySwitch'
 
-const styles = theme => {console.log(theme); return{
+const styles = theme => ({
   container: {
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
-    height: 700,
+    height: 250,
     padding: 20,
     [theme.breakpoints.only('sm')]: {
       width: '75%',
-    }
+    },
+    [theme.breakpoints.down('sm')]: {
+      height: 350,
+    },
   },
   formRoot: {
     width: '60%',
@@ -111,7 +114,7 @@ const styles = theme => {console.log(theme); return{
       top: 2,
     }
   },
-}}
+})
 
 const InfoTool = ({ style }) =>
   <Tooltip id="tooltip-top" title="This gives you information" placement="top">
@@ -126,7 +129,6 @@ const BasicInformation = withStyles(styles)(({ classes }) =>
     <div className={classes.field}>
       <div className={classes.label}>
         <div>Commissioner:</div>
-        <InfoTool style={classes.infoTool} />
       </div>
       {/* <TextField fullWidth label="Commissioner's Name" /> */}
       <FormControl className={classes.textField}>
@@ -136,47 +138,43 @@ const BasicInformation = withStyles(styles)(({ classes }) =>
 
     <div className={classes.field}>
       <div className={classes.label}>
-        <div>Amount of Members:</div>
+        <div>League Name:</div>
+      </div>
+      {/* <TextField fullWidth label="Commissioner's Name" /> */}
+      <FormControl className={classes.textField}>
+        <Input placeholder="League Name Here" />
+      </FormControl>
+    </div>
+
+    <div className={classes.field}>
+      <div className={classes.label}>
+        <div>League Password:</div>
         <InfoTool style={classes.infoTool} />
       </div>
+      <FormControl className={classes.textField}>
+        <Input placeholder="Minimum of 8 characters" />
+      </FormControl>
+    </div>
+
+    <div className={classes.field}>
+      <div className={classes.label}>
+        <div>Verify Password:</div>
+      </div>
+      <FormControl className={classes.textField}>
+        <Input placeholder="Must match Password" />
+      </FormControl>
+    </div>
+
+    <div className={classes.field}>
+      <div className={classes.label}>
+        <div>Amount of Members:</div>
+      </div>
       {/* <TextField fullWidth label="Commissioner's Name" /> */}
-      <div className={classes.formRoot} style={{ display: 'flex' }}>
-        <FormControl style={{ border: '1.5px solid black', width: '20%', marginRight: '5%' }}>
-          <Input classes={{ root: classes.rootTest }} disableUnderline type="number" />
-        </FormControl>
+      <div className={classes.formRoot} style={{ display: 'flex', justifyContent: 'space-between' }}>
+        {/* <FormControl style={{ width: '60%', marginRight: '5%' }}> */}
+          <Input style={{ border: '1.5px solid black' }} disableUnderline type="number" />
+        {/* </FormControl> */}
         <div style={{ alignSelf: 'center' }}>Minimum of X teams to play</div>
-      </div>
-    </div>
-
-    <div className={classes.field}>
-      <div className={classes.label}>
-        <div>Set Draft Date & Time:</div>
-      </div>
-      {/* <TextField fullWidth label="Commissioner's Name" /> */}
-      <div className={classes.formRoot} style={{ display: 'flex' }}>
-        <FormControl style={{ width: 164 }}>
-          <Input className={classes.date} type="date" />
-        </FormControl>
-        <DateRange style={{ height: 24, width: 24,  padding: '0px 5px' }} />
-        <FormControl style={{ width: 114 }}>
-          <Input className={classes.time} required type="time" />
-        </FormControl>
-      </div>
-    </div>
-
-    <div className={classes.field}>
-      <div className={classes.label}>
-        <div>Seconds Per Pick:</div>
-      </div>
-      {/* <TextField fullWidth label="Commissioner's Name" /> */}
-      <div className={classes.formRoot} style={{ display: 'flex' }}>
-        <FormControl style={{ border: '1.5px solid black', width: '20%' }}>
-          <Input
-            classes={{ root: classes.rootTest }}
-            disableUnderline
-            type="number"
-          />
-        </FormControl>
       </div>
     </div>
 
@@ -188,38 +186,6 @@ const BasicInformation = withStyles(styles)(({ classes }) =>
       {/* <TextField fullWidth label="Commissioner's Name" /> */}
       <div className={`${classes.formRoot} ${classes.switchPosition}`} style={{ alignSelf: 'flex-start' }}>
         <DerbySwitch />
-      </div>
-    </div>
-
-    <div className={classes.field}>
-      <div className={classes.label}>
-        <div>Set Draft Date & Time:</div>
-      </div>
-      {/* <TextField fullWidth label="Commissioner's Name" /> */}
-      <div className={classes.formRoot} style={{ display: 'flex' }}>
-        <FormControl style={{ width: 164 }}>
-          <Input className={classes.date} type="date" />
-        </FormControl>
-        <DateRange style={{ height: 24, width: 24,  padding: '0px 5px' }} />
-        <FormControl style={{ width: 114 }}>
-          <Input className={classes.time} required type="time" />
-        </FormControl>
-      </div>
-    </div>
-
-    <div className={classes.field}>
-      <div className={classes.label}>
-        <div>Set Draft Date & Time:</div>
-      </div>
-      {/* <TextField fullWidth label="Commissioner's Name" /> */}
-      <div className={classes.formRoot} style={{ display: 'flex' }}>
-        <FormControl style={{ width: 164 }}>
-          <Input className={classes.date} type="date" />
-        </FormControl>
-        <DateRange style={{ height: 24, width: 24,  padding: '0px 5px' }} />
-        <FormControl style={{ width: 114 }}>
-          <Input className={classes.time} required type="time" />
-        </FormControl>
       </div>
     </div>
   </Card>

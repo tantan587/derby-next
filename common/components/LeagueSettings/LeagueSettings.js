@@ -5,7 +5,7 @@ import DerbyTabs from '../Tabs/DerbyTabs'
 import LeagueInfo from './LeagueInfo/LeagueInfo'
 import ManageEmails from './ManageLeague/ManageEmails'
 
-const styles = {
+const styles = theme =>({
   root: {
     display: 'flex',
     flexDirection: 'column',
@@ -13,18 +13,24 @@ const styles = {
     marginTop: 80
   },
   content: {
-    width: '80%'
+    width: '80%',
+    [theme.breakpoints.only('sm')]: {
+      width: '85%'
+    },
+    [theme.breakpoints.only('xs')]: {
+      width: '90%'
+    },
   },
   title: {
     fontFamily: 'HorsebackSlab',
     fontSize: 32,
     color: '#299149'
   }
-}
+})
 
 const myTabs = [
   { label: 'League Info & Draft', Component: <LeagueInfo /> },
-  { label: 'Manage League Members', Component: <ManageEmails /> }
+  { label: 'Manage League Members', Component: <ManageEmails /> },
 ]
 
 class LeagueSettings extends React.Component {

@@ -97,7 +97,7 @@ class CustomizeTeam extends Component {
         <Grid item xs={12} md={12} lg={6} className={classes.gridMargins}>
           <div>
             <div className={classes.title}>Draft Settings</div>
-            <BasicInformation />
+            <DraftSettings />
           </div>
         </Grid>
         <StyledButton
