@@ -5,16 +5,18 @@ import {withStyles} from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
-import Button from '@material-ui/core/Button'
-import DAYS from './DAYS'
+import {WeekdaysShort} from '../../lib/time'
+import {DatePicker} from 'material-ui-pickers'
 
 const styles = (theme) => ({
   week: {
-    display: 'inline',
     listStyle: 'none',
     padding: '0',
     margin: '0 20px 0 0',
-    height: 48,
+    display:'flex',
+    justifyContent:'center',
+    flexWrap:'wrap',
+    alignItems:'center'
   },
   arrow: {
     float: 'left',
@@ -42,13 +44,13 @@ const styles = (theme) => ({
 
 const Day = ({classes}, onUpdateDate) => (date, index) => {
   return (
-    <li
+    <div
       className={classNames(classes.day, {[classes.activeDay]: index === 3})}
       onClick={() => onUpdateDate(date)}
     >
       <Typography
         variant="body2"
-        children={DAYS[date.getDay()]}
+        children={WeekdaysShort[date.getDay()]}
         align="center"
         color="inherit"
       />
@@ -58,11 +60,11 @@ const Day = ({classes}, onUpdateDate) => (date, index) => {
         align="center"
         color="inherit"
       />
-    </li>
+    </div>
   )
 }
 
-class WeekDayPicker extends Component {
+class DayPicker extends Component {
 
   changeDateByOffset = (date,offset) => {
     const tmp = new Date(date.getTime())
@@ -76,17 +78,26 @@ class WeekDayPicker extends Component {
       return this.changeDateByOffset(date,offset)
     })
     return (
-      <ul className={classes.week}>
-        <li className={classes.arrow}
+      <div className={classes.week}>
+        <div className={classes.arrow}
           onClick={() => onUpdateDate(this.changeDateByOffset(date,-1))}>
-          <ChevronLeftIcon fontSize="inherit"/></li>
+          <ChevronLeftIcon fontSize="inherit"/></div>
         {DateRange.map(Day({classes}, onUpdateDate))}
-        <li className={classes.arrow}
+        <div className={classes.arrow}
           onClick={() => onUpdateDate(this.changeDateByOffset(date,1))}>
-          <ChevronRightIcon fontSize="inherit"/></li>
-      </ul>
+          <ChevronRightIcon fontSize="inherit"/></div>
+        <DatePicker
+          style={{marginLeft:20}}
+          keyboard
+          label="Or pick a date"
+          format="MM/DD/YYYY"
+          value={date}
+          onChange={this.onUpdateDate}
+          animateYearScrolling={false}
+        />
+      </div>
     )
   }
 }
-
-export default withStyles(styles)(WeekDayPicker)
+//display:'flex',justifyContent:'center', flexWrap:'wrap'
+export default withStyles(styles)(DayPicker)

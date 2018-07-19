@@ -1,33 +1,69 @@
 const R = require('ramda')
 import {Component} from 'react'
 import {connect} from 'react-redux'
-import {DatePicker} from 'material-ui-pickers'
 import {withStyles} from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
-import Grid from '@material-ui/core/Grid'
-import Paper from '@material-ui/core/Paper'
-import MONTHS from './MONTHS'
-import {LRRR} from './ScoreCardLayouts'
-import WeekDayPicker from './WeekDayPicker'
-import TeamCard from './TeamCard'
-import MetaPB from './MetaPB'
+import DayPicker from './DayPicker'
+import ScoreCard from './ScoreCard'
+import {MonthNames } from '../../lib/time'
 
-const FIXTURES = {
-  away_team: 'Atlanta Hawks',
-  home_team: 'Boston Celtics',
-  away_url: 'https://upload.wikimedia.org/wikipedia/en/2/24/Atlanta_Hawks_logo.svg',
-  home_url: 'https://upload.wikimedia.org/wikipedia/en/8/8f/Boston_Celtics.svg',
-  away_record: '28-30',
-  home_record: '33-25',
-  inning:'Top 8',
-  away_runs:0,
-  home_runs:4,
-  away_hits:4,
-  home_hits:4,
-  away_errors:0,
-  home_errors:0,
-  stadium:'Washington Field',
+const scoreboardDataLive = {
+  status : 'Top 8th',
+  header : ['R','H','E'],
+  home : {
+    team_name: 'Boston Redsox',
+    url: 'https://upload.wikimedia.org/wikipedia/en/6/6d/RedSoxPrimary_HangingSocks.svg',
+    record: '33-25, 87 Points',
+    score:[4,7,1]
+  },
+  away : {
+    team_name: 'Atlanta Braves',
+    url: 'https://upload.wikimedia.org/wikipedia/en/f/f2/Atlanta_Braves.svg',
+    record: '23-35, 36 Points',
+    score:[2,3,1]
+  },
+  stadium: 'Fenway Park'
 }
+
+const scoreboardDataFinal = {
+  status : 'Final',
+  header : ['R','H','E'],
+  home : {
+    team_name: 'Boston Redsox',
+    url: 'https://upload.wikimedia.org/wikipedia/en/6/6d/RedSoxPrimary_HangingSocks.svg',
+    record: '33-25, 87 Points',
+    score:[6,8,1]
+  },
+  away : {
+    team_name: 'Atlanta Braves',
+    url: 'https://upload.wikimedia.org/wikipedia/en/f/f2/Atlanta_Braves.svg',
+    record: '23-35, 36 Points',
+    score:[3,5,1],
+    lost:true
+  },
+  stadium: 'Fenway Park'
+}
+
+const scoreboardDataPreview = {
+  status : '7:00 PM EST',
+  header : ['R','H','E'],
+  home : {
+    team_name: 'Boston Redsox',
+    url: 'https://upload.wikimedia.org/wikipedia/en/6/6d/RedSoxPrimary_HangingSocks.svg',
+    record: '33-25, 87 Points',
+    score:[0,0,0]
+  },
+  away : {
+    team_name: 'Atlanta Braves',
+    url: 'https://upload.wikimedia.org/wikipedia/en/f/f2/Atlanta_Braves.svg',
+    record: '23-35, 36 Points',
+    score:[0,0,0]
+  },
+  stadium: 'Fenway Park'
+}
+
+
+
 
 const styles = (theme) => (console.log(theme), {
   container: {
@@ -57,103 +93,7 @@ const getCompleteDate = (date) => {
   return `${formatDate(prev)} - ${formatDate(next)}`
 }
 
-const formatDate = (date) => `${MONTHS[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`
-
-const ScoreCard = withStyles((theme) => ({
-  container: {
-    maxWidth: 600,
-    marginBottom: 20,
-  },
-  title: {
-    fontWeight: 'bold',
-    color: theme.palette.primary.main,
-  },
-  left: {
-    [theme.breakpoints.between('xs', 'sm')]: {
-      borderBottom: `1px solid ${theme.palette.grey.A200}`,
-    },
-    [theme.breakpoints.up('md')]: {
-      borderRight: `1px solid ${theme.palette.grey.A200}`,
-    },
-  },
-  venue: {
-    marginBottom: 10,
-    marginLeft: 10,
-  },
-  right: {
-    padding: '25px',
-  },
-  bb: {
-    borderBottom: '1px solid #777'
-  },
-  Header: {marginBottom: 30, borderBottom: `1px solid ${theme.palette.grey.A200}`, padding: '10px 10px 10px 10px'},
-  Row: {marginBottom: 30, padding: '0 10px'},
-  R: {color: '#555'},
-  RContent: {justifyContent: 'center'}
-}))(({
-  classes,
-}) => (
-  <Grid
-    container
-    className={classes.container}
-    xs={12}
-    direction="row"
-    component={Paper}
-  > 
-    <Grid
-      className={classes.left}
-      item
-      container
-      xs={12}
-      md={7}
-    >
-      <LRRR
-        className={classes.Header}
-        classes={R.pick(['R', 'RContent'], classes)}
-        L={<Typography children={<b>Top 8th</b>} variant="subheading" color="primary"/>}
-        R={[<Typography children="R" variant="caption" />,
-          <Typography children="H" variant="caption" />,
-          <Typography children="E" variant="caption" />]}
-      />
-      <LRRR
-        className={classes.Row}
-        classes={R.pick(['R', 'RContent'], classes)}
-        L={(
-          <TeamCard
-            team_name={FIXTURES.away_team}
-            logo_url={FIXTURES.away_url}
-          />
-        )}
-        R={[<Typography children={FIXTURES.away_runs} variant="subheading" color="inherit" />,
-          <Typography children={FIXTURES.away_hits} variant="subheading" color="inherit" />,
-          <Typography children={FIXTURES.away_errors} variant="subheading" color="inherit" />]}
-      />
-      <LRRR
-        className={classes.Row}
-        classes={R.pick(['R', 'RContent'], classes)}
-        L={(
-          <TeamCard
-            team_name={FIXTURES.home_team}
-            logo_url={FIXTURES.home_url}
-          />
-        )}
-        R={[<Typography children={FIXTURES.home_runs} variant="subheading" color="inherit" />,
-          <Typography children={FIXTURES.home_hits} variant="subheading" color="inherit" />,
-          <Typography children={FIXTURES.home_errors} variant="subheading" color="inherit" />]}
-      />
-      <Typography className={classes.venue} variant="caption"><b>Location</b>: AT&T Stadium</Typography>
-    </Grid>
-    <Grid
-      item
-      className={classes.right}
-      xs={12}
-      md={5}
-      children={(
-        <MetaPB />
-      )}
-    />
-  </Grid>
-))
+const formatDate = (date) => `${MonthNames[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`
 
 class Scoreboard extends Component {
 
@@ -166,14 +106,19 @@ class Scoreboard extends Component {
   }
 
   render() {
-    const {classes, teams} = this.props
+    const {classes} = this.props
     const {date} = this.state
+    const scoreCards = [<ScoreCard useRightSide={false} scoreboardData={scoreboardDataLive}/>,
+      <ScoreCard useRightSide={false} scoreboardData={scoreboardDataPreview}/>,
+      <ScoreCard useRightSide={false} scoreboardData={scoreboardDataFinal}/>,
+      <ScoreCard useRightSide scoreboardData={scoreboardDataLive}/>]
+
     return (
       <div className={classes.container}>
         <Typography
           className={classes.title}
           variant="display1"
-          children="MLB Scores"
+          children="Scores"
         />
         <Typography
           className={classes.caption}
@@ -181,26 +126,21 @@ class Scoreboard extends Component {
           gutterBottom
           children={getCompleteDate(new Date())}
         />
-        <WeekDayPicker
+        <DayPicker
           date={date}
           onUpdateDate={this.onUpdateDate}
         />
-        <DatePicker
-          keyboard
-          label="Or pick a date"
-          format="MM/DD/YYYY"
-          value={date}
-          onChange={this.onUpdateDate}
-          animateYearScrolling={false}
-        />
+        <br/>
         <Typography
           className={classes.body1}
           variant="body1"
           children={`Scores for ${formatDate(new Date())}`}
           paragraph={true}
         />
-        <ScoreCard />
-        <ScoreCard />
+        <div style={{display:'flex', justifyContent:'center', flexWrap:'wrap'}}>
+          {scoreCards.map(x => x)}
+        </div>
+
       </div>
     )
   }

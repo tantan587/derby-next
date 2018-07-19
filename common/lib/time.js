@@ -57,7 +57,7 @@ export const GetFullDateStr = (date) =>
   var split = date.split('-')
   var d = new Date(split[0],split[1]-1,split[2])
 
-  return weekdays[d.getDay()] + ', ' + monthNames[d.getMonth()] + ' ' + (d.getDate()) + ', ' + d.getFullYear()
+  return weekdays[d.getDay()] + ', ' + MonthNames[d.getMonth()] + ' ' + (d.getDate()) + ', ' + d.getFullYear()
 }
 
 export const GetCountdownTimeStr = (num) =>
@@ -116,5 +116,8 @@ export const GetNextDay = (inputDay, forward) =>
 export const Timezones = {'0': {value:'-07', name:'PST'},'1': {value:'-06', name:'MST'},'2': {value:'-05',name:'CST'},'3': {value:'-04', name:'EST'}}
 
 const weekdays = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
-const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+
+export const WeekdaysShort = ['SUN', 'MON','TUE','WED','THU','FRI','SAT']
+
+export const MonthNames = ['January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December']

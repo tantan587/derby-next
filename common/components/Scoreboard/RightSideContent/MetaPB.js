@@ -1,7 +1,7 @@
 import {withStyles} from '@material-ui/core/styles'
 import Avatar from '@material-ui/core/Avatar'
 import Typography from '@material-ui/core/Typography'
-import {LTB} from './ScoreCardLayouts'
+import {LTB} from '../ScoreCardLayouts'
 import BSO from './BSO'
 
 const styles = (theme) => ({

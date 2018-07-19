@@ -33,35 +33,48 @@ export const LTB = ({L, T, B, classes = {}, ...rest}) => (
   </Grid>
 )
 
-export const LRRR = ({L, R, classes = {}, ...rest}) => (
-  <Grid
-    container
-    alignItems="center"
-    {...rest}
-  >
-    <Grid 
-      item
-      className={classes.L}
-      children={L}
-      variant="body2"
-      xs={7}
-    />
+export const LeftRight = ({L, R, totalInd, classes = {}, ...rest}) => {
+  let T = totalInd ? R.pop() : null
+  return (
     <Grid
-      item
-      className={classes.R}
       container
-      variant="body2"
-      xs={5}
+      alignItems="center"
+      {...rest}
     >
-      {R.map(oneR => {
-        return <Grid
-          container
+      <Grid 
+        item
+        className={classes.L}
+        children={L}
+        variant="body2"
+        xs={6}
+      />
+      <Grid
+        item
+        className={classes.R}
+        container
+        variant="body2"
+        xs={totalInd ? 4 : 6}
+      >
+        {R.map(oneR => {
+          return <Grid
+            container
+            item
+            className={classes.RValues}
+            xs={Math.floor(12/R.length)}
+            children={oneR}
+            alignItems="center"
+          />})}
+      </Grid>
+      { totalInd ? 
+        <Grid 
           item
-          className={classes.RContent}
-          xs={4}
-          children={oneR}
-          alignItems="center"
-        />})}
+          className={classes.RValues}
+          style={{textAlign:'center'}}
+          children={T}
+          variant="body2"
+          xs={2}/> :
+        null
+      }
     </Grid>
-  </Grid>
-)
+  )}
+
