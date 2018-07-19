@@ -16,12 +16,17 @@ const getLeague = async (league_id, user_id, res, type) => {
   fantasy.owners a, users.users b, fantasy.points c
   where a.user_id = b.user_id and a.owner_id = c.owner_id and a.league_id = '` + league_id + '\''
 
-  var teamInfoStr = `select b.owner_id, a.team_id, a.reg_points as points
+  var teamInfoStr = `select c.owner_id, a.team_id, a.reg_points as points
   from fantasy.team_points a
   left outer join (select cc.* from fantasy.rosters cc, fantasy.owners dd where
    cc.owner_id = dd.owner_id and dd.league_id = '` + league_id + '\'' +
- `) b on a.team_id = b.team_id 
-  where a.league_id = '` + league_id + '\''
+ `) c on a.team_id = c.team_id 
+ where a.scoring_type_id = 1`
+ //need to fix this to do it based on league
+ //, fantasy.leagues b
+ //where b.league_id = '` + league_id + '\' and b.scoring_type_id = a.scoring_type_id'
+  //
+  
    
   const leagueInfo = await knex.raw(leagueInfoStr)
   const ownerInfo = await knex.raw(ownerInfoStr)
