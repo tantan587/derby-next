@@ -1,5 +1,5 @@
-const R = require('ramda')
-import React, {Component, createContext} from 'react'
+//const R = require('ramda')
+import {Component, createContext} from 'react'
 
 export const ToggleContext = createContext()
 

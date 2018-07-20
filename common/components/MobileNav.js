@@ -53,7 +53,7 @@ const styles = (theme) => (console.log(theme), {
 })
 
 const closeAllMenusOnEsc = (e) => {
-  e = e || window.event;
+  e = e || window.event
   if (e.key === 'Escape' || e.keyCode === 27) {
     hideMobileNav()
   }
