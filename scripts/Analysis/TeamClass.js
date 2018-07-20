@@ -31,6 +31,7 @@ class Team {
         this.bowl_wins = 0
         this.average_wins = 0
         this.average_losses = 0
+        this.average_ties=0
         this.average_playoff_wins = 0
         this.average_playoff_appearances = 0
         this.average_finalists = 0
@@ -75,7 +76,7 @@ class Team {
 
     adjustEloWins(sport_id, win_value, win_percentage, elo_adjust, playoff_game){
         this.elo += ((win_value-win_percentage)*elo_adjust)
-        if(playoff_game === false&& sport_id !== 104){
+        if(playoff_game === false && sport_id !== 104){
             if(sport_id===107 && win_value ===.5){
                 this.ties++
             }else{

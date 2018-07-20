@@ -6,6 +6,7 @@ const pullPastGames = (knex, day) =>
 {
     return knex('sports.schedule')
         .where('sports.schedule.day_count', "<", day) //need to test if want to go past today, or e this day count
+        .where('season_type',1) 
         .select('*')
         .then(game => {
             //console.log(game)
@@ -17,6 +18,8 @@ const pullFutureGames = (knex, day) =>
 {
     return knex('sports.schedule')
         .where('sports.schedule.day_count', ">", day) //need to test if want to go past today, or include this day count
+        .where('season_type',1) 
+        .whereNot('status', 'Postponed')
         .select('*')
         .then(game => {
             //console.log(game)

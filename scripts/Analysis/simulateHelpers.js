@@ -113,7 +113,7 @@ const updateProjections = (teams, day) => {
         //let playoff_json = JSON.stringify({wins: team.average_playoff_wins, playoffs: team.average_playoff_appearances, finalists: team.average_finalists, champions: team.average_champions})
         //console.log(playoff_json)
         return {team_id: team.team_id, wins: team.average_wins,
-             losses: team.average_losses, ties: 0, day_count: day, 
+             losses: team.average_losses, ties: team.average_ties, day_count: day, 
              playoff: {wins: team.average_playoff_wins, playoffs: team.average_playoff_appearances, finalists: team.average_finalists, champions: team.average_champions, bowl_wins: team.average_bowl_wins}}
     })
     console.log(rows.length)
@@ -165,12 +165,16 @@ const fantasyProjections = (all_teams, day, points) => {
     points.forEach(type => {
         array_for_copy.push([])
     })
+
     //i should be dividing this up by conference and not just by league
-    let sport_ids = ['101', '102', '103', '104', '105', '106', '107']
+    //this no longer checks for each different point type: error: will fix later
+    let sport_ids = ['101','102', '103', '104', '105', '106', '107']
     sport_ids.forEach(sport => {
         let sport_teams = Object.keys(all_teams[sport]).map(team => {return all_teams[sport][team]})
         let x = 0
-        let points_array = array_for_copy.slice(0)
+        let points_array = [[]]
+        //let points_array = array_for_copy.slice(0)
+        console.log(points_array)
 
         sport_teams.forEach(team => {
             team.calculateFantasyPoints(points)
@@ -184,13 +188,17 @@ const fantasyProjections = (all_teams, day, points) => {
         let last_drafted = []
         points_array.forEach(arr => {
             arr.sort(function(a,b){return b-a})
+            //console.log(arr.length)
             //normalize size of leagues for rankings
             let size = 12
             let roster_size_for_ranking = sport === ('106'||'105') ? size*3 : sport === '107' ? size : size*2
+            console.log(roster_size_for_ranking,sport)
             let drafted_teams = arr.slice(0, roster_size_for_ranking)
             averages.push(math.mean(drafted_teams))
             let standard_dev = math.std(drafted_teams)
             last_drafted.push(arr[roster_size_for_ranking])
+            console.log(averages,sport)
+            console.log(last_drafted,sport)
         })
         sport_teams.forEach(team => {
             team.calculateAboveValuesForRanking(last_drafted, averages)
