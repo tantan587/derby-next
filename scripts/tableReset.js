@@ -3,7 +3,6 @@ const knex = require('../server/db/connection')
 
 const reset_tables = async () => {
     return Promise.all([
-        knex('sports.test').truncate(),
         knex('sports.standings').truncate(),
         knex('sports.schedule').truncate(),
         knex('sports.team_info').truncate(),

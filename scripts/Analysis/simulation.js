@@ -39,13 +39,13 @@ async function simulate(knex)
     //.then(games => {
 
     //these are the functions for each individual season. 
+    const epl_teams = simulateEPL(games, all_teams, all_points, simulations)
     const cfb_teams = simulateCFB(games, all_teams, all_points, simulations)
     const mlb_teams = simulateProfessionalLeague(games, all_teams, '103', all_points, simulations)
     const nba_teams = simulateProfessionalLeague(games, all_teams, '101', all_points, simulations)
     const nfl_teams = simulateProfessionalLeague(games, all_teams, '102', all_points, simulations)
     const nhl_teams = simulateProfessionalLeague(games, all_teams, '104', all_points, simulations)
     const cbb_teams = simulateCBB(games, all_teams, all_points, simulations)
-    const epl_teams = simulateEPL(games, all_teams, all_points, simulations)
     
     //team variables contain team projections as first object, game projections as second.
     //the following three functions find the team projections, game projections, and then find fantasy.projections
@@ -274,7 +274,6 @@ const simulateEPL = (all_games_list, teams, points, simulations = 10) => {
     //console.log(leagues)
     for(let x=0; x<simulations; x++){
         all_games_list['107'].forEach(game => {
-            //console.log(game)
            game.play_EPL_game()})
         
         //sort by EPL points

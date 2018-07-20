@@ -76,6 +76,17 @@ const getSchedInfo = async (knex, sportName, api, promiseToGet, year) => {
       return schedInfo
     })
   }else{
+    if(sportName==='MLB'){
+      let non_byes = [schedInfo[0].home_team_id, schedInfo[0].away_team_id, schedInfo[1].home_team_id, schedInfo[1].away_team_id]
+      let playoff_teams = await knex('sports.playoff_standings').where('team_id',"<",103999).andWhere('team_id',">",103000).andWhere('playoff_status',">",2).select('team_id')
+      let playoff_team_ids = playoff_teams.map(team => team.team_id)
+      let byes = []
+      playoff_team_ids.forEach(team =>{
+        if(!(non_byes.includes(team))){
+          byes.push(team)
+        }
+      })
+    }
   //console.log('here')
   //console.log(stadiumInfo[0])
   return schedInfo

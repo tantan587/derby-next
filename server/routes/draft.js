@@ -6,7 +6,7 @@ const C = require('../../common/constants')
 const draftHelpers = require('./helpers/draftHelpers')
 
 //router.post('/enterdraft', authHelpers.loginRequired, (req, res, next)  => {
-router.post('/enterdraft', (req, res, next)  => {
+router.post('/enterdraft', (req, res)  => {
   return getDraft(req.body.room_id, req.body.owner_id)
     .then((resp) => { 
       handleReduxResponse(res, 200, resp)})
@@ -15,7 +15,7 @@ router.post('/enterdraft', (req, res, next)  => {
       handleResponse(res, 500, err)})
 })
 
-router.post('/savedraft', authHelpers.loginRequired, (req, res, next)  => {
+router.post('/savedraft', authHelpers.loginRequired, (req, res)  => {
   return draftHelpers.enterDraftToDb(req.body.allTeams, req.body.league_id, res)
     .catch((err) => {
       handleResponse(res, 500, err) })

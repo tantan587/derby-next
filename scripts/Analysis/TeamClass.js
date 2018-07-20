@@ -37,7 +37,6 @@ class Team {
         this.average_champions = 0
         this.average_bowl_wins = 0
         this.cTWins = 0
-        this.aLosses = 0
         //this.wOnePoints = 0 //Derby Points accrued in a single season
         this.total_playoff_appearances = 0
         this.total_champions = 0
@@ -74,12 +73,16 @@ class Team {
     get string (){
         return this.name}
 
-    adjustEloWins(win_value, win_percentage, elo_adjust, playoff_game){
+    adjustEloWins(sport_id, win_value, win_percentage, elo_adjust, playoff_game){
         this.elo += ((win_value-win_percentage)*elo_adjust)
-        if(playoff_game === false){
+        if(playoff_game === false&& sport_id !== 104){
+            if(sport_id===107 && win_value ===.5){
+                this.ties++
+            }else{
             this.wins += win_value
             this.losses += Math.abs(1-win_value)
         }
+    }
         
     }
 
@@ -207,9 +210,9 @@ class Team {
                 let milestone_parameter = this.sport_id === '103' ? this.wins : this.wins+this.ties/2
                 let milestone_points = sport_points.regular_season.milestone_points
                 //maybe this should not be so rigid - if you are close to points, projects you getting some of bonus. Fade out as season goes along
-                bonus_win = milestone_parameter < sport_points.regular_season.milestone_1 ? 0 :
-                milestone_parameter < sport_points.regular_season.milestone_2 ? milestone_points :
-                milestone_parameter < sport_points.regular_season.milestone_3 ? milestone_points*2 : milestone_points*3
+                bonus_win = milestone_parameter < sport_points.regular_season.milestones[0] ? 0 :
+                milestone_parameter < sport_points.regular_season.milestones[1] ? milestone_points :
+                milestone_parameter < sport_points.regular_season.milestones[2] ? milestone_points*2 : milestone_points*3
               }else{
                 bonus_win = 0
               }

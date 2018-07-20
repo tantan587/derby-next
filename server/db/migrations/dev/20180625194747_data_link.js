@@ -6,7 +6,7 @@ exports.up = function(knex, Promise) {
   //   table.dropColumn('team_name')
   //   table.dropColumn('fantasydata_id')
   // })
-])
+  ])
 }
 
 exports.down = function(knex, Promise) {
@@ -16,5 +16,5 @@ exports.down = function(knex, Promise) {
   //   table.string('team_name')
   //   table.string('fantasydata_id')
   // })
-])
+  ])
 }
