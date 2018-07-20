@@ -6,6 +6,7 @@ import wrapDisplayName from 'recompose/wrapDisplayName'
 import getContext from '../../styles/getContext'
 import storeFactory from '../store'
 import { Provider } from 'react-redux'
+import ToggleProvider from '../providers/ToggleProvider'
 
 const store = storeFactory(false)
 
@@ -56,11 +57,13 @@ function withRoot(Component) {
           sheetsManager={this.styleContext.sheetsManager}
         >
           <Provider store={store}>
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-              <AppWrapper>
-                <Component {...this.props} />
-              </AppWrapper>
-            </MuiPickersUtilsProvider>
+            <ToggleProvider>
+              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <AppWrapper>
+                  <Component {...this.props} />
+                </AppWrapper>
+              </MuiPickersUtilsProvider>
+            </ToggleProvider>
           </Provider>
         </MuiThemeProvider>
       )
