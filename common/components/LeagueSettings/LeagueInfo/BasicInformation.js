@@ -1,4 +1,4 @@
-// const R = require('ramda')
+import { Component } from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import Card from '@material-ui/core/Card'
 // import Grid from '@material-ui/core/Grid'
@@ -7,6 +7,9 @@ import FormControl from '@material-ui/core/FormControl'
 import Input from '@material-ui/core/Input'
 import Tooltip from '@material-ui/core/Tooltip'
 import DateRange from '@material-ui/icons/DateRange'
+import Menu from '@material-ui/core/Menu'
+import MenuItem from '@material-ui/core/MenuItem'
+import Button from '@material-ui/core/Button'
 
 import DerbySwitch from '../../UI/DerbySwitch'
 
@@ -15,13 +18,13 @@ const styles = theme => ({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
-    height: 250,
-    padding: 20,
+    height: 280,
+    padding: '6px 20px 20px 20px',
     [theme.breakpoints.only('sm')]: {
       width: '75%',
     },
     [theme.breakpoints.down('sm')]: {
-      height: 350,
+      height: 400,
     },
   },
   formRoot: {
@@ -90,18 +93,19 @@ const styles = theme => ({
   },
   label: {
     display: 'flex',
+    alignSelf: 'flex-end',
     fontWeight: 600,
-    width: '37%',
+    width: '40%',
     [theme.breakpoints.down('sm')]: {
       width: '100%'
     }
   },
   switchLabel: {
     display: 'flex',
-    alignSelf: 'flex-start',
+    alignSelf: 'flex-end',
     paddingTop: 8,
     fontWeight: 600,
-    width: '37%',
+    width: '40%',
     [theme.breakpoints.down('sm')]: {
       width: '100%'
     }
@@ -109,7 +113,7 @@ const styles = theme => ({
   switchPosition: {
     position: 'relative',
     left: -13,
-    top: -10,
+    top: -5,
     [theme.breakpoints.down('sm')]: {
       top: 2,
     }
@@ -124,71 +128,105 @@ const InfoTool = ({ style }) =>
 // const InfoTool = class => { <div className={class}>i</div> }
 // const InfoTool = ({ class )} => <div>hi</div>
 
-const BasicInformation = withStyles(styles)(({ classes }) =>
-  <Card className={classes.container}>
-    <div className={classes.field}>
-      <div className={classes.label}>
-        <div>Commissioner:</div>
-      </div>
-      {/* <TextField fullWidth label="Commissioner's Name" /> */}
-      <FormControl className={classes.textField}>
-        <Input placeholder="Commissioner's Name" />
-      </FormControl>
-    </div>
+const BasicInformation = withStyles(styles)(class extends Component {
+  state = {
+    memberAnchor: null,
+    memberVal: 8
+  }
 
-    <div className={classes.field}>
-      <div className={classes.label}>
-        <div>League Name:</div>
-      </div>
-      {/* <TextField fullWidth label="Commissioner's Name" /> */}
-      <FormControl className={classes.textField}>
-        <Input placeholder="League Name Here" />
-      </FormControl>
-    </div>
+  handleClick = event => { this.setState({ memberAnchor: event.currentTarget }) }
+  handleClose = () => { this.setState({ memberAnchor: null }) }
+  handleSelect = value => { this.setState({ memberAnchor: null, memberVal: value }) }
 
-    <div className={classes.field}>
-      <div className={classes.label}>
-        <div>League Password:</div>
-        <InfoTool style={classes.infoTool} />
-      </div>
-      <FormControl className={classes.textField}>
-        <Input placeholder="Minimum of 8 characters" />
-      </FormControl>
-    </div>
 
-    <div className={classes.field}>
-      <div className={classes.label}>
-        <div>Verify Password:</div>
-      </div>
-      <FormControl className={classes.textField}>
-        <Input placeholder="Must match Password" />
-      </FormControl>
-    </div>
+  render() {
+    const { classes } = this.props
+    const { memberAnchor, memberVal } = this.state
 
-    <div className={classes.field}>
-      <div className={classes.label}>
-        <div>Amount of Members:</div>
-      </div>
-      {/* <TextField fullWidth label="Commissioner's Name" /> */}
-      <div className={classes.formRoot} style={{ display: 'flex', justifyContent: 'space-between' }}>
-        {/* <FormControl style={{ width: '60%', marginRight: '5%' }}> */}
-          <Input style={{ border: '1.5px solid black' }} disableUnderline type="number" />
-        {/* </FormControl> */}
-        <div style={{ alignSelf: 'center' }}>Minimum of X teams to play</div>
-      </div>
-    </div>
+    const memberArray = new Array(8).fill(0).map((arr, i) => i + 8)
 
-    <div className={classes.switchField}>
-      <div className={classes.switchLabel}>
-        <div>Add Premier League:</div>
-        <InfoTool style={classes.infoTool} />
-      </div>
-      {/* <TextField fullWidth label="Commissioner's Name" /> */}
-      <div className={`${classes.formRoot} ${classes.switchPosition}`} style={{ alignSelf: 'flex-start' }}>
-        <DerbySwitch />
-      </div>
-    </div>
-  </Card>
-)
+    return (
+      <Card className={classes.container}>
+        <div className={classes.field}>
+          <div className={classes.label}>
+            <div>Commissioner:</div>
+          </div>
+          {/* <TextField fullWidth label="Commissioner's Name" /> */}
+          <FormControl className={classes.textField}>
+            <Input placeholder="Commissioner's Name" />
+          </FormControl>
+        </div>
+
+        <div className={classes.field}>
+          <div className={classes.label}>
+            <div>League Name:</div>
+          </div>
+          {/* <TextField fullWidth label="Commissioner's Name" /> */}
+          <FormControl className={classes.textField}>
+            <Input placeholder="League Name Here" />
+          </FormControl>
+        </div>
+
+        <div className={classes.field}>
+          <div className={classes.label}>
+            <div>League Password:</div>
+            <InfoTool style={classes.infoTool} />
+          </div>
+          <FormControl className={classes.textField}>
+            <Input placeholder="Minimum of 8 characters" />
+          </FormControl>
+        </div>
+
+        <div className={classes.field}>
+          <div className={classes.label}>
+            <div>Verify Password:</div>
+          </div>
+          <FormControl className={classes.textField}>
+            <Input placeholder="Must match Password" />
+          </FormControl>
+        </div>
+
+        <div className={classes.field}>
+          <div className={classes.label}>
+            <div>Amount of Members:</div>
+          </div>
+          <div className={classes.formRoot} style={{ display: 'flex' }}>
+            <Button
+              variant="raised"
+              aria-owns={memberAnchor ? 'simple-menu' : null}
+              aria-haspopup="true"
+              onClick={this.handleClick}
+            >
+              { memberVal }
+            </Button>
+            <Menu
+              id="simple-menu"
+              anchorEl={memberAnchor}
+              open={Boolean(memberAnchor)}
+              onClose={this.handleClose}
+            >
+              {
+                memberArray.map(val =>
+                  <MenuItem onClick={this.handleSelect.bind(null, val)}>
+                    { val }
+                  </MenuItem>)
+              }
+            </Menu>
+          </div>
+        </div>
+
+        <div className={classes.switchField}>
+          <div className={classes.switchLabel}>
+            <div>Add Premier League:</div>
+            <InfoTool style={classes.infoTool} />
+          </div>
+          <div className={`${classes.formRoot} ${classes.switchPosition}`} style={{ alignSelf: 'flex-start' }}>
+            <DerbySwitch />
+          </div>
+        </div>
+      </Card>
+    )
+  }
+})
 
 export default BasicInformation

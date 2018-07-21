@@ -42,6 +42,11 @@ class ManageEmails extends Component {
     const { classes } = this.props
     const { post, notifications } = this.state
 
+    const MEMBERS_AMOUNT = 10
+    const modifiedMembers = MemberList.slice()
+    modifiedMembers.length = MEMBERS_AMOUNT
+    modifiedMembers.fill({}, MemberList.length)
+
     const inviteCopy = 'Invite members to join your league by adding their names to the Member List. Emailing them an invitation will send them a unique link and password along with instructions on how to join your league.'
     const settingsCopy = 'Your League is set for 10 Members. You can edit the number of league members in the "Basic League Settings" above.'
 
@@ -58,7 +63,7 @@ class ManageEmails extends Component {
               <ManageForm />
             </Grid>
             <Grid item xs={12} sm={12} md={8} lg={8} className={classes.item}>
-              <ManageTable members={MemberList} />
+              <ManageTable members={modifiedMembers} />
             </Grid>
           </Grid>
         </Card>

@@ -34,7 +34,7 @@ export default class MyDocument extends Document {
             rel="stylesheet"
             href="https://fonts.googleapis.com/css?family=Titillium+Web:300,400,700"
           />
-          <link href="https://fonts.googleapis.com/css?family=Tinos:700" rel="stylesheet"/>
+          <link href="https://fonts.googleapis.com/css?family=Tinos:700|Material+Icons" rel="stylesheet"/>
           <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
         </Head>
         <body>
@@ -84,4 +84,3 @@ MyDocument.getInitialProps = ctx => {
     ),
   }
 }
-

@@ -12,6 +12,7 @@ import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
+import { DatePicker, DateTimePicker, TimePicker } from 'material-ui-pickers'
 
 import DerbySwitch from '../../UI/DerbySwitch'
 
@@ -21,7 +22,7 @@ const styles = theme => ({
     flexDirection: 'column',
     justifyContent: 'space-between',
     height: 150,
-    padding: 20,
+    padding: '6px 20px 20px 20px',
     [theme.breakpoints.only('sm')]: {
       width: '75%',
     },
@@ -95,6 +96,7 @@ const styles = theme => ({
   },
   label: {
     display: 'flex',
+    alignSelf: 'flex-end',
     fontWeight: 600,
     width: '37%',
     [theme.breakpoints.down('sm')]: {
@@ -132,18 +134,27 @@ const InfoTool = ({ style }) =>
 const BasicInformation = withStyles(styles)(
   class extends Component {
   state = {
-    anchor: null,
-    draftType: 'Online - Snake Format'
+    draftAnchor: null,
+    draftType: 'Online - Snake Format',
+    pickAnchor: null,
+    pickType: 5,
+
   }
 
-  handleClick = event => {
-    this.setState({ anchor: event.currentTarget })
+  handleClick = (type, event) => { this.setState({ [`${type}Anchor`]: event.currentTarget }) }
+
+  handleClose = type => { this.setState({ [`${type}Anchor`]: null }) }
+  handleSelect = (type, value) => { this.setState({ [`${type}Anchor`]: null, [`${type}Type`]: value }) }
+
+  handleDateChange = (date) => {
+    this.setState({ selectedDate: date })
   }
-  handleClose = draftType => { this.setState({ anchor: null, draftType }) }
 
   render() {
-    const { anchor, draftType } = this.state
+    const { draftAnchor, draftType, pickAnchor, pickType } = this.state
     const { classes } = this.props
+
+    const secondsArray = new Array(18).fill(0).map((arr, i) => (i + 1) * 5)
 
     return (
       <Card className={classes.container}>
@@ -153,13 +164,19 @@ const BasicInformation = withStyles(styles)(
           </div>
           {/* <TextField fullWidth label="Commissioner's Name" /> */}
           <div className={classes.formRoot} style={{ display: 'flex' }}>
-            <FormControl style={{ width: 164 }}>
+            {/* <FormControl style={{ width: 164 }}>
               <Input className={classes.date} type="date" />
             </FormControl>
             <DateRange style={{ height: 24, width: 24,  padding: '0px 5px' }} />
             <FormControl style={{ width: 114 }}>
               <Input className={classes.time} required type="time" />
-            </FormControl>
+            </FormControl> */}
+            <DateTimePicker
+              keyboard
+              value={new Date()}
+              onChange={() => ({})}
+            />
+
           </div>
         </div>
 
@@ -171,19 +188,20 @@ const BasicInformation = withStyles(styles)(
           {/* <TextField fullWidth label="Commissioner's Name" /> */}
           <div className={classes.formRoot} style={{ display: 'flex' }}>
             <Button
-              aria-owns={anchor ? 'simple-menu' : null}
+              variant="raised"
+              aria-owns={draftAnchor ? 'simple-menu' : null}
               aria-haspopup="true"
-              onClick={this.handleClick}
+              onClick={this.handleClick.bind(null, 'draft')}
             >
               { draftType }
             </Button>
             <Menu
               id="simple-menu"
-              anchorEl={anchor}
-              open={Boolean(anchor)}
-              onClose={this.handleClose}
+              anchorEl={draftAnchor}
+              open={Boolean(draftAnchor)}
+              onClose={this.handleClose.bind(null, 'draft')}
             >
-              <MenuItem onClick={this.handleClose.bind(null, 'Online - Snake Format')}>
+              <MenuItem onClick={this.handleSelect.bind(null, 'draft', 'Online - Snake Format')}>
                 Online - Snake Format
               </MenuItem>
             </Menu>
@@ -196,13 +214,32 @@ const BasicInformation = withStyles(styles)(
           </div>
           {/* <TextField fullWidth label="Commissioner's Name" /> */}
           <div className={classes.formRoot} style={{ display: 'flex' }}>
-            <FormControl style={{ border: '1.5px solid black', width: '20%' }}>
-              <Input
-                classes={{ root: classes.rootTest }}
-                disableUnderline
-                type="number"
-              />
-            </FormControl>
+            <Button
+              variant="raised"
+              aria-owns={pickAnchor ? 'simple-menu' : null}
+              aria-haspopup="true"
+              onClick={this.handleClick.bind(null, 'pick')}
+            >
+              { pickType }
+            </Button>
+            <Menu
+              id="simple-menu"
+              anchorEl={pickAnchor}
+              open={Boolean(pickAnchor)}
+              onClose={this.handleClose.bind(null, 'pick')}
+              PaperProps={{
+                style: {
+                  maxHeight: 300,
+                },
+              }}
+            >
+              {
+                secondsArray.map(val =>
+                  <MenuItem onClick={this.handleSelect.bind(null, 'pick', val)}>
+                    { val }
+                  </MenuItem>)
+              }
+            </Menu>
           </div>
         </div>
       </Card>

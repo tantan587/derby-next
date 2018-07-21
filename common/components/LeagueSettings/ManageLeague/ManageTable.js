@@ -1,5 +1,5 @@
+const R = require('ramda')
 import { withStyles } from '@material-ui/core/styles'
-
 import StyledButton from '../../Navigation/Buttons/StyledButton'
 import DerbyCheckbox from '../../UI/DerbyCheckbox'
 
@@ -34,6 +34,7 @@ const styles = theme => ({
     display: 'flex',
     justifyContent: 'space-around',
     marginTop: 20,
+    backgroundColor: 'white !important',
     [theme.breakpoints.only('xs')]: {
       flexDirection: 'column',
       marginLeft: 20,
@@ -55,11 +56,12 @@ const statusColors = {
 
 const ManageTable = withStyles(styles)(({ classes, members }) =>
   <div>
+    { console.log('hello', members) }
     <div className={classes.title}>Member List</div>
     <div style={{ overflowX: 'scroll' }}>
       <div className={classes.tableSize}>
         <div className={classes.header}>
-          <div style={{ flex: 5, marginLeft: 12, position: 'relative', left: 12 }}>Name</div>
+          <div style={{ flex: 5, marginLeft: 12, position: 'relative', left: 20 }}>Name</div>
           <div style={{ flex: 5 }}>Email</div>
           <div style={{ flex: 3 }}>Status</div>
           <div style={{ flex: 1 }}>Select</div>
@@ -67,17 +69,18 @@ const ManageTable = withStyles(styles)(({ classes, members }) =>
         <div className={classes.tableBody}>
           {
             members.map((member, idx) => <div key={idx} className={classes.tableRow}>
-              <div style={{ flex: 5, marginLeft: 12 }}>
-                {`${idx}. ${member.name}`}
+              <div style={{ display: 'flex', flex: 5, marginLeft: 12 }}>
+                <div style={{ fontWeight: 600, width: 20 }}>{`${idx + 1}.`}</div>
+                <div>{R.has('name')(member) && member.name}</div>
               </div>
               <div style={{ flex: 5 }}>
-                { member.email }
+                { R.has('email')(member) && member.email }
               </div>
               <div style={{ flex: 3, color: statusColors[member.status] }}>
-                { member.status }
+                { R.has('status')(member) && member.status }
               </div>
               <div style={{ flex: 1 }}>
-                <DerbyCheckbox />
+                {R.has('select')(member)  && <DerbyCheckbox />}
               </div>
             </div>)
           }
