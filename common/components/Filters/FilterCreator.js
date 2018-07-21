@@ -45,11 +45,8 @@ class FilterCreator extends React.Component {
                 filterId={i}
                 clickedUpdateFilter={this.clickedUpdateFilter}
                 key={i} 
-                sportInd={filter.sportInd}
-                imageInd={filter.imageInd}
+                displayType={filter.displayType}
                 tabs={filter.values} 
-                allInd={filter.allInd}
-                myOwnerName={filter.myOwnerName}
                 column={filter.column}
                 defaultTab={filter.defaultTab}
                 tabStyles={filter.tabStyles}/>

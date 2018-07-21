@@ -10,7 +10,9 @@ import sportLeagues from '../../../data/sportLeagues.json'
 import ScoreboardBody from './'
 import scoreData from '../../../data/scoreData.js'
 import FilterCreator from '../Filters/FilterCreator'
+import Filterer from '../Filters/Filterer'
 const R = require('ramda')
+
 
 const styles = theme => ({
   section1: {
@@ -48,27 +50,24 @@ class ScoreboardPage extends React.Component {
       sportId:null
     }
   }
-
-  componentDidMount() {
-
-  }
-  passUpFilterInfo = (x) => {
-    console.log(x)
-    this.setState({sportId:x.value})
+  test = (x) => {
+    console.log(x.scoreboard[0])
   }
 
   render() {
     //const { classes, liveGames} = this.props
-    const {sportId} = this.state
-    const filteredScoreData = sportId ? scoreData.filter(x => x.sport_id == sportId) : scoreData
+
+    const {contentFilter} = this.props
+    const page='scoreboard'
+
+    const filteredScoreData = Filterer(scoreData, R.values(contentFilter[page]))
     const sports = R.values(sportLeagues).sort((x,y) => x.order > y.order).map(x => x.sport_id)
+    sports.unshift('All')
 
     const filter = {
       type:'tab',
-      sportInd:true,
+      displayType:'sportsIcon',
       values:sports,
-      imageInd:true,
-      allInd:true,
       column:'sport_id',
       defaultTab:0,
       tabStyles:{backgroundColor:'#392007', color:'white',
@@ -78,20 +77,7 @@ class ScoreboardPage extends React.Component {
     return (
       <div>
         <Title color='white' backgroundColor='#EBAB38' title={'Scoreboard'}/>
-        <FilterCreator filters={[filter]} page={'scoreboard'}/>
-        {/* <TabFilter
-          sportInd={true}
-          imageInd={true} 
-          allInd
-          myInd
-          tabs={sports} 
-          rows={R.values(this.props.liveGames[this.state.dayCount])}
-          column={'sport_id'} 
-          passUpFilterInfo={this.passUpFilterInfo}
-          updateMyRows={() => {}}
-          tabStyles={{backgroundColor:'#392007', color:'white',
-            selectedBackgroundColor:'#392007', 
-            selectedColor:'#EBAB38'}}/> */}
+        <FilterCreator filters={[filter]} page={page}/>
         <ScoreboardBody scoreData={filteredScoreData}/>
       </div>
 
@@ -114,6 +100,7 @@ const mapDispatchToProps = (dispatch) => ({
 
 export default compose(
   connect(state => ({
+    contentFilter:state.contentFilter,
     teams: state.teams,
     liveGames: state.liveGames,
     activeLeague: state.activeLeague

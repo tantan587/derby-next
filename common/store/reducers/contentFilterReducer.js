@@ -6,7 +6,7 @@ export default (state = {}, action={ type: null }) => {
   case C.CLEAR_FILTERS: 
   {
     delete state[action.page]
-    return state
+    return {...state}
   }
 
   case C.UPDATE_FILTER: 
@@ -16,13 +16,13 @@ export default (state = {}, action={ type: null }) => {
       state[action.page] = {}
     }
     state[action.page][action.filterId] = action.filter
-    return state
+    return {...state}
   }
 
   case C.REMOVE_FILTER: 
   {
     delete state[action.page][action.filterId]
-    return state
+    return {...state}
   }
     
   // case C.LOGOUT:

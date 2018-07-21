@@ -23,15 +23,7 @@ class TabFilter extends React.Component {
 
     this.state = {
       index: props.defaultTab || 0,
-      localTabs: props.tabs // this.calculateTabs(props)
     }
-  }
-
-  calculateTabs = (props) => {
-    let localTabs = props.tabs
-    localTabs = props.allInd ? ['All'].concat(localTabs) : localTabs
-    localTabs = props.myOwnerName ? localTabs.concat('Mine') : localTabs
-    return localTabs
   }
 
   componentDidMount() {
@@ -40,23 +32,20 @@ class TabFilter extends React.Component {
   
   handleTabClick = (index) => () =>
   {
-    this.setState({ index: index })
+    this.setState({ index})
     this.filterRows(index)
 
   }
 
   filterRows = (index) => {
     const { column, tabs, clickedUpdateFilter, filterId} = this.props
-    const {localTabs} = this.state
-
-    const filter = localTabs && tabs.includes(localTabs[index]) ? localTabs[index] : null
-    clickedUpdateFilter({key:column, value:filter, type:'tab'}, filterId)
+    clickedUpdateFilter({key:column, value:tabs[index], type:'tab'}, filterId)
   }
 
   render() {
-    const {sportInd, imageInd, classes, tabStyles} = this.props
-    const {index, localTabs} = this.state
-    let height = sportInd && imageInd ? 100 : 50
+    const {displayType, classes, tabStyles, tabs} = this.props
+    const {index} = this.state
+    let height = displayType ==='sportsIcon' ? 100 : 50
     return (
       <div style={{width:'96%'}}>
         <AppBar position="static"
@@ -64,18 +53,22 @@ class TabFilter extends React.Component {
           style={{backgroundColor:tabStyles.backgroundColor, marginLeft:'2%', height:height, minHeight:height }} >
           <Scrollbars autoHide style={{ width: '100%'}}>
             <div style={{display:'flex', justifyContent:'center', alignItems:'flex-end',height:height }}>
-              {localTabs.map((x,i) => {
+              {tabs.map((x,i) => {
                 let style = i === index ? {backgroundColor:tabStyles.selectedBackgroundColor,
                   color:tabStyles.selectedColor} : {color:tabStyles.color}
-                let display = sportInd ? 
-                  imageInd ? 
-                    <SportIconText color={style.color} sportId={x}/> 
-                    : <SportText color={style.color} sportId={x} fontSize={tabStyles.fontSize}/>
-                  : x
+
+                let display = x
+
+                if (displayType ==='sportsIcon')
+                  display = <SportIconText color={style.color} sportId={x}/> 
+
+                else if (displayType ==='sportsName')
+                  display = <SportText color={style.color} sportId={x} fontSize={tabStyles.fontSize}/>
+                  
                 return <Button key={i}
                   className={classes.button}
                   style={{...style,fontSize:tabStyles.fontSize, minWidth:80 }}
-                  onClick={this.handleTabClick(i, localTabs)}>
+                  onClick={this.handleTabClick(i)}>
                   {display}
                 </Button>
               })}
