@@ -5,37 +5,6 @@ const localDateTime = (extraHours = 0) =>
   return x
 }
 
-export function myTimeout(callback, delay) {
-  var id, started, remaining = delay, running
-
-  this.start = function() {
-    running = true
-    started = new Date()
-    id = setTimeout(callback, remaining)
-  }
-
-  this.pause = function() {
-    running = false
-    clearTimeout(id)
-    remaining -= new Date() - started
-  }
-
-  this.getTimeLeft = function() {
-    if (running) {
-      this.pause()
-      this.start()
-    }
-
-    return remaining
-  }
-
-  this.getStateRunning = function() {
-    return running
-  }
-
-  this.start()
-}
-
 export const GetLocalDateStr = () =>
 {
   return localDateTime().toJSON().slice(0,10)
@@ -49,6 +18,13 @@ export const GetTomorrowLocalDateTimeStr = () =>
 export const GetLocalDateTimeStr = () =>
 {
   return localDateTime().toJSON().slice(0,16)
+}
+
+export const GetWeekOffsetRange = (date) => {
+  let dayOfWeek = date.getDay()
+  let start = -dayOfWeek
+  let end = 7-dayOfWeek
+  return {start,end}
 }
 
 

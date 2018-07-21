@@ -1,5 +1,5 @@
 const R = require('ramda')
-import React from 'react'
+//import React from 'react'
 import {connect} from 'react-redux'
 import Link from 'next/link'
 import classNames from 'classnames'
@@ -8,8 +8,7 @@ import { push as Menu } from 'react-burger-menu'
 import {withStyles} from '@material-ui/core/styles'
 import {hideMobileNav} from '../actions/status-actions'
 import {ToggleContext} from '../providers/ToggleProvider'
-import MenuButton from './Navigation/Buttons/MenuButton'
-
+//import MenuButton from './Navigation/Buttons/MenuButton'
 import HomeLogoIcon from './Icons/HomeLogoIcon'
 import HomeIcon from '@material-ui/icons/Home'
 import PublicIcon from '@material-ui/icons/Public'
@@ -109,7 +108,7 @@ const LinkHelper = ({
 const MobileNav = ({
   router,
   classes,
-  user,
+  //user,
   isVisible,
   hideMobileNav,
 }) => {
@@ -146,46 +145,46 @@ const MobileNav = ({
                   </a>
                 </Link>
               </ListItem>
-             <LinkHelper 
-              href="/"
-              children="Derby Home"
-              className={classNames(classes.link, {[classes.activeLink]: isActive('/')})}
-              Icon={HomeIcon}
-             />
-             <LinkHelper 
-              href="/"
-              children="Create/Join League"
-              className={classNames(classes.link, {[classes.activeLink]: isActive('/')})}
-              Icon={PublicIcon}
-             />
-             <LinkHelper 
-              href="/"
-              children="Rules & FAQ"
-              className={classNames(classes.link, {[classes.activeLink]: isActive('/')})}
-              Icon={HelpIcon}
-             />
-             <LinkHelper 
-              href="javascript:void(0)"
-              children="League 1"
-              endAdornment={league1 ? <ExpandLess /> : <ExpandMore />}
-              className={classNames(classes.link, {[classes.activeLink]: isActive('/')})}
-              Icon={() => <Typography variant="title" color="inherit" className={classes.leagueIcon}>#1</Typography>}
-              parent={true}
-              onClick={() => toggle('league1')}
-             />
+              <LinkHelper 
+                href="/"
+                children="Derby Home"
+                className={classNames(classes.link, {[classes.activeLink]: isActive('/')})}
+                Icon={HomeIcon}
+              />
+              <LinkHelper 
+                href="/"
+                children="Create/Join League"
+                className={classNames(classes.link, {[classes.activeLink]: isActive('/')})}
+                Icon={PublicIcon}
+              />
+              <LinkHelper 
+                href="/"
+                children="Rules & FAQ"
+                className={classNames(classes.link, {[classes.activeLink]: isActive('/')})}
+                Icon={HelpIcon}
+              />
+              <LinkHelper 
+                href="javascript:void(0)"
+                children="League 1"
+                endAdornment={league1 ? <ExpandLess /> : <ExpandMore />}
+                className={classNames(classes.link, {[classes.activeLink]: isActive('/')})}
+                Icon={() => <Typography variant="title" color="inherit" className={classes.leagueIcon}>#1</Typography>}
+                parent={true}
+                onClick={() => toggle('league1')}
+              />
             </List>
             <Collapse className={classes.nestedContainer} in={league1}>
               <LinkHelper 
-               href="/"
-               children="Live Draft"
-               className={classNames(classes.nested, classes.link, {[classes.activeLink]: isActive('/')})}
-               Icon={() => ""}
+                href="/"
+                children="Live Draft"
+                className={classNames(classes.nested, classes.link, {[classes.activeLink]: isActive('/')})}
+                Icon={() => ''}
               />
               <LinkHelper 
-               href="/"
-               children="Standings"
-               className={classNames(classes.nested, classes.link, {[classes.activeLink]: isActive('/')})}
-               Icon={() => ""}
+                href="/"
+                children="Standings"
+                className={classNames(classes.nested, classes.link, {[classes.activeLink]: isActive('/')})}
+                Icon={() => ''}
               />
             </Collapse>
           </Menu>

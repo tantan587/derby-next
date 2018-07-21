@@ -5,7 +5,7 @@ import {withStyles} from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import DayPicker from './DayPicker'
 import ScoreCard from './ScoreCard'
-import {MonthNames } from '../../lib/time'
+import {MonthNames, GetWeekOffsetRange } from '../../lib/time'
 
 const styles = (theme) => ({
   container: {
@@ -27,11 +27,13 @@ const styles = (theme) => ({
   },
 })
 
-const getCompleteDate = (date) => {
+const getDateRangeForWeek = (date) => {
+
+  let offset = GetWeekOffsetRange(date)
   let prev = new Date(date.getTime())
-  prev.setDate(date.getDate() - 3)
+  prev.setDate(date.getDate() + offset.start)
   let next = new Date(date.getTime())
-  next.setDate(date.getDate() + 3)
+  next.setDate(date.getDate() + offset.end)
   return `${formatDate(prev)} - ${formatDate(next)}`
 }
 
@@ -62,7 +64,7 @@ class Scoreboard extends Component {
           className={classes.caption}
           variant="caption"
           gutterBottom
-          children={getCompleteDate(new Date())}
+          children={getDateRangeForWeek(date)}
         />
         <DayPicker
           date={date}
@@ -72,7 +74,7 @@ class Scoreboard extends Component {
         <Typography
           className={classes.body1}
           variant="body1"
-          children={`Scores for ${formatDate(new Date())}`}
+          children={`Scores for ${formatDate(date)}`}
           paragraph={true}
         />
         <div style={{display:'flex', justifyContent:'center', flexWrap:'wrap'}}>

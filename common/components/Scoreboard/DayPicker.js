@@ -7,6 +7,7 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import {WeekdaysShort} from '../../lib/time'
 import {DatePicker} from 'material-ui-pickers'
+import { GetWeekOffsetRange } from '../../lib/time'
 
 const styles = (theme) => ({
   week: {
@@ -42,10 +43,10 @@ const styles = (theme) => ({
   }
 })
 
-const Day = ({classes}, onUpdateDate) => (date, index) => {
+const Day = ({classes}, onUpdateDate, currDay) => (date, index) => {
   return (
     <div
-      className={classNames(classes.day, {[classes.activeDay]: index === 3})}
+      className={classNames(classes.day, {[classes.activeDay]: index === currDay})}
       onClick={() => onUpdateDate(date)}
     >
       <Typography
@@ -64,6 +65,8 @@ const Day = ({classes}, onUpdateDate) => (date, index) => {
   )
 }
 
+
+
 class DayPicker extends Component {
 
   changeDateByOffset = (date,offset) => {
@@ -74,7 +77,8 @@ class DayPicker extends Component {
 
   render() {
     const {classes, date, onUpdateDate} = this.props
-    const DateRange = R.range(-3, 4).map((offset) => {
+    let offset = GetWeekOffsetRange(date)
+    const DateRange = R.range(offset.start, offset.end).map((offset) => {
       return this.changeDateByOffset(date,offset)
     })
     return (
@@ -82,7 +86,7 @@ class DayPicker extends Component {
         <div className={classes.arrow}
           onClick={() => onUpdateDate(this.changeDateByOffset(date,-1))}>
           <ChevronLeftIcon fontSize="inherit"/></div>
-        {DateRange.map(Day({classes}, onUpdateDate))}
+        {DateRange.map(Day({classes}, onUpdateDate, date.getDay()))}
         <div className={classes.arrow}
           onClick={() => onUpdateDate(this.changeDateByOffset(date,1))}>
           <ChevronRightIcon fontSize="inherit"/></div>
@@ -92,7 +96,7 @@ class DayPicker extends Component {
           label="Or pick a date"
           format="MM/DD/YYYY"
           value={date}
-          onChange={this.onUpdateDate}
+          onChange={(d) => onUpdateDate(d)}
           animateYearScrolling={false}
         />
       </div>
