@@ -25,41 +25,23 @@ const styles = theme => ({
 })
 
 class DropdownFilter extends React.Component {
-  state = {
-    value:''
-  };
 
   handleChange = () => event => {
     const value = event.target.value
-    this.setState({
-      value: value,
-    })
 
-    const {rows, column, updateMyRows, passUpFilterInfo} = this.props
-
-    const filter = (!value || value === 'All') ? null : value
-
-    const localRows = filter ? rows.filter(row => row[column] === filter) : rows
-    updateMyRows(localRows)
-    if (passUpFilterInfo)
-    {
-      passUpFilterInfo({key:column, value:filter, type:'dropdown'})
-    }
-
+    const { column, clickedUpdateFilter, filterId} = this.props
+    clickedUpdateFilter({key:column, value, type:'dropdown'}, filterId)
   }
 
   render() {
-    const {dropdowns, allInd, classes, name} = this.props
-    const {value} = this.state
-    let localDropdown = allInd ? ['All'].concat(dropdowns) : dropdowns
-    
+    const {dropdowns, classes, name, value} = this.props
     return (
 
       <div style={{width:'20%', float:'left'}}>
         <TextField
           id="drowndown"
           select
-          label={'Select ' + name}
+          label={value ? ' ' : 'Select ' + name}
           className={classes.textField}
           value={value}
           onChange={this.handleChange()}
@@ -71,7 +53,7 @@ class DropdownFilter extends React.Component {
           }}
           margin="normal"
         >
-          {localDropdown.map(option => (
+          {dropdowns.map(option => (
             <MenuItem key={option} value={option}>
               {option}
             </MenuItem>

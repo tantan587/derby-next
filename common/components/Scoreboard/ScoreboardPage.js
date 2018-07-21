@@ -60,7 +60,10 @@ class ScoreboardPage extends React.Component {
     const {contentFilter} = this.props
     const page='scoreboard'
 
-    const filteredScoreData = Filterer(scoreData, R.values(contentFilter[page]))
+    let filteredScoreData = scoreData
+    R.values(contentFilter[page]).forEach(filter => {
+      filteredScoreData = Filterer(scoreData, filter)
+    })
     const sports = R.values(sportLeagues).sort((x,y) => x.order > y.order).map(x => x.sport_id)
     sports.unshift('All')
 

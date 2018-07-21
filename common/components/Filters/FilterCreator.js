@@ -1,8 +1,8 @@
 import React from 'react'
 //import CheckboxFilter from './Filters/CheckboxFilter'
 import TabFilter from './TabFilter'
-//import SearchFilter from './Filters/SearchFilter'
-//import DropdownFilter from './Filters/DropdownFilter'
+import SearchFilter from './SearchFilter'
+import DropdownFilter from './DropdownFilter'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import {updateFilter, clearFilters, removeFilter} from '../../actions/filter-actions'
@@ -11,11 +11,25 @@ class FilterCreator extends React.Component {
 
   constructor(props) {
     super(props)
-    this.state = {page:this.props.page}
+    this.state = {page:this.props.page, values:{}}
   }
 
   clickedUpdateFilter =  (filter, filterId) =>{
+    const {values} = this.state
+    values[filterId] = filter.value
+    this.setState({values})
     this.props.handleUpdateFilter(this.state.page, filterId, filter)
+  }
+
+  removeFiltersBelow = (filterId) => {
+    const {filters} = this.props
+    const {values} = this.state
+    for(let i = filterId +1; i < filters.length; i++)
+    {
+      delete values[i]
+      this.props.handleRemoveFilter(this.state.page, i)
+    }
+    this.setState({values})
   }
 
   componentWillUnmount() {
@@ -25,6 +39,7 @@ class FilterCreator extends React.Component {
   
   render() {
     const {filters } = this.props
+    const {values} = this.state
     return (
       <div>
         {
@@ -43,6 +58,7 @@ class FilterCreator extends React.Component {
             {
               return <TabFilter
                 filterId={i}
+                removeFiltersBelow={this.removeFiltersBelow}
                 clickedUpdateFilter={this.clickedUpdateFilter}
                 key={i} 
                 displayType={filter.displayType}
@@ -51,26 +67,25 @@ class FilterCreator extends React.Component {
                 defaultTab={filter.defaultTab}
                 tabStyles={filter.tabStyles}/>
             }
-            // if (filter.type === 'search')
-            // {
-            //   return <SearchFilter key={i}
-            //     rows={rows} 
-            //     column={filter.column} 
-            //     passUpFilterInfo={passUpFilterInfo}
-            //     updateMyRows={updateMyRows}/>
-            // }
-            // if (filter.type === 'dropdown')
-            // {
-            //   return <DropdownFilter key={i}
-            //     passUpFilterInfo={passUpFilterInfo}
-            //     updateMyRows={updateMyRows} 
-            //     key={i} 
-            //     dropdowns={filter.values} 
-            //     rows={rows} 
-            //     allInd={true}
-            //     name={filter.name}
-            //     column={filter.column}/>
-            // }
+            if (filter.type === 'search')
+            {
+              return <SearchFilter key={i}
+                filterId={i}
+                value={values[i]}
+                column={filter.column} 
+                clickedUpdateFilter={this.clickedUpdateFilter}/>
+            }
+            if (filter.type === 'dropdown')
+            {
+              return <DropdownFilter key={i}
+                value={values[i]}
+                clickedUpdateFilter={this.clickedUpdateFilter}
+                key={i} 
+                dropdowns={filter.values}
+                filterId={i} 
+                name={filter.name}
+                column={filter.column}/>
+            }
           })
         }
       </div>

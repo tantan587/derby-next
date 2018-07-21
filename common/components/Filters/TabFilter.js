@@ -38,8 +38,9 @@ class TabFilter extends React.Component {
   }
 
   filterRows = (index) => {
-    const { column, tabs, clickedUpdateFilter, filterId} = this.props
+    const { column, tabs, clickedUpdateFilter,removeFiltersBelow, filterId} = this.props
     clickedUpdateFilter({key:column, value:tabs[index], type:'tab'}, filterId)
+    removeFiltersBelow(filterId)
   }
 
   render() {
@@ -64,7 +65,7 @@ class TabFilter extends React.Component {
 
                 else if (displayType ==='sportsName')
                   display = <SportText color={style.color} sportId={x} fontSize={tabStyles.fontSize}/>
-                  
+
                 return <Button key={i}
                   className={classes.button}
                   style={{...style,fontSize:tabStyles.fontSize, minWidth:80 }}

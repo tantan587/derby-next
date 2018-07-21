@@ -7,6 +7,8 @@ import Title from '../Navigation/Title'
 import DerbyTableContainer from '../Table/DerbyTableContainer'
 import TeamsDialog from '../TeamsDialog/TeamsDialog'
 import sportLeagues from '../../../data/sportLeagues.json'
+import FilterCreator from '../Filters/FilterCreator'
+import Filterer from '../Filters/Filterer'
 const R = require('ramda')
 
 const styles = {
@@ -25,9 +27,9 @@ class MainLeagueTeams extends React.Component {
   
 
   render() {
-    const {teams, activeLeague} = this.props
+    const page = 'teams'
+    const {teams, activeLeague, contentFilter} = this.props
     const sportLeagueIds = R.keys(sportLeagues)
-    console.log(sportLeagueIds)
     let myTeams = Object.values(teams).filter(team => sportLeagueIds.includes(team.sport_id)).map(team => 
     {
       let owner = null 
@@ -41,38 +43,48 @@ class MainLeagueTeams extends React.Component {
         //points:activeLeague.teams[team.team_id].points
       }
     })
-    let ownerName = activeLeague.owners.find(x => x.owner_id = activeLeague.my_owner_id).owner_name
-    let confs = [...new Set(myTeams.map(x => x.conference))].sort((a,b) => { return a > b})
+    const values=R.map(x => x.sport_id, this.props.activeLeague.rules)
+    values.unshift('All')
+    values.push('Mine')
+    let ownerName = activeLeague.owners.find(x => x.owner_id === activeLeague.my_owner_id).owner_name
+    
+    let filteredMyTeams = myTeams
+    let confs = [...new Set(filteredMyTeams.map(x => x.conference))].sort((a,b) => { return a > b})
+    R.values(contentFilter[page]).forEach(filter => {
+      filteredMyTeams = Filterer(filteredMyTeams, filter, {ownerName})
+      if(filter.type === 'tab'){
+        confs = [...new Set(filteredMyTeams.map(x => x.conference))].sort((a,b) => { return a > b})
+      }
+    })
+    const filters = [{
+      type:'tab',
+      displayType:'sportsName',
+      values,
+      column:'sport_id',
+      defaultTab:0,
+      tabStyles:{backgroundColor:'#e3dac9',
+        color:'#48311A',
+        selectedBackgroundColor:'white', 
+        selectedColor:'#229246',
+        fontSize:16}
+    },{type:'dropdown',
+      values:confs,
+      column:'conference',
+      name:'Conference'
+    },
+    {type:'search',
+      column:'team_name',
+    },
+    ]
     return (
       <div>
         <TeamsDialog />
 
         <Title color='white' backgroundColor='#EBAB38' title='All Teams'/>
+        <FilterCreator filters={filters} page={page}/>
         <DerbyTableContainer
           usePagination={true}
-          myRows={myTeams}
-          filters={[
-            {type:'tab',
-              values :R.map(x => x.sport_id, this.props.activeLeague.rules),
-              column:'sport_id',
-              allInd:true,
-              sportInd:true,
-              myOwnerName:ownerName,
-              tabStyles:{backgroundColor:'#e3dac9',
-                color:'#48311A',
-                selectedBackgroundColor:'white', 
-                selectedColor:'#229246',
-                fontSize:16}
-            },
-            {type:'dropdown',
-              values:confs,
-              column:'conference',
-              name:'Conference'
-            },
-            {type:'search',
-              column:'team_name',
-            },
-          ]}
+          myRows={filteredMyTeams}
           orderInd={true}
           myHeaders = {[
             {label: 'Logo', key: 'logo_url', sortId:'team_name', imageInd:true},
@@ -99,8 +111,11 @@ const mapDispatchToProps = (dispatch) => ({
 
 export default connect(
   state => ({
+    contentFilter:state.contentFilter,
     teams: state.teams,
     activeLeague : state.activeLeague
   }),
   mapDispatchToProps,
 )(withStyles(styles)(MainLeagueTeams))
+
+
