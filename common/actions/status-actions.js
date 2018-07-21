@@ -8,6 +8,7 @@ export const hideMobileNav = () => ({
   type: C.HIDE_MOBILE_NAV,
 })
 
-export const toggleMobileNav = () => ({
+export const toggleMobileNav = (variant) => () => ({
   type: C.TOGGLE_MOBILE_NAV,
+  payload: variant,
 })

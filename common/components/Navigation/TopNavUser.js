@@ -1,3 +1,4 @@
+const R = require('ramda')
 import React from 'react'
 import {connect} from 'react-redux'
 import {withStyles} from '@material-ui/core/styles'
@@ -105,10 +106,11 @@ class TopNavUser extends React.Component {
           </Toolbar>
         </AppBar>
       </div>
-
     )
   }
 }
 
-export default connect(({ user }) => ({ user }),
-  {toggleMobileNav})(withStyles(styles)(TopNavUser))
+export default R.compose(
+  withStyles(styles),
+  connect(R.pick(['user']), {toggleMobileNav: toggleMobileNav('TopNavUser')}),
+)(TopNavUser)

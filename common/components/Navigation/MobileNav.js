@@ -4,13 +4,13 @@ import {connect} from 'react-redux'
 import Link from 'next/link'
 import classNames from 'classnames'
 import { withRouter } from 'next/router'
-import { push as Menu } from 'react-burger-menu'
+import { slide as Menu } from 'react-burger-menu'
 import {withStyles} from '@material-ui/core/styles'
-import {hideMobileNav} from '../actions/status-actions'
-import {ToggleContext} from '../providers/ToggleProvider'
-import MenuButton from './Navigation/Buttons/MenuButton'
+import {hideMobileNav} from '../../actions/status-actions'
+import {ToggleContext} from '../../providers/ToggleProvider'
+import MenuButton from './Buttons/MenuButton'
 
-import HomeLogoIcon from './Icons/HomeLogoIcon'
+import HomeLogoIcon from '../Icons/HomeLogoIcon'
 import HomeIcon from '@material-ui/icons/Home'
 import PublicIcon from '@material-ui/icons/Public'
 import HelpIcon from '@material-ui/icons/Help'
@@ -25,7 +25,7 @@ import Typography from '@material-ui/core/Typography'
 
 const pathnameEqToHref = R.curry((pathname, href) => pathname === href)
 
-const styles = (theme) => (console.log(theme), {
+const styles = (theme) => ({
   container: {
     background: theme.palette.primary.main,
     color: 'white',
@@ -33,19 +33,25 @@ const styles = (theme) => (console.log(theme), {
   logo: {
   },
   link: {
+    '&:hover': {
+      color: '#EBAB38',
+    },
+  },
+  linkAnchor: {
+    fontSize: '1.1em',
     padding: 10,
     textDecoration: 'none',
     fontWeight: 500,
   },
   activeLink: {
-    background: theme.palette.primary.dark,
+    // background: theme.palette.primary.dark,
+    color: '#EBAB38',
   },
   nestedContainer: {
     background: theme.palette.primary.A700,
   },
   nested: {
     paddingLeft: 20,
-    color: 'white',
   },
   leagueIcon: {
     marginRight: 15,
@@ -62,7 +68,7 @@ const closeAllMenusOnEsc = (e) => {
 const LinkHelper = ({
   children,
   href,
-  className,
+  classes,
   Icon,
   endAdornment,
   parent,
@@ -72,9 +78,10 @@ const LinkHelper = ({
     button
     dense
     onClick={parent ? onClick : (() => {})}
+    className={classes.link}
   >
     <ListItemIcon>
-      <Icon style={{color: 'white'}} />
+      <Icon style={{color: 'inherit'}} />
     </ListItemIcon>
     {parent ? (
       <ListItemText
@@ -82,7 +89,7 @@ const LinkHelper = ({
         primary={children}
         primaryTypographyProps={{
           variant: 'body1',
-          className: className,
+          className: classes.linkAnchor,
           href: href,
           color: 'inherit',
         }}
@@ -94,7 +101,7 @@ const LinkHelper = ({
           primary={children}
           primaryTypographyProps={{
             variant: 'body1',
-            className: className,
+            className: classes.linkAnchor,
             href: href,
             color: 'inherit',
             component: 'a',
@@ -108,6 +115,7 @@ const LinkHelper = ({
 
 const MobileNav = ({
   router,
+  variant,
   classes,
   user,
   isVisible,
@@ -148,27 +156,39 @@ const MobileNav = ({
               </ListItem>
              <LinkHelper 
               href="/"
-              children="Derby Home"
-              className={classNames(classes.link, {[classes.activeLink]: isActive('/')})}
+              children="DERBY HOME"
+              classes={{
+                link: classNames(classes.link, {[classes.activeLink]: isActive('/')}),
+                linkAnchor: classes.linkAnchor,
+              }}
               Icon={HomeIcon}
              />
              <LinkHelper 
               href="/"
-              children="Create/Join League"
-              className={classNames(classes.link, {[classes.activeLink]: isActive('/')})}
+              children="CREATE/JOIN LEAGUE"
+              classes={{
+                link: classNames(classes.link, {[classes.activeLink]: isActive('/participate')}),
+                linkAnchor: classes.linkAnchor,
+              }}
               Icon={PublicIcon}
              />
              <LinkHelper 
               href="/"
-              children="Rules & FAQ"
-              className={classNames(classes.link, {[classes.activeLink]: isActive('/')})}
+              children="RULES & FAQ"
+              classes={{
+                link: classNames(classes.link, {[classes.activeLink]: isActive('/faq')}),
+                linkAnchor: classes.linkAnchor,
+              }}
               Icon={HelpIcon}
              />
              <LinkHelper 
               href="javascript:void(0)"
-              children="League 1"
+              children="LEAGUE 1"
               endAdornment={league1 ? <ExpandLess /> : <ExpandMore />}
-              className={classNames(classes.link, {[classes.activeLink]: isActive('/')})}
+              classes={{
+                link: classNames(classes.link, {[classes.activeLink]: isActive('/scoreboard')}),
+                linkAnchor: classes.linkAnchor,
+              }}
               Icon={() => <Typography variant="title" color="inherit" className={classes.leagueIcon}>#1</Typography>}
               parent={true}
               onClick={() => toggle('league1')}
@@ -176,16 +196,22 @@ const MobileNav = ({
             </List>
             <Collapse className={classes.nestedContainer} in={league1}>
               <LinkHelper 
-               href="/"
-               children="Live Draft"
-               className={classNames(classes.nested, classes.link, {[classes.activeLink]: isActive('/')})}
-               Icon={() => ""}
+                href="/"
+                children="LIVE DRAFT"
+                classes={{
+                 link: classes.link,
+                 linkAnchor: classNames(classes.nested, classes.linkAnchor, {[classes.activeLink]: isActive('/')}),
+                }}
+                Icon={() => ""}
               />
               <LinkHelper 
-               href="/"
-               children="Standings"
-               className={classNames(classes.nested, classes.link, {[classes.activeLink]: isActive('/')})}
-               Icon={() => ""}
+                href="/"
+                children="STANDINGS"
+                classes={{
+                  link: classes.link,
+                  linkAnchor: classNames(classes.nested, classes.linkAnchor, {[classes.activeLink]: isActive('/')}),
+                }}
+                Icon={() => ""}
               />
             </Collapse>
           </Menu>

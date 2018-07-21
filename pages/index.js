@@ -20,6 +20,8 @@ import SportsSocket from '../common/components/Sockets/SportsSocket'
 import {clickedAdminUpdates} from '../common/actions/auth-actions'
 import sportLeagues from '../data/sportLeagues.json'
 
+import MobileNav from '../common/components/Navigation/MobileNav'
+
 //https://github.com/zeit/next.js/tree/master/examples/with-global-stylesheet
 
 
@@ -84,11 +86,11 @@ class Index extends React.Component {
       {name:'4) Watch and Win the Race', src:'/static/icons/HowToPlayIcons/WatchWin.svg', link:'/signup'} //page of images
     ]
     return (
-
-      <div>
+      <div id="outer-container">
+        <MobileNav />
         <TopNavHome/>
         <SportsSocket>
-          <div className={classes.section1}>
+          <div id="page-wrap" className={classes.section1}>
             <Typography 
               variant="display3" style={{color:'white'}}>
               <div style={{ fontFamily:'museo-slab-bold', display: 'inline'}}>
