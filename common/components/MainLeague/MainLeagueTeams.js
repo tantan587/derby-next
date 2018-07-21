@@ -50,6 +50,7 @@ class MainLeagueTeams extends React.Component {
     
     let filteredMyTeams = myTeams
     let confs = [...new Set(filteredMyTeams.map(x => x.conference))].sort((a,b) => { return a > b})
+    
     R.values(contentFilter[page]).forEach(filter => {
       filteredMyTeams = Filterer(filteredMyTeams, filter, {ownerName})
       if(filter.type === 'tab'){
