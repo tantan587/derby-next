@@ -70,14 +70,12 @@ class DraftContainer extends React.Component {
   // connect to WS server and listen event
   componentDidMount() {
     this.socket = io('/draft')
-    console.log('hello', this.socket)
     this.socket.on('connect', () => {
       // Connected, let's sign-up for to receive messages for this room
       this.socket.emit('join', 
         {roomId: this.props.activeLeague.room_id, 
           owner_id:this.props.activeLeague.my_owner_id })
     })
-    console.log(this.socket.on())
     this.state.sockets.map((socket,i) => 
       this.socket.on(socket, this.state.functions[i]))
     let myDraftPosition =-1

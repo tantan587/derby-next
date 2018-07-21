@@ -18,7 +18,7 @@ const OwnerSilk = (avatar, style) => {
     secondary={secondary}
     style={style} 
     pattern={pattern} 
-    darkPrimaryColorInd={primary==='Black'}/>
+    darkPrimaryColorInd={primary==='Black' || primary==='#000000'}/>
 
 }
 

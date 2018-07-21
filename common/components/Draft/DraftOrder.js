@@ -4,7 +4,7 @@ import { withStyles } from '@material-ui/core/styles'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
-// import Avatar from '@material-ui/core/Avatar'
+import Avatar from '@material-ui/core/Avatar'
 // import ImageIcon from '@material-ui/icons/Image'
 import Divider from '@material-ui/core/Divider'
 import Typography from '@material-ui/core/Typography'
@@ -135,7 +135,9 @@ class DraftOrder extends React.Component {
                   {/* <Avatar>
                     <ImageIcon />
                   </Avatar> */}
-                  {OwnerSilk(owner.avatar, { height: 35, width:'35', marginLeft:-20 })}
+                  <Avatar style={{ height: 35, width: 35, backgroundColor:'black', marginLeft:-20 }}>
+                    {OwnerSilk(owner.avatar, { height: 35, width:35 })}
+                  </Avatar> 
                   <ListItemText disableTypography 
                     primary=
                       {<Typography variant="body1" style={{   color: owner.owner_name===myOwnerName  ? '#EBAB38' :  'white' }}>
