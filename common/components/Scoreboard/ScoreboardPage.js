@@ -8,7 +8,7 @@ import {GetDayCountStr} from '../../lib/time'
 import TabFilter from '../Table/Filters/TabFilter' 
 import sportLeagues from '../../../data/sportLeagues.json'
 import ScoreboardBody from './'
-
+import scoreData from '../../../data/scoreData.js'
 const R = require('ramda')
 
 const styles = theme => ({
@@ -43,19 +43,22 @@ class ScoreboardPage extends React.Component {
     super(props)
     this.state = {
       dayCount: GetDayCountStr((new Date()).toJSON()),
-      startTime: 1//Math.round((new Date(this.props.activeLeague.draft_start_time)-new Date())/1000)
+      startTime: 1,//Math.round((new Date(this.props.activeLeague.draft_start_time)-new Date())/1000)
+      sportId:null
     }
   }
 
   componentDidMount() {
 
   }
-  updateMyRows = () => {
-
+  passUpFilterInfo = (x) => {
+    this.setState({sportId:x.value})
   }
 
   render() {
     //const { classes, liveGames} = this.props
+    const {sportId} = this.state
+    const filteredScoreData = sportId ? scoreData.filter(x => x.sport_id == sportId) : scoreData
     const sports = R.values(sportLeagues).sort((x,y) => x.order > y.order).map(x => x.sport_id)
     return (
       <div>
@@ -67,11 +70,12 @@ class ScoreboardPage extends React.Component {
           myInd
           tabs={sports} 
           rows={R.values(this.props.liveGames[this.state.dayCount])} 
-          updateMyRows={this.updateMyRows}
+          passUpFilterInfo={this.passUpFilterInfo}
+          updateMyRows={() => {}}
           tabStyles={{backgroundColor:'#392007', color:'white',
             selectedBackgroundColor:'#392007', 
             selectedColor:'#EBAB38'}}/>
-        <ScoreboardBody />
+        <ScoreboardBody scoreData={filteredScoreData}/>
       </div>
 
     )

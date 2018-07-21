@@ -43,9 +43,10 @@ const styles = (theme) => (console.log(theme), {
 })
 
 
-const TeamScoreRow = ({classes, team}) => {
+const TeamScoreRow = ({classes, team, totalInd}) => {
   return (
     <LeftRight
+      totalInd={totalInd}
       className={classes.Row}
       style={{color:team.lost ? '#777' : '#000'}}
       classes={R.pick(['R', 'RValues'], classes)}
@@ -63,7 +64,7 @@ class ScoreCard extends Component {
 
   render() {
     const {classes, useRightSide, scoreboardData} = this.props
-
+    const totalInd=scoreboardData.header[scoreboardData.header.length-1] === 'T'
     return (
       <Grid
         container
@@ -81,14 +82,14 @@ class ScoreCard extends Component {
           md={useRightSide ? 7 : 12}
         >
           <LeftRight
-            totalInd
+            totalInd={totalInd}
             className={classes.Header}
             classes={R.pick(['R', 'RValues'], classes)}
             L={<Typography children={<b>{scoreboardData.status}</b>} variant="subheading" color="primary"/>}
             R={scoreboardData.header.map(x => <Typography children={x} variant="subheading" color="inherit" />)}
           />
-          <TeamScoreRow classes={classes} team={scoreboardData.away}/>
-          <TeamScoreRow classes={classes} team={scoreboardData.home}/>
+          <TeamScoreRow totalInd={totalInd} classes={classes} team={scoreboardData.away}/>
+          <TeamScoreRow totalInd={totalInd} classes={classes} team={scoreboardData.home}/>
           <Typography className={classes.venue} variant="caption"><b>Location</b>{': ' + scoreboardData.stadium}</Typography>
         </Grid>
         {useRightSide ? 
