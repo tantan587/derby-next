@@ -76,7 +76,6 @@ class ScoreCard extends Component {
       > 
         <Grid
           className={classes.left}
-          item
           container
           xs={12}
           md={useRightSide ? 7 : 12}
@@ -94,7 +93,6 @@ class ScoreCard extends Component {
         </Grid>
         {useRightSide ? 
           <Grid
-            item
             className={classes.right}
             xs={12}
             md={5}

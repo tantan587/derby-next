@@ -5,7 +5,7 @@ import DerbyTableFilters from './DerbyTableFilters'
 
 
 
-const styles = theme => ({
+const styles = () => ({
 })
 
 class DerbyTableContainer extends React.Component {

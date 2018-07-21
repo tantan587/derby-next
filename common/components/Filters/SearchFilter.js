@@ -1,15 +1,15 @@
 import React from 'react'
 import { withStyles } from '@material-ui/core/styles'
-//import Paper from '@material-ui/core/Paper'
+import Paper from '@material-ui/core/Paper'
 import TextField from '@material-ui/core/TextField'
 import IconButton from '@material-ui/core/IconButton'
 import SearchIcon from '@material-ui/icons/Search'
-//import { Scrollbars } from 'react-custom-scrollbars'
+import { Scrollbars } from 'react-custom-scrollbars'
 import Grid from '@material-ui/core/Grid'
 
 
 
-const styles = () => ({
+const styles = theme => ({
 
 })
 
