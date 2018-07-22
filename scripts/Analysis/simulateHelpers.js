@@ -9,7 +9,6 @@ const Series = (home, away, games, sport_id, round, neutral=false) => {
     let homeGames = [0,1,4,6]
     let roadGames = [2,3,5]
     let x = 0
-    //console.log(round)
     while(home.playoff_wins[round] < clinch && away.playoff_wins[round] < clinch){
         let results = homeGames.includes(x) ? simulateGame(home, away, sport_id, neutral, true):simulateGame(away, home, sport_id, neutral, true)
         results[0].playoff_wins[round]++
@@ -174,7 +173,6 @@ const fantasyProjections = (all_teams, day, points) => {
         let x = 0
         let points_array = [[]]
         //let points_array = array_for_copy.slice(0)
-        console.log(points_array)
 
         sport_teams.forEach(team => {
             team.calculateFantasyPoints(points)
@@ -192,13 +190,10 @@ const fantasyProjections = (all_teams, day, points) => {
             //normalize size of leagues for rankings
             let size = 12
             let roster_size_for_ranking = sport === ('106'||'105') ? size*3 : sport === '107' ? size : size*2
-            console.log(roster_size_for_ranking,sport)
             let drafted_teams = arr.slice(0, roster_size_for_ranking)
             averages.push(math.mean(drafted_teams))
             let standard_dev = math.std(drafted_teams)
             last_drafted.push(arr[roster_size_for_ranking])
-            console.log(averages,sport)
-            console.log(last_drafted,sport)
         })
         sport_teams.forEach(team => {
             team.calculateAboveValuesForRanking(last_drafted, averages)

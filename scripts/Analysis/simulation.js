@@ -64,15 +64,16 @@ async function simulate(knex)
             //breaking up inserting game projections into two: college basketball and everything but college basketball
             return db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', game_projections)
             .then(()=> {
+                console.log('1')
                 return db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', cbb_teams[1])
                 .then(() =>{
-                    return fantasyHelpers.updateLeagueProjectedPoints()
-                    .then(()=>{
+                    // return fantasyHelpers.updateLeagueProjectedPoints()
+                    // .then(()=>{
 
 
                     console.log('done')
                     process.exit()
-                    })
+                    // })
                 })
             })
         })
