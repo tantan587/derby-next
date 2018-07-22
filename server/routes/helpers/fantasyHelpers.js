@@ -281,7 +281,6 @@ const updateTeamPoints = async () =>
 {
   let points = await getPointsStructure()
   let data = await getStandingDataPlayoffAndRegular()
-  console.log(points)
   //somewhere, this needs to check to be sure the league scoring type is 1 and input it here
   let str = `select a.*, b.sport_id
       from fantasy.team_points a, sports.team_info b
@@ -361,8 +360,7 @@ const updateLeagueProjectedPoints = async (league_id) => {
 
     
   let fantasyPoints = [].concat.apply([], addingRank)
-  console.log(fantasyPoints)
-  process.exit()
+
   return updatePointsTable(fantasyPoints, true)
     .then(result => {
       console.log('Number of Fantasy Points Updated: ' + result)
