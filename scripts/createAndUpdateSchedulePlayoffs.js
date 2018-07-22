@@ -2,6 +2,7 @@ const db_helpers = require('./helpers').data
 const fantasyHelpers = require('../server/routes/helpers/fantasyHelpers')
 const knex = require('../server/db/connection')
 const myNull = '---'
+const json_functions = require('./scheduleJsons')
 
 
 
@@ -30,15 +31,16 @@ const getSchedInfo = async (knex, sportName, api, promiseToGet, year) => {
   let sport_id = await db_helpers.getSportId(knex,sportName)
   let teamIdMap = await db_helpers.getTeamIdMap(knex, sport_id)
   let cleanSched = JSON.parse(schedData)
+  let sport_json = json_functions[sport_id]
 
   const idSpelling = sportName === 'EPL' ? 'Id' : 'ID'
   let schedInfo = []
   let new_clean_sched =[]
   if(sportName === 'CBB'){
     new_clean_sched = cleanSched['Games']
-    schedInfo = db_helpers.createScheduleForInsert(new_clean_sched, sport_id, idSpelling, teamIdMap, fantasyHelpers, myNull)
+    schedInfo = db_helpers.createScheduleForInsert(new_clean_sched, sport_id, idSpelling, teamIdMap, fantasyHelpers, myNull, sport_json)
   }else{
-    schedInfo = db_helpers.createScheduleForInsert(cleanSched, sport_id, idSpelling, teamIdMap, fantasyHelpers, myNull)
+    schedInfo = db_helpers.createScheduleForInsert(cleanSched, sport_id, idSpelling, teamIdMap, fantasyHelpers, myNull, sport_json)
   }
 
 
