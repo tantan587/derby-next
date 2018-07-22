@@ -3,6 +3,8 @@ import DerbyTableContainer from '../Table/DerbyTableContainer'
 import { connect } from 'react-redux'
 import {handleFilterTab} from '../../actions/draft-actions'
 import TeamsDialog from '../TeamsDialog/TeamsDialog'
+import FilterCreator from '../Filters/FilterCreator'
+import Filterer from '../Filters/Filterer'
 const R = require('ramda')
 
 
@@ -35,56 +37,35 @@ class TeamDisplay extends React.Component {
   componentWillMount() {
     this.props.onFilterTab({})
   }
-
-  passUpFilterInfo = (filterInfo) =>
-  {
-
-    const newFilterInfo = this.props.draft.filterInfo
-
-    if (newFilterInfo)
-    {
-      newFilterInfo[filterInfo.type] = {'key':filterInfo.key, 'value': filterInfo.value}
-
-      if ( filterInfo.type === 'tab')
-        newFilterInfo['dropdown'] = null
-
-      this.props.onFilterTab(newFilterInfo)
-    }
-  }
-
   render() {
-    const {  draft,teams, allowDraft} = this.props
-    const availableTeams = draft.availableTeams
+    const page = 'draft-teams'
+    const {  draft,teams, allowDraft, contentFilter} = this.props
+    const allTeams = draft.allTeams
     const queue = draft.queue
     let confs = []
     let teamsToShow = []
 
-    if (availableTeams)
+    if (allTeams)
     {
-      availableTeams.map(teamId => {
-        if(!draft.eligibleTeams.includes(teamId))
-          teamsToShow.push({...teams[teamId],disableQueue:true, labelOverride:'Not eligible', eligible:false })
+      allTeams.map(teamId => {
+        if (draft.draftedTeams.includes(teamId))
+          teamsToShow.push({...teams[teamId],disableQueue:true, draftOverride:'Drafted', queueOverride:'Not eligible', eligible:false, checkbox:'Drafted' })
+        else if(!draft.eligibleTeams.includes(teamId))
+          teamsToShow.push({...teams[teamId],disableQueue:true, queueOverride:'Not eligible', eligible:false, checkbox:'Available' })
         else if(queue.indexOf(teamId) === -1)
-          teamsToShow.push({...teams[teamId], eligible:true})
+          teamsToShow.push({...teams[teamId], eligible:true, checkbox:true})
         else
-          teamsToShow.push({...teams[teamId], labelOverride:'Remove',onClickOverride:this.removeItem, eligible:true })
+          teamsToShow.push({...teams[teamId], queueOverride:'Remove',onClickOverride:this.removeItem, eligible:true, checkbox:true })
       })
-      if (draft.filterInfo['tab'])
-        teamsToShow = draft.filterInfo['tab'].value ?
-          teamsToShow = teamsToShow.filter(x => x[draft.filterInfo['tab'].key] === draft.filterInfo['tab'].value) :
-          teamsToShow
-
-      confs= [...new Set(teamsToShow.map(x => x.conference))].sort((a,b) => { return a > b})
-
-      if (draft.filterInfo['dropdown'])
-        teamsToShow = draft.filterInfo['dropdown'].value ?
-          teamsToShow.filter(x => x[draft.filterInfo['dropdown'].key] === draft.filterInfo['dropdown'].value) :
-          teamsToShow
-
-      if (draft.filterInfo['search'] && draft.filterInfo['search'].value)
-        teamsToShow = teamsToShow.filter(x =>
-          x[draft.filterInfo['search'].key].toLowerCase().includes(draft.filterInfo['search'].value.toLowerCase()))
-
+    
+      R.values(contentFilter[page]).forEach(filter => {
+        teamsToShow = Filterer(teamsToShow, filter)
+        if(filter.type === 'tab'){
+          confs = [...new Set(teamsToShow.map(x => x.conference))]
+          confs.sort()
+        }
+      })
+    
       if (teamsToShow && !allowDraft)
       {
         teamsToShow = teamsToShow.map(team => {return {...team,disableDraft:true }})
@@ -99,37 +80,41 @@ class TeamDisplay extends React.Component {
       }
     }
 
+    console.log(teamsToShow)
+
+    const filters = [{
+      type:'tab',
+      displayType:'sportsName',
+      values:['All'].concat(R.map(x => x.sport_id, this.props.activeLeague.rules)),
+      column:'sport_id',
+      defaultTab:0,
+      tabStyles:{backgroundColor:'#e3dac9',
+        color:'#48311A',
+        selectedBackgroundColor:'white', 
+        selectedColor:'#229246',
+        fontSize:16}
+    },{type:'dropdown',
+      values:confs,
+      column:'conference',
+      name:'Conference'
+    },
+    {type:'search',
+      column:'team_name',
+    },
+    {type:'checkbox',
+      column:'ok',
+      values:['Drafted', 'Available']
+    }
+    ]
 
     return (
       <div >
         <TeamsDialog />
+        <FilterCreator page={page} filters={filters}/>
         <DerbyTableContainer
-          passUpFilterInfo={this.passUpFilterInfo}
           usePagination={true}
           myRows={teamsToShow}
           styleProps={styleProps}
-          filters={[
-            {type:'tab',
-              values :R.map(x => x.sport_id, this.props.activeLeague.rules),
-              column:'sport_id',
-              allInd:true,
-              sportInd:true,
-              defaultTab:0,
-              tabStyles:{backgroundColor:'#e3dac9',
-                color:'#48311A',
-                selectedBackgroundColor:'white', 
-                selectedColor:'#229246',
-                fontSize:16}
-            },
-            {type:'dropdown',
-              values:confs,
-              column:'conference',
-              name:'Conference'
-            },
-            {type:'search',
-              column:'team_name',
-            },
-          ]}
           myHeaders = {[
             {key: 'logo_url', sortId:'team_name',imageInd:true},
             {label: 'Team Name', key: 'team_name'},
@@ -139,7 +124,7 @@ class TeamDisplay extends React.Component {
               button:{
                 disabledBackgroundColor:'#d3d3d3',
                 disabled:'disableQueue',
-                labelOverride:'true',
+                labelOverride:'queueOverride',
                 onClickOverride:'true',
                 onClick:this.addItem,
                 label:'Add to Queue',
@@ -150,6 +135,7 @@ class TeamDisplay extends React.Component {
               button:{
                 disabledBackgroundColor:'#d3d3d3',
                 disabled:'disableDraft',
+                labelOverride:'draftOverride',
                 onClick:this.draftTeam,
                 label:'Draft Team',
                 color:'white',
@@ -167,6 +153,7 @@ class TeamDisplay extends React.Component {
 export default connect(
   state =>
     ({
+      contentFilter:state.contentFilter,
       activeLeague : state.activeLeague,
       draft : state.draft,
       teams:state.teams

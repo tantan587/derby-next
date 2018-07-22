@@ -30,45 +30,33 @@ const styles = theme => ({
 })
 
 class CheckboxFilter extends React.Component {
-  constructor(props, context) {
-    super(props, context)
-
-    this.state = {
-      checkboxes: [],
-    }
-  }
-  componentWillMount() {
-    const checkboxes = [{val: true, label: 'All'}]
-    this.props.checkboxes.map(x => checkboxes.push({val:true, label:x}))
-    this.setState({checkboxes:checkboxes})
-  }
 
   handleCheckboxClick = i => event =>
   {
-    let localCheck = this.state.checkboxes
+    let localCheck = this.props.value
     if(localCheck[i].label ==='All')  {
-      localCheck.map(check => check.val = event.target.checked)
+      localCheck.forEach(check => check.val = event.target.checked)
     }
     else{
       localCheck[i].val = event.target.checked
     }
-    this.setState({ checkboxes: localCheck })
 
-    const {rows, checkboxColumn} = this.props
-    const notCheckboxes = localCheck
-      .filter(check => check.val !== true)
-      .map(check => {return check.label})
-    const localRows = rows.filter(row => !notCheckboxes.includes(row[checkboxColumn]))
-    this.props.updateMyRows(localRows)
+    // const notCheckboxes = localCheck
+    //   .filter(check => check.val !== true)
+    //   .map(check => {return check.label})
+    // const localRows = rows.filter(row => !notCheckboxes.includes(row[checkboxColumn]))
+
+    const {column, clickedUpdateFilter, filterId} = this.props
+    clickedUpdateFilter({key:column, value:localCheck, type:'checkbox'}, filterId)
 
   }
 
   render() {
-    const {checkboxes} = this.state
+    const {value} = this.props
     return (
       <FormGroup style={{textAlign: 'center', marginLeft:10}} row>
-        {checkboxes.map( (check, i) => 
-          <FormControlLabel style={{}}
+        {value.map( (check, i) => 
+          <FormControlLabel style={{height:20, marginTop:25, marginBottom:-25}}
             key={i}
             control={
               <Checkbox

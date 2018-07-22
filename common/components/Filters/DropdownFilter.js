@@ -34,7 +34,7 @@ class DropdownFilter extends React.Component {
   }
 
   render() {
-    const {dropdowns, classes, name, value} = this.props
+    const {dropdowns, classes, name, value, displayFunction} = this.props
     return (
 
       <div style={{width:'20%', float:'left'}}>
@@ -43,7 +43,7 @@ class DropdownFilter extends React.Component {
           select
           label={value ? ' ' : 'Select ' + name}
           className={classes.textField}
-          value={value}
+          value={value || ''}
           onChange={this.handleChange()}
           style={{marginTop:5, marginLeft:38}}
           SelectProps={{
@@ -55,7 +55,7 @@ class DropdownFilter extends React.Component {
         >
           {dropdowns.map(option => (
             <MenuItem key={option} value={option}>
-              {option}
+              {displayFunction(option)}
             </MenuItem>
           ))}
         </TextField>

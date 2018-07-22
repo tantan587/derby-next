@@ -34,7 +34,7 @@ class DerbyBody extends React.Component {
   extraRowRender = (extraTableRow, i, n) =>
   {
     return <TableRow key={'round'+i}>
-      <TableCell key={'round1'+i} colSpan={4} style={{color:'#269349', fontSize:16, fontWeight:'bold'}}>
+      <TableCell key={'round1'+i} colSpan={9} style={{color:'#269349', fontSize:16, fontWeight:'bold'}}>
         {extraTableRow.message + parseInt(n[extraTableRow.key])}
       </TableCell>
     </TableRow>
@@ -73,7 +73,7 @@ class DerbyBody extends React.Component {
                     fontStyle: header.button.disabled && n[header.button.disabled] ? 'italic' :'normal',
                     fontSize:10, height:22, width:100}}
                   onClick={() => header.button.onClickOverride && n['onClickOverride'] ? n['onClickOverride'](n[header.id]) : header.button.onClick(n[header.id])}>
-                  {header.button.labelOverride && n['labelOverride'] ? n['labelOverride'] : header.button.label}
+                  {header.button.labelOverride && n[header.button.labelOverride] || header.button.label}
                 </Button>
                 : header.id == 'team_name' && n['team_name'] !== 'none' ?
                   <div

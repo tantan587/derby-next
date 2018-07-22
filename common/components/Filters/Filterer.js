@@ -5,13 +5,22 @@ const Filterer = (data, filter, options) => {
   switch (filter.type) {
   case 'tab': case 'dropdown':{
     rtnData = exclusiveFilter(rtnData, filter, options)
-  }
     break
+  }
+    
   case 'search': {
-    rtnData = searchFilter(rtnData, filter, options)
+    rtnData = searchFilter(rtnData, filter)
+    break
   }
-  }
+  case 'checkbox': {
+    rtnData = inclusiveFilter(rtnData, filter)
+  }}
   return rtnData
+}
+
+const inclusiveFilter = (data, filter) => {
+  let options = filter.value.filter(x => x.val).map(x => x.label)
+  return data.filter(x => x[filter.key] || options.includes(x[filter.key]))
 }
 
 const exclusiveFilter = (data, filter, options) => {

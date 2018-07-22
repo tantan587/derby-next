@@ -147,10 +147,10 @@ class DraftContainer extends React.Component {
   }
 
   handleStartTick = () => {
-    if(this.state.startTime < 5 && this.props.draft.mode ==='pre')
-    {
-      this.props.onSetDraftMode('wait')
-    }
+    // if(this.state.startTime < 5 && this.props.draft.mode ==='pre')
+    // {
+    //   this.props.onSetDraftMode('wait')
+    // }
     if(this.state.startTime > 0)
     {
       this.setState({ startTime: this.state.startTime -1 })

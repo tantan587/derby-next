@@ -1,5 +1,5 @@
 import React from 'react'
-//import CheckboxFilter from './Filters/CheckboxFilter'
+import CheckboxFilter from './CheckboxFilter'
 import TabFilter from './TabFilter'
 import SearchFilter from './SearchFilter'
 import DropdownFilter from './DropdownFilter'
@@ -46,13 +46,13 @@ class FilterCreator extends React.Component {
           filters.map((filter,i) => {
             if (filter.type === 'checkbox')
             {
-              return null
-              // <CheckboxFilter
-              //   updateMyRows={updateMyRows} 
-              //   key={i} 
-              //   checkboxes={filter.values} 
-              //   rows={rows} 
-              //   checkboxColumn={filter.column}/>
+              let value = values[i] || filter.values.map(x => {return {val:true, label:x}})
+              return <CheckboxFilter
+                clickedUpdateFilter={this.clickedUpdateFilter}
+                filterId={i}
+                key={i} 
+                value={value} 
+                column={filter.column}/>
             }
             if (filter.type === 'tab')
             {
@@ -80,7 +80,8 @@ class FilterCreator extends React.Component {
               return <DropdownFilter key={i}
                 value={values[i]}
                 clickedUpdateFilter={this.clickedUpdateFilter}
-                key={i} 
+                key={i}
+                displayFunction={filter.displayFunction || ((x) => x)} 
                 dropdowns={filter.values}
                 filterId={i} 
                 name={filter.name}
