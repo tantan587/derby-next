@@ -2,6 +2,7 @@ const db_helpers = require('./helpers').data
 const fantasyHelpers = require('../server/routes/helpers/fantasyHelpers')
 const knex = require('../server/db/connection')
 const myNull = '---'
+const json_functions = require('./scheduleJsons')
 
 
 
@@ -30,15 +31,16 @@ const getSchedInfo = async (knex, sportName, api, promiseToGet, year) => {
   let sport_id = await db_helpers.getSportId(knex,sportName)
   let teamIdMap = await db_helpers.getTeamIdMap(knex, sport_id)
   let cleanSched = JSON.parse(schedData)
+  let sport_json = json_functions[sport_id]
 
   const idSpelling = sportName === 'EPL' ? 'Id' : 'ID'
   let schedInfo = []
   let new_clean_sched =[]
   if(sportName === 'CBB'){
     new_clean_sched = cleanSched['Games']
-    schedInfo = db_helpers.createScheduleForInsert(new_clean_sched, sport_id, idSpelling, teamIdMap, fantasyHelpers, myNull)
+    schedInfo = db_helpers.createScheduleForInsert(new_clean_sched, sport_id, idSpelling, teamIdMap, fantasyHelpers, myNull, sport_json)
   }else{
-    schedInfo = db_helpers.createScheduleForInsert(cleanSched, sport_id, idSpelling, teamIdMap, fantasyHelpers, myNull)
+    schedInfo = db_helpers.createScheduleForInsert(cleanSched, sport_id, idSpelling, teamIdMap, fantasyHelpers, myNull, sport_json)
   }
 
 
@@ -55,10 +57,10 @@ const getSchedInfo = async (knex, sportName, api, promiseToGet, year) => {
       let home_id = teamIdMap[game.GlobalHomeTeamID]
       let away_id = teamIdMap[game.GlobalAwayTeamID]
       if(!(home_id in playoff_standings)){
-        playoff_standings[home_id] = {team_id: home_id, playoff_wins: 0, playoff_losses: 0, playoff_status: 'in_playoffs', byes: 1}
+        playoff_standings[home_id] = {team_id: home_id, playoff_wins: 0, playoff_losses: 0, playoff_status: 3, byes: 1}
       }
       if(!(away_id in playoff_standings)){
-        playoff_standings[away_id] = {team_id: away_id, playoff_wins: 0, playoff_losses: 0, playoff_status: 'in_playoffs', byes: 1}
+        playoff_standings[away_id] = {team_id: away_id, playoff_wins: 0, playoff_losses: 0, playoff_status: 3, byes: 1}
       }
       if(game.Round == null){
         playoff_standings[home_id].byes--
@@ -76,6 +78,17 @@ const getSchedInfo = async (knex, sportName, api, promiseToGet, year) => {
       return schedInfo
     })
   }else{
+    if(sportName==='MLB'){
+      let non_byes = [schedInfo[0].home_team_id, schedInfo[0].away_team_id, schedInfo[1].home_team_id, schedInfo[1].away_team_id]
+      let playoff_teams = await knex('sports.playoff_standings').where('team_id',"<",103999).andWhere('team_id',">",103000).andWhere('playoff_status',">",2).select('team_id')
+      let playoff_team_ids = playoff_teams.map(team => team.team_id)
+      let byes = []
+      playoff_team_ids.forEach(team =>{
+        if(!(non_byes.includes(team))){
+          byes.push(team)
+        }
+      })
+    }
   //console.log('here')
   //console.log(stadiumInfo[0])
   return schedInfo

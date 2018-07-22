@@ -230,7 +230,7 @@ function getSportsData(req, league_id)
       .select('team_id')
       .whereIn('conference_id',selectConfs)
       .then((teamIds)=>{
-        var teams = []
+        var teams = [] //this is where this needs to be modified to create teamPoints. Needs to pull in scoring type id from somwhere - tbd
         teamIds.map(teamId => {teams.push({league_id:league_id, team_id:teamId.team_id,reg_points:0,bonus_points:0})})
         resolve({sports:sports, conferences:conferences, teams:teams})
       })

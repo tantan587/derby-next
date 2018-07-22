@@ -23,7 +23,7 @@ const createCollegeSport = async (knex, sport_id, sportName, api, promiseToGet) 
 
     standings.push({team_id: team_id, wins : 0, losses: 0, ties: 0})
     
-    playoff_standings.push({team_id: team_id, playoff_wins : 0, playoff_losses: 0, byes: 0, bowl_wins: 0, playoff_status: 'tbd'})
+    playoff_standings.push({team_id: team_id, playoff_wins : 0, playoff_losses: 0, byes: 0, bowl_wins: 0, playoff_status: 1})
   })
 
 
@@ -63,7 +63,7 @@ const createProfessionalSport = async (knex, sport_id, sportName, api, promiseTo
 
     standings.push({team_id: team_id, wins : 0, losses: 0, ties: 0})
         
-    playoff_standings.push({team_id: team_id, playoff_wins : 0, playoff_losses: 0, byes: 0, bowl_wins: 0, playoff_status: 'tbd'})
+    playoff_standings.push({team_id: team_id, playoff_wins : 0, playoff_losses: 0, byes: 0, bowl_wins: 0, playoff_status: 1})
     
   })
 
@@ -112,7 +112,7 @@ const createSoccerLeague = async (knex, sport_id, sportName, api, promiseToGet, 
 
     standings.push({team_id: team_id, wins : 0, losses: 0, ties: 0})
         
-    playoff_standings.push({team_id: team_id, playoff_wins : 0, playoff_losses: 0, byes: 0, bowl_wins: 0, playoff_status: 'tbd'})
+    playoff_standings.push({team_id: team_id, playoff_wins : 0, playoff_losses: 0, byes: 0, bowl_wins: 0, playoff_status: 1})
 
     premier_table.push({team_id: team_id, division_1: true})
     

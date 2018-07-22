@@ -82,29 +82,34 @@ const getCFBstandings = async (knex, sportName, api, promiseToGet, year) =>{
           bowl_wins.push({team_id: results[0], bowl_wins: 1})
         }
       }
+      //first - check to see if games was played in a playoff stadium
       if(playoff_stadium_ids.includes(game.StadiumID)){
+        //next - check to see if the game was played before after dec. 29 or before jan.10 - to weed out non-playoff games
         let split = game.Day.split('T')[0].split('-')
         if(split[2] >29 || split[2]<10){
-          //next year playoff stadiums are orange, cotton: ids are 70, 
-          if(finalist_stadium_ids_by_year[year].includes(game.StadiumID)){//||(split[1]==1 && split[2]>3)){
-            let playoff_result = [0, 0]
-            if(game.Status[0] === 'F'){
+          //this checks if the stadium is in one of the two finalist stadiums - grabs two games
+          if(finalist_stadium_ids_by_year[year].includes(game.StadiumID)){
+            let playoff_result = [0, 0] //default results - game not played yet
+            if(game.Status[0] === 'F'){ //check to see if game is over to log results
               playoff_result = game.HomeTeamScore > game.AwayTeamScore ? [1,0] : [0,1]
             }
             playoff_teams.push(
-              {team_id: teamIdMap[game.GlobalHomeTeamID], playoff_wins: playoff_result[0], playoff_losses: playoff_result[1], playoff_status: 'finalist', bowl_wins: 0},
-              {team_id: teamIdMap[game.GlobalAwayTeamID], playoff_wins: playoff_result[1], playoff_losses: playoff_result[0], playoff_status: 'finalist', bowl_wins: 0}
+              {team_id: teamIdMap[game.GlobalHomeTeamID], playoff_wins: playoff_result[0], playoff_losses: playoff_result[1], playoff_status: 5, bowl_wins: 0},
+              {team_id: teamIdMap[game.GlobalAwayTeamID], playoff_wins: playoff_result[1], playoff_losses: playoff_result[0], playoff_status: 5, bowl_wins: 0}
             )
             finalist_team_ids.push(teamIdMap[game.GlobalHomeTeamID], teamIdMap[game.GlobalAwayTeamID])
-          }else if(split[1]==1 && split[2]>3){
-            if(game.Status[0] === 'F'){
+          }
+          //this checks if the month is equal to january and the game is after the 3rd - to catch national championship
+          else if(split[1]==1 && split[2]>3){
+            if(game.Status[0] === 'F'){ //only relevant if games is over - otherwise, no need to log extra result that this game is occuring
+              //since this is the last playoff game chronologicaly, can reshape playoff teams to new playoff teams
               let finalists = game.HomeTeamScore > game.AwayTeamScore ? [teamIdMap[game.GlobalHomeTeamID], teamIdMap[game.GlobalAwayTeamID]] : [teamIdMap[game.GlobalAwayTeamID], teamIdMap[game.GlobalHomeTeamID]]
-              new_playoff_teams = playoff_teams.filter(team => finalists.includes(team.team_id) === false)
+              new_playoff_teams = playoff_teams.filter(team => finalists.includes(team.team_id) === false) //filters out finalists for new array to be added
               new_playoff_teams.push(
-                {team_id: finalists[0], playoff_wins: 2, playoff_losses: 0, playoff_status: 'champions', year: game.Season},
-                {team_id: finalists[1], playoff_wins: 1, playoff_losses: 1, playoff_status: 'finalist', year: game.Season})
+                {team_id: finalists[0], playoff_wins: 2, playoff_losses: 0, playoff_status: 6},
+                {team_id: finalists[1], playoff_wins: 1, playoff_losses: 1, playoff_status: 5},)
             }
-          }else
+          }else //if the team made a new years 6 bowl, just add them to playoffs as normal
           {
             playoff_teams.push({team_id: teamIdMap[game.GlobalHomeTeamID], playoff_status: 'in_playoffs', playoff_wins: 0, playoff_losses: 0, year: game.Season}, {team_id: teamIdMap[game.GlobalAwayTeamID], playoff_status: 'in_playoffs', playoff_wins: 0, playoff_losses: 0, year: game.Season})
           }

@@ -1,12 +1,12 @@
+
 exports.up = function(knex, Promise) {
     return Promise.all([
-        knex.schema.withSchema('sports').createTable('premier_status', (table) => {
-    table.decimal('team_id',6,0).unique().notNullable()
-    table.boolean('division_1').notNullable()
+        knex.schema.withSchema('types').createTable('playoff_types', (table) => {
+            table.integer('type_id').notNullable().unique()
+            table.string('playoff_status').notNullable()
     })
 ])
-}
-
+};
 
 exports.down = function(knex, Promise) {
     return Promise.all([

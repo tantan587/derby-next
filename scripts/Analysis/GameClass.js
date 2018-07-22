@@ -79,20 +79,23 @@ class Game{
         if(results[0]===1){
             this.all_simulate_results.home.wins ++
             this.last_result.home.wins++
+            this.home.wins++
         }else if(results[0] === .5){
             this.all_simulate_results.home.ties ++
             this.last_result.home.ties++
+            this.home.ties++
         }else{
             this.all_simulate_results.home.losses++
             this.last_result.home.losses++
+            this.home.losses++
         }
 
         results[1] === 1 ? (
-            this.all_simulate_results.away.wins++, this.last_result.away.wins++
+            this.all_simulate_results.away.wins++, this.last_result.away.wins++, this.away.wins++
         ) : results[1] === .5 ? (
-            this.all_simulate_results.away.ties++, this.last_result.away.ties++
+            this.all_simulate_results.away.ties++, this.last_result.away.ties++, this.away.ties++
         ) : (
-            this.all_simulate_results.away.losses++, this.last_result.away.losses++
+            this.all_simulate_results.away.losses++, this.last_result.away.losses++, this.away.losses++
         )
         }
         
@@ -198,9 +201,9 @@ class Game{
         let regular_wins = this.EOS_results[team][result].regular.wins
         let milestone_wins = sport_id === '104' ? regular_wins + (this.EOS_results[team][result].regular.ties/2) : regular_wins
         let milestone_points = points[sport_id].regular_season.milestone_points
-        let bonus_win = sport_id === ('103'||'104') ? milestone_wins < points[sport_id].regular_season.milestone_1 ? 0 :
-            milestone_wins < points[sport_id].regular_season.milestone_2 ? milestone_points :
-            milestone_wins < points[sport_id].regular_season.milestone_3 ? milestone_points*2 : milestone_points*3 : 0
+        let bonus_win = sport_id === ('103'||'104') ? milestone_wins < points[sport_id].regular_season.milestones[0] ? 0 :
+            milestone_wins < points[sport_id].regular_season.milestones[1] ? milestone_points :
+            milestone_wins < points[sport_id].regular_season.milestones[2] ? milestone_points*2 : milestone_points*3 : 0
         let win_points = (
             this.EOS_results[team][result].regular.wins * points[sport_id].regular_season.win + 
             this.EOS_results[team][result].playoffs.playoff_appearance * points[sport_id].bonus.appearance +

@@ -13,7 +13,7 @@ const updatePastElos = async (knex) => {
     let day_count = getDayCount(today)
     const games = await dbSimulateHelpers.createPastGamesArrayWithScores(knex, all_teams,day_count)
     //console.log(games['101'])
-    let sports_for_update = ['101', '102', '103', '104', '105', '106']
+    let sports_for_update = ['104']//['101', '102', '103', '104', '105', '106']
     let team_list = []
     sports_for_update.forEach(sport => {
         updateElosPerLeague(sport, games)
@@ -23,8 +23,6 @@ const updatePastElos = async (knex) => {
     //for college basketball - need to add in that this doesn't happen during the playoffs
     //below won't work, since it is just for one game, i don't think...
     //any_cbb ? rpiUpdate.cbbUpdateAllRpi(home_wins, away_wins, neutral_wins, home_losses, away_losses, neutral_losses) : 0
-    console.log(all_teams['101'])
-    console.log(team_list[0])
     deleteAndUpdateElos(knex, team_list)
     .then(()=> {
         console.log('done!')

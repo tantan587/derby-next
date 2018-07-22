@@ -297,23 +297,23 @@ const updateTeamPoints = async () =>
   if (result.rows.length > 0)
   {
     const teamPoints = result.rows.map(fteam => {
-      fteam.scoring_type_id = 1
       const team = data[fteam.team_id]
       //const league = points.filter(league => league.sport_id == fteam.sport_id)[0]
       let sport_id = fteam.sport_id
-      let bonus_win
+      let bonus_win=0
+      let status = Number(team.playoff_status)
+
       if(sport_id === ('103'||'104')){
         let milestone_parameter = sport_id === '103' ? team.wins : team.wins+team.ties/2
         let milestone_points = points[fteam.scoring_type_id][sport_id].regular_season.milestone_points
-        bonus_win = milestone_parameter < points[fteam.scoring_type_id][sport_id].regular_season.milestone_1 ? 0 :
-          milestone_parameter < points[fteam.scoring_type_id][sport_id].regular_season.milestone_2 ? milestone_points :
-            milestone_parameter < points[fteam.scoring_type_id][sport_id].regular_season.milestone_3 ? milestone_points*2 : milestone_points*3
-      }else{
-        bonus_win = 0
+        bonus_win = milestone_parameter < points[fteam.scoring_type_id][sport_id].regular_season.milestones[0] ? 0 :
+        milestone_parameter < points[fteam.scoring_type_id][sport_id].regular_season.milestones[1] ? milestone_points :
+        milestone_parameter < points[fteam.scoring_type_id][sport_id].regular_season.milestones[2] ? milestone_points*2 : milestone_points*3
       }
-      let bonus_points = team.playoff_status === 'appearance' ? points[fteam.scoring_type_id][sport_id].bonus.appearance : 
-        team.playoff_status === 'finalist' ? points[fteam.scoring_type_id][sport_id].bonus.finalist + points[fteam.scoring_type_id][sport_id].bonus.appearance :
-          team.playoff_status === 'championship' ? points[fteam.scoring_type_id][sport_id].bonus.championship + points[fteam.scoring_type_id][sport_id].bonus.finalist + points[fteam.scoring_type_id][sport_id].bonus.appearance : 0
+      
+      let bonus_points = status > 5 ? points[fteam.scoring_type_id][sport_id].bonus.championship + points[fteam.scoring_type_id][sport_id].bonus.finalist + points[fteam.scoring_type_id][sport_id].bonus.appearance :
+        status > 4 ? points[fteam.scoring_type_id][sport_id].bonus.finalist + points[fteam.scoring_type_id][sport_id].bonus.appearance :
+          status >2 ? points[fteam.scoring_type_id][sport_id].bonus.appearance : 0
       fteam.reg_points = points[fteam.scoring_type_id][sport_id].regular_season.win * team.wins + points[fteam.scoring_type_id][sport_id].regular_season.tie * team.ties
       fteam.playoff_points = points[fteam.scoring_type_id][sport_id].playoffs.win * team.playoff_wins
       //below depends on how we format bowl wins
@@ -322,12 +322,10 @@ const updateTeamPoints = async () =>
       return fteam})
 
     let resp = await updateTeamPointsTable(teamPoints)
-
     console.log('Number of Teams Updated: ' + resp)
 
   }
 
-  return 'hello'
 }
 
 const updateLeagueProjectedPoints = async (league_id) => {
