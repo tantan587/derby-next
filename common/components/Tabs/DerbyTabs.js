@@ -18,7 +18,7 @@ const styles = {
     display: 'none'
   },
   tabRoot: {
-    width: 200,
+    minWidth: 200,
     fontFamily: 'museo-slab-bold',
     color: '#E2E2E2',
     backgroundColor: '#999999',

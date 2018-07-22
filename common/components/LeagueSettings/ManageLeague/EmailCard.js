@@ -11,8 +11,7 @@ const styles = theme => ({
     },
     paddingBottom: 18,
   },
-  content: {
-    display: 'flex',
+  content: { display: 'flex',
     height: '100%',
     padding: '20px 16px 0px 16px',
     flexDirection: 'column',
@@ -56,13 +55,9 @@ const styles = theme => ({
 
 const EmailCard = withStyles(styles)(({ classes, title, copy, check, label }) =>
   <Card className={classes.root}>
-    <div style={{
-      display: 'flex',
-      height: '100%',
-      padding: '20px 16px 0px 16px',
-      flexDirection: 'column',
-      justifyContent: 'space-between'
-    }}>
+    <div style={{ display: 'flex', height: '100%', padding: '20px 16px 0px 16px',
+        flexDirection: 'column',
+        justifyContent: 'space-between', }}>
       <div>
         <div className={classes.title}>{title}</div>
         {copy}
@@ -75,7 +70,9 @@ const EmailCard = withStyles(styles)(({ classes, title, copy, check, label }) =>
             classes={{
               bar: classes.switchRoot,
               icon: classes.icon,
-              checked: classes.checked
+              checked: classes.checked,
+              colorPrimary: classes.primary,
+              colorSecondary: classes.secondary
             }}
           />
         </div>
