@@ -29,7 +29,6 @@ const getStandingsInfo = async (knex, sportName, api, promiseToGet, year) => {
         let status = 3
         if(sportName==='NBA'||sportName==='NHL'){
             status = team.Wins===16 ? 6 : team.Wins>11 ? 5 : team.Losses%4 === 0 && team.Wins<team.Losses ? 4 : 3
-            console.log(status)
         }
 
         return {team_id: team.team_id, playoff_wins: team.Wins, playoff_losses: team.Losses, byes: 0, playoff_status: status}
