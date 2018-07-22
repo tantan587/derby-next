@@ -20,7 +20,7 @@ const Filterer = (data, filter, options) => {
 
 const inclusiveFilter = (data, filter) => {
   let options = filter.value.filter(x => x.val).map(x => x.label)
-  return data.filter(x => x[filter.key] || options.includes(x[filter.key]))
+  return data.filter(x => x[filter.key]===true || options.includes(x[filter.key]))
 }
 
 const exclusiveFilter = (data, filter, options) => {
