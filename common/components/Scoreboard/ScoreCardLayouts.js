@@ -1,4 +1,3 @@
-import React from 'react'
 import Grid from '@material-ui/core/Grid'
 
 export const LTB = ({L, T, B, classes = {}, ...rest}) => (
@@ -34,50 +33,48 @@ export const LTB = ({L, T, B, classes = {}, ...rest}) => (
   </Grid>
 )
 
-export const LRRR = ({L, R1, R2, R3, classes = {}, ...rest}) => (
-  <Grid
-    container
-    alignItems="center"
-    {...rest}
-  >
-    <Grid 
-      item
-      className={classes.L}
-      children={L}
-      variant="body2"
-      xs={7}
-    />
+export const LeftRight = ({L, R, totalInd, classes = {}, ...rest}) => {
+  let T = totalInd ? R.pop() : null
+  return (
     <Grid
-      item
-      className={classes.R}
       container
-      variant="body2"
-      xs={5}
+      alignItems="center"
+      {...rest}
     >
-      <Grid
-        container
+      <Grid 
         item
-        className={classes.R1}
-        xs={4}
-        children={R1}
-        alignItems="center"
+        className={classes.L}
+        children={L}
+        variant="body2"
+        xs={6}
       />
       <Grid
-        container
         item
-        className={classes.R2}
-        xs={4}
-        children={R2}
-        alignItems="center"
-      />
-      <Grid
+        className={classes.R}
         container
-        item
-        className={classes.R3}
-        xs={4}
-        children={R3}
-        alignItems="center"
-      />
+        variant="body2"
+        xs={totalInd ? 4 : 6}
+      >
+        {R.map(oneR => {
+          return <Grid
+            container
+            item
+            className={classes.RValues}
+            xs={Math.floor(12/R.length)}
+            children={oneR}
+            alignItems="center"
+          />})}
+      </Grid>
+      { totalInd ? 
+        <Grid 
+          item
+          className={classes.RValues}
+          style={{textAlign:'center'}}
+          children={T}
+          variant="body2"
+          xs={2}/> :
+        null
+      }
     </Grid>
-  </Grid>
-)
+  )}
+

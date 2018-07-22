@@ -1,8 +1,7 @@
-import React from 'react'
 import {withStyles} from '@material-ui/core/styles'
 import Avatar from '@material-ui/core/Avatar'
 import Typography from '@material-ui/core/Typography'
-import {LTB} from './ScoreCardLayouts'
+import {LTB} from '../ScoreCardLayouts'
 import BSO from './BSO'
 
 const styles = (theme) => ({
@@ -15,7 +14,7 @@ const styles = (theme) => ({
 // Meta Pitcher Batter
 const MetaPB = ({
   classes,
-  logo_url = "https://upload.wikimedia.org/wikipedia/en/2/24/Atlanta_Hawks_logo.svg",
+  logo_url = 'https://upload.wikimedia.org/wikipedia/en/2/24/Atlanta_Hawks_logo.svg',
 }) => (
   <div>
     <LTB

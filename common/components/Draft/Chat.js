@@ -12,7 +12,7 @@ import { Scrollbars } from 'react-custom-scrollbars'
 import Grid from '@material-ui/core/Grid'
 import { connect } from 'react-redux'
 
-const styles = theme => ({
+const styles = () => ({
   message : {
     paddingTop:0,
     paddingBottom:0,
@@ -113,7 +113,7 @@ class Chat extends React.Component {
                 </Grid>
                 <Grid item xs={2} sm={2}
                   style={{backgroundColor:'white'}}>
-                  <IconButton style={{ }} onClick={this.onPressSubmit}>
+                  <IconButton style={{width:35 }} onClick={this.onPressSubmit}>
                     <SendIcon/>
                   </IconButton>
                 </Grid>

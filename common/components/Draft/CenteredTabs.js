@@ -13,10 +13,12 @@ const styles = () => ({
     flexGrow: 1,
   },
   deepindicator : {
-    height:0
+    height:0,
+    minWidth:50,
+    maxWidth:500
   },
   deeptext : {
-    fontSize:18
+    fontSize:16
   },
   tab : {
     fontFamily:'museo-slab-bold',
@@ -53,7 +55,8 @@ class CenteredTabs extends React.Component {
           classes={{indicator: classes.deepindicator}}
           textColor="primary"
           fullWidth
-          centered
+          scrollable
+          //centered
         >
           <Tab label="ROSTER" 
             classes={{label: classes.deeptext}}

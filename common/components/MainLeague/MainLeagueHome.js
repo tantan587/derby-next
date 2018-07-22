@@ -28,7 +28,7 @@ const styles = theme => ({
   'cards': {
     display: 'flex',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     width: '90%',
     margin: '0px 5% 0px 5%',
     [theme.breakpoints.down('sm')]: {
