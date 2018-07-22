@@ -111,7 +111,7 @@ const getCFBstandings = async (knex, sportName, api, promiseToGet, year) =>{
             }
           }else //if the team made a new years 6 bowl, just add them to playoffs as normal
           {
-            playoff_teams.push({team_id: teamIdMap[game.GlobalHomeTeamID], playoff_status: 'in_playoffs', playoff_wins: 0, playoff_losses: 0, year: game.Season}, {team_id: teamIdMap[game.GlobalAwayTeamID], playoff_status: 'in_playoffs', playoff_wins: 0, playoff_losses: 0, year: game.Season})
+            playoff_teams.push({team_id: teamIdMap[game.GlobalHomeTeamID], playoff_status: 4, playoff_wins: 0, playoff_losses: 0, year: game.Season}, {team_id: teamIdMap[game.GlobalAwayTeamID], playoff_status: 4, playoff_wins: 0, playoff_losses: 0, year: game.Season})
           }
         }
         //note: still need to figure out a way to differentiate between playoff wins and normal bowl wins. NY6 teams all get playoff appearance points
