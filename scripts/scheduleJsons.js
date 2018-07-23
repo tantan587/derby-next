@@ -1,18 +1,27 @@
 const NBA_json = (game) => {
+    let quarters = {}
+    game.Quarters.forEach(quarter => {
+      quarters[quarter.Number] = {...quarter}
+    })
     return {
-      //quarter data in stats/box scores
-      last_play: game.LastPlay
-      //below needs to be added back when they update
-      // home_quarter_1: game.HomeScoreQuarter1,
-      // home_quarter_2: game.HomeScoreQuarter2,
-      // home_quarter_3: game.HomeScoreQuarter3,
-      // home_quarter_4: game.HomeScoreQuarter4,
-      // home_overtime: game.HomeScoreOvertime,
-      // away_quarter_1: game.AwayScoreQuarter1,
-      // away_quarter_2: game.AwayScoreQuarter2,
-      // away_quarter_3: game.AwayScoreQuarter3,
-      // away_quarter_4: game.AwayScoreQuarter4,
-      // away_overtime: game.AwayScoreOvertime,
+      last_play: game.LastPlay,
+      home_quarter_1: quarters[1].HomeScore ? quarters[1].HomeScore : 0,
+      home_quarter_2: quarters[2].HomeScore ? quarters[2].HomeScore : 0,
+      home_quarter_3: quarters[3].HomeScore ? quarters[3].HomeScore : 0,
+      home_quarter_4: quarters[4].HomeScore ? quarters[4].HomeScore : 0,
+      home_quarter_ot_1: quarters[5].HomeScore ? quarters[5].HomeScore : 0,
+      home_quarter_ot_2: quarters[6].HomeScore ? quarters[6].HomeScore : 0,
+      home_quarter_ot_3: quarters[7].HomeScore ? quarters[7].HomeScore : 0,
+      away_quarter_1: quarters[1].AwayScore ? quarters[1].AwayScore : 0,
+      away_quarter_2: quarters[2].AwayScore ? quarters[2].AwayScore : 0,
+      away_quarter_3: quarters[3].AwayScore ? quarters[3].AwayScore : 0,
+      away_quarter_4: quarters[4].AwayScore ? quarters[4].AwayScore : 0,
+      away_quarter_ot_1: quarters[5].AwayScore ? quarters[5].AwayScore : 0,
+      away_quarter_ot_2: quarters[6].AwayScore ? quarters[6].AwayScore : 0,
+      away_quarter_ot_3: quarters[7].AwayScore ? quarters[7].AwayScore : 0,
+      channel: game.Channel,
+      spread: game.PointSpread,
+      over_under: game.OverUnder
     }
   }
   
