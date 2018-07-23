@@ -19,6 +19,7 @@ const createCollegeSport = async (knex, sport_id, sportName, api, promiseToGet) 
     teamInfo.push({sport_id: sport_id, team_id: team_id, key: team.Key, city: team.School, 
       name: team.Name, conference_id: conf_id, 
       logo_url:team.TeamLogoUrl,
+      stadium_id: sport_id === '106' ? 106999 : team.StadiumID,
       global_team_id:team.GlobalTeamID, division: team_division})
 
     standings.push({team_id: team_id, wins : 0, losses: 0, ties: 0})
@@ -55,10 +56,10 @@ const createProfessionalSport = async (knex, sport_id, sportName, api, promiseTo
     let team_id = teamIdMap[team.GlobalTeamID]
     let team_division = team.Division
     let team_conference = sport_id === '103' ? confMap[team.League] : confMap[team.Conference]
-        
     teamInfo.push({sport_id: sport_id, team_id: team_id, key: team.Key, city: team.City, 
       name: team.Name, conference_id: team_conference, 
       logo_url: team.WikipediaLogoUrl,
+      stadium_id: sport_id * 1000 + team.StadiumID + 100,
       global_team_id:team.GlobalTeamID, division: team_division})
 
     standings.push({team_id: team_id, wins : 0, losses: 0, ties: 0})
@@ -108,6 +109,7 @@ const createSoccerLeague = async (knex, sport_id, sportName, api, promiseToGet, 
     teamInfo.push({sport_id: sport_id, team_id: team_id, key: team.Team.Key, city: team.Team.City, 
       name: team.Team.Name, conference_id: team_conference, 
       logo_url: team.Team.WikipediaLogoUrl ? team.Team.WikipediaLogoUrl: '---',
+      stadium_id: sport_id * 1000 + team.Team.VenueID + 100,
       global_team_id: team.Team.GlobalTeamId})
 
     standings.push({team_id: team_id, wins : 0, losses: 0, ties: 0})
@@ -124,6 +126,7 @@ const createSoccerLeague = async (knex, sport_id, sportName, api, promiseToGet, 
       teamInfo.push({sport_id: sport_id, team_id: team_id, key: team.Team.Key, city: team.Team.City, 
         name: team.Team.Name, conference_id: team_conference, 
         logo_url: team.Team.WikipediaLogoUrl ? team.Team.WikipediaLogoUrl: '---',
+        stadium_id: sport_id * 1000 + team.Team.VenueID + 100,
         global_team_id: team.Team.GlobalTeamId})
     
       standings.push({team_id: team_id, wins : 0, losses: 0, ties: 0})

@@ -64,6 +64,8 @@ methods.createScheduleForInsert = function(cleanSched, sport_id, idSpelling, tea
       game.IsOver ? game.IsOvertime ? 'F/OT' : 'Final' : game.IsInProgress ? 'InProgress' : game.Canceled ? 'Canceled' : 'Scheduled';
     let home_score = sport_id === '103' ? game.HomeTeamRuns : sport_id === '102' ? game.HomeScore : game.HomeTeamScore;
     let away_score = sport_id === '103' ? game.AwayTeamRuns : sport_id === '102' ? game.AwayScore : game.AwayTeamScore;
+    let i = sport_id === '107' ? game.VenueId : game.StadiumID
+    let StadiumID = sport_id * 1000 + i + 100
     return {
     global_game_id: game['GlobalGame' + idSpelling],
       home_team_id: teamIdMap[game['GlobalHomeTeam' + idSpelling]],
@@ -91,7 +93,8 @@ methods.createScheduleForInsert = function(cleanSched, sport_id, idSpelling, tea
         sport_id === '102' ? game.LastUpdated ? game.LastUpdated : myNull :
           game.Updated ? game.Updated : myNull,
       season_type: game.SeasonType, year: game.Season, 
-      game_extra: json_function(game)
+      game_extra: json_function(game),
+      stadium_id: sport_id === '106' ? 106999 : StadiumID
     }
   })
 
