@@ -1,7 +1,7 @@
 import React from 'react'
 import { withStyles } from '@material-ui/core/styles'
 
-import DerbyTabs from '../Tabs/DerbyTabs'
+import DerbyTabs from '../UI/DerbyTabs'
 import CustomizeTeam from './CustomizeTeam/CustomizeTeam'
 import ManageEmails from './ManageEmails/ManageEmails'
 

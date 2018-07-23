@@ -1,16 +1,16 @@
 import React from 'react'
 import { withStyles } from '@material-ui/core/styles'
-
-import DerbyTabs from '../UI/DerbyTabs'
+import Title from '../Navigation/Title'
+//import DerbyTabs from '../UI/DerbyTabs'
 import LeagueInfo from './LeagueInfo/LeagueInfo'
-import ManageEmails from './ManageLeague/ManageEmails'
+//import ManageEmails from './ManageLeague/ManageEmails'
 
 const styles = theme =>({
   root: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    marginTop: 80
+    //marginTop: 80
   },
   content: {
     width: '80%',
@@ -28,10 +28,10 @@ const styles = theme =>({
   }
 })
 
-const myTabs = [
-  { label: 'League Info & Draft', Component: <LeagueInfo /> },
-  { label: 'Manage League Members', Component: <ManageEmails /> },
-]
+// const myTabs = [
+//   { label: 'League Info & Draft', Component: <LeagueInfo /> },
+//   //{ label: 'Manage League Members', Component: <ManageEmails /> },
+// ]
 
 class LeagueSettings extends React.Component {
 
@@ -39,10 +39,12 @@ class LeagueSettings extends React.Component {
     const { classes } = this.props
 
     return (
-      <div className={classes.root}>
-        <div className={classes.content}>
-          <div className={classes.title}>League Settings</div>
-          <DerbyTabs tabsList={myTabs} />
+      <div>
+        <Title color='white' backgroundColor='#EBAB38' title='Create League'/>
+        <div className={classes.root}>
+          <div className={classes.content}>
+            <LeagueInfo />
+          </div>
         </div>
       </div>
     )

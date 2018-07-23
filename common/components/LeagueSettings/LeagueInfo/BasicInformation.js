@@ -1,15 +1,11 @@
 import { Component } from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import Card from '@material-ui/core/Card'
-// import Grid from '@material-ui/core/Grid'
-// import TextField from '@material-ui/core/TextField'
 import FormControl from '@material-ui/core/FormControl'
 import Input from '@material-ui/core/Input'
 import Tooltip from '@material-ui/core/Tooltip'
-import DateRange from '@material-ui/icons/DateRange'
-import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
-import Button from '@material-ui/core/Button'
+import Select from '@material-ui/core/Select'
 
 import DerbySwitch from '../../UI/DerbySwitch'
 
@@ -130,18 +126,14 @@ const InfoTool = ({ style }) =>
 
 const BasicInformation = withStyles(styles)(class extends Component {
   state = {
-    memberAnchor: null,
     memberVal: 8
   }
 
-  handleClick = event => { this.setState({ memberAnchor: event.currentTarget }) }
-  handleClose = () => { this.setState({ memberAnchor: null }) }
-  handleSelect = value => { this.setState({ memberAnchor: null, memberVal: value }) }
-
+  handleSelect = event => { this.setState({  memberVal: event.target.value }) }
 
   render() {
     const { classes } = this.props
-    const { memberAnchor, memberVal } = this.state
+    const { memberVal } = this.state
 
     const memberArray = new Array(8).fill(0).map((arr, i) => i + 8)
 
@@ -191,27 +183,17 @@ const BasicInformation = withStyles(styles)(class extends Component {
             <div>Amount of Members:</div>
           </div>
           <div className={classes.formRoot} style={{ display: 'flex' }}>
-            <Button
-              variant="raised"
-              aria-owns={memberAnchor ? 'simple-menu' : null}
-              aria-haspopup="true"
-              onClick={this.handleClick}
-            >
-              { memberVal }
-            </Button>
-            <Menu
-              id="simple-menu"
-              anchorEl={memberAnchor}
-              open={Boolean(memberAnchor)}
-              onClose={this.handleClose}
+            <Select
+              value={memberVal}
+              onChange={this.handleSelect}
             >
               {
                 memberArray.map(val =>
-                  <MenuItem onClick={this.handleSelect.bind(null, val)}>
+                  <MenuItem value={val}>
                     { val }
                   </MenuItem>)
               }
-            </Menu>
+            </Select>
           </div>
         </div>
 

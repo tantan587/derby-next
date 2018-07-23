@@ -1,9 +1,6 @@
 import { Component } from 'react'
 import { withStyles } from '@material-ui/core/styles'
-// import TextField from '@material-ui/core/TextField'
 import Grid from '@material-ui/core/Grid'
-
-// import TeamView from './TeamView'
 import BasicInformation from './BasicInformation'
 import DraftSettings from './DraftSettings'
 import StyledButton from '../../Navigation/Buttons/StyledButton'
@@ -102,9 +99,11 @@ class CustomizeTeam extends Component {
         </Grid>
         <StyledButton
           height={50}
-          styles={{ fontSize: 16, fontWeight: 600, marginTop: 40 }}
+          styles={{ fontSize: 16, fontWeight: 600, marginTop: 40, marginBottom:50 }}
           text="Save Settings"
         />
+        <br/>
+        <br/>
       </Grid>
     )
   }
