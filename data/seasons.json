@@ -1,10 +1,16 @@
 [
-    {"sport_id": 101, "start_date": "2018-06-01", "end_date": "2018-08-15", "year": 2019, "season_group_type": 1, "status": 1},
-    {"sport_id": 101, "start_date": "2018-08-15", "end_date": "2018-09-01", "year": 2019, "season_group_type": 1, "status": 2},
-    {"sport_id": 102, "start_date": "2018-06-01", "end_date": "2018-08-01", "year": 2018, "season_group_type": 1, "status": 2},
-    {"sport_id": 102, "start_date": "2018-08-02", "end_date": "2018-09-05", "year": 2018, "season_group_type": 1, "status": 3},
-    {"sport_id": 102, "start_date": "2018-09-06", "end_date": "2018-12-30", "year": 2018, "season_group_type": 1, "status": 4},
-    {"sport_id": 102, "start_date": "2018-12-31", "end_date": "2019-02-03", "year": 2018, "season_group_type": 1, "status": 5},
-    {"sport_id": 102, "start_date": "2019-02-04", "end_date": "2019-10-31", "year": 2018, "season_group_type": 1, "status": 6}
-
+    {"sport_id": 101, "year": 2019, "scoring_type_ids": [ 1 ], "api_pull_parameter": 2019},
+    {"sport_id": 102, "year": 2018, "scoring_type_ids": [ 1 ], "api_pull_parameter": 2018},
+    {"sport_id": 103, "year": 2019, "scoring_type_ids": [ 1 ], "api_pull_parameter": 2019},
+    {"sport_id": 104, "year": 2019, "scoring_type_ids": [ 1 ], "api_pull_parameter": 2019},
+    {"sport_id": 105, "year": 2018, "scoring_type_ids": [ 1 ], "api_pull_parameter": 2018},
+    {"sport_id": 106, "year": 2019, "scoring_type_ids": [ 1 ], "api_pull_parameter": 2019},
+    {"sport_id": 107, "year": 2019, "scoring_type_ids": [ 1 ], "api_pull_parameter": 9999999},
+    {"sport_id": 101, "year": 2018, "scoring_type_ids": [ 1 ], "api_pull_parameter": 2018},
+    {"sport_id": 102, "year": 2017, "scoring_type_ids": [ 1 ], "api_pull_parameter": 2017},
+    {"sport_id": 103, "year": 2018, "scoring_type_ids": [ 1 ], "api_pull_parameter": 2018},
+    {"sport_id": 104, "year": 2018, "scoring_type_ids": [ 1 ], "api_pull_parameter": 2018},
+    {"sport_id": 105, "year": 2017, "scoring_type_ids": [ 1 ], "api_pull_parameter": 2017},
+    {"sport_id": 106, "year": 2018, "scoring_type_ids": [ 1 ], "api_pull_parameter": 2018},
+    {"sport_id": 107, "year": 2018, "scoring_type_ids": [ 1 ], "api_pull_parameter": 144}
 ]

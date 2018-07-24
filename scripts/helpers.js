@@ -160,6 +160,29 @@ methods.getFdata = async (knex, sportName,api, promiseToGet, parameters=false, s
   
 }
 
+methods.getSeasonCall = async (knex) => {
+  let seasons = 
+    await knex
+      .withSchema('sports')
+      .table('season_call')
+      .select('*')
+  
+  let today = new Date()
+  let api_calls = seasons.filter(sport_season => sport_season.start_pull_date < today && sport_season.start_pull_date>today)
+  
+ /*  let api_calls = {101: [], 102: [], 103: [],  104: [], 105: [], 106:[], 107:[]}
+  seasons.forEach(sport_season => {
+    if(sport_season.start_pull_date < today && sport_season.start_pull_date>today){
+      api_calls[sport_season.sport_id].push({
+        pull_parameter: sport_season.api_pull_parameter,
+        scoring_types: sport_season.scoring_type_ids
+      })
+    }
+  }) */
+
+  return api_calls
+}
+
 methods.createStandingsData = async (knex, sportName, api, promiseToGet, year) =>{
   let standData = await methods.getFdata (knex, sportName, api, promiseToGet, year)
   let sport_id = await methods.getSportId(knex, sportName)

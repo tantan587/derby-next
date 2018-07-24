@@ -8,6 +8,17 @@ const knex = require('../server/db/connection')
 //for CFB - this function also updates the post season standings.
 async function updateStandings()
 {
+  let data = []
+  let season_calls = db_helpers.getSeasonCall(knex)
+  season_calls.forEach(season => {
+    let sport_id = season.sport_id
+    let sport = sport_keys[sport_id]
+    if(sport_id===105){
+      data.push(await getCFBstandings(knex, sport.sport_name, sport.api, sport.promiseToGet, season.api_pull_parameter))
+    }else{
+      data.push(await standingsBySport(knex, sport.sport_name, sport.api, sport.promiseToGet, season.api_pull_parameter))
+    }
+  })
   //let cbbData = await getCBBstandings(knex, 'CBB', 'CBBv3StatsClient', 'getTeamSeasonStatsPromise', '2018')
   let cbbData = await standingsBySport(knex, 'CBB', 'CBBv3StatsClient', 'getTeamSeasonStatsPromise', '2018')
   let cfbData = await getCFBstandings(knex, 'CFB', 'CFBv3ScoresClient', 'getTeamSeasonStatsStandingsPromise', '2017')
@@ -24,6 +35,18 @@ async function updateStandings()
   await fantasyHelpers.updateLeaguePoints()
   console.log('im done')
   process.exit()
+
+}
+
+//maybe this shouldn't be hard coded, but instead pull from database
+const sport_keys = {
+  101: {sport_name: 'NBA', api: 'NBAv3StatsClient', promiseToGet: 'getStandingsPromise'},
+  102: {sport_name: 'NFL', api: 'NFLv3StatsClient', promiseToGet: 'getStandingsPromise'},
+  103: {sport_name: 'MLB', api: 'MLBv3StatsClient', promiseToGet: 'getStandingsPromise'},
+  104: {sport_name: 'NHL', api: 'NHLv3StatsClient', promiseToGet: 'getStandingsPromise'},
+  105: {sport_name: 'CFB', api: 'CFBv3StatsClient', promiseToGet: 'getTeamSeasonStatsStandingsPromise'},
+  106: {sport_name: 'CBB', api: 'CBBv3StatsClient', promiseToGet: 'getTeamSeasonStatsPromise'},
+  107: {sport_name: 'EPL', api: 'Soccerv3StatsClient', promiseToGet: 'getStandingsPromise'}
 
 }
 
