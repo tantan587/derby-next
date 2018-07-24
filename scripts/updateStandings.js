@@ -1,6 +1,7 @@
 const db_helpers = require('./helpers').data
 const fantasyHelpers = require('../server/routes/helpers/fantasyHelpers')
 const knex = require('../server/db/connection')
+const sport_keys = require('./sportKeys')
 //const getDayCount = require('./Analysis/dayCount.js')
 
 //note: college basketball has an extra, old functino below: waiting to be sure we don't need this again
@@ -14,9 +15,9 @@ async function updateStandings()
     let sport_id = season.sport_id
     let sport = sport_keys[sport_id]
     if(sport_id===105){
-      data.push(await getCFBstandings(knex, sport.sport_name, sport.api, sport.promiseToGet, season.api_pull_parameter))
+      data.push(await getCFBstandings(knex, sport.sport_name, sport.api, sport.standingsPromiseToGet, season.api_pull_parameter))
     }else{
-      data.push(await standingsBySport(knex, sport.sport_name, sport.api, sport.promiseToGet, season.api_pull_parameter))
+      data.push(await standingsBySport(knex, sport.sport_name, sport.api, sport.standingsPromiseToGet, season.api_pull_parameter))
     }
   })
   //let cbbData = await getCBBstandings(knex, 'CBB', 'CBBv3StatsClient', 'getTeamSeasonStatsPromise', '2018')
@@ -38,17 +39,7 @@ async function updateStandings()
 
 }
 
-//maybe this shouldn't be hard coded, but instead pull from database
-const sport_keys = {
-  101: {sport_name: 'NBA', api: 'NBAv3StatsClient', promiseToGet: 'getStandingsPromise'},
-  102: {sport_name: 'NFL', api: 'NFLv3StatsClient', promiseToGet: 'getStandingsPromise'},
-  103: {sport_name: 'MLB', api: 'MLBv3StatsClient', promiseToGet: 'getStandingsPromise'},
-  104: {sport_name: 'NHL', api: 'NHLv3StatsClient', promiseToGet: 'getStandingsPromise'},
-  105: {sport_name: 'CFB', api: 'CFBv3StatsClient', promiseToGet: 'getTeamSeasonStatsStandingsPromise'},
-  106: {sport_name: 'CBB', api: 'CBBv3StatsClient', promiseToGet: 'getTeamSeasonStatsPromise'},
-  107: {sport_name: 'EPL', api: 'Soccerv3StatsClient', promiseToGet: 'getStandingsPromise'}
 
-}
 
 const standingsBySport = async (knex, sportName, api, promiseToGet, year) => {
   let standings_info = await db_helpers.createStandingsData(knex, sportName, api, promiseToGet, year)

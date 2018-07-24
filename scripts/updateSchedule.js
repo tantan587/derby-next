@@ -2,11 +2,19 @@ const db_helpers = require('./helpers').data
 const fantasyHelpers = require('../server/routes/helpers/fantasyHelpers')
 const knex = require('../server/db/connection')
 const myNull = '---'
-
+const sport_keys = require('./sportKeys')
 
 
 async function createSchedule()
 {
+  let data = []
+  let season_calls = db_helpers.getSeasonCall(knex)
+  season_calls.forEach(season => {
+    let sport_id = season.sport_id
+    let sport = sport_keys[sport_id]
+    data.push(await getSchedInfo(knex, sport.sport_name, sport.api, sport.schedulePromiseToGet, season.api_pull_parameter))
+  })
+
   let cbbData = await getSchedInfo(knex, 'CBB', 'CBBv3ScoresClient', 'getSchedulesPromise','2018')
   let mlbData = await getSchedInfo(knex, 'MLB', 'MLBv3StatsClient', 'getSchedulesPromise', '2018')
   let nbaData = await getSchedInfo(knex, 'NBA', 'NBAv3ScoresClient', 'getSchedulesPromise','2018')

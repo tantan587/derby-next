@@ -2,11 +2,20 @@
 const db_helpers = require('./helpers').data
 const fantasyHelpers = require('../server/routes/helpers/fantasyHelpers')
 const knex = require('../server/db/connection')
+const sport_keys = require('./sportKeys')
 
 //this still needs to deal with college bball, football, and epl. Putting those on hold for now.
 
 async function createStandingsPO () {
-    
+    let data = []
+    let season_calls = db_helpers.getSeasonCall(knex)
+    let post_season_calls = season_calls.filter(season => [101, 102, 103, 104].includes(season.sport_id))
+    new_season_calls.forEach(season => {
+      let sport_id = season.sport_id
+      let sport = sport_keys[sport_id]
+      data.push(await getSchedInfo(knex, sport.sport_name, sport.api, sport.schedulePromiseToGet, season.api_pull_parameter.concat('POST')))
+    })
+
     let MLB_standPO = await getStandingsInfo(knex, 'MLB','MLBv3ScoresClient','getStandingsPromise', '2017POST')
     let NBA_standPO = await getStandingsInfo(knex, 'NBA','NBAv3ScoresClient','getStandingsPromise', '2018POST')
     let NHL_standPO = await getStandingsInfo(knex, 'NHL','NHLv3ScoresClient','getStandingsPromise', '2018POST')
