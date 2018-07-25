@@ -16,6 +16,7 @@ exports.up = function(knex, Promise) {
             table.integer('year').notNullable()
             table.integer('season_status_type').notNullable()
         }),
+        //maybe this should be fantasy.season_status instead...
         knex.schema.withSchema('sports').createTable('season_status', (table) => {
             table.integer('season_status_type').notNullable().unique()
             table.string('season_status_name').notNullable()
