@@ -28,7 +28,7 @@ const styles = theme => ({
     }
   },
   textField: {
-    width: '60%',
+    width: '100%',
     [theme.breakpoints.down('sm')]: {
       width: '60%',
       marginTop: 8
@@ -93,6 +93,7 @@ const styles = theme => ({
       width: '100%'
     }
   },
+  
   switchLabel: {
     display: 'flex',
     alignSelf: 'flex-start',
@@ -121,40 +122,31 @@ const InfoTool = ({ style }) =>
 // const InfoTool = class => { <div className={class}>i</div> }
 // const InfoTool = ({ class )} => <div>hi</div>
 
-const BasicInformation = withStyles(styles)(
+const DraftSettings = withStyles(styles)(
   class extends Component {
-  state = {
-    draftType: 'Online - Snake Format',
-    pickType: 5,
-
-  }
-
-  handleChange = event => {
-    this.setState({ [event.target.name]: event.target.value })
-  };
 
   handleDateChange = (date) => {
     this.setState({ selectedDate: date })
   }
 
   render() {
-    const {  draftType,  pickType } = this.state
-    const { classes } = this.props
-
-    const secondsArray = new Array(18).fill(0).map((arr, i) => (i + 1) * 5)
+    const { classes, draftType,  pickTime, draftDate, handleChange  } = this.props
+  
+    const secondsArray = new Array(3).fill(0).map((arr, i) => i * 30 + 60)
 
     return (
       <Card className={classes.container}>
         <div className={classes.field}>
           <div className={classes.label}>
-            <div>Set Draft Date & Time:</div>
+            <div>Set Draft Time (EST):</div>
           </div>
           <div className={classes.formRoot} style={{ display: 'flex' }}>
            
             <DateTimePicker
               keyboard
-              value={new Date()}
-              onChange={() => ({})}
+              className={classes.textField}
+              value={draftDate}
+              onChange={(date) => {handleChange('draftDate')(date)}}
             />
 
           </div>
@@ -169,7 +161,7 @@ const BasicInformation = withStyles(styles)(
 
             <Select
               value={draftType}
-              onChange={this.handleChange}
+              onChange={handleChange('draftType')}
               inputProps={{
                 name: 'draftType',
                 id: 'draftType',
@@ -177,7 +169,7 @@ const BasicInformation = withStyles(styles)(
             >
               {
                 ['Online - Snake Format'].map(val =>
-                  <MenuItem value={val}>
+                  <MenuItem key={val} value={val}>
                     { val }
                   </MenuItem>)
               }
@@ -193,16 +185,16 @@ const BasicInformation = withStyles(styles)(
           <div className={classes.formRoot} style={{ display: 'flex' }}>
 
             <Select
-              value={pickType}
-              onChange={this.handleChange}
+              value={pickTime}
+              onChange={handleChange('pickTime')}
               inputProps={{
-                name: 'pickType',
-                id: 'pickType',
+                name: 'pickTime',
+                id: 'pickTime',
               }}
             >
               {
                 secondsArray.map(val =>
-                  <MenuItem value={val}>
+                  <MenuItem key={val} value={val}>
                     { val }
                   </MenuItem>)
               }
@@ -214,4 +206,4 @@ const BasicInformation = withStyles(styles)(
   }
   })
 
-export default BasicInformation
+export default DraftSettings

@@ -1,9 +1,11 @@
 import React from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import Title from '../Navigation/Title'
-//import DerbyTabs from '../UI/DerbyTabs'
 import LeagueInfo from './LeagueInfo/LeagueInfo'
-//import ManageEmails from './ManageLeague/ManageEmails'
+import {connect} from 'react-redux'
+import {withRouter} from 'next/router'
+import {clickedCreateLeague} from '../../actions/fantasy-actions'
+const R = require('ramda')
 
 const styles = theme =>({
   root: {
@@ -33,7 +35,42 @@ const styles = theme =>({
 //   //{ label: 'Manage League Members', Component: <ManageEmails /> },
 // ]
 
-class LeagueSettings extends React.Component {
+class CreateLeague extends React.Component {
+  state = {
+    leagueInfo : 
+      {
+        name: '',
+        password: '',
+        matchPassword: '',
+        owners: 8,
+        premier:false,
+        draftType: 'Online - Snake Format',
+        pickTime: 60,
+        draftDate: new Date((new Date()).getTime() + 7 * 86400000),
+        showError:false
+      }
+  }
+
+  setDeepState = (key, name, value) => {
+    this.setState({
+      [key]:{
+        ...this.state[key],
+        [name]: value,
+      }
+    })
+  }
+
+  handleChange = name => event => {
+
+    let newValue = name === 'premier' ? event.target.checked : name === 'draftDate' ?  event : event.target.value
+
+    this.setDeepState('leagueInfo', name, newValue)
+    
+  }
+
+  onSubmit = () => {
+    this.setDeepState('leagueInfo','showError', true)
+  }
 
   render() {
     const { classes } = this.props
@@ -43,7 +80,7 @@ class LeagueSettings extends React.Component {
         <Title color='white' backgroundColor='#EBAB38' title='Create League'/>
         <div className={classes.root}>
           <div className={classes.content}>
-            <LeagueInfo />
+            <LeagueInfo leagueInfo={this.state.leagueInfo} onSubmit={this.onSubmit} handleChange={this.handleChange}/>
           </div>
         </div>
       </div>
@@ -51,4 +88,8 @@ class LeagueSettings extends React.Component {
   }
 }
 
-export default withStyles(styles)(LeagueSettings)
+export default R.compose(
+  withRouter,
+  withStyles(styles),
+  connect(R.pick(['user']), {onCreateLeague: clickedCreateLeague}),
+)(CreateLeague)

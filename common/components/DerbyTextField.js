@@ -7,7 +7,7 @@ const styles = {
   container: {
     left: '50%',
     // textAlign: 'center',
-    marginTop : '100px'
+    //marginTop : '100px'
   },
   field: {
     width: 300,
@@ -38,7 +38,7 @@ class DerbyTextField extends React.Component {
       <TextField
         id= {this.props.id || this.props.label }
         error={parsedErrorText !== ''}
-        className={classes.field}
+        //className={classes.field}
         helperText = {parsedErrorText}
         label={this.props.label}
         value={this.props.value}

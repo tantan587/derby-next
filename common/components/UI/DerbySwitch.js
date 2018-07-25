@@ -25,7 +25,7 @@ const styles = {
   }
 }
 
-const DerbySwitch = withStyles(styles)(({ onClick, state, classes }) =>
+const DerbySwitch = withStyles(styles)(({ onClick, stateKey, classes }) =>
   <Switch
     classes={{
       root: classes.root,
@@ -33,7 +33,7 @@ const DerbySwitch = withStyles(styles)(({ onClick, state, classes }) =>
       icon: classes.icon,
       checked: classes.checked,
     }}
-    onClick={onClick && onClick.bind(null, state)}
+    onClick={onClick(stateKey) }
   />
 )
 
