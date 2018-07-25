@@ -168,7 +168,7 @@ methods.getSeasonCall = async (knex) => {
       .select('*')
   
   let today = new Date()
-  let api_calls = seasons.filter(sport_season => sport_season.start_pull_date < today && sport_season.start_pull_date>today)
+  let api_calls = seasons.filter(sport_season => sport_season.start_pull_date < today && sport_season.end_pull_date>today)
   
  /*  let api_calls = {101: [], 102: [], 103: [],  104: [], 105: [], 106:[], 107:[]}
   seasons.forEach(sport_season => {

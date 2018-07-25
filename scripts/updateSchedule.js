@@ -10,15 +10,22 @@ async function asyncForEach(array, callback) {
   }
 }
 
-async function createSchedule()
-{
+const create_data = async () => {
   let data = []
-  let season_calls = db_helpers.getSeasonCall(knex)
-  asyncForEach(season_calls, async (season) => {
+  let season_calls = await db_helpers.getSeasonCall(knex)
+  await asyncForEach(season_calls, async (season) => {
     let sport_id = season.sport_id
     let sport = sport_keys[sport_id]
-    data.push(await getSchedInfo(knex, sport.sport_name, sport.api, sport.schedulePromiseToGet, season.api_pull_parameter))
+    data.push(...await getSchedInfo(knex, sport.sport_name, sport.api, sport.schedulePromiseToGet, season.api_pull_parameter))
   })
+
+  return data
+}
+
+async function createSchedule()
+{
+  let data = await create_data()
+  
 
   // let cbbData = await getSchedInfo(knex, 'CBB', 'CBBv3ScoresClient', 'getSchedulesPromise','2018')
   // let mlbData = await getSchedInfo(knex, 'MLB', 'MLBv3StatsClient', 'getSchedulesPromise', '2018')
@@ -29,7 +36,6 @@ async function createSchedule()
   // let eplData = await getSchedInfo(knex, 'EPL', 'Soccerv3ScoresClient', 'getSchedulePromise', '144')
   
   
-
   //let data = (nbaData).concat(cbbData).concat(cfbData).concat(mlbData).concat(nflData).concat(eplData).concat(nhlData)
   db_helpers.updateSchedule(knex, data)
     .then(result => {
@@ -41,7 +47,6 @@ async function createSchedule()
 const getSchedInfo = async (knex, sportName, api, promiseToGet, year) => {
   let schedData = await db_helpers.getFdata (knex, sportName, api, promiseToGet, year)
   let sport_id = await db_helpers.getSportId(knex,sportName)
-  console.log(sport_id)
   let teamIdMap = await db_helpers.getTeamIdMap(knex, sport_id)
   let cleanSched = JSON.parse(schedData)
   const idSpelling = sportName === 'EPL' ? 'Id' : 'ID'
