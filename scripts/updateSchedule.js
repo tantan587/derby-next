@@ -4,28 +4,33 @@ const knex = require('../server/db/connection')
 const myNull = '---'
 const sport_keys = require('./sportKeys')
 
+async function asyncForEach(array, callback) {
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index], index, array)
+  }
+}
 
 async function createSchedule()
 {
   let data = []
   let season_calls = db_helpers.getSeasonCall(knex)
-  season_calls.forEach(season => {
+  asyncForEach(season_calls, async (season) => {
     let sport_id = season.sport_id
     let sport = sport_keys[sport_id]
     data.push(await getSchedInfo(knex, sport.sport_name, sport.api, sport.schedulePromiseToGet, season.api_pull_parameter))
   })
 
-  let cbbData = await getSchedInfo(knex, 'CBB', 'CBBv3ScoresClient', 'getSchedulesPromise','2018')
-  let mlbData = await getSchedInfo(knex, 'MLB', 'MLBv3StatsClient', 'getSchedulesPromise', '2018')
-  let nbaData = await getSchedInfo(knex, 'NBA', 'NBAv3ScoresClient', 'getSchedulesPromise','2018')
-  let nhlData = await getSchedInfo(knex, 'NHL', 'NHLv3ScoresClient', 'getSchedulesPromise','2018')
-  let nflData = await getSchedInfo(knex, 'NFL', 'NFLv3ScoresClient', 'getScoresBySeasonPromise','2017')
-  let cfbData = await getSchedInfo(knex, 'CFB', 'CFBv3ScoresClient', 'getSchedulesPromise','2017')
-  let eplData = await getSchedInfo(knex, 'EPL', 'Soccerv3ScoresClient', 'getSchedulePromise', '144')
+  // let cbbData = await getSchedInfo(knex, 'CBB', 'CBBv3ScoresClient', 'getSchedulesPromise','2018')
+  // let mlbData = await getSchedInfo(knex, 'MLB', 'MLBv3StatsClient', 'getSchedulesPromise', '2018')
+  // let nbaData = await getSchedInfo(knex, 'NBA', 'NBAv3ScoresClient', 'getSchedulesPromise','2018')
+  // let nhlData = await getSchedInfo(knex, 'NHL', 'NHLv3ScoresClient', 'getSchedulesPromise','2018')
+  // let nflData = await getSchedInfo(knex, 'NFL', 'NFLv3ScoresClient', 'getScoresBySeasonPromise','2017')
+  // let cfbData = await getSchedInfo(knex, 'CFB', 'CFBv3ScoresClient', 'getSchedulesPromise','2017')
+  // let eplData = await getSchedInfo(knex, 'EPL', 'Soccerv3ScoresClient', 'getSchedulePromise', '144')
   
   
 
-  let data = (nbaData).concat(cbbData).concat(cfbData).concat(mlbData).concat(nflData).concat(eplData).concat(nhlData)
+  //let data = (nbaData).concat(cbbData).concat(cfbData).concat(mlbData).concat(nflData).concat(eplData).concat(nhlData)
   db_helpers.updateSchedule(knex, data)
     .then(result => {
       console.log('Number of Schedules Updated: ' + result)
@@ -36,6 +41,7 @@ async function createSchedule()
 const getSchedInfo = async (knex, sportName, api, promiseToGet, year) => {
   let schedData = await db_helpers.getFdata (knex, sportName, api, promiseToGet, year)
   let sport_id = await db_helpers.getSportId(knex,sportName)
+  console.log(sport_id)
   let teamIdMap = await db_helpers.getTeamIdMap(knex, sport_id)
   let cleanSched = JSON.parse(schedData)
   const idSpelling = sportName === 'EPL' ? 'Id' : 'ID'
