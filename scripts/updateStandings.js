@@ -2,33 +2,40 @@ const db_helpers = require('./helpers').data
 const fantasyHelpers = require('../server/routes/helpers/fantasyHelpers')
 const knex = require('../server/db/connection')
 const sport_keys = require('./sportKeys')
+const asyncForEach = require('./asyncForEach')
 //const getDayCount = require('./Analysis/dayCount.js')
 
+const filtered_fantasy_standings_data = async () => {
+  let data = []
+  let season_calls = await db_helpers.getSeasonCall(knex)
+  let post_season_calls = season_calls.filter(season => season.season_status === 1)
+  await asyncForEach(post_season_calls, async (season) => {
+    let sport_id = season.sport_id
+    let sport = sport_keys[sport_id]
+    if(sport_id===105){
+      data.push(...await getCFBstandings(knex, sport.sport_name, sport.api, sport.standingsPromiseToGet, season.api_pull_parameter))
+    }else{
+      data.push(...await standingsBySport(knex, sport.sport_name, sport.api, sport.standingsPromiseToGet, season.api_pull_parameter))
+    }
+  })
+
+  return data
+}
 //note: college basketball has an extra, old functino below: waiting to be sure we don't need this again
 
 //for CFB - this function also updates the post season standings.
 async function updateStandings()
 {
-  let data = []
-  let season_calls = db_helpers.getSeasonCall(knex)
-  season_calls.forEach(season => {
-    let sport_id = season.sport_id
-    let sport = sport_keys[sport_id]
-    if(sport_id===105){
-      data.push(await getCFBstandings(knex, sport.sport_name, sport.api, sport.standingsPromiseToGet, season.api_pull_parameter))
-    }else{
-      data.push(await standingsBySport(knex, sport.sport_name, sport.api, sport.standingsPromiseToGet, season.api_pull_parameter))
-    }
-  })
+  let data = await filtered_fantasy_standings_data()
   //let cbbData = await getCBBstandings(knex, 'CBB', 'CBBv3StatsClient', 'getTeamSeasonStatsPromise', '2018')
-  let cbbData = await standingsBySport(knex, 'CBB', 'CBBv3StatsClient', 'getTeamSeasonStatsPromise', '2018')
-  let cfbData = await getCFBstandings(knex, 'CFB', 'CFBv3ScoresClient', 'getTeamSeasonStatsStandingsPromise', '2017')
-  let nhlData = await standingsBySport(knex, 'NHL', 'NHLv3StatsClient', 'getStandingsPromise', '2018')
-  let nbaData = await standingsBySport(knex, 'NBA', 'NBAv3StatsClient', 'getStandingsPromise', '2018')
-  let mlbData = await standingsBySport(knex, 'MLB', 'MLBv3StatsClient', 'getStandingsPromise', '2018')
-  let nflData = await standingsBySport(knex, 'NFL', 'NFLv3StatsClient', 'getStandingsPromise', '2017')
-  let eplData = await standingsBySport(knex, 'EPL', 'Soccerv3StatsClient', 'getStandingsPromise', '144')
-  let data = nhlData.concat(nbaData).concat(mlbData).concat(nflData).concat(cfbData).concat(eplData).concat(cbbData)
+  // let cbbData = await standingsBySport(knex, 'CBB', 'CBBv3StatsClient', 'getTeamSeasonStatsPromise', '2018')
+  // let cfbData = await getCFBstandings(knex, 'CFB', 'CFBv3ScoresClient', 'getTeamSeasonStatsStandingsPromise', '2017')
+  // let nhlData = await standingsBySport(knex, 'NHL', 'NHLv3StatsClient', 'getStandingsPromise', '2018')
+  // let nbaData = await standingsBySport(knex, 'NBA', 'NBAv3StatsClient', 'getStandingsPromise', '2018')
+  // let mlbData = await standingsBySport(knex, 'MLB', 'MLBv3StatsClient', 'getStandingsPromise', '2018')
+  // let nflData = await standingsBySport(knex, 'NFL', 'NFLv3StatsClient', 'getStandingsPromise', '2017')
+  // let eplData = await standingsBySport(knex, 'EPL', 'Soccerv3StatsClient', 'getStandingsPromise', '144')
+  // let data = nhlData.concat(nbaData).concat(mlbData).concat(nflData).concat(cfbData).concat(eplData).concat(cbbData)
 
   let result =  await db_helpers.updateStandings(knex, data)
   console.log('Number of Standings Updated: ' + result)

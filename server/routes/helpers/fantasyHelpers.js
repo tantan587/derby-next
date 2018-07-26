@@ -279,32 +279,66 @@ const getPointsStructure = async () => {
     })
 }
 
+//below function is the same thing that is in helpers.
+//Was unsure if could pull in the same structure
 const activeSeasons = async () => {
-  let seasons = 
-    await knex
-      .withSchema('fantasy')
-      .table('season_user_display')
-      .select('*')
-  
   let today = new Date()
 
-  let active_seasons = seasons.filter(sport_season => sport_season.season_start_date < today && sport_season.season_end_date>today)
-
-  return active_seasons
+  let seasons = 
+    await knex
+      .withSchema('sports')
+      .table('sport_season')
+      .where('start_pull_date', "<", today)
+      .andWhere('end_pull_date', ">", today)
+      .select('*')
+  
+  return seasons
 }
 //this should be updated to do all the different team points structures
 //similar to the way i did that before with the update fantasy projected points
 //need to set up this table somewhere...
 const updateTeamPoints = async () =>
 {
+  // let standings_for_update =
+  //   await knex
+  //     .withSchema('fantasy')
+  //     .table('team_points')
+  //     .leftOuterJoin('fantasy.sports_structure', 'fantasy.sports_structure.sport_structure_id', 'fantasy.team_points.sport_structure_id')
+  //     .leftOuterJoin('fantasy.league_bundle', 'fantasy.sports_structure.league_bundle_id', 'fantasy.league_bundle.league_bundle_id')
+  //     .select('*')
+  
+  //first - pulls all the sports structures
+  let sport_structure = 
+    await knex
+      .withSchema('fantasy')
+      .table('sports_structure')
+      .leftOuterJoin('fantasy.league_bundle', 'fantasy.sports_structure.league_bundle_id', 'fantasy.league_bundle.league_bundle_id')
+      .select('*')
+  
+  //this is the active seaons - so that we can filter out the not active seasons, and only pull data for the active ones
   let seasons = await activeSeasons()
-  let sport_years = {}
+  //we only want to pull standing data for active seasons. 
+  //this means need to update the standings and playoff standings to have the sports season ids in there for both
+  
+  let seasons_for_pull = []
+  seasons.forEach(season => {
+    seasons_for_pull.push(season.sport_season_id)
+  })
+
+  let data = await getStandingDataPlayoffAndRegular(seasons_for_pull)
+
   let sport_season_status = []
+  let sport_years=[]
   seasons.forEach(sport => {
-    if(!(sport.sport_id in sport_years)){
-      sport_years[sport.sport_id] = []
+    if(!(sport.sport_id in seasons_for_pull)){
+      //sport_years[sport.sport_id] = []
+      //above is just pulling year. Below is creating an object with the year, that will then also pull the season status type
+      seasons_for_pull[sport.sport_id] = {}
     }
-    sport_years[sport.sport_id].push(sport.year)
+    //sport_years[sport.sport_id].push(sport.year)
+    //below is same as change for above, to use season status here
+    seasons_for_pull[sport.sport_id][sport.year] = sport.season_status_type
+    sport_years.push([sport.sport_id, sport.year])
     sport_season_status.push([sport.sport_id, sport.season_status_type])
     // if(!(sport.sport_id in sport_season_status_map)){
     //   sport_season_status_map[sport.sport_id] = []
@@ -315,7 +349,6 @@ const updateTeamPoints = async () =>
 
 
   let points = await getPointsStructure()
-  let data = await getStandingDataPlayoffAndRegular(sport_years)
 
   //somewhere, this needs to check to be sure the league scoring type is 1 and input it here
   // let str = `select a.*, b.sport_id
@@ -333,7 +366,7 @@ const updateTeamPoints = async () =>
   if (result.rows.length > 0)
   {
     const teamPoints = result.rows.map(fteam => {
-      const team = data[fteam.team_id]
+      const team = data[fteam.season_status_type][fteam.team_id]
       //const league = points.filter(league => league.sport_id == fteam.sport_id)[0]
       let sport_id = fteam.sport_id
       let bonus_win=0
@@ -488,13 +521,21 @@ const getStandingDataPlayoffAndRegular = async (seasons_for_pull) =>
   let results = 
     await knex('sports.standings')
       .leftOuterJoin('sports.playoff_standings', 'sports.standings.team_id', 'sports.playoff_standings.team_id')
-      .select('*')
+      .leftOuterJoin('sports.team_info', 'sports.team_info.team_id', 'sports.standings.team_id')
+      .whereIn(['sports.team_info.sport_id', 'sports.standings.year'], sport_years)
+      .select('sports.standings.*, sports.playoff_standings.*, sports.team_info.team_id')
   
-  let new_results = results.filter(team => 
-    seasons_for_pull[team.sport_id].includes(team.year)
-  )
+  // let new_results = results.filter(team => 
+  //   seasons_for_pull[team.sport_id].includes(team.year)
+  // )
   let teamMap = {}
-  results.map(team => {teamMap[team.team_id] = {...team}})
+  results.forEach(team => {
+    let season_status = seasons_for_pull[team.sport_id][team.year]
+    if(!(season_status in teamMap)){
+      teamMap[season_status] = {}
+    }
+    teamMap[season_status][team.team_id] ={...team}
+  })
   return teamMap
 
 }

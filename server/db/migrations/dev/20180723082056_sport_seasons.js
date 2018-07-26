@@ -1,33 +1,45 @@
 exports.up = function(knex, Promise) {
     return Promise.all([
-        knex.schema.withSchema('sports').createTable('season_call', (table) => {
+        knex.schema.withSchema('sports').createTable('sport_season', (table) => {
+            table.integer('sport_season_id').notNullable().unique()
             table.integer('sport_id').notNullable()
+            table.integer('year').notNullable()
+            table.integer('season_type').notNullable()
             table.date('start_pull_date')
             table.date('end_pull_date')
-            table.integer('year').notNullable()
-            table.json('scoring_type_ids').notNullable(), //do we need to have a different type of pull in here for epl?
             table.string('api_pull_parameter')
         }),
-        knex.schema.withSchema('fantasy').createTable('season_user_display', (table) => {
-            table.integer('scoring_type_id').notNullable()
-            table.integer('sport_id').notNullable()
-            table.date('season_start_date')
-            table.date('season_end_date')
-            table.integer('year').notNullable()
-            table.integer('season_status_type').notNullable()
+        knex.schema.withSchema('fantasy').createTable('league_bundle', (table) => {
+            table.integer('league_bundle_id').notNullable().unique()
+            table.json('current_sport_seasons').notNullable()
+            table.integer('previous_year_league_bundle')
+            table.string('name')
         }),
-        //maybe this should be fantasy.season_status instead...
-        knex.schema.withSchema('sports').createTable('season_status', (table) => {
-            table.integer('season_status_type').notNullable().unique()
-            table.string('season_status_name').notNullable()
+        //this should probably have a boolean that says if a league is active - if it is not active, it shoudl not be updated
+        knex.schema.withSchema('fantasy').createTable('sports_structure', (table) => {
+            table.integer('sport_structure_id').notNullable().unique()
+            table.integer('league_bundle_id').notNullable()
+            table.integer('scoring_type_id').notNullable()
+        }),
+        knex.schema.withSchema('fantasy').table('team_points', function(t) {
+            t.integer('sport_structure_id').notNullable().defaultTo(2)
+        }),
+        knex.schema.withSchema('sports').table('standings', function(t) {
+            t.integer('sport_seasons_id').notNullable().defaultTo(0)
         })
 ])
 };
 
 exports.down = function(knex, Promise) {
     return Promise.all([
-        knex.schema.withSchema('sports').dropTable('season_call'),
-        knex.schema.withSchema('fantasy').dropTable('season_user_display'),
-        knex.schema.withSchema('sports').dropTable('season_status')
+        knex.schema.withSchema('sports').dropTable('sport_season'),
+        knex.schema.withSchema('fantasy').dropTable('league_bundle'),
+        knex.schema.withSchema('sports').dropTable('sports_structure'),
+        knex.schema.withSchema('fantasy').table('team_points', (table) => {
+            table.dropColumn('sport_structure_id')
+        }),
+        knex.schema.withSchema('sports').table('standings', (table) => {
+            table.dropColumn('sport_season_id')
+        })
     ])
 };
