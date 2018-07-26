@@ -3,17 +3,14 @@ const fantasyHelpers = require('../server/routes/helpers/fantasyHelpers')
 const knex = require('../server/db/connection')
 const myNull = '---'
 const sport_keys = require('./sportKeys')
+const asyncForEach = require('./asyncForEach')
 
-async function asyncForEach(array, callback) {
-  for (let index = 0; index < array.length; index++) {
-    await callback(array[index], index, array)
-  }
-}
 
 const create_data = async () => {
   let data = []
   let season_calls = await db_helpers.getSeasonCall(knex)
-  await asyncForEach(season_calls, async (season) => {
+  let regular_season_calls = season_calls.filter(season => season.season_type === 1)
+  await asyncForEach(regular_season_calls, async (season) => {
     let sport_id = season.sport_id
     let sport = sport_keys[sport_id]
     data.push(...await getSchedInfo(knex, sport.sport_name, sport.api, sport.schedulePromiseToGet, season.api_pull_parameter))

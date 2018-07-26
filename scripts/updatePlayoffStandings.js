@@ -3,26 +3,28 @@ const db_helpers = require('./helpers').data
 const fantasyHelpers = require('../server/routes/helpers/fantasyHelpers')
 const knex = require('../server/db/connection')
 const sport_keys = require('./sportKeys')
+const asyncForEach = require('./asyncForEach')
 
-//this still needs to deal with college bball, football, and epl. Putting those on hold for now.
-
-async function createStandingsPO () {
+const create_active_playoff_standings_data = async () => {
     let data = []
-    let season_calls = db_helpers.getSeasonCall(knex)
-    let post_season_calls = season_calls.filter(season => [101, 102, 103, 104].includes(season.sport_id))
-    new_season_calls.forEach(season => {
+    let season_calls = await db_helpers.getSeasonCall(knex)
+    let post_season_calls = season_calls.filter(season => [101, 102, 103, 104].includes(season.sport_id)&& sport.season_status === 3)
+    await asyncForEach(post_season_calls, async (season) => {
       let sport_id = season.sport_id
       let sport = sport_keys[sport_id]
-      data.push(await getSchedInfo(knex, sport.sport_name, sport.api, sport.schedulePromiseToGet, season.api_pull_parameter.concat('POST')))
+      data.push(...await getStandingsInfo(knex, sport.sport_name, sport.api, sport.schedulePromiseToGet, season.api_pull_parameter))
     })
+  
+    return data
+}
+async function createStandingsPO () {
 
-    let MLB_standPO = await getStandingsInfo(knex, 'MLB','MLBv3ScoresClient','getStandingsPromise', '2017POST')
-    let NBA_standPO = await getStandingsInfo(knex, 'NBA','NBAv3ScoresClient','getStandingsPromise', '2018POST')
-    let NHL_standPO = await getStandingsInfo(knex, 'NHL','NHLv3ScoresClient','getStandingsPromise', '2018POST')
-    let NFL_standPO = await getStandingsInfo(knex, 'NFL','NFLv3StatsClient','getStandingsPromise', '2017POST')
-    //let CFB_standPO = await getStandInfo(knex, 'CFB','CFBv3ScoresClient','getStandingsPromise', '2017POST')
-    //let CBB_standPO = await getStandInfo(knex, 'CBB','CBBv3ScoresClient','getTournamentHierarchyPromise', '2018POST')
-    //let EPL_standPO = await getStandInfo(knex, 'EPL','EPLv3ScoresClient','getStandingsPromise', '144')
+    let data = await create_active_playoff_standings_data()
+    // let MLB_standPO = await getStandingsInfo(knex, 'MLB','MLBv3ScoresClient','getStandingsPromise', '2017POST')
+    // let NBA_standPO = await getStandingsInfo(knex, 'NBA','NBAv3ScoresClient','getStandingsPromise', '2018POST')
+    // let NHL_standPO = await getStandingsInfo(knex, 'NHL','NHLv3ScoresClient','getStandingsPromise', '2018POST')
+    // let NFL_standPO = await getStandingsInfo(knex, 'NFL','NFLv3StatsClient','getStandingsPromise', '2017POST')
+    
     
     let data = MLB_standPO.concat(NBA_standPO).concat(NHL_standPO).concat(NFL_standPO)//.concat(CBB_standPO).concat(CFB_standPO)//.concat(EPL_standPO)
     db_helpers.updatePlayoffStandings(knex, data)
