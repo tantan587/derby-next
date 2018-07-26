@@ -2,38 +2,51 @@ import React from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import {GetCountdownTimeObj} from '../../lib/time'
+import ContainerDimensions from 'react-container-dimensions'
 
 
 const styles = () => ({
   countdownBase : {
     fontFamily:'digital-7',
-    fontSize:65,
-    color:'#292929',
-    display: 'inline-block'
+    color:'#393939',
   },
   countdown : {
     fontFamily:'digital-7',
-    fontSize:65,
     color:'#EBAB38',
-    display: 'inline-block',
   },
   countdownAlert : {
     fontFamily:'digital-7',
-    fontSize:65,
     color:'#b30000',
-    display: 'inline-block',
   },
   title : {
     textAlign : 'center',
     color:'white',
-    fontFamily:'museo-slab-bold'
+    fontFamily:'museo-slab-bold',
+    marginBottom:-15
   },
-  preDraft : {fontFamily:'digital-7',fontSize:40,color:'#EBAB38'},
-  preDraftBase : {fontFamily:'digital-7',fontSize:40,color:'#292929'},
-  time :{
-    color:'white',fontSize:12, fontFamily:'museo-slab-bold', marginTop:-25, marginBottom:35
+  time :{ 
+    color:'white',
+    fontFamily:'museo-slab-bold',
   }
 })
+//
+const TimeBlock = ({classes, displayInfo, parentWidth, preDraftInd, alertInd, noTimeInd}) => {
+  let marginTop = (preDraftInd ? -0.247 : -0.363) * parentWidth
+  let fontSize = (preDraftInd ? 0.17 : 0.25) * parentWidth
+  let marginBottom = (preDraftInd ? 0 : -.05) * parentWidth
+  let backgroundText = displayInfo.colon ? ':' : '8'.repeat(displayInfo.time.toString().length)
+
+  return <div style={{display:'flex', flexDirection:'column' }}>
+    <Typography style={{fontSize}} className={classes.countdownBase}
+      children={backgroundText}/>
+    <Typography style={{fontSize, marginTop, marginBottom}} 
+      className={alertInd ? classes.countdownAlert : noTimeInd ? classes.countdownBase : classes.countdown} 
+      children={displayInfo.time}/>
+    <Typography  className={classes.time} style={{fontSize:parentWidth*0.05, marginTop:-0.045*parentWidth}} 
+      children={displayInfo.timeType}/>
+    }
+  </div>
+}
 
 
 class Countdown extends React.Component {
@@ -44,77 +57,78 @@ class Countdown extends React.Component {
   render()
   {
     let { countdownTime, classes, startTime, mode} = this.props
-    let minutes = Math.floor(countdownTime / 60)
-    let seconds = countdownTime - minutes * 60
-    minutes =  this.add0IfLessThanAmount(minutes,10)
-    seconds =  this.add0IfLessThanAmount(seconds,10) 
-    
-    let toggleColor = countdownTime < 10
 
-    let preDraftTime = GetCountdownTimeObj(startTime)
-    preDraftTime.days = this.add0IfLessThanAmount(this.add0IfLessThanAmount(preDraftTime.days,10),100)
-    preDraftTime.hours = this.add0IfLessThanAmount(preDraftTime.hours,10)
-    preDraftTime.minutes = this.add0IfLessThanAmount(preDraftTime.minutes,10)
-    preDraftTime.seconds = this.add0IfLessThanAmount(preDraftTime.seconds,10)
+    let displayTime = []
+    let alertInd = false
+    let preDraftInd = false
+    let noTimeInd = false
+    let title = ''
 
+    if (mode === 'post')
+    {
+      title = 'DRAFT IS OVER'
+      noTimeInd = true
+      displayTime = [
+        {time: 88},
+        {time:':', colon:true},
+        {time: 88}]
+    }
+    else if (mode === 'live' || mode==='timeout')
+    {
+      title = 'DRAFT CLOCK'
+      let minutes = Math.floor(countdownTime / 60)
+      let seconds = countdownTime - minutes * 60
+      displayTime = [
+        {time: this.add0IfLessThanAmount(minutes,10)},
+        {time:':', colon:true},
+        {time: this.add0IfLessThanAmount(seconds,10)}]
+      
+      alertInd = countdownTime < 10
+    }
+    else if (mode === 'pre')
+    {
+      title = 'STARTS IN'
+      preDraftInd=true
+      let preDraftTime = GetCountdownTimeObj(startTime)
+      displayTime = [
+        { timeType : 'Days',
+          time: this.add0IfLessThanAmount(this.add0IfLessThanAmount(preDraftTime.days,10),100)
+        },
+        { timeType : 'Hours',
+          time: this.add0IfLessThanAmount(preDraftTime.hours,10)
+        },
+        { timeType : 'Minutes',
+          time: this.add0IfLessThanAmount(preDraftTime.minutes,10)
+        },
+        { timeType : 'Seconds',
+          time: this.add0IfLessThanAmount(preDraftTime.seconds,10)
+        }
+      ]
+    }
     return (
-      //{countdownTime}
       <div>
         <br/>
-        {mode === 'post' ?
-          <div>
-            <Typography className={classes.title} style={{}} variant="subheading">{'DRAFT IS OVER'}</Typography>
-            <Typography className={classes.countdownBase}>88</Typography>
-            <Typography className={classes.countdownBase} style={{marginLeft:-5}}>:</Typography>
-            <Typography className={classes.countdownBase}style={{marginLeft:-5}}>88</Typography>
+        <ContainerDimensions>
+          { ({width}) => 
+          {return <div>
+            <Typography className={classes.title} variant="subheading">{title}</Typography>
+            <br/>
+            <div style={{display: 'flex', justifyContent:preDraftInd ? 'space-evenly': 'center'}}>
+              {displayTime.map((x,i) => 
+                <TimeBlock key={i} classes={classes} 
+                  displayInfo={x} parentWidth={width} 
+                  preDraftInd={preDraftInd} 
+                  alertInd={alertInd}
+                  noTimeInd={noTimeInd}/>
+              )
+              }
+            </div> 
           </div>
-          : mode === 'live' || mode==='timeout' ?
-            <div>
-              <Typography className={classes.title} variant="subheading">{'DRAFT CLOCK'}</Typography>
-              <Typography className={classes.countdownBase}>88</Typography>
-              <Typography className={classes.countdownBase} style={{marginLeft:-5}}>:</Typography>
-              <Typography className={classes.countdownBase}style={{marginLeft:-5}}>88</Typography>
-              <Typography className={toggleColor ? classes.countdownAlert : classes.countdown}style={{marginLeft:-136}}>{minutes}</Typography>
-              <Typography className={toggleColor ? classes.countdownAlert : classes.countdown} style={{marginLeft:-5}}>:</Typography>
-              <Typography className={toggleColor ? classes.countdownAlert : classes.countdown}style={{marginLeft:-5}}>{seconds}</Typography>
-            </div>
-            :
-            <div>
-              <Typography className={classes.title} variant="subheading">{'STARTS IN'}</Typography>
-              <div style={{display: 'inline-block'}}>
-                <div>
-                  <Typography className={classes.preDraftBase}  style={{display: 'inline-block'}}>888</Typography>
-                  <Typography style={{marginLeft:-55, display: 'inline-block'}} className={classes.preDraft}>{preDraftTime.days}</Typography>
-                </div>
-                <br/>
-                <Typography  className={classes.time}>{'Days'}</Typography> 
-              </div>
-              <div style={{display: 'inline-block', marginLeft:12}}>
-                <div>
-                  <Typography className={classes.preDraftBase}  style={{display: 'inline-block'}}>88</Typography>
-                  <Typography style={{marginLeft:-37, display: 'inline-block'}} className={classes.preDraft}>{preDraftTime.hours}</Typography>
-                </div>
-                <br/>
-                <Typography  className={classes.time}>{'Hours'}</Typography> 
-              </div>
-              <div style={{display: 'inline-block', marginLeft:12}}>
-                <div>
-                  <Typography className={classes.preDraftBase}  style={{display: 'inline-block'}}>88</Typography>
-                  <Typography style={{marginLeft:-37, display: 'inline-block'}} className={classes.preDraft}>{preDraftTime.minutes}</Typography>
-                </div>
-                <br/>
-                <Typography  className={classes.time}>{'Minutes'}</Typography> 
-              </div>
-              <div style={{display: 'inline-block', marginLeft:12}}>
-                <div>
-                  <Typography className={classes.preDraftBase}  style={{display: 'inline-block'}}>88</Typography>
-                  <Typography style={{marginLeft:-37, display: 'inline-block'}} className={classes.preDraft}>{preDraftTime.seconds}</Typography>
-                </div>
-                <br/>
-                <Typography  className={classes.time}>{'Seconds'}</Typography> 
-              </div>
-            </div>
-        }
+          }
+          }
+        </ContainerDimensions>
+        <br/>
+        
       </div>
     ) 
   }

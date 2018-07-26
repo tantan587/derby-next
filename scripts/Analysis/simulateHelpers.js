@@ -1,5 +1,4 @@
 const leagues = require('./leagues.js')
-//const league = require('./leagues.js')// load math.js
 const math = require('mathjs')
 
 
@@ -10,7 +9,6 @@ const Series = (home, away, games, sport_id, round, neutral=false) => {
     let homeGames = [0,1,4,6]
     let roadGames = [2,3,5]
     let x = 0
-    //console.log(round)
     while(home.playoff_wins[round] < clinch && away.playoff_wins[round] < clinch){
         let results = homeGames.includes(x) ? simulateGame(home, away, sport_id, neutral, true):simulateGame(away, home, sport_id, neutral, true)
         results[0].playoff_wins[round]++
@@ -38,8 +36,8 @@ const simulateGame = (home, away, sport_id, neutral = false, playoff_game = fals
     let random_number = Math.random()
     let home_win_value = random_number < home_win_percentage ? 1:0
 
-    home.adjustEloWins(home_win_value, home_win_percentage, leagues[sport_id].elo_adjust, playoff_game)
-    away.adjustEloWins(Math.abs(1-home_win_value), 1 - home_win_percentage, leagues[sport_id].elo_adjust, playoff_game)
+    home.adjustEloWins(sport_id, home_win_value, home_win_percentage, leagues[sport_id].elo_adjust, playoff_game)
+    away.adjustEloWins(sport_id, Math.abs(1-home_win_value), 1 - home_win_percentage, leagues[sport_id].elo_adjust, playoff_game)
     let results = home_win_value === 1 ?[home, away]:[away,home]
     return results
 
@@ -51,8 +49,8 @@ const simulateBowlGame = (home, away) =>
     let home_win_percentage = 1/(Math.pow(10,(-1*elo_difference/400))+1)
     let random_number = Math.random()
     let home_win_value = random_number < home_win_percentage ? 1:0
-    home.adjustEloWins(home_win_value, home_win_percentage, leagues['105'].elo_adjust, true)
-    away.adjustEloWins(Math.abs(1-home_win_value), 1 - home_win_percentage, leagues['105'].elo_adjust, true)
+    home.adjustEloWins(105, home_win_value, home_win_percentage, leagues['105'].elo_adjust, true)
+    away.adjustEloWins(105, Math.abs(1-home_win_value), 1 - home_win_percentage, leagues['105'].elo_adjust, true)
     home_win_value === 1 ? home.bowl_wins++ : away.bowl_wins++
 }
 
@@ -79,10 +77,10 @@ const simulateNHLGame = (home, away, neutral = false) =>
     ) : random_number < away_win_in_OT ? (
         home_win_value_standings = .5, away_win_value_standings = 1
     ) : away_win_value_standings = 1
-    //let home_win_value_standings = home_win_value_ELO !== .5 ? home_win_value_ELO : random_number < home_win_percentage ? 1:.5
-    //let away_win_value_standings = home_win_value_ELO != .5 ? 1-home_win_value_ELO : random_number < home_win_percentage ? .5: 1
-    home.adjustEloWins(home_win_value_ELO, home_win_percentage, leagues['107'].elo_adjust)
-    away.adjustEloWins(Math.abs(1-home_win_value_ELO), 1 - home_win_percentage, leagues['107'].elo_adjust)
+
+    home.adjustEloWins(104, home_win_value_ELO, home_win_percentage, leagues[104].elo_adjust)
+    away.adjustEloWins(104, Math.abs(1-home_win_value_ELO), 1 - home_win_percentage, leagues[104].elo_adjust)
+
     return [home_win_value_standings, away_win_value_standings]
     
 
@@ -101,8 +99,8 @@ const simulateEPLGame = (home, away) =>
     let tie_percentage = home_win_percentage_raw + tie_percent/2
     //ELO assumes an overtime loss and overtime win is the same as a tie. 
     let home_win_value = random_number < home_win_percentage ? 1 : random_number < tie_percentage ? .5 : 0
-    home.adjustEloWins(home_win_value, home_win_percentage_raw, leagues['107'].elo_adjust)
-    away.adjustEloWins(Math.abs(1-home_win_value), 1 - home_win_percentage_raw, leagues['107'].elo_adjust)
+    home.adjustEloWins(107, home_win_value, home_win_percentage_raw, leagues['107'].elo_adjust, false)
+    away.adjustEloWins(107, Math.abs(1-home_win_value), 1 - home_win_percentage_raw, leagues['107'].elo_adjust, false)
 
     return home_win_value
     
@@ -114,7 +112,7 @@ const updateProjections = (teams, day) => {
         //let playoff_json = JSON.stringify({wins: team.average_playoff_wins, playoffs: team.average_playoff_appearances, finalists: team.average_finalists, champions: team.average_champions})
         //console.log(playoff_json)
         return {team_id: team.team_id, wins: team.average_wins,
-             losses: team.average_losses, ties: 0, day_count: day, 
+             losses: team.average_losses, ties: team.average_ties, day_count: day, 
              playoff: {wins: team.average_playoff_wins, playoffs: team.average_playoff_appearances, finalists: team.average_finalists, champions: team.average_champions, bowl_wins: team.average_bowl_wins}}
     })
     console.log(rows.length)
@@ -166,12 +164,15 @@ const fantasyProjections = (all_teams, day, points) => {
     points.forEach(type => {
         array_for_copy.push([])
     })
+
     //i should be dividing this up by conference and not just by league
-    let sport_ids = ['101', '102', '103', '104', '105', '106', '107']
+    //this no longer checks for each different point type: error: will fix later
+    let sport_ids = ['101','102', '103', '104', '105', '106', '107']
     sport_ids.forEach(sport => {
         let sport_teams = Object.keys(all_teams[sport]).map(team => {return all_teams[sport][team]})
         let x = 0
-        let points_array = array_for_copy.slice(0)
+        let points_array = [[]]
+        //let points_array = array_for_copy.slice(0)
 
         sport_teams.forEach(team => {
             team.calculateFantasyPoints(points)
@@ -185,6 +186,7 @@ const fantasyProjections = (all_teams, day, points) => {
         let last_drafted = []
         points_array.forEach(arr => {
             arr.sort(function(a,b){return b-a})
+            //console.log(arr.length)
             //normalize size of leagues for rankings
             let size = 12
             let roster_size_for_ranking = sport === ('106'||'105') ? size*3 : sport === '107' ? size : size*2

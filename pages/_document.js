@@ -84,4 +84,3 @@ MyDocument.getInitialProps = ctx => {
     ),
   }
 }
-

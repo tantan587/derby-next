@@ -25,10 +25,13 @@ async function createStandingsPO () {
 
 const getStandingsInfo = async (knex, sportName, api, promiseToGet, year) => {
     let standings_info = await db_helpers.createStandingsData(knex, sportName, api, promiseToGet, year)
-    //this is only until they fix it so that the NBA data is correct
-    standings_info.filter(team => team.Wins <17)
     let newStandings = standings_info.map(team=>{
-      return {team_id: team.team_id, playoff_wins: team.Wins, playoff_losses: team.Losses, byes: 0, playoff_status: 'in_playoffs', year: team.Season}
+        let status = 3
+        if(sportName==='NBA'||sportName==='NHL'){
+            status = team.Wins===16 ? 6 : team.Wins>11 ? 5 : team.Losses%4 === 0 && team.Wins<team.Losses ? 4 : 3
+        }
+
+        return {team_id: team.team_id, playoff_wins: team.Wins, playoff_losses: team.Losses, byes: 0, playoff_status: status}
     })
     return newStandings
 }

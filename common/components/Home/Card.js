@@ -10,6 +10,8 @@ const styles = {
     marginTop: 50,
     height: 350,
     width: 300,
+    marginLeft:25,
+    marginRight:25,
     backgroundColor: 'white',
     borderRadius: '0px',
     color: 'black'

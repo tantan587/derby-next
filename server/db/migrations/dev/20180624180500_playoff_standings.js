@@ -5,9 +5,9 @@ exports.up = function(knex, Promise) {
     table.integer('playoff_wins').notNullable()
     table.integer('playoff_losses').notNullable()
     table.integer('byes').notNullable()
-    table.string('playoff_status').notNullable()
-  })
-  ])
+    table.string('playoff_status').notNullable() //for prod, this should be changed to integer to link to playoff status table
+    })
+])
 }
 
 

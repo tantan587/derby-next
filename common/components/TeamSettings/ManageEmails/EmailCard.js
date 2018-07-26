@@ -75,9 +75,7 @@ const EmailCard = withStyles(styles)(({ classes, title, copy, check, label }) =>
             classes={{
               bar: classes.switchRoot,
               icon: classes.icon,
-              checked: classes.checked,
-              colorPrimary: classes.primary,
-              colorSecondary: classes.secondary
+              checked: classes.checked
             }}
           />
         </div>

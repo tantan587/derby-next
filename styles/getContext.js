@@ -29,14 +29,14 @@ let derbyBrown = {}
 for (const key of Object.keys(hslDerbyBrown)) {
   derbyBrown[key] = hsl(hslDerbyBrown[key].h, hslDerbyBrown[key].s, hslDerbyBrown[key].l)
 }
-derbyGreen['contrastDefaultColor']= 'dark'
+derbyBrown['contrastDefaultColor']= 'dark'
 
 const hslDerbyYellow = materialpalette({ h: 39, s: 82, l: 57 })
 let derbyYellow = {}
 for (const key of Object.keys(hslDerbyYellow)) {
   derbyYellow[key] = hsl(hslDerbyYellow[key].h, hslDerbyYellow[key].s, hslDerbyYellow[key].l)
 }
-derbyGreen['contrastDefaultColor']= 'dark'
+derbyYellow['contrastDefaultColor']= 'dark'
 
 const theme = createMuiTheme({
   palette: {

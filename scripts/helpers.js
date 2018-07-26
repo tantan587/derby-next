@@ -47,7 +47,7 @@ methods.getTeamAndGlobalId =  async function(knex, sportId)
     .select('team_id', 'global_team_id')
 }
 
-methods.createScheduleForInsert = function(cleanSched, sport_id, idSpelling, teamIdMap, fantasyHelpers, myNull) {
+methods.createScheduleForInsert = function(cleanSched, sport_id, idSpelling, teamIdMap, fantasyHelpers, myNull, json_function) {
 
   return cleanSched.map(game => {
 //below is commented out, and kept, becasue it was there to catch teams that didn't go through, and didn't have IDs
@@ -90,10 +90,13 @@ methods.createScheduleForInsert = function(cleanSched, sport_id, idSpelling, tea
       updated_time: sport_id === '103' ? game.Status === 'InProcess' ? game.InningHalf + game.Inning + '-' + game.Outs + ':' + game.Balls + ':' + game.Strikes : game.Status :
         sport_id === '102' ? game.LastUpdated ? game.LastUpdated : myNull :
           game.Updated ? game.Updated : myNull,
-      season_type: game.SeasonType, year: game.Season
+      season_type: game.SeasonType, year: game.Season, 
+      game_extra: json_function(game)
     }
   })
+
 }
+
 methods.getScheduleData = (knex, sportName, url) => 
 {
   return knex

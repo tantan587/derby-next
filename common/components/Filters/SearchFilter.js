@@ -1,15 +1,15 @@
 import React from 'react'
 import { withStyles } from '@material-ui/core/styles'
-import Paper from '@material-ui/core/Paper'
+//import Paper from '@material-ui/core/Paper'
 import TextField from '@material-ui/core/TextField'
 import IconButton from '@material-ui/core/IconButton'
 import SearchIcon from '@material-ui/icons/Search'
-import { Scrollbars } from 'react-custom-scrollbars'
+//import { Scrollbars } from 'react-custom-scrollbars'
 import Grid from '@material-ui/core/Grid'
 
 
 
-const styles = theme => ({
+const styles = () => ({
 
 })
 
@@ -18,14 +18,11 @@ class SearchFilter extends React.Component {
   constructor(props, context) {
     super(props, context)
 
-    this.state = {
-      value: '',
-    }
   }
 
   onTextChange = event => {
 
-    this.setState({ value: event.target.value })
+    //this.setState({ value: event.target.value })
     this.filterRows(event.target.value)
   }
 
@@ -35,17 +32,13 @@ class SearchFilter extends React.Component {
 
   
   filterRows = word => {
-    const {rows, column, updateMyRows, passUpFilterInfo} = this.props
-    const localRows = word  ? rows.filter(row => row[column].toLowerCase().includes(word.toLowerCase())) : rows
-    updateMyRows(localRows)
-    if (passUpFilterInfo)
-    {
-      passUpFilterInfo({key:column, value:word, type:'search'})
-    }
+    const {column, clickedUpdateFilter, filterId} = this.props
+    clickedUpdateFilter({key:column, value:word, type:'search'}, filterId)
   }
 
   render() {
-    let localValue = this.state.value === '\n' ? '' : this.state.value
+    let localValue = this.props.value === '\n' ? '' : this.props.value
+    localValue = localValue || ''
     return(
       <Grid container spacing={24} style={{width:'25%', float:'left', marginLeft:'10%', marginRight:'0%', marginTop:10}}>
         <Grid item xs={12}>

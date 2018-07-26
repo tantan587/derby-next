@@ -33,11 +33,11 @@ class LeaguesButton extends React.Component {
       text:'News',
       link:'/livedraft'})
     items2.push({
-      text:'League Settings',
-      link:'/mainleaguesettings'})
+      text:'Team Settings',
+      link:'/mainleagueteamsettings'})
     items2.push({
       text:'Commish Tools',
-      link:'/livedraft'})
+      link:'/mainleaguesettings'})
 
     return (
       <MenuBase

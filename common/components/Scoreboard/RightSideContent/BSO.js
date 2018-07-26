@@ -1,4 +1,3 @@
-import React from 'react'
 import Rating from 'react-rating'
 import {withStyles} from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'

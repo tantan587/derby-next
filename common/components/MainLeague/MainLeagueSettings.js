@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 
 import Title from '../Navigation/Title'
-import TeamSettings from '../TeamSettings/TeamSettings'
+import LeagueSettings from '../LeagueSettings/LeagueSettings'
 
 class MainLeagueSettings extends React.Component {
 
@@ -17,10 +17,7 @@ class MainLeagueSettings extends React.Component {
           title="Welcome"
           subheading={activeLeague.league_name}
         />
-        <TeamSettings />
-        <br/>
-        <br/>
-        <br/>
+        <LeagueSettings />
       </div>
     )
   }

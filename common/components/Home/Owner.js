@@ -1,5 +1,6 @@
 import { withStyles } from '@material-ui/core/styles'
 import OwnerSilk from '../Icons/Avatars/OwnerSilk'
+import Avatar from '@material-ui/core/Avatar'
 
 const styles = {
   root: {
@@ -13,14 +14,14 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    height: 150,
-    width: 150,
-    backgroundColor: 'white'
+    //height: 150,
+    //width: 150,
+    //backgroundColor: 'white'
   },
   data: {
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
     height: '100%',
     fontFamily: 'HorsebackSlab',
     fontSize: 18,
@@ -39,15 +40,16 @@ const Owner = withStyles(styles)(({ classes, myOwner, num }) => {
   let ownerData = []
   if(myOwner)
     ownerData = [
-      { entry: 'Record', data: 'N/A' },
-      { entry: 'Points Overall', data: myOwner.total_points },
+      { entry: 'Points', data: myOwner.total_points },
       { entry: `of ${num} Teams`, data: myOwner.rank },
     ]
 
   return (
     <div className={classes.root}>
       <div className={classes.silkContainer}>
-        { myOwner && OwnerSilk(myOwner.avatar, { height: 125, width: 125 }) }
+        <Avatar style={{ height: 160, width: 160, backgroundColor:'white' }}>
+          { myOwner && OwnerSilk(myOwner.avatar, { height: 125, width: 125 }) }
+        </Avatar>
       </div>
       <div className={classes.data}>
         <div>{myOwner && myOwner.owner_name}</div>
