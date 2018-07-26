@@ -1,3 +1,4 @@
+const R = require('ramda')
 import React from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import AppBar from '@material-ui/core/AppBar'
@@ -8,13 +9,25 @@ import MenuButton from './Buttons/MenuButton'
 import LeaguesButton from './Buttons/LeaguesButton'
 import HomeLogoIconSmall from '../Icons/HomeLogoIconSmall'
 
-const styles = () => ({
+import HamburgerIcon from '@material-ui/icons/Reorder'
+import {toggleMobileNav, setMobileNavVariant} from '../../actions/status-actions'
+
+const styles = (theme) => ({
   root: {
     flexGrow: 1,
     backgroundColor:'white', 
   },
+  toolbar: {
+    display: 'flex',
+    [theme.breakpoints.down('sm')]: {
+      justifyContent: 'center',
+    },
+  },
   flex: {
     flex: 1,
+    [theme.breakpoints.down('sm')]: {
+      display: 'none'
+    },
   },
   menuButton: {
     marginLeft: -12,
@@ -24,10 +37,20 @@ const styles = () => ({
   toolbarHeight :{
     height:30,
     maxHeight:30,
-  }
+  },
+  hamburger: {
+    position: 'absolute',
+    left: 0,
+    color: 'white',
+    [theme.breakpoints.up('md')]: {
+      display: 'none'
+    }
+  },
 })
-class TopNavUser extends React.Component {
-  
+class TopNavLeague extends React.Component {
+  componentDidMount() {
+    this.props.setMobileNavVariant('TopNavLeagueVariant')
+  }
   state = {
     hoverIndex:-1
   };
@@ -55,13 +78,17 @@ class TopNavUser extends React.Component {
   }
 
   render() {
-    const {classes, user} = this.props
+    const {classes, user, toggleMobileNav} = this.props
     
     return (
       <div className={classes.root}>
         <AppBar position="static" style={{backgroundColor:'229246', color:'white'}}>
           <div style={{backgroundColor:'#00642C', height:30}}/>
-          <Toolbar>
+          <Toolbar className={classes.toolbar}>
+            <Button className={classes.hamburger} variant="flat" onClick={toggleMobileNav}>
+              <HamburgerIcon />
+            </Button>
+
             {this.setHoverToButton('home', 0, '/')} 
             <div  className={classes.flex}>
               {this.setHoverToButton('league', 1)}
@@ -82,5 +109,7 @@ class TopNavUser extends React.Component {
   }
 }
 
-export default connect(({ user}) => ({ user }),
-  null)(withStyles(styles)(TopNavUser))
+export default R.compose(
+  withStyles(styles),
+  connect(R.pick(['user']), {toggleMobileNav: toggleMobileNav('TopNavLeagueVariant'), setMobileNavVariant}),
+)(TopNavLeague)

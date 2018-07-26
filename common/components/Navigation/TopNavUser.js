@@ -9,7 +9,7 @@ import HamburgerIcon from '@material-ui/icons/Reorder'
 
 import MenuButton from './Buttons/MenuButton'
 import LeaguesButton from './Buttons/LeaguesButton'
-import {toggleMobileNav} from '../../actions/status-actions'
+import {toggleMobileNav, setMobileNavVariant} from '../../actions/status-actions'
 
 const styles = (theme) => ({
   root: {
@@ -47,7 +47,9 @@ const styles = (theme) => ({
   },
 })
 class TopNavUser extends React.Component {
-  
+  componentDidMount() {
+    this.props.setMobileNavVariant('TopNavHomeVariant')
+  }
   state = {
     hoverIndex:-1
   };
@@ -112,5 +114,5 @@ class TopNavUser extends React.Component {
 
 export default R.compose(
   withStyles(styles),
-  connect(R.pick(['user']), {toggleMobileNav: toggleMobileNav('TopNavUser')}),
+  connect(R.pick(['user']), {toggleMobileNav: toggleMobileNav('TopNavHomeVariant'), setMobileNavVariant}),
 )(TopNavUser)

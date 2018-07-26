@@ -12,3 +12,8 @@ export const toggleMobileNav = (variant) => () => ({
   type: C.TOGGLE_MOBILE_NAV,
   payload: variant,
 })
+
+export const setMobileNavVariant = (variant) => ({
+  type: C.SET_MOBILE_NAV_VARIANT,
+  payload: variant,
+})

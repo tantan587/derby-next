@@ -11,7 +11,7 @@ import LoginButton from './Buttons/LoginButton'
 import MenuButton from './Buttons/MenuButton'
 import LeaguesButton from './Buttons/LeaguesButton'
 import AdminButton from './Buttons/AdminButton'
-import {toggleMobileNav} from '../../actions/status-actions'
+import {toggleMobileNav, setMobileNavVariant} from '../../actions/status-actions'
 
 const styles = (theme) => ({
   root: {
@@ -50,7 +50,9 @@ const styles = (theme) => ({
   }
 })
 class TopNavHome extends React.Component {
-  
+  componentDidMount() {
+    this.props.setMobileNavVariant('TopNavHomeVariant')
+  }
   state = {
     hoverIndex:-1
   };
@@ -113,5 +115,5 @@ class TopNavHome extends React.Component {
 
 export default R.compose(
   withStyles(styles),
-  connect(R.pick(['user']), {toggleMobileNav: toggleMobileNav('TopNavHome')}),
+  connect(R.pick(['user']), {toggleMobileNav: toggleMobileNav('TopNavHomeVariant'), setMobileNavVariant}),
 )(TopNavHome)
