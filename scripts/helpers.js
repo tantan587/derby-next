@@ -190,7 +190,6 @@ methods.createStandingsData = async (knex, sportName, api, promiseToGet, year) =
       })
   }else if(sportName==='EPL'){
     let newStand = cleanStand.filter(standings => standings.Scope === 'Total')
-    console.log(newStand.length)
     standInfo = newStand.map(team=>
       {
         let global = fantasy_2_global[sportName] + Number(team.TeamId)
@@ -332,6 +331,7 @@ methods.updateBowlWins = async (knex, bowl_wins, playoff_wins) => {
     return 0
 }
 
+//this should use sport_season_id
 methods.updatePlayoffStandings = (knex, newStandings) =>
 {
   return knex
@@ -350,6 +350,8 @@ methods.updatePlayoffStandings = (knex, newStandings) =>
           updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'playoff_losses', teamRec.playoff_losses, true )))
         if(oldStandings[teamRec.team_id].playoff_status !== teamRec.playoff_status)  
           updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'playoff_status', teamRec.playoff_status, true )))
+        if(oldStandings[teamRec.team_id].year !== teamRec.year)
+          updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'year', teamRec.year, true )))
       })
       if (updateList.length > 0)
       {
@@ -364,36 +366,45 @@ methods.updatePlayoffStandings = (knex, newStandings) =>
     })
 }
 
-methods.updateStandings = (knex,newStandings) =>
+//this should use sport_season_id
+methods.updateStandings = async (knex,newStandings) =>
 {
-  return knex
+  let results = await knex
     .withSchema('sports')
     .table('standings')
-    .then(results => {
-      let oldStandings = {}
-      var updateList =[]
-      results.map(result => oldStandings[result.team_id] =result)
+  
+  let playoff_results = await knex('sports.playoff_standings')
+  let oldPlayoffStandings = {}
+  playoff_results.forEach(result => oldPlayoffStandings[result.team_id] = result)
+  
+  let oldStandings = {}
+  var updateList =[]
+  results.map(result => oldStandings[result.team_id] =result)
 
-      newStandings.map(teamRec =>
-      {
-        if(oldStandings[teamRec.team_id].wins !== teamRec.wins)  
-          updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'wins', teamRec.wins )))
-        if(oldStandings[teamRec.team_id].losses !== teamRec.losses)  
-          updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'losses', teamRec.losses )))
-        if(oldStandings[teamRec.team_id].ties !== teamRec.ties)  
-          updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'ties', teamRec.ties )))
+  newStandings.map(teamRec =>
+  {
+    if(oldStandings[teamRec.team_id].wins !== teamRec.wins)  
+      updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'wins', teamRec.wins )))
+    if(oldStandings[teamRec.team_id].losses !== teamRec.losses)  
+      updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'losses', teamRec.losses )))
+    if(oldStandings[teamRec.team_id].ties !== teamRec.ties)  
+      updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'ties', teamRec.ties )))
+    if(oldStandings[teamRec.team_id].year !== teamRec.year)  
+      updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'year', teamRec.year )))
+    if(oldPlayoffStandings[teamRec.team_id] !== teamRec.year)
+      updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'year', teamRec.year, true)))
+  })
+
+  if (updateList.length > 0)
+  {
+    return Promise.all(updateList)
+      .then(() => { 
+        //console.log("im done updating!")
+        return updateList.length
       })
-      if (updateList.length > 0)
-      {
-        return Promise.all(updateList)
-          .then(() => { 
-            //console.log("im done updating!")
-            return updateList.length
-          })
-      }
-      else
-        return 0
-    })
+  }
+  else
+    return 0
 }
 
 methods.updateOneStandingRow = (knex, team_id, column, value, playoffs=false) =>

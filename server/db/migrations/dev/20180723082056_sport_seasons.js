@@ -12,7 +12,6 @@ exports.up = function(knex, Promise) {
         knex.schema.withSchema('fantasy').createTable('league_bundle', (table) => {
             table.integer('league_bundle_id').notNullable().unique()
             table.json('current_sport_seasons').notNullable()
-            table.integer('previous_year_league_bundle')
             table.string('name')
         }),
         //this should probably have a boolean that says if a league is active - if it is not active, it shoudl not be updated
@@ -20,12 +19,17 @@ exports.up = function(knex, Promise) {
             table.integer('sport_structure_id').notNullable().unique()
             table.integer('league_bundle_id').notNullable()
             table.integer('scoring_type_id').notNullable()
+            table.integer('previous_sport_structure_id')
+            table.boolean('active')
         }),
         knex.schema.withSchema('fantasy').table('team_points', function(t) {
             t.integer('sport_structure_id').notNullable().defaultTo(2)
         }),
         knex.schema.withSchema('sports').table('standings', function(t) {
-            t.integer('sport_seasons_id').notNullable().defaultTo(0)
+            t.integer('sport_season_id').notNullable().defaultTo(0)
+        }),
+        knex.schema.withSchema('sports').table('playoff_standings', function(t) {
+            t.integer('sport_season_id').notNullable().defaultTo(0)
         })
 ])
 };
@@ -34,11 +38,14 @@ exports.down = function(knex, Promise) {
     return Promise.all([
         knex.schema.withSchema('sports').dropTable('sport_season'),
         knex.schema.withSchema('fantasy').dropTable('league_bundle'),
-        knex.schema.withSchema('sports').dropTable('sports_structure'),
+        knex.schema.withSchema('fantasy').dropTable('sports_structure'),
         knex.schema.withSchema('fantasy').table('team_points', (table) => {
             table.dropColumn('sport_structure_id')
         }),
         knex.schema.withSchema('sports').table('standings', (table) => {
+            table.dropColumn('sport_season_id')
+        }),
+        knex.schema.withSchema('sports').table('playoff_standings', (table) => {
             table.dropColumn('sport_season_id')
         })
     ])
