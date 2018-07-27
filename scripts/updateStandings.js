@@ -8,14 +8,14 @@ const asyncForEach = require('./asyncForEach')
 const filtered_fantasy_standings_data = async () => {
   let data = []
   let season_calls = await db_helpers.getSeasonCall(knex)
-  let post_season_calls = season_calls.filter(season => season.season_status === 1)
-  await asyncForEach(post_season_calls, async (season) => {
+  let regular_season_calls = season_calls.filter(season => season.season_type === 1)
+  await asyncForEach(regular_season_calls, async (season) => {
     let sport_id = season.sport_id
     let sport = sport_keys[sport_id]
     if(sport_id===105){
-      data.push(...await getCFBstandings(knex, sport.sport_name, sport.api, sport.standingsPromiseToGet, season.api_pull_parameter))
+      data.push(...await getCFBstandings(knex, sport.sport_name, sport.api, sport.standingsPromiseToGet, season.api_pull_parameter, season.year))
     }else{
-      data.push(...await standingsBySport(knex, sport.sport_name, sport.api, sport.standingsPromiseToGet, season.api_pull_parameter))
+      data.push(...await standingsBySport(knex, sport.sport_name, sport.api, sport.standingsPromiseToGet, season.api_pull_parameter, season.year))
     }
   })
 
@@ -40,7 +40,7 @@ async function updateStandings()
   let result =  await db_helpers.updateStandings(knex, data)
   console.log('Number of Standings Updated: ' + result)
   await fantasyHelpers.updateTeamPoints()
-  await fantasyHelpers.updateLeaguePoints()
+  // await fantasyHelpers.updateLeaguePoints()
   console.log('im done')
   process.exit()
 
@@ -48,33 +48,35 @@ async function updateStandings()
 
 
 
-const standingsBySport = async (knex, sportName, api, promiseToGet, year) => {
-  let standings_info = await db_helpers.createStandingsData(knex, sportName, api, promiseToGet, year)
+const standingsBySport = async (knex, sportName, api, promiseToGet, pull_parameter, year) => {
+  let standings_info = await db_helpers.createStandingsData(knex, sportName, api, promiseToGet, pull_parameter)
   let newStandings = standings_info.map(team=>{
     let ties = sportName === 'NHL' ? team.OvertimeLosses : 
       sportName === 'NFL' ? team.Ties : 
         sportName === 'EPL' ? team.Draws : 0
 
-    return {team_id: team.team_id, wins: team.Wins, losses: team.Losses, ties: ties, year: team.Season}
+    return {team_id: team.team_id, wins: team.Wins, losses: team.Losses, ties: ties, year: year}
   })
 
   return newStandings
 }
 
-const getCFBstandings = async (knex, sportName, api, promiseToGet, year) =>{
-  const standings = await standingsBySport(knex, sportName, api, promiseToGet, year)
+const getCFBstandings = async (knex, sportName, api, promiseToGet, pull_parameter, year) =>{
+  const standings = await standingsBySport(knex, sportName, api, promiseToGet, pull_parameter, year)
   //check if current week is after the start of the post season, or is null. 
   //This could also be done with dates and season status table, as had been discussed
   //table hasn't yet been created
+
+  //need to use this 
   let current_week = await db_helpers.getFdata(knex, sportName, api, 'getCurrentWeekPromise')
   if(current_week !== '' && current_week < 16){
     return standings
   }else{
     //pull, and then make readable, playoff games (including bowl games)
     let post_year = year.concat('POST')
-    let non_parse_games = await db_helpers.getFdata(knex, sportName, api, 'getGamesByWeekPromise', post_year, 1)
+    let non_parse_games = await db_helpers.getFdata(knex, sportName, api, 'getGamesByWeekPromise', pull_parameter, 1)
     let playoff_games = JSON.parse(non_parse_games)
-
+    console.log(playoff_games[0])
     let teamIdMap = await db_helpers.getTeamIdMap(knex, '105')
 
     let standings_by_team_id = {}
@@ -132,7 +134,7 @@ const getCFBstandings = async (knex, sportName, api, promiseToGet, year) =>{
             }
           }else //if the team made a new years 6 bowl, just add them to playoffs as normal
           {
-            playoff_teams.push({team_id: teamIdMap[game.GlobalHomeTeamID], playoff_status: 4, playoff_wins: 0, playoff_losses: 0, year: game.Season}, {team_id: teamIdMap[game.GlobalAwayTeamID], playoff_status: 4, playoff_wins: 0, playoff_losses: 0, year: game.Season})
+            playoff_teams.push({team_id: teamIdMap[game.GlobalHomeTeamID], playoff_status: 4, playoff_wins: 0, playoff_losses: 0, year: year}, {team_id: teamIdMap[game.GlobalAwayTeamID], playoff_status: 4, playoff_wins: 0, playoff_losses: 0, year: year})
           }
         }
         //note: still need to figure out a way to differentiate between playoff wins and normal bowl wins. NY6 teams all get playoff appearance points

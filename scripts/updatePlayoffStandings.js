@@ -8,11 +8,11 @@ const asyncForEach = require('./asyncForEach')
 const create_active_playoff_standings_data = async () => {
     let data = []
     let season_calls = await db_helpers.getSeasonCall(knex)
-    let post_season_calls = season_calls.filter(season => [101, 102, 103, 104].includes(season.sport_id)&& sport.season_status === 3)
+    let post_season_calls = season_calls.filter(season => [101, 102, 103, 104].includes(season.sport_id)&& season.season_type === 3)
     await asyncForEach(post_season_calls, async (season) => {
       let sport_id = season.sport_id
       let sport = sport_keys[sport_id]
-      data.push(...await getStandingsInfo(knex, sport.sport_name, sport.api, sport.schedulePromiseToGet, season.api_pull_parameter))
+      data.push(...await getStandingsInfo(knex, sport.sport_name, sport.api, sport.standingsPromiseToGet, season.api_pull_parameter, season.year))
     })
   
     return data
@@ -26,7 +26,7 @@ async function createStandingsPO () {
     // let NFL_standPO = await getStandingsInfo(knex, 'NFL','NFLv3StatsClient','getStandingsPromise', '2017POST')
     
     
-    let data = MLB_standPO.concat(NBA_standPO).concat(NHL_standPO).concat(NFL_standPO)//.concat(CBB_standPO).concat(CFB_standPO)//.concat(EPL_standPO)
+    //let data = MLB_standPO.concat(NBA_standPO).concat(NHL_standPO).concat(NFL_standPO)//.concat(CBB_standPO).concat(CFB_standPO)//.concat(EPL_standPO)
     db_helpers.updatePlayoffStandings(knex, data)
         .then(()=>{
 
@@ -34,16 +34,15 @@ async function createStandingsPO () {
           process.exit()
 })}
 
-const getStandingsInfo = async (knex, sportName, api, promiseToGet, year) => {
-    let standings_info = await db_helpers.createStandingsData(knex, sportName, api, promiseToGet, year)
-    let year_for_insert = year.split('POST')
+const getStandingsInfo = async (knex, sportName, api, promiseToGet, pull_parameter, year) => {
+    let standings_info = await db_helpers.createStandingsData(knex, sportName, api, promiseToGet, pull_parameter)
     let newStandings = standings_info.map(team=>{
         let status = 3
         if(sportName==='NBA'||sportName==='NHL'){
             status = team.Wins===16 ? 6 : team.Wins>11 ? 5 : team.Losses%4 === 0 && team.Wins<team.Losses ? 4 : 3
         }
 
-        return {team_id: team.team_id, playoff_wins: team.Wins, playoff_losses: team.Losses, byes: 0, playoff_status: status, year: year_for_insert}
+        return {team_id: team.team_id, playoff_wins: team.Wins, playoff_losses: team.Losses, byes: 0, playoff_status: status, year: year}
     })
     return newStandings
 }

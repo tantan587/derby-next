@@ -172,27 +172,27 @@ const updateTeamPointsTable = async (newTeamPoints) =>
   var updateList =[]
   results.map(result => {
     //console.log(result)
-    if (!oldTeamPoints[result.scoring_type_id]){
-      oldTeamPoints[result.scoring_type_id] = {}
+    if (!oldTeamPoints[result.sport_structure_id]){
+      oldTeamPoints[result.sport_structure_id] = {}
     }
-    oldTeamPoints[result.scoring_type_id][result.team_id] = result})
+    oldTeamPoints[result.sport_structure_id][result.team_id] = result})
   newTeamPoints.map(teamPoints =>
   {
     //needs to be != because of 100.00 vs 100
-    if(!oldTeamPoints[teamPoints.scoring_type_id][teamPoints.team_id] ||
-      oldTeamPoints[teamPoints.scoring_type_id][teamPoints.team_id].reg_points != teamPoints.reg_points)
+    if(!oldTeamPoints[teamPoints.sport_structure_id][teamPoints.team_id] ||
+      oldTeamPoints[teamPoints.sport_structure_id][teamPoints.team_id].reg_points != teamPoints.reg_points)
     {
-      updateList.push(Promise.resolve(updateOneRowTeamPoints(teamPoints.scoring_type_id,teamPoints.team_id,'reg_points',teamPoints.reg_points )))
+      updateList.push(Promise.resolve(updateOneRowTeamPoints(teamPoints.sport_structure_id,teamPoints.team_id,'reg_points',teamPoints.reg_points )))
     }
 
-    if(!oldTeamPoints[teamPoints.scoring_type_id][teamPoints.team_id] ||
-      oldTeamPoints[teamPoints.scoring_type_id][teamPoints.team_id].bonus_points != teamPoints.bonus_points){
-      updateList.push(Promise.resolve(updateOneRowTeamPoints(teamPoints.scoring_type_id,teamPoints.team_id,'bonus_points',teamPoints.bonus_points )))}
+    if(!oldTeamPoints[teamPoints.sport_structure_id][teamPoints.team_id] ||
+      oldTeamPoints[teamPoints.sport_structure_id][teamPoints.team_id].bonus_points != teamPoints.bonus_points){
+      updateList.push(Promise.resolve(updateOneRowTeamPoints(teamPoints.sport_structure_id,teamPoints.team_id,'bonus_points',teamPoints.bonus_points )))}
     
-    if(!oldTeamPoints[teamPoints.scoring_type_id][teamPoints.team_id] ||
-      oldTeamPoints[teamPoints.scoring_type_id][teamPoints.team_id].playoff_points != teamPoints.playoff_points){
+    if(!oldTeamPoints[teamPoints.sport_structure_id][teamPoints.team_id] ||
+      oldTeamPoints[teamPoints.sport_structure_id][teamPoints.team_id].playoff_points != teamPoints.playoff_points){
       {
-        updateList.push(Promise.resolve(updateOneRowTeamPoints(teamPoints.scoring_type_id,teamPoints.team_id,'playoff_points',teamPoints.playoff_points )))}
+        updateList.push(Promise.resolve(updateOneRowTeamPoints(teamPoints.sport_structure_id,teamPoints.team_id,'playoff_points',teamPoints.playoff_points )))}
     }
   })
   
@@ -253,13 +253,13 @@ const updateOneRow = (schema, table, column_link, column_link_val, column, value
     })
 }
 
-const updateOneRowTeamPoints = (scoring_type_id,team_id, column, value ) =>
+const updateOneRowTeamPoints = (sport_structure_id,team_id, column, value ) =>
 {
   return knex
     .withSchema('fantasy')
     .table('team_points')
-    .where('scoring_type_id',scoring_type_id)
-    .andWhere('team_id',parseInt(team_id))
+    .where('sport_structure_id',sport_structure_id)
+    .andWhere('team_id', parseInt(team_id))
     .update(column, value)
     .then(() =>
     {
@@ -313,9 +313,7 @@ const updateTeamPoints = async () =>
   
   //first - pulls all the sports structures
   let sport_structure = 
-    await knex
-      .withSchema('fantasy')
-      .table('sports_structure')
+    await knex('fantasy.sports_structure')
       .leftOuterJoin('fantasy.league_bundle', 'fantasy.sports_structure.league_bundle_id', 'fantasy.league_bundle.league_bundle_id')
       .select('*')
   
@@ -323,34 +321,20 @@ const updateTeamPoints = async () =>
   let seasons = await activeSeasons()
   //we only want to pull standing data for active seasons. 
   //this means need to update the standings and playoff standings to have the sports season ids in there for both
-  
+
   let seasons_for_pull = []
   seasons.forEach(season => {
     seasons_for_pull.push(season.sport_season_id)
   })
 
-  let data = await getStandingDataPlayoffAndRegular(seasons_for_pull)
+  let data = await getStandingDataPlayoffAndRegular(seasons_for_pull, sport_structure)
+  console.log(data)
+  //if we updated based on standings, then from each standing we would need the team id, and the year
+  //then would pull from team_points based on those that had same year
+  //we would then update those with active year...right?
 
-  let sport_season_status = []
-  let sport_years=[]
-  seasons.forEach(sport => {
-    if(!(sport.sport_id in seasons_for_pull)){
-      //sport_years[sport.sport_id] = []
-      //above is just pulling year. Below is creating an object with the year, that will then also pull the season status type
-      seasons_for_pull[sport.sport_id] = {}
-    }
-    //sport_years[sport.sport_id].push(sport.year)
-    //below is same as change for above, to use season status here
-    seasons_for_pull[sport.sport_id][sport.year] = sport.season_status_type
-    sport_years.push([sport.sport_id, sport.year])
-    sport_season_status.push([sport.sport_id, sport.season_status_type])
-    // if(!(sport.sport_id in sport_season_status_map)){
-    //   sport_season_status_map[sport.sport_id] = []
-    // }
-    // sport_season_status_map[sport.sport_id].push(sport.season_status)
-  })
-
-
+  
+  //what about if we updated based upon standings instead? what would that look like?
 
   let points = await getPointsStructure()
 
@@ -362,16 +346,16 @@ const updateTeamPoints = async () =>
   let result = 
     await knex('fantasy.team_points')
       .innerJoin('sports.team_info', 'sports.team_info.team_id', 'fantasy.team_points.team_id')
-      .whereIn(['sports.team_info.sport_id', 'fantasy.team_points.season_status_type'], sport_season_status)
       .select('fantasy.team_points.*', 'sports.team_info.sport_id')
 
 
 
-  if (result.rows.length > 0)
+  if (result.length > 0)
   {
-    const teamPoints = result.rows.map(fteam => {
-      const team = data[fteam.season_status_type][fteam.team_id]
+    const teamPoints = result.map(fteam => {
+      const team = data[fteam.sport_structure_id][fteam.team_id]
       //const league = points.filter(league => league.sport_id == fteam.sport_id)[0]
+      if(team){
       let sport_id = fteam.sport_id
       let bonus_win=0
       let status = Number(team.playoff_status)
@@ -386,13 +370,14 @@ const updateTeamPoints = async () =>
       
       let bonus_points = status > 5 ? points[fteam.scoring_type_id][sport_id].bonus.championship + points[fteam.scoring_type_id][sport_id].bonus.finalist + points[fteam.scoring_type_id][sport_id].bonus.appearance :
         status > 4 ? points[fteam.scoring_type_id][sport_id].bonus.finalist + points[fteam.scoring_type_id][sport_id].bonus.appearance :
-          status >2 ? points[fteam.scoring_type_id][sport_id].bonus.appearance : 0
+        status > 2 ? points[fteam.scoring_type_id][sport_id].bonus.appearance : 0
       fteam.reg_points = points[fteam.scoring_type_id][sport_id].regular_season.win * team.wins + points[fteam.scoring_type_id][sport_id].regular_season.tie * team.ties
       fteam.playoff_points = points[fteam.scoring_type_id][sport_id].playoffs.win * team.playoff_wins
       //below depends on how we format bowl wins
       sport_id === '105' ? fteam.playoff_points += (points[fteam.scoring_type_id][sport_id].playoffs.bowl_win * team.bowl_wins) : 0
       fteam.bonus_points = bonus_win + bonus_points
-      return fteam})
+      return fteam}
+    })
 
     let resp = await updateTeamPointsTable(teamPoints)
     console.log('Number of Teams Updated: ' + resp)
@@ -520,28 +505,48 @@ const updateLeaguePoints = (league_id) =>
 //   })
 // }
 
-const getStandingDataPlayoffAndRegular = async (seasons_for_pull) =>
+const getStandingDataPlayoffAndRegular = async (seasons_for_pull, sport_structure) =>
 {
-  let results = 
+  //this needs to be fixed to have playoff_standings.sport_season_id be separate from other id
+  let standings = 
     await knex('sports.standings')
-      .leftOuterJoin('sports.playoff_standings', 'sports.standings.team_id', 'sports.playoff_standings.team_id')
-      .leftOuterJoin('sports.team_info', 'sports.team_info.team_id', 'sports.standings.team_id')
-      .whereIn(['sports.team_info.sport_id', 'sports.standings.year'], sport_years)
-      .select('sports.standings.*, sports.playoff_standings.*, sports.team_info.team_id')
+      .leftOuterJoin('sports.playoff_standings', function(){
+        this.on('sports.standings.team_id', '=', 'sports.playoff_standings.team_id').andOn('sports.standings.year', '=', 'sports.playoff_standings.year')
+      })
+      .whereIn('sports.standings.sport_season_id', seasons_for_pull)
+      .orWhereIn('sports.playoff_standings.sport_season_id', seasons_for_pull)
+      .select('*')
   
+
   // let new_results = results.filter(team => 
   //   seasons_for_pull[team.sport_id].includes(team.year)
   // )
   let teamMap = {}
-  results.forEach(team => {
-    let season_status = seasons_for_pull[team.sport_id][team.year]
-    if(!(season_status in teamMap)){
-      teamMap[season_status] = {}
+  let season_ids = []
+  sport_structure.forEach(structure => {
+    console.log('structure id', structure.sport_structure_id)
+    teamMap[structure.sport_structure_id] = {}
+    console.log('current sport seasons',structure.current_sport_seasons)
+    structure.current_sport_seasons.forEach(number =>{
+      console.log(typeof number, number)
+    })
+    if(21 in structure.current_sport_seasons){
+      console.log(21)
+      process.exit()
     }
-    teamMap[season_status][team.team_id] ={...team}
+    if(structure.current_sport_seasons.length > 0){
+      standings.forEach(team => {
+        let m = 0
+        //use includes below
+        if(structure.current_sport_seasons.includes(team.sport_season_id)){
+          teamMap[structure.sport_structure_id][team.team_id] = {...team}
+        }
+      })
+    }
   })
-  return teamMap
 
+ 
+  return teamMap
 }
 
 const updateFantasy = (league_id, res) =>
