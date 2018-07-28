@@ -13,7 +13,7 @@ class DerbyTable extends React.Component {
       orderBy: '',
       orderByDisplay:'',
       page: 0,
-      rowsPerPage: 10,
+      rowsPerPage: 32,
     }
   }
 

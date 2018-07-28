@@ -8,7 +8,7 @@ import Title from '../Navigation/Title'
 import Owner from '../Home/Owner'
 import Card from '../Home/Card'
 import Standings from '../Home/Cards/Standings'
-import TheWire from '../Home/Cards/TheWire'
+//import TheWire from '../Home/Cards/TheWire'
 import Countdown from '../Home/Cards/Countdown'
 import Upcoming from '../Home/Cards/Upcoming'
 import StyledButton from '../Navigation/Buttons/StyledButton'
@@ -52,7 +52,7 @@ class MainLeagueHome extends React.Component {
     this.tick()
     this.timerID = setInterval(
       () => this.tick(),
-      5000
+      500
     )
   }
 
@@ -79,7 +79,7 @@ class MainLeagueHome extends React.Component {
     const myOwner =owners.find(owner => owner.owner_id === activeLeague.my_owner_id)
     return (
       <div>
-        <Title color='white' backgroundColor='#EBAB38' title={'Welcome To The Stable'}/>
+        <Title color='white' backgroundColor='#EBAB38' title={'League Home'}/>
         <div className={classes.section1}>
           {/* <div className={classes.section1}/> */}
           <Owner myOwner={myOwner} num={owners.length} />
@@ -111,7 +111,7 @@ class MainLeagueHome extends React.Component {
               <Standings owners={owners.sort((a, b) => a.rank - b.rank)} />
             </Card>
 
-            <Card title="The Wire" scroll>
+            {/* <Card title="The Wire" scroll>
               <TheWire items={[
                 {
                   headline: 'Headline placeholder copy here.',
@@ -129,8 +129,10 @@ class MainLeagueHome extends React.Component {
                   Button: () => <StyledButton text="Link" link='/login'/>
                 },
               ]}/>
-            </Card>
+            </Card> */}
           </Grid>
+          <br/>
+          <br/>
         </div>
       </div>
     )

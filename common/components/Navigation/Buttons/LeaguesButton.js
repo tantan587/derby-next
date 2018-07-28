@@ -25,13 +25,6 @@ class LeaguesButton extends React.Component {
     items2.push({
       text:'Draft Room',
       link:'/livedraft'})
-
-    items2.push({
-      text:'Message Board',
-      link:'/livedraft'})    
-    items2.push({
-      text:'News',
-      link:'/livedraft'})
     items2.push({
       text:'Team Settings',
       link:'/mainleagueteamsettings'})

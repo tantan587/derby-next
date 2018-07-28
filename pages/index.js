@@ -24,7 +24,7 @@ import sportLeagues from '../data/sportLeagues.json'
 
 
 
-const styles = {
+const styles = (theme) =>  ({
   section1: {
     textAlign: 'center',
     paddingTop: 100,
@@ -43,6 +43,14 @@ const styles = {
     paddingTop: 50,
     backgroundColor:'#229246',
     color:'white'},
+  section5: {
+    textAlign: 'center',
+    paddingTop: 50,
+    backgroundColor:'#229246',
+    [theme.breakpoints.down('md')]: {
+      display: 'none',
+    },
+    color:'white'},
   section3: {
     paddingTop: 50,
     display: 'flex',
@@ -52,8 +60,8 @@ const styles = {
   section4: {
     textAlign: 'center',
     paddingTop: 50,
-    color:'#229246'}
-}
+    color:'#229246'},
+})
 
 
 class Index extends React.Component {
@@ -123,7 +131,7 @@ class Index extends React.Component {
               <Button style={{color:'white', backgroundColor:'#ebab38',height:50, width:125}}>
               
                 <div>
-                  signup
+                  sign up
                 </div>
               </Button>
             </Link>
@@ -168,7 +176,7 @@ class Index extends React.Component {
             </div>
             <div style={{ marginRight: 40 }}>
               <HomeTitle title='Root For Teams' color='#229246'/>
-              <Typography variant='headline'style={{color:'#229246', lineHeight:1.6, fontWeight:'bold'}}>
+              <Typography variant='headline'style={{color:'#229246', lineHeight:1.6,  fontFamily:'museo-slab-bold'}}>
               Root for teams, not just players. Win when your teams do!
               </Typography>
             </div>
@@ -185,10 +193,11 @@ class Index extends React.Component {
           <br/>
           <br/>
           <br/>
-          <div className={classes.section2}>
+          <div className={classes.section5}>
             <HomeTitle title='The Derby Difference' color='white'/>
             <br/>
             <br/>
+
             <div style={{marginLeft:'10%',marginRight:'10%', width:'auto', marginBottom:30}}>
               <HomePageTable/>
             </div>

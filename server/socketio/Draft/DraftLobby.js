@@ -38,11 +38,9 @@ class DraftLobby {
       if(this.draftRooms[roomId] && !this.draftRooms[roomId].Manager)
       {
         this.draftRooms[roomId].Manager = new DraftManager(roomId, this.draftRooms[roomId].Emitter)
-        console.log('Im starting Draft', roomId)
         await this.draftRooms[roomId].Manager.Create()
         // eslint-disable-next-line no-console
         this.draftRooms[roomId].Manager.Start()
-        console.log('Started', roomId)
       }
     })}
 

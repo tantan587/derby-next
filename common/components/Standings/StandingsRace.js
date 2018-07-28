@@ -69,7 +69,7 @@ class StandingsRace extends React.Component {
           }}>
             <div style={{ position: 'relative', width: 500, top: 0, left: 0 }}>
               <span style={{ fontWeight: 600, position: 'relative', marginLeft:10 }}>
-              Derby Fantasy League
+              Derby Fantasy Wins League
               </span>
               &nbsp; &nbsp; Season Progress
             </div>

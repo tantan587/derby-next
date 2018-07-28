@@ -43,9 +43,13 @@ class MainLeagueTeams extends React.Component {
         //points:activeLeague.teams[team.team_id].points
       }
     })
+    console.log(myTeams)
+    myTeams.sort((a,b) => {
+      if(a.team_name < b.team_name) return -1
+      return 1})
     const values=R.map(x => x.sport_id, this.props.activeLeague.rules)
     values.unshift('All')
-    values.push('Mine')
+    values.push('My Teams')
     let ownerName = activeLeague.owners.find(x => x.owner_id === activeLeague.my_owner_id).owner_name
     
     let filteredMyTeams = myTeams

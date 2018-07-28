@@ -29,7 +29,7 @@ class BottomNav extends React.Component {
       {text:'Home', link:'/'},
       {text:'Rules', link:''},
       {text:'FAQ', link:''},
-      {text:'Private Policy', link:''},
+      {text:'Privacy Policy', link:''},
       {text:'Logout', link:'/logout'},] :
       [ {text:'Home', link:'/'},
         {text:'Login', link:'/login'},
@@ -59,7 +59,7 @@ class BottomNav extends React.Component {
           })
           }
         </div>
-        <div style={{float:'right', marginRight:100, marginTop:50}}>
+        <div style={{float:'right', marginRight:50, marginTop:20}}>
           <a href='/' target="_blank">
             <HomeLogoIcon color={'white'} height={75} width={225} />
           </a>
@@ -77,8 +77,11 @@ class BottomNav extends React.Component {
             <img src="https://fantasydata.com/images/badges/fantasydata-light-wide.png" alt="Powered by FantasyData.com"/>
           </a>
           <div style={{marginTop:20}}>
-            <Typography variant="caption" gutterBottom style={{color:'white', textAlign:'center'}} >
-              Copyright 2018 Derby Fantasy Wins League
+            <Typography variant="caption" style={{color:'white', textAlign:'center'}} >
+            All Rights Reserved. © 2018, Derby FWL, LLC
+            </Typography>
+            <Typography variant="caption" style={{color:'white', textAlign:'center', fontSize:8, width:250}} >
+              DERBY FANTASY WINS LEAGUE and the unicorn trophy logo are trademarks of Derby FWL, LLC. All other trademarks shown on this site are the property of their respective owners. Derby Fantasy Wins League is not sponsored by, endorsed by or affiliated with any of the leagues or teams displayed herein.
             </Typography>
           </div>
         </div>

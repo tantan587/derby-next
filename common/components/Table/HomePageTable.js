@@ -11,7 +11,7 @@ const headers = ['Leagues', 'Team Based', 'Draft Format',
   'No Roster Management', 'Social Competition', 'Includes Playoffs',
   'Multi-Sport','Year-Round']
 const rows = [['Fantasy Leagues', false, true, false, true, false, false, false],
-  ['Daily Fantasy', false, false, false, false, true, false, false],
+  ['Daily Fantasy', false, false, false, false, true, true, false],
   ['DERBY', true, true, true, true, true, true, true]]
 
 

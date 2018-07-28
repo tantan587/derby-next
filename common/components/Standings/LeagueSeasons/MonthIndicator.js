@@ -2,7 +2,7 @@
 // blank | sep | blank | nov | blank | jan 18 | blank | mar | blank | may | blank | jul | blank | sep | blank
 
 const MonthIndicator = () => {
-  const monthsToRender = [null, 'sep', null, 'nov', null, 'jan 18', null, 'mar', null, 'may', null, 'jul', null, 'sep', null]
+  const monthsToRender = [null, 'sep', null, 'nov', null, 'jan \'18', null, 'mar', null, 'may', null, 'jul', null, 'sep', null]
   const NUM_MONTHS = monthsToRender.length
 
   return (
