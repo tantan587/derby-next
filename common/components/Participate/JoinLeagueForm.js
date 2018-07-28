@@ -5,11 +5,11 @@ import { withStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import {withRouter} from 'next/router'
 import { connect } from 'react-redux'
-import C from '../constants'
-import DerbyTextField from './DerbyTextField'
-import Title from './Navigation/Title'
-import { clickedJoinLeague, updateError } from '../actions/fantasy-actions'
-import StyledButton from './Navigation/Buttons/StyledButton'
+import C from '../../constants'
+import DerbyTextField from '../DerbyTextField'
+import Title from '../Navigation/Title'
+import { clickedJoinLeague, updateError } from '../../actions/fantasy-actions'
+import StyledButton from '../Navigation/Buttons/StyledButton'
 const R = require('ramda')
 
 const styles = {

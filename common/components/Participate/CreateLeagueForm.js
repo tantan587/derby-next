@@ -1,7 +1,7 @@
 import React from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import Title from '../Navigation/Title'
-import LeagueInfo from './LeagueInfo/LeagueInfo'
+import LeagueInfo from '../LeagueSettings/LeagueInfo/LeagueInfo'
 import {connect} from 'react-redux'
 import {withRouter} from 'next/router'
 import {clickedCreateLeague, updateError} from '../../actions/fantasy-actions'
@@ -36,7 +36,7 @@ const styles = theme =>({
 //   //{ label: 'Manage League Members', Component: <ManageEmails /> },
 // ]
 
-class CreateLeague extends React.Component {
+class CreateLeagueForm extends React.Component {
   state = {
     leagueInfo : 
       {
@@ -49,6 +49,12 @@ class CreateLeague extends React.Component {
         pickTime: 60,
         draftDate: new Date((new Date()).getTime() + 7 * 86400000)
       }
+  }
+
+  componentWillUnmount() {
+
+    this.props.onUpdateError(C.PAGES.CREATE_LEAGUE, '')
+
   }
 
   setDeepState = (key, name, value) => {
@@ -119,4 +125,4 @@ export default R.compose(
   withRouter,
   withStyles(styles),
   connect(R.pick(['user']), {onCreateLeague: clickedCreateLeague, onUpdateError: updateError}),
-)(CreateLeague)
+)(CreateLeagueForm)
