@@ -6,7 +6,7 @@ import { withStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import Button from '@material-ui/core/Button'
 import { connect } from 'react-redux'
-
+import TextField from '@material-ui/core/TextField'
 import DerbyTextField from './DerbyTextField'
 import Title from './Navigation/Title'
 import { clickedJoinLeague } from '../actions/fantasy-actions'
@@ -91,34 +91,22 @@ class JoinLeagueForm extends React.Component {
 
       return (
         <div>
-          <Title
-            backgroundColor="#EBAB38"
-            color="white"
-            title="League Directory"
-            styles={{
-              fontSize: 22,
-              height: 40,
-              lineHeight: '40px',
-              paddingTop: 0,
-              textTransform: 'capitalize'
-            }}
-          />
+          <Title color='white' backgroundColor='#EBAB38' title='Join League'/>
           <form className={classes.container} noValidate autoComplete="off"
             onKeyPress={(event) => this.keypress(event)}>
             <Typography variant="display2" className={classes.title} gutterBottom>
               Join Existing League
             </Typography>
             <DerbyTextField
-              errorText={this.props.user.error.join_league_name}
               label="League name"
               value={this.state.league_name}
               onChange = {this.handleChange('league_name')}
             />
             <DerbyTextField
-              errorText={this.props.user.error.join_league_password}
               label="Password"
               value={this.state.league_password}
               onChange = {this.handleChange('league_password')}/>
+            
             <StyledButton
               onClick={(event) => this.submit(event)}
               width={130}

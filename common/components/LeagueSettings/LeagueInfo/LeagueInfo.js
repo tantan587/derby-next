@@ -71,10 +71,8 @@ class LeagueInfo extends Component {
   }
 
   render() {
-    const { classes, leagueInfo, onSubmit, handleChange } = this.props
-    const {owners, password, matchPassword,  draftType, pickTime, draftDate, showError} = leagueInfo
-    const errorText = showError && password !== matchPassword && 'Passwords do not match' //'errorText'
-
+    const { classes, leagueInfo, onSubmit, handleChange, errorText } = this.props
+    const {owners, draftType, pickTime, draftDate} = leagueInfo
     return (
       <Grid container justify="space-between" className={classes.root} spacing={40} onKeyPress={(event) => this.keypress(event)}>
         <Grid item xs={12} md={12} lg={6}>

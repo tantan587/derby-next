@@ -10,7 +10,7 @@ import ChooseColor from './ChooseColor'
 import StyledButton from '../../Navigation/Buttons/StyledButton'
 import {connect} from 'react-redux'
 import {clickedSaveSilks} from '../../../actions/fantasy-actions'
-import Typography from '@material-ui/core/Typography/Typography';
+import Typography from '@material-ui/core/Typography/Typography'
 
 
 const styles = theme => ({

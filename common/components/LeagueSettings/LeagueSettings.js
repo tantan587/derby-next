@@ -2,8 +2,8 @@ import React from 'react'
 import { withStyles } from '@material-ui/core/styles'
 
 import DerbyTabs from '../UI/DerbyTabs'
-import LeagueInfo from './LeagueInfo/LeagueInfo'
 import ManageEmails from './ManageLeague/ManageEmails'
+import DraftSettings from './LeagueInfo/DraftSettings'
 
 const styles = theme =>({
   root: {
@@ -29,7 +29,7 @@ const styles = theme =>({
 })
 
 const myTabs = [
-  { label: 'League Info & Draft', Component: <LeagueInfo /> },
+  { label: 'League Info & Draft', Component: <DraftSettings/> },
   { label: 'Manage League Members', Component: <ManageEmails /> },
 ]
 

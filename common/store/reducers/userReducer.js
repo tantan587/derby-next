@@ -53,6 +53,16 @@ export default (state = {}, action={ type: null }) => {
       ...state,
       error : action.error
     }
+  
+  case C.UPDATE_ERROR:
+  {
+    let errorText = new ErrorText()
+    errorText.addError(action.name,action.error)
+    return {
+      ...state,
+      error : errorText
+    }
+  }  
 
   case C.CREATE_LEAGUE_SUCCESS:
   case C.JOIN_LEAGUE_SUCCESS:

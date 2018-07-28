@@ -1,4 +1,5 @@
 import {FetchThenDispatch} from './actionHelpers'
+import C from '../constants'
 
 export const clickedCreateLeague = (leagueInfo) => dispatch =>
   FetchThenDispatch(
@@ -30,3 +31,9 @@ export const clickedSaveSilks = (ownerName, pattern, primary, secondary, league_
     'POST',
     JSON.stringify({ownerName, avatar, league_id, owner_id}))
 }
+
+export const updateError = (name, error) => ({
+  type: C.UPDATE_ERROR,
+  name,
+  error
+})

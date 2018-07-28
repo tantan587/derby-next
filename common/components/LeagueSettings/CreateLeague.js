@@ -4,7 +4,8 @@ import Title from '../Navigation/Title'
 import LeagueInfo from './LeagueInfo/LeagueInfo'
 import {connect} from 'react-redux'
 import {withRouter} from 'next/router'
-import {clickedCreateLeague} from '../../actions/fantasy-actions'
+import {clickedCreateLeague, updateError} from '../../actions/fantasy-actions'
+import C from '../../constants'
 const R = require('ramda')
 
 const styles = theme =>({
@@ -47,7 +48,7 @@ class CreateLeague extends React.Component {
         draftType: 'Online - Snake Format',
         pickTime: 60,
         draftDate: new Date((new Date()).getTime() + 7 * 86400000),
-        showError:false
+        errorText:''
       }
   }
 
@@ -68,19 +69,46 @@ class CreateLeague extends React.Component {
     
   }
 
+  getErrorText = () => 
+  {
+    const {leagueInfo} = this.state
+    
+    if (leagueInfo.name.length < 6)
+      return 'League Name must be longer than 5 characters'
+    if (leagueInfo.name.length > 20)
+      return 'League Name must be shorter than 21 characters'
+    if (leagueInfo.password !== leagueInfo.matchPassword)
+      return 'Passwords do not match'
+    if (leagueInfo.password.length < 8)
+      return 'Password must be longer than 7 characters'
+    if (leagueInfo.password.length > 20)
+      return 'Password must be shorter than 21 characters'
+    if (leagueInfo.draftDate - new Date() < 86400000)
+      return 'Draft Date/Time must be at least 24 hours from now'
+    return ''
+
+  }
+
   onSubmit = () => {
-    this.setDeepState('leagueInfo','showError', true)
+    let errorText = this.getErrorText()
+    if (errorText)
+    {
+      this.props.onUpdateError(C.PAGES.CREATE_LEAGUE, errorText)
+    }
+    else
+    {
+      this.props.onCreateLeague(this.state.leagueInfo)
+    }
   }
 
   render() {
-    const { classes } = this.props
-
+    const { classes, user } = this.props
     return (
       <div>
         <Title color='white' backgroundColor='#EBAB38' title='Create League'/>
         <div className={classes.root}>
           <div className={classes.content}>
-            <LeagueInfo leagueInfo={this.state.leagueInfo} onSubmit={this.onSubmit} handleChange={this.handleChange}/>
+            <LeagueInfo leagueInfo={this.state.leagueInfo} errorText={user.error[C.PAGES.CREATE_LEAGUE]} onSubmit={this.onSubmit} handleChange={this.handleChange}/>
           </div>
         </div>
       </div>
@@ -91,5 +119,5 @@ class CreateLeague extends React.Component {
 export default R.compose(
   withRouter,
   withStyles(styles),
-  connect(R.pick(['user']), {onCreateLeague: clickedCreateLeague}),
+  connect(R.pick(['user']), {onCreateLeague: clickedCreateLeague, onUpdateError: updateError}),
 )(CreateLeague)
