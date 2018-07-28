@@ -21,8 +21,8 @@ router.post('/joinleague', authHelpers.loginRequired, (req, res)  => {
     .then((league_id) => { 
       return getSimpleLeague(league_id,res, C.JOIN_LEAGUE_SUCCESS)
     })
-    .catch((err) => { 
-      handleResponse(res, 500, err) })
+    .catch((action) => {  
+      handleReduxResponse(res, 400, action)})
 })
 
 router.post('/saveownersettings', authHelpers.loginRequired, async (req, res)  => {
@@ -48,10 +48,6 @@ function handleReduxResponse(res, code, action){
   res.status(code).json(action)
 }
 
-function handleResponse(res, code, statusMsg) {
-  res.status(code).json({status: statusMsg})
-}
-
 const createLeague = async (req) => {
 
   await handleCreateErrors(req)
@@ -72,6 +68,7 @@ const createLeague = async (req) => {
         league_password: req.body.leagueInfo.password,
         total_enrolled: 1,
         private_ind: true,
+        scoring_type_id:1
       })
       .returning('*')
       .then((response) => {
@@ -134,59 +131,68 @@ const createLeague = async (req) => {
   
 }
 
-const joinLeague = async (req, res) => {
+const joinLeague = async (req) => {
 
-  await handleJoinErrors(req)
-  // return knex.transaction((trx) => {
-  //       let owner_id = v4()
-  //       return knex.withSchema('fantasy').table('owners')
-  //         .transacting(t)
-  //         .insert({
-  //           league_id: league_id,
-  //           user_id: req.user.user_id,
-  //           owner_id: owner_id,
-  //           owner_name:  req.body.owner_name,
-  //           commissioner: false
-  //         })
-  //         .then(() => {
-  //           return knex.withSchema('fantasy').table('points')
-  //             .transacting(t)
-  //             .insert({
-  //               owner_id: owner_id,
-  //               total_points: 0,
-  //               rank: 1
-  //             })
-  //             .then(() => {
-  //               return knex.withSchema('draft').table('settings')
-  //                 .transacting(t)
-  //                 .where('league_id', league_id)
-  //                 .then((resp) => {
-  //                   const draft_position = resp[0].draft_position
-  //                   draft_position.push(owner_id)
-  //                   return knex
-  //                     .withSchema('draft')
-  //                     .table('settings')
-  //                     .transacting(t)
-  //                     .where('league_id',league_id)
-  //                     .update('draft_position', JSON.stringify(draft_position))
-  //                     .then(()=> {return})
-  //                 })
-  //             })  
-  //         })
-  //         .then(()=>{
-  //           t.commit})
-  //         .catch((err) => {t.rollback; throw err})
-  //     })
-  //       .then(()=>{
-  //         return league_id
-  //       })
-  //       .catch(function (err) {
-  //         res.status(400).json(err)
-  //       })
-  //   })
-  //   .catch((action) => {
-  //     handleReduxResponse(res,400,action)
-  //   })
+  let {league_id, total_enrolled} = await handleJoinErrorsAndGetInfo(req)
+
+  return knex.transaction((trx) => {
+    let owner_id = v4()
+    return knex.withSchema('fantasy').table('owners')
+      .transacting(trx)
+      .insert({
+        league_id: league_id,
+        user_id: req.user.user_id,
+        owner_id: owner_id,
+        owner_name:  req.body.league_name + '-owner-' + total_enrolled,
+        commissioner: false
+      })
+      .then(() => {
+        return knex.withSchema('fantasy').table('points')
+          .transacting(trx)
+          .insert({
+            owner_id: owner_id,
+            total_points: 0,
+            rank: 1
+          })
+          .then(() => {
+            return knex.withSchema('fantasy').table('leagues')
+              .transacting(trx)
+              .where({
+                'league_id': league_id
+              })
+              .update({
+                total_enrolled:total_enrolled+1
+              })
+              .then(() => {
+                return knex.withSchema('draft').table('settings')
+                  .transacting(trx)
+                  .where('league_id', league_id)
+                  .then((resp) => {
+                    const draft_position = resp[0].draft_position
+                    draft_position.push(owner_id)
+                    return knex
+                      .withSchema('draft')
+                      .table('settings')
+                      .transacting(trx)
+                      .where('league_id',league_id)
+                      .update('draft_position', JSON.stringify(draft_position))
+                      .then(()=> {return})
+                  })//draft settings
+              }) //fantasy leagues
+          })//fantasy points  
+      })//fantasy owners
+      .then(trx.commit)
+      .catch(trx.rollback)
+  })
+    .then(() => {
+      return league_id
+    })
+    .catch(function(error) {
+      console.error(error)
+      let errorText = new ErrorText()
+      errorText.addError(C.PAGES.JOIN_LEAGUE,'Something went wrong with the server. Please try again.')
+      throw {type:C.JOIN_LEAGUE_FAIL, error: errorText}
+    })
 }
 
 const updateOwnerSettings =  async (req) =>
@@ -249,8 +255,18 @@ function handleCreateErrors(req) {
   })
 }
 
-function handleJoinErrors(req) {
-  return new Promise((resolve, reject) => {
+const getLeagueInfoForJoin = async (league_name) => {
+  const str = 'select league_id, total_enrolled, max_owners from fantasy.leagues where league_name = \'' + league_name + '\''
+  let result = await knex.raw(str)
+  return result.rows[0]
+
+
+}
+
+const handleJoinErrorsAndGetInfo= async (req) => {
+  let league_info = await getLeagueInfoForJoin(req.body.league_name)
+  return new Promise(async (resolve, reject) => {
+
     let errorText = new ErrorText()
     var str = 'select (select count(*) leagueexists from fantasy.leagues where league_name = \'' + req.body.league_name +
       '\'), (select count(*) passconfirm from fantasy.leagues where league_password = \'' + req.body.league_password +
@@ -264,15 +280,19 @@ function handleJoinErrors(req) {
       {
         if (result.rows[0].leagueexists === '0') 
         {
-          errorText.addError('join_league_name','Can not find this league')
+          errorText.addError(C.PAGES.JOIN_LEAGUE,'Can not find this league')
         }
-        if (result.rows[0].leagueexists === '1' && result.rows[0].passconfirm === '0') 
+        else if (result.rows[0].leagueexists === '1' && result.rows[0].passconfirm === '0') 
         {
-          errorText.addError('join_league_password','password does not match')
+          errorText.addError(C.PAGES.JOIN_LEAGUE,'password does not match')
         }
-        if (result.rows[0].leagueexists === '1' && result.rows[0].joined === '1') 
+        else if (league_info.total_enrolled === league_info.max_owners) 
         {
-          errorText.addError('join_league_name','You\'ve already joined this league')
+          errorText.addError(C.PAGES.JOIN_LEAGUE,'This league is already full')
+        }
+        else if (result.rows[0].leagueexists === '1' && result.rows[0].joined === '1') 
+        {
+          errorText.addError(C.PAGES.JOIN_LEAGUE,'You\'ve already joined this league')
         }
         if (errorText.foundError()) {
           reject({
@@ -281,7 +301,7 @@ function handleJoinErrors(req) {
         }
         else
         {
-          resolve(result.rows[0].league_id)
+          resolve(league_info)
         }
       })
   })
@@ -427,7 +447,6 @@ const getInUseFantasyConf = (league_id, useEPL) =>
 
   return useEPL ? confs : confs.filter(x => x.sport_id !== 107)
 }
-
 
 
 module.exports = router

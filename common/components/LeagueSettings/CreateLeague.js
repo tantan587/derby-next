@@ -47,8 +47,7 @@ class CreateLeague extends React.Component {
         premier:false,
         draftType: 'Online - Snake Format',
         pickTime: 60,
-        draftDate: new Date((new Date()).getTime() + 7 * 86400000),
-        errorText:''
+        draftDate: new Date((new Date()).getTime() + 7 * 86400000)
       }
   }
 

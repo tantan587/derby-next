@@ -1,16 +1,16 @@
 import React from 'react'
-import Link from 'next/link'
 import Router from 'next/router'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
-import Button from '@material-ui/core/Button'
+import {withRouter} from 'next/router'
 import { connect } from 'react-redux'
-import TextField from '@material-ui/core/TextField'
+import C from '../constants'
 import DerbyTextField from './DerbyTextField'
 import Title from './Navigation/Title'
-import { clickedJoinLeague } from '../actions/fantasy-actions'
+import { clickedJoinLeague, updateError } from '../actions/fantasy-actions'
 import StyledButton from './Navigation/Buttons/StyledButton'
+const R = require('ramda')
 
 const styles = {
   container: {
@@ -50,6 +50,11 @@ class JoinLeagueForm extends React.Component {
     fireRedirect: false
   }
 
+  componentWillUnmount() {
+
+    this.props.onUpdateError(C.PAGES.JOIN_LEAGUE, '')
+
+  }
 
   handleChange = name => event => {
     this.setState({
@@ -87,7 +92,8 @@ class JoinLeagueForm extends React.Component {
       return(<div></div>)
     }
     else{
-      const { classes } = this.props
+      const { classes, user } = this.props
+      const errorText = user.error[C.PAGES.JOIN_LEAGUE]
 
       return (
         <div>
@@ -98,21 +104,25 @@ class JoinLeagueForm extends React.Component {
               Join Existing League
             </Typography>
             <DerbyTextField
+              style={{width:300}}
               label="League name"
               value={this.state.league_name}
               onChange = {this.handleChange('league_name')}
             />
             <DerbyTextField
+              style={{width:300}}
               label="Password"
               value={this.state.league_password}
               onChange = {this.handleChange('league_password')}/>
-            
+            <Typography variant='subheading' style={{color:'red', marginTop:20}}>
+              {errorText}
+            </Typography>
             <StyledButton
               onClick={(event) => this.submit(event)}
               width={130}
               height={40}
               text="Join League"
-              styles={{ marginTop: 26, fontSize: 15, fontWeight: 500 }}
+              styles={{ marginTop: errorText ? 16 : 40, fontSize: 15, fontWeight: 500 }}
             />
           </form>
         </div>
@@ -125,15 +135,11 @@ JoinLeagueForm.propTypes = {
   classes: PropTypes.object.isRequired,
 }
 
-export default connect(
-  state =>
-    ({
-      user : state.user
-    }),
-  dispatch =>
-    ({
-      onJoinLeague(league_name, league_password, owner_name) {
-        dispatch(
-          clickedJoinLeague(league_name, league_password, owner_name))
-      }
-    }))(withStyles(styles)(JoinLeagueForm))
+
+
+export default R.compose(
+  withRouter,
+  withStyles(styles),
+  connect(R.pick(['user']), {onJoinLeague: clickedJoinLeague, onUpdateError: updateError}),
+)(JoinLeagueForm)
+    

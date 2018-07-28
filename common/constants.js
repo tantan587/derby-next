@@ -63,7 +63,8 @@ const constants = {
   },
 
   PAGES:{
-    CREATE_LEAGUE : 'CREATE_LEAGUE'
+    CREATE_LEAGUE : 'CREATE_LEAGUE',
+    JOIN_LEAGUE : 'JOIN_LEAGUE'
   }
 }
 
