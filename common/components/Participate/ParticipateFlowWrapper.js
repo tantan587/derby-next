@@ -1,6 +1,5 @@
 import React from 'react'
 import { withStyles } from '@material-ui/core/styles'
-import CustomizeTeam from  '../TeamSettings/CustomizeTeam/CustomizeTeam' 
 import Title from '../Navigation/Title'
 
 const styles = theme => ({
@@ -22,22 +21,24 @@ const styles = theme => ({
 })
 
 
-class TeamOptions extends React.Component {
+class ParticipateFlowWrapper extends React.Component {
 
   render() {
-    const { classes, updatePage } = this.props
+    const { classes, page, title} = this.props
 
     return (
       <div>
-        <Title color='white' backgroundColor='#EBAB38' title='OWNER SETTINGS'/>
+        <Title color='white' backgroundColor='#EBAB38' title={title}/>
         <div className={classes.root}>
           <div className={classes.content}>
-            <CustomizeTeam updatePage={updatePage}/>
+            {page}
           </div>
         </div>
+        <br/>
+        <br/>
       </div>
     )
   }
 }
 
-export default withStyles(styles)(TeamOptions)
+export default withStyles(styles)(ParticipateFlowWrapper)

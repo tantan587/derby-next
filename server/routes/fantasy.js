@@ -320,17 +320,17 @@ const handleOwnerSettingsErrors = async (req) => {
 
   let errorText = new ErrorText()
   if (!req.body.ownerName || req.body.ownerName.length < 5) {
-    errorText.addError(C.PAGES.TEAM_OPTIONS,'Owner name must be longer than five characters')
+    errorText.addError(C.PAGES.CUSTOMIZE_TEAMS,'Owner name must be longer than five characters')
   }
   
   if (req.body.ownerName && req.body.ownerName.length > 15) {
-    errorText.addError(C.PAGES.TEAM_OPTIONS,'Owner name must be shorter than fifteen characters')
+    errorText.addError(C.PAGES.CUSTOMIZE_TEAMS,'Owner name must be shorter than fifteen characters')
   }
   if (ownerNames.includes(req.body.ownerName)) {
-    errorText.addError(C.PAGES.TEAM_OPTIONS,'Owner name must be unique')
+    errorText.addError(C.PAGES.CUSTOMIZE_TEAMS,'Owner name must be unique')
   }
   if (silkColors.includes(req.body.avatar.primary + ';' + req.body.avatar.secondary)) {
-    errorText.addError(C.PAGES.TEAM_OPTIONS,'This color combo has already been chosen. You must choose a unique set of colors.')
+    errorText.addError(C.PAGES.CUSTOMIZE_TEAMS,'This color combo has already been chosen. You must choose a unique set of colors.')
   }
    
   if (errorText.foundError()) {

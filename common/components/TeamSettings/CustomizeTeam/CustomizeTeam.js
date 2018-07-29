@@ -93,7 +93,7 @@ class CustomizeTeam extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.props.updatePage && this.state.fireRedirect && !nextProps.user.error[C.PAGES.TEAM_OPTIONS])
+    if (this.props.updatePage && this.state.fireRedirect && !nextProps.user.error[C.PAGES.CUSTOMIZE_TEAMS])
     {
       this.props.updatePage()
     }
@@ -139,7 +139,7 @@ class CustomizeTeam extends Component {
     const { ownerName, pattern, primary, secondary } = this.state
     const { classes, user } = this.props
 
-    const errorText= user.error[C.PAGES.TEAM_OPTIONS]
+    const errorText= user.error[C.PAGES.CUSTOMIZE_TEAMS]
 
     const teamCopy =`Jockeys wear elaborate “silks” when riding horses in a race.
      Receiving silks is a rite of passage for jockeys entering their first ride.
