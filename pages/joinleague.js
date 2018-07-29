@@ -1,6 +1,6 @@
 import React from 'react'
 import LayoutUser from '../common/components/LayoutUser'
-import JoinLeagueForm from '../common/components/Participate/JoinLeagueForm'
+import JoinLeagueFlow from '../common/components/Participate/JoinLeagueFlow'
 import RouteProtector from '../common/components/RouteProtector'
 import withRoot from '../common/components/withRoot'
 import withRedux from 'next-redux-wrapper'
@@ -13,7 +13,7 @@ class JoinLeague extends React.Component {
       <div>
         <LayoutUser >
           <RouteProtector 
-            ProtectedRoute={() => <JoinLeagueForm/>}
+            ProtectedRoute={() => <JoinLeagueFlow/>}
             previousPage={'joinleague'}/>
         </LayoutUser>
       </div>

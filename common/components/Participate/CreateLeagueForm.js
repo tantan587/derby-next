@@ -43,8 +43,8 @@ class CreateLeagueForm extends React.Component {
         name: '',
         password: '',
         matchPassword: '',
-        owners: 8,
-        premier:false,
+        owners: 15,
+        premier:true,
         draftType: 'Online - Snake Format',
         pickTime: 60,
         draftDate: new Date((new Date()).getTime() + 7 * 86400000)

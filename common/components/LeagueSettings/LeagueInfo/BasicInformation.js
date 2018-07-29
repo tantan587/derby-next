@@ -127,7 +127,7 @@ const InfoTool = ({ style }) =>
 const BasicInformation = withStyles(styles)(class extends Component {
 
   render() {
-    const { classes, handleChange, owners } = this.props
+    const { classes, handleChange, owners, premier } = this.props
 
     const memberArray = new Array(8).fill(0).map((arr, i) => i + 8)
 
@@ -188,7 +188,7 @@ const BasicInformation = withStyles(styles)(class extends Component {
             <InfoTool style={classes.infoTool} />
           </div>
           <div className={`${classes.formRoot} ${classes.switchPosition}`} style={{ alignSelf: 'flex-start' }}>
-            <DerbySwitch onClick={handleChange} stateKey='premier'/>
+            <DerbySwitch onClick={handleChange} stateKey='premier' value={premier}/>
           </div>
         </div>
       </Card>

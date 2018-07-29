@@ -32,6 +32,14 @@ export const clickedSaveSilks = (ownerName, pattern, primary, secondary, league_
     JSON.stringify({ownerName, avatar, league_id, owner_id}))
 }
 
+export const clickedUpdateLeague = (leagueInfo, league_id) => dispatch =>
+  FetchThenDispatch(
+    dispatch,
+    '/api/updateleague',
+    'POST',
+    JSON.stringify({leagueInfo, league_id}))
+
+
 export const updateError = (name, error) => ({
   type: C.UPDATE_ERROR,
   name,

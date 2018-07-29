@@ -6,6 +6,7 @@ export default (state = {}, action={ type: null }) => {
   switch (action.type){
   case C.CLICKED_LEAGUE:
   case C.CREATE_LEAGUE_SUCCESS:
+  case C.JOIN_LEAGUE_SUCCESS:
     return {
       success : true,
       league_id : action.league_id,

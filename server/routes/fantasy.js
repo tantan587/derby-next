@@ -9,7 +9,7 @@ const fantasyHelpers = require('./helpers/fantasyHelpers')
 
 
 router.post('/createleague', authHelpers.loginRequired, (req, res)  => {
-  return createLeague(req, res)
+  return createLeague(req)
     .then((league_id) => { 
       return fantasyHelpers.getLeague(league_id, req.user.user_id, res, C.CREATE_LEAGUE_SUCCESS)
     })
@@ -20,7 +20,7 @@ router.post('/createleague', authHelpers.loginRequired, (req, res)  => {
 router.post('/joinleague', authHelpers.loginRequired, (req, res)  => {
   return joinLeague(req, res)
     .then((league_id) => { 
-      return getSimpleLeague(league_id,res, C.JOIN_LEAGUE_SUCCESS)
+      return fantasyHelpers.getLeague(league_id, req.user.user_id, res, C.JOIN_LEAGUE_SUCCESS)
     })
     .catch((action) => {  
       handleReduxResponse(res, 400, action)})
@@ -39,6 +39,15 @@ router.post('/saveownersettings', authHelpers.loginRequired, async (req, res)  =
     return handleReduxResponse(res,401,{type:C.SAVE_OWNER_SETTINGS_FAIL, error: resp.error})
   } 
   
+})
+
+router.post('/updateleague', authHelpers.loginRequired, (req, res)  => {
+  return updateLeague(req, res)
+    .then(() => { 
+      return fantasyHelpers.getLeague(req.body.league_id, req.user.user_id, res, C.CREATE_LEAGUE_SUCCESS)
+    })
+    .catch((action) => {  
+      handleReduxResponse(res, 400, action)})
 })
 
 router.post('/clickleague', authHelpers.loginRequired, (req, res)  => {
@@ -196,6 +205,31 @@ const joinLeague = async (req) => {
     })
 }
 
+const updateLeague =  (req) => {
+  
+  return knex.transaction((trx) => {
+    knex.withSchema('draft').table('settings')
+      .transacting(trx)
+      .update({
+        start_time: req.body.leagueInfo.draftDate,
+        type: req.body.leagueInfo.draftType,
+      })
+      .where('league_id', req.body.league_id)
+      .then(trx.commit)
+      .catch(trx.rollback)
+  }) //trans
+    .then(() => {
+      return 
+    })
+    .catch(function(error) {
+      console.error(error)
+      let errorText = new ErrorText()
+      errorText.addError(C.PAGES.UPDATE_LEAGUE,'Something went wrong with the server. Please try again.')
+      throw {type:C.CREATE_LEAGUE_FAIL, error: errorText}
+    })
+  
+}
+
 const updateOwnerSettings =  async (req) =>
 {
   return knex.withSchema('fantasy').table('owners')
@@ -343,31 +377,6 @@ const handleOwnerSettingsErrors = async (req) => {
     return {success: true}
 
 }
-
-const getSimpleLeague = (league_id, res, type) =>{
-  
-  return knex.withSchema('fantasy')
-    .table('leagues')
-    .where('league_id',league_id)
-    .then(result =>
-    {
-      if (result.length > 0) 
-      {
-        var league_name = result[0].league_name
-        var league_id = result[0].league_id
-        return handleReduxResponse(res,200, {
-          type: type,
-          league_name : league_name,
-          league_id : league_id
-        })
-      }
-      else
-      {
-        return handleReduxResponse(res,400, {})
-      }
-    })
-}
-
 
 //this should not all be hard coded
 const getInUseFantasySports = (league_id, useEPL) =>

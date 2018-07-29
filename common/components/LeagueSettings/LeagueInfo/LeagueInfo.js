@@ -72,13 +72,13 @@ class LeagueInfo extends Component {
 
   render() {
     const { classes, leagueInfo, onSubmit, handleChange, errorText } = this.props
-    const {owners, draftType, pickTime, draftDate} = leagueInfo
+    const {owners, draftType, pickTime, draftDate, premier} = leagueInfo
     return (
       <Grid container justify="space-between" className={classes.root} spacing={40} onKeyPress={(event) => this.keypress(event)}>
         <Grid item xs={12} md={12} lg={6}>
           <div>
             <div className={classes.title}>Basic League Information</div>
-            <BasicInformation handleChange={handleChange} owners={owners}/>
+            <BasicInformation handleChange={handleChange} owners={owners} premier={premier}/>
           </div>
         </Grid>
         <Grid item xs={12} md={12} lg={6} className={classes.gridMargins}>

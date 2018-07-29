@@ -1,5 +1,4 @@
 import React from 'react'
-import Router from 'next/router'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
@@ -46,7 +45,6 @@ class JoinLeagueForm extends React.Component {
   state={
     league_name:'',
     league_password:'',
-    owner_name:'',
     fireRedirect: false
   }
 
@@ -54,6 +52,13 @@ class JoinLeagueForm extends React.Component {
 
     this.props.onUpdateError(C.PAGES.JOIN_LEAGUE, '')
 
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.state.fireRedirect && !nextProps.user.error[C.PAGES.JOIN_LEAGUE])
+    {
+      this.props.updatePage()
+    }
   }
 
   handleChange = name => event => {
@@ -65,9 +70,9 @@ class JoinLeagueForm extends React.Component {
   handleSubmit(e)
   {
     const { onJoinLeague } = this.props
-    this.setState({fireRedirect: true})
+    this.setState({fireRedirect:true})
     e.preventDefault()
-    onJoinLeague(this.state.league_name, this.state.league_password,this.state.owner_name)
+    onJoinLeague(this.state.league_name, this.state.league_password)
   }
 
   submit(e) {
@@ -81,53 +86,42 @@ class JoinLeagueForm extends React.Component {
   }
 
   render() {
-    if(this.state.fireRedirect && this.props.user.error.success === true){
-      Router.push('/')
-      return(<div></div>)
-    }
-    else if(this.props.user.loggedIn === false){
-      if (typeof document !== 'undefined'){
-        Router.push('/login')
-      }
-      return(null)
-    }
-    else{
-      const { classes, user } = this.props
-      const errorText = user.error[C.PAGES.JOIN_LEAGUE]
 
-      return (
-        <div>
-          <Title color='white' backgroundColor='#EBAB38' title='Join League'/>
-          <form className={classes.container} noValidate autoComplete="off"
-            onKeyPress={(event) => this.keypress(event)}>
-            <Typography variant="display2" className={classes.title} gutterBottom>
-              Join Existing League
-            </Typography>
-            <DerbyTextField
-              style={{width:300}}
-              label="League name"
-              value={this.state.league_name}
-              onChange = {this.handleChange('league_name')}
-            />
-            <DerbyTextField
-              style={{width:300}}
-              label="Password"
-              value={this.state.league_password}
-              onChange = {this.handleChange('league_password')}/>
-            <Typography variant='subheading' style={{color:'red', marginTop:20}}>
-              {errorText}
-            </Typography>
-            <StyledButton
-              onClick={(event) => this.submit(event)}
-              width={130}
-              height={40}
-              text="Join League"
-              styles={{ marginTop: errorText ? 16 : 40, fontSize: 15, fontWeight: 500 }}
-            />
-          </form>
-        </div>
-      )
-    }
+    const { classes, user } = this.props
+    const errorText = user.error[C.PAGES.JOIN_LEAGUE]
+
+    return (
+      <div>
+        <Title color='white' backgroundColor='#EBAB38' title='Join League'/>
+        <form className={classes.container} noValidate autoComplete="off"
+          onKeyPress={(event) => this.keypress(event)}>
+          <Typography variant="display2" className={classes.title} gutterBottom>
+            Join Existing League
+          </Typography>
+          <DerbyTextField
+            style={{width:300}}
+            label="League name"
+            value={this.state.league_name}
+            onChange = {this.handleChange('league_name')}
+          />
+          <DerbyTextField
+            style={{width:300}}
+            label="Password"
+            value={this.state.league_password}
+            onChange = {this.handleChange('league_password')}/>
+          <Typography variant='subheading' style={{color:'red', marginTop:20}}>
+            {errorText}
+          </Typography>
+          <StyledButton
+            onClick={(event) => this.submit(event)}
+            width={130}
+            height={40}
+            text="Join League"
+            styles={{ marginTop: errorText ? 16 : 40, fontSize: 15, fontWeight: 500 }}
+          />
+        </form>
+      </div>
+    )
   }
 }
 

@@ -5,7 +5,7 @@ import Typography from '@material-ui/core/Typography'
 import {connect} from 'react-redux'
 import {withRouter} from 'next/router'
 import DraftSettings from './DraftSettings'
-import {clickedCreateLeague, updateError} from '../../../actions/fantasy-actions'
+import {clickedUpdateLeague, updateError} from '../../../actions/fantasy-actions'
 import C from '../../../constants'
 const R = require('ramda')
 import StyledButton from '../../Navigation/Buttons/StyledButton'
@@ -55,24 +55,22 @@ const styles = theme =>({
 // ]
 
 class CommishTool extends React.Component {
-  state = {
-    leagueInfo : 
-      {
-        name: '',
-        password: '',
-        matchPassword: '',
-        owners: 8,
-        premier:false,
-        draftType: 'Online - Snake Format',
-        pickTime: 60,
-        draftDate: new Date((new Date()).getTime() + 7 * 86400000)
-      },
-    fireRedirect:false
+  constructor(props){
+    super(props)
+    this.state = {
+      leagueInfo : 
+        {
+          draftType: 'Online - Snake Format',
+          pickTime: 60,
+          draftDate: props.activeLeague.draft_start_time
+        },
+      fireRedirect:false
+    }
   }
 
   componentWillUnmount() {
 
-    this.props.onUpdateError(C.PAGES.CREATE_LEAGUE, '')
+    this.props.onUpdateError(C.PAGES.COMMISH_TOOLS, '')
 
   }
 
@@ -97,16 +95,6 @@ class CommishTool extends React.Component {
   {
     const {leagueInfo} = this.state
     
-    if (leagueInfo.name.length < 6)
-      return 'League Name must be longer than 5 characters'
-    if (leagueInfo.name.length > 20)
-      return 'League Name must be shorter than 21 characters'
-    if (leagueInfo.password !== leagueInfo.matchPassword)
-      return 'Passwords do not match'
-    if (leagueInfo.password.length < 8)
-      return 'Password must be longer than 7 characters'
-    if (leagueInfo.password.length > 20)
-      return 'Password must be shorter than 21 characters'
     if (leagueInfo.draftDate - new Date() < 86400000)
       return 'Draft Date/Time must be at least 24 hours from now'
     return ''
@@ -114,23 +102,23 @@ class CommishTool extends React.Component {
   }
 
   onSubmit = () => {
+
     let errorText = this.getErrorText()
+    console.log(errorText)
     if (errorText)
     {
-      this.props.onUpdateError(C.PAGES.CREATE_LEAGUE, errorText)
+      this.props.onUpdateError(C.PAGES.COMMISH_TOOLS, errorText)
     }
     else
     {
       this.setState({fireRedirect:true})
-      this.props.onCreateLeague(this.state.leagueInfo)
+      this.props.onUpdateLeague(this.state.leagueInfo, this.props.activeLeague.league_id)
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.state.fireRedirect && !nextProps.user.error[C.PAGES.CREATE_LEAGUE])
-    {
-      this.props.updatePage()
-    }
+
+    this.setState({draftDate:nextProps.activeLeague.draft_start_time})
   }
 
   keypress(e) {
@@ -183,5 +171,5 @@ class CommishTool extends React.Component {
 export default R.compose(
   withRouter,
   withStyles(styles),
-  connect(R.pick(['user']), {onCreateLeague: clickedCreateLeague, onUpdateError: updateError}),
+  connect(R.pick(['user', 'activeLeague']), {onUpdateLeague: clickedUpdateLeague, onUpdateError: updateError}),
 )(CommishTool)

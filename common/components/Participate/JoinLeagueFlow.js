@@ -1,7 +1,6 @@
 import React from 'react'
-import CreateLeagueForm from './CreateLeagueForm'
+import JoinLeagueForm from './JoinLeagueForm'
 import ParticipateFlowContentWrapper from './ParticipateFlowContentWrapper'
-import ManageEmails from '../LeagueSettings/ManageLeague/ManageEmails'
 import {connect} from 'react-redux'
 import {makeProgress} from '../../actions/fantasy-actions'
 import CustomizeTeam from  '../TeamSettings/CustomizeTeam/CustomizeTeam'
@@ -9,12 +8,12 @@ const R = require('ramda')
 import Router from 'next/router'
 
 
-class CreateLeagueFlow extends React.Component {
+class JoinLeagueFlow extends React.Component {
 
 
   updatePage = () => {
     const {progress} = this.props.user
-    if (progress === 3)
+    if (progress === 2)
       Router.push('/mainleaguehome')
     else
       this.props.onMakeProgress(this.props.user.progress + 1 )
@@ -38,14 +37,9 @@ class CreateLeagueFlow extends React.Component {
     }
     
     const {progress} = this.props.user
-    console.log(this.props.user)
     let component = null
-    if(progress === 3)
-    {
-      let page3 = <ManageEmails updatePage={this.updatePage}/>
-      component = <ParticipateFlowContentWrapper page={page3} title='Choose Friends'/>
-    }
-    else if(progress === 2)
+
+    if(progress === 2)
     {
       let page2 =  <CustomizeTeam updatePage={this.updatePage}/>
       component = <ParticipateFlowContentWrapper page={page2} title='Customize Owner'/>
@@ -53,7 +47,7 @@ class CreateLeagueFlow extends React.Component {
     else if(progress === 1)
     {
       
-      component = <CreateLeagueForm updatePage={this.updatePage}/>
+      component = <JoinLeagueForm updatePage={this.updatePage}/>
     }
 
     return (
@@ -65,4 +59,4 @@ class CreateLeagueFlow extends React.Component {
 
 export default R.compose(
   connect(R.pick(['user']), {onMakeProgress: makeProgress}),
-)(CreateLeagueFlow)
+)(JoinLeagueFlow)
