@@ -17,6 +17,7 @@ const constants = {
   CREATE_PASSWORD_FAIL: 'CREATE_PASSWORD_FAIL',
   CREATE_PASSWORD_SUCCESS: 'CREATE_PASSWORD_SUCCESS',
   FORCED_LOGIN: 'FORCED_LOGIN',
+  UPDATE_ERROR: 'UPDATE_ERROR',
 
   UPDATE_TEAM_UPDATE_TIME:'UPDATE_TEAM_UPDATE_TIME',
   UPDATE_TEAMS:'UPDATE_TEAMS',
@@ -59,6 +60,15 @@ const constants = {
   SB: {
     'EHBS': 'Email has been sent.',
     'YHSCUPPL': 'You have successfully changed your password, please login.'
+  },
+
+  MAKE_PROGRESS : 'MAKE_PROGRESS',
+
+  PAGES:{
+    CREATE_LEAGUE : 'CREATE_LEAGUE',
+    JOIN_LEAGUE : 'JOIN_LEAGUE',
+    CUSTOMIZE_TEAMS : 'CUSTOMIZE_TEAMS',
+    COMMISH_TOOLS : 'COMMISH_TOOLS'
   }
 }
 

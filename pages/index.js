@@ -30,6 +30,7 @@ const styles = (theme) =>  ({
     paddingTop: 100,
     //backgroundColor:'#48311A',
     color:'white',
+    //backgroundColor:'#392007',
     backgroundImage: 'url("/static/images/derbyhome2.svg")',
     backgroundRepeat: 'no-repeat',
     //backgroundAttachment: 'fixed',
@@ -96,31 +97,28 @@ class Index extends React.Component {
       <div>
         <TopNavHome/>
         <SportsSocket>
-          <div className={classes.section1}>
+          <div className={classes.section1} style={{display:'flex', flexDirection:'column', alignItems:'center'}}>
             <Typography 
               variant="display3" style={{color:'white'}}>
-              <div style={{ fontFamily:'museo-slab-bold', display: 'inline'}}>
+              <div style={{ fontFamily:'museo-slab-bold'}}>
               A New Way to Play Fantasy Sports
               </div>
-              <br/>
-              <div style={{fontFamily:'museo-slab', display: 'inline',  width:'80%'}}>
-              Cheer for Teams, Not Just Players. All Year Round.
+              <div style={{fontFamily:'museo-slab'}}>
+              Cheer for Teams, Not for Players. All Year Round.
               </div>
             </Typography>
-            <br/>
-            <Typography variant='headline'style={{color:'white',width:'60%', marginLeft:'20%', lineHeight:1.6}}>
+            <Typography variant='headline'style={{color:'white',width:'60%', lineHeight:1.6}}>
             Pick your teams in this race and ride them to victory! 
             In Derby Fantasy Wins League, compete with your friends
              by drafting teams across multiple sports.
               Earn points when your teams win throughout their entire seasons. 
               The more games your teams win, the more points you earn.
             </Typography>
-            <br/>
-            <br/>
+
             {
               <div style={{display:'flex', alignItems:'flex-end', justifyContent:'center', flexWrap:'wrap'}}>
                 {R.values(sportLeagues).sort((a,b) => a.order > b.order).map((x,i) => { 
-                  return <SportIconText key={i} sportId={x.sport_id}/>
+                  return <SportIconText key={i} sportId={x.sport_id} />
                 })
                 }
               </div>

@@ -1,6 +1,6 @@
 import React from 'react'
 import LayoutUser from '../common/components/LayoutUser'
-import ParticipateForm from '../common/components/ParticipateForm'
+import ParticipateForm from '../common/components/Participate/ParticipateForm'
 import withRoot from '../common/components/withRoot'
 import withRedux from 'next-redux-wrapper'
 import storeFactory from '../common/store'

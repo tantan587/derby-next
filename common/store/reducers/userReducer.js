@@ -12,6 +12,7 @@ export default (state = {}, action={ type: null }) => {
       last_name: action.last_name,
       username: action.username,
       loggedIn: true,
+      progress:null,
       error: new ErrorText()
     }
   case C.SIGNUP_SUCCESS:
@@ -49,15 +50,27 @@ export default (state = {}, action={ type: null }) => {
     }
   case C.CREATE_LEAGUE_FAIL:
   case C.JOIN_LEAGUE_FAIL:
+  case C.SAVE_OWNER_SETTINGS_FAIL:
     return {
       ...state,
       error : action.error
     }
+  
+  case C.UPDATE_ERROR:
+  {
+    let errorText = new ErrorText()
+    errorText.addError(action.name,action.error)
+    return {
+      ...state,
+      error : errorText
+    }
+  }  
 
   case C.CREATE_LEAGUE_SUCCESS:
   case C.JOIN_LEAGUE_SUCCESS:
   case C.FORGOT_PASSWORD_SUCCESS:
   case C.FORGOT_USERNAME_SUCCESS:
+  case C.SAVE_OWNER_SETTINGS_SUCCESS:
   {
     let errorText = new ErrorText()
     errorText.addError('success',true)
@@ -65,6 +78,11 @@ export default (state = {}, action={ type: null }) => {
       ...state,
       error : errorText
     }
+  }
+
+  case C.MAKE_PROGRESS:
+  {
+    return {...state, progress:action.progress}
   }
 
   case C.CREATE_PASSWORD_SUCCESS:

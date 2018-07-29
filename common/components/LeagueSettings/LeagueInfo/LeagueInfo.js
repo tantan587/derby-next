@@ -1,5 +1,6 @@
 import { Component } from 'react'
 import { withStyles } from '@material-ui/core/styles'
+import Typography from '@material-ui/core/Typography'
 import Grid from '@material-ui/core/Grid'
 import BasicInformation from './BasicInformation'
 import DraftSettings from './DraftSettings'
@@ -61,46 +62,42 @@ const styles = theme => ({
   }
 })
 
-class CustomizeTeam extends Component {
-  state = {
-    teamName: '',
-    pattern: '',
-    patternColor: '',
-    jerseyColor: ''
+class LeagueInfo extends Component {
+  
+  keypress(e) {
+    if (e.key === 'Enter') { 
+      this.props.onSubmit(e)
+    }
   }
-
-  handleChange = name => event => {
-    this.setState({
-      [name]: event.target.value,
-    })
-  }
-
-  handleColorClick = (type, color) => this.setState({ [type]: color })
-  handlePatternClick = pattern => {
-    console.log(pattern)
-    this.setState({ pattern })}
 
   render() {
-    const { classes } = this.props
-
+    const { classes, leagueInfo, onSubmit, handleChange, errorText } = this.props
+    const {owners, draftType, pickTime, draftDate, premier} = leagueInfo
     return (
-      <Grid container justify="space-between" className={classes.root} spacing={40}>
+      <Grid container justify="space-between" className={classes.root} spacing={40} onKeyPress={(event) => this.keypress(event)}>
         <Grid item xs={12} md={12} lg={6}>
           <div>
             <div className={classes.title}>Basic League Information</div>
-            <BasicInformation />
+            <BasicInformation handleChange={handleChange} owners={owners} premier={premier}/>
           </div>
         </Grid>
         <Grid item xs={12} md={12} lg={6} className={classes.gridMargins}>
           <div>
             <div className={classes.title}>Draft Settings</div>
-            <DraftSettings />
+            <DraftSettings draftType={draftType} pickTime={pickTime} draftDate={draftDate} handleChange={handleChange}/>
           </div>
         </Grid>
+        <Grid item xs={12} md={12} className={classes.gridMargins}>
+          <Typography variant='subheading' style={{color:'red'}}>
+            {errorText}
+          </Typography>
+        </Grid>
+        
         <StyledButton
           height={50}
-          styles={{ fontSize: 16, fontWeight: 600, marginTop: 40, marginBottom:50 }}
+          styles={{ fontSize: 16, fontWeight: 600, marginTop: errorText ? 16 : 40, marginBottom:50 }}
           text="Save Settings"
+          onClick={onSubmit}
         />
         <br/>
         <br/>
@@ -109,4 +106,4 @@ class CustomizeTeam extends Component {
   }
 }
 
-export default withStyles(styles)(CustomizeTeam)
+export default (withStyles(styles))(LeagueInfo)

@@ -14,7 +14,7 @@ class MainLeagueSettings extends React.Component {
         <Title
           backgroundColor="#EBAB38"
           color="white"
-          title="Welcome"
+          title="Commish Tools"
           subheading={activeLeague.league_name}
         />
         <LeagueSettings />

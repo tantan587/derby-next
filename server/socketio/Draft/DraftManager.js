@@ -12,6 +12,7 @@ function DraftManager(roomId, draftEmitter) {
   this.Create = async () =>
   {
     const resp = await socketIoHelpers.GetDraftInfo(roomId)
+    timeToDraft = resp.seconds_pick
     that.draftPosition = resp.draft_position
     that.draftOrder =  fantasyHelpers.GetDraftOrder(resp.total_teams,resp.draft_position.length)
     that.allTeams = Array.from(resp.teams)

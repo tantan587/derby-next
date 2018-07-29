@@ -125,37 +125,22 @@ const InfoTool = ({ style }) =>
 // const InfoTool = ({ class )} => <div>hi</div>
 
 const BasicInformation = withStyles(styles)(class extends Component {
-  state = {
-    memberVal: 8
-  }
-
-  handleSelect = event => { this.setState({  memberVal: event.target.value }) }
 
   render() {
-    const { classes } = this.props
-    const { memberVal } = this.state
+    const { classes, handleChange, owners, premier } = this.props
 
     const memberArray = new Array(8).fill(0).map((arr, i) => i + 8)
 
     return (
       <Card className={classes.container}>
-        <div className={classes.field}>
-          <div className={classes.label}>
-            <div>Commissioner:</div>
-          </div>
-          {/* <TextField fullWidth label="Commissioner's Name" /> */}
-          <FormControl className={classes.textField}>
-            <Input placeholder="Commissioner's Name" />
-          </FormControl>
-        </div>
-
-        <div className={classes.field}>
+        
+        <div className={classes.field} style={{marginTop:10}}>
           <div className={classes.label}>
             <div>League Name:</div>
           </div>
           {/* <TextField fullWidth label="Commissioner's Name" /> */}
           <FormControl className={classes.textField}>
-            <Input placeholder="League Name Here" />
+            <Input placeholder="League Name Here" onChange={handleChange('name')}/>
           </FormControl>
         </div>
 
@@ -165,7 +150,7 @@ const BasicInformation = withStyles(styles)(class extends Component {
             <InfoTool style={classes.infoTool} />
           </div>
           <FormControl className={classes.textField}>
-            <Input placeholder="Minimum of 8 characters" />
+            <Input placeholder="Minimum of 8 characters" onChange={handleChange('password')}/>
           </FormControl>
         </div>
 
@@ -174,7 +159,7 @@ const BasicInformation = withStyles(styles)(class extends Component {
             <div>Verify Password:</div>
           </div>
           <FormControl className={classes.textField}>
-            <Input placeholder="Must match Password" />
+            <Input placeholder="Must match Password" onChange={handleChange('matchPassword')}/>
           </FormControl>
         </div>
 
@@ -184,12 +169,12 @@ const BasicInformation = withStyles(styles)(class extends Component {
           </div>
           <div className={classes.formRoot} style={{ display: 'flex' }}>
             <Select
-              value={memberVal}
-              onChange={this.handleSelect}
+              value={owners}
+              onChange={handleChange('owners')}
             >
               {
                 memberArray.map(val =>
-                  <MenuItem value={val}>
+                  <MenuItem key={val} value={val}>
                     { val }
                   </MenuItem>)
               }
@@ -203,7 +188,7 @@ const BasicInformation = withStyles(styles)(class extends Component {
             <InfoTool style={classes.infoTool} />
           </div>
           <div className={`${classes.formRoot} ${classes.switchPosition}`} style={{ alignSelf: 'flex-start' }}>
-            <DerbySwitch />
+            <DerbySwitch onClick={handleChange} stateKey='premier' value={premier}/>
           </div>
         </div>
       </Card>

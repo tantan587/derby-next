@@ -5,7 +5,7 @@ import Typography from '@material-ui/core/Typography'
 import Router from 'next/router'
 import { connect } from 'react-redux'
 
-import StyledButton from './Navigation/Buttons/StyledButton'
+import StyledButton from '../Navigation/Buttons/StyledButton'
 
 const styles = theme => ({
   container: {

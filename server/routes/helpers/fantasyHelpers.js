@@ -7,7 +7,7 @@ function handleReduxResponse(res, code, action){
 }
 
 const getLeague = async (league_id, user_id, res, type) => {
-  var leagueInfoStr = `select a.league_name, a.max_owners, a.league_id, b.room_id, b.start_time, b.draft_position, c.total_teams 
+  var leagueInfoStr = `select a.league_name, a.max_owners, a.league_id, b.room_id, b.start_time, b.draft_position, b.seconds_pick, c.total_teams 
   from fantasy.leagues a, draft.settings b, (
     select league_id, sum(number_teams) as total_teams from fantasy.sports where league_id = '` + league_id + `' group by league_id) c
   where a.league_id = b.league_id and a.league_id = c.league_id`
@@ -41,6 +41,7 @@ const getLeague = async (league_id, user_id, res, type) => {
     var total_teams = leagueInfo.rows[0].total_teams
     var room_id = leagueInfo.rows[0].room_id
     var start_time = leagueInfo.rows[0].start_time
+    let seconds_pick = leagueInfo.rows[0].seconds_pick
     var draft_position = leagueInfo.rows[0].draft_position
     var my_owner_id = ''
     var owners = []
@@ -71,19 +72,22 @@ const getLeague = async (league_id, user_id, res, type) => {
     const draftOrder = GetDraftOrder(total_teams,owners.length)
 
     return handleReduxResponse(res,200, {
-      type: type,
-      league_name : league_name,
-      max_owners : max_owners,
-      total_teams:total_teams,
-      league_id : league_id,
-      owners : owners,
-      room_id: room_id,
-      draft_start_time:start_time,
-      my_owner_id:my_owner_id,
-      draftOrder:draftOrder,
-      teams:teams,
-      ownerGames:ownerGames,
-      rules:rules
+      type,
+      league_name,
+      max_owners,
+      total_teams,
+      league_id,
+      owners,
+      room_id,
+      draftInfo: {
+        start_time,
+        seconds_pick
+      },
+      my_owner_id,
+      draftOrder,
+      teams,
+      ownerGames,
+      rules,
     })
   }
   else
@@ -307,8 +311,8 @@ const updateTeamPoints = async () =>
         let milestone_parameter = sport_id === '103' ? team.wins : team.wins+team.ties/2
         let milestone_points = points[fteam.scoring_type_id][sport_id].regular_season.milestone_points
         bonus_win = milestone_parameter < points[fteam.scoring_type_id][sport_id].regular_season.milestones[0] ? 0 :
-        milestone_parameter < points[fteam.scoring_type_id][sport_id].regular_season.milestones[1] ? milestone_points :
-        milestone_parameter < points[fteam.scoring_type_id][sport_id].regular_season.milestones[2] ? milestone_points*2 : milestone_points*3
+          milestone_parameter < points[fteam.scoring_type_id][sport_id].regular_season.milestones[1] ? milestone_points :
+            milestone_parameter < points[fteam.scoring_type_id][sport_id].regular_season.milestones[2] ? milestone_points*2 : milestone_points*3
       }
       
       let bonus_points = status > 5 ? points[fteam.scoring_type_id][sport_id].bonus.championship + points[fteam.scoring_type_id][sport_id].bonus.finalist + points[fteam.scoring_type_id][sport_id].bonus.appearance :

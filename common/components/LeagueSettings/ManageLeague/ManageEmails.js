@@ -2,13 +2,12 @@ import { Component } from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import Card from '@material-ui/core/Card'
 import Grid from '@material-ui/core/Grid'
-
 import ManageTable from './ManageTable'
 import ManageForm from './ManageForm'
-
 import MemberList from './fakeMemberData'
+import StyledButton from '../../Navigation/Buttons/StyledButton'
 
-const styles = theme => ({
+const styles = () => ({
   root: {
     marginTop: 50,
     fontFamily: 'Roboto',
@@ -32,16 +31,17 @@ const styles = theme => ({
 })
 
 class ManageEmails extends Component {
-  state = {
-    post: true,
-    notifications: false
-  }
 
+  onSubmit = () => {
+    if(this.props.updatePage)
+    {
+      this.props.updatePage()
+    }
+  }
 
   render() {
     const { classes } = this.props
-    const { post, notifications } = this.state
-
+    
     const MEMBERS_AMOUNT = 10
     const modifiedMembers = MemberList.slice()
     modifiedMembers.length = MEMBERS_AMOUNT
@@ -67,6 +67,12 @@ class ManageEmails extends Component {
             </Grid>
           </Grid>
         </Card>
+        <StyledButton
+          height={50}
+          styles={{ fontSize: 16, fontWeight: 600, marginTop: 40, marginBottom:50 }}
+          text="Save Settings"
+          onClick={this.onSubmit}
+        />
       </div>
     )
   }
