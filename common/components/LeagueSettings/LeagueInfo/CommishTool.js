@@ -61,8 +61,8 @@ class CommishTool extends React.Component {
       leagueInfo : 
         {
           draftType: 'Online - Snake Format',
-          pickTime: 60,
-          draftDate: props.activeLeague.draft_start_time
+          pickTime: props.activeLeague.draftInfo.seconds_pick,
+          draftDate: props.activeLeague.draftInfo.start_time
         },
       fireRedirect:false
     }
@@ -118,7 +118,7 @@ class CommishTool extends React.Component {
 
   componentWillReceiveProps(nextProps) {
 
-    this.setState({draftDate:nextProps.activeLeague.draft_start_time})
+    this.setState({draftDate:nextProps.activeLeague.draftInfo.start_time})
   }
 
   keypress(e) {

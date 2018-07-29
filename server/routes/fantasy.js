@@ -108,7 +108,8 @@ const createLeague = async (req) => {
                     start_time: req.body.leagueInfo.draftDate,
                     type: req.body.leagueInfo.draftType,
                     room_id: Math.random().toString(36).substr(2, 10),
-                    draft_position: JSON.stringify([owner_id])
+                    draft_position: JSON.stringify([owner_id]),
+                    seconds_pick: req.body.leagueInfo.pickTime
                   })
                   .then(() => {
                     return knex.withSchema('fantasy').table('sports')
@@ -213,6 +214,7 @@ const updateLeague =  (req) => {
       .update({
         start_time: req.body.leagueInfo.draftDate,
         type: req.body.leagueInfo.draftType,
+        seconds_pick: req.body.leagueInfo.pickTime
       })
       .where('league_id', req.body.league_id)
       .then(trx.commit)

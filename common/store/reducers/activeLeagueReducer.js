@@ -15,7 +15,7 @@ export default (state = {}, action={ type: null }) => {
       total_teams : action.total_teams,
       max_owners : action.max_owners,
       owners : action.owners,
-      draft_start_time : action.draft_start_time,
+      draftInfo : action.draftInfo,
       room_id : action.room_id,
       my_owner_id:action.my_owner_id,
       draftOrder:action.draftOrder,

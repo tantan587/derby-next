@@ -49,7 +49,7 @@ class DraftContainer extends React.Component {
     super(props)
     this.state = {
       countdownTime:0,
-      startTime:Math.round((new Date(this.props.activeLeague.draft_start_time)-new Date())/1000),
+      startTime:Math.round((new Date(this.props.activeLeague.draftInfo.start_time)-new Date())/1000),
       snackbarOpen:false,
       snackbarMessage:'',
       myDraftPosition:-1,
@@ -342,7 +342,7 @@ class DraftContainer extends React.Component {
                         label="Draft Time (secs)"
                         onChange={this.onTimeToDraftChange}
                         type="number"
-                        defaultValue="5"
+                        defaultValue={activeLeague.draftInfo.seconds_pick}
                         InputLabelProps={{
                           shrink: true,
                         }}

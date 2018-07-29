@@ -46,7 +46,7 @@ class ScoreboardPage extends React.Component {
     super(props)
     this.state = {
       dayCount: GetDayCountStr((new Date()).toJSON()),
-      startTime: 1,//Math.round((new Date(this.props.activeLeague.draft_start_time)-new Date())/1000)
+      startTime: 1,
       sportId:null
     }
   }
