@@ -89,7 +89,7 @@ class JoinLeagueForm extends React.Component {
       if (typeof document !== 'undefined'){
         Router.push('/login')
       }
-      return(<div></div>)
+      return(null)
     }
     else{
       const { classes, user } = this.props

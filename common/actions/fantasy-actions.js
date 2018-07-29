@@ -37,3 +37,8 @@ export const updateError = (name, error) => ({
   name,
   error
 })
+
+export const makeProgress = (progress) => ({
+  type: C.MAKE_PROGRESS,
+  progress
+})

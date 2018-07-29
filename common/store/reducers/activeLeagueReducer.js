@@ -5,6 +5,7 @@ import C from '../../constants'
 export default (state = {}, action={ type: null }) => {
   switch (action.type){
   case C.CLICKED_LEAGUE:
+  case C.CREATE_LEAGUE_SUCCESS:
     return {
       success : true,
       league_id : action.league_id,
@@ -26,10 +27,8 @@ export default (state = {}, action={ type: null }) => {
   case C.UPDATE_DRAFT_ORDER:
     return {...state, owners : owners(state.owners, action) }
 
-  case C.SAVE_OWNER_SETTINGS_FAIL:
-    return {...state, error : action.error } 
   case C.SAVE_OWNER_SETTINGS_SUCCESS:
-    return {...state, error : {}, owners: owners(state, action) } 
+    return {...state,  owners: owners(state, action) } 
   case C.LOGOUT:
     return {
       success : false,

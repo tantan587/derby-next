@@ -62,9 +62,12 @@ const constants = {
     'YHSCUPPL': 'You have successfully changed your password, please login.'
   },
 
+  MAKE_PROGRESS : 'MAKE_PROGRESS',
+
   PAGES:{
     CREATE_LEAGUE : 'CREATE_LEAGUE',
-    JOIN_LEAGUE : 'JOIN_LEAGUE'
+    JOIN_LEAGUE : 'JOIN_LEAGUE',
+    TEAM_OPTIONS : 'TEAM_OPTIONS'
   }
 }
 

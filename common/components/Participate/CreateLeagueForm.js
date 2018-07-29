@@ -48,7 +48,8 @@ class CreateLeagueForm extends React.Component {
         draftType: 'Online - Snake Format',
         pickTime: 60,
         draftDate: new Date((new Date()).getTime() + 7 * 86400000)
-      }
+      },
+    fireRedirect:false
   }
 
   componentWillUnmount() {
@@ -102,18 +103,29 @@ class CreateLeagueForm extends React.Component {
     }
     else
     {
+      this.setState({fireRedirect:true})
       this.props.onCreateLeague(this.state.leagueInfo)
     }
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (this.state.fireRedirect && !nextProps.user.error[C.PAGES.CREATE_LEAGUE])
+    {
+      this.props.updatePage()
+    }
+  }
+
   render() {
-    const { classes, user } = this.props
+    const { classes, user  } = this.props
+    const {leagueInfo} = this.state
+
+    
     return (
       <div>
         <Title color='white' backgroundColor='#EBAB38' title='Create League'/>
         <div className={classes.root}>
           <div className={classes.content}>
-            <LeagueInfo leagueInfo={this.state.leagueInfo} errorText={user.error[C.PAGES.CREATE_LEAGUE]} onSubmit={this.onSubmit} handleChange={this.handleChange}/>
+            <LeagueInfo leagueInfo={leagueInfo} errorText={user.error[C.PAGES.CREATE_LEAGUE]} onSubmit={this.onSubmit} handleChange={this.handleChange}/>
           </div>
         </div>
       </div>

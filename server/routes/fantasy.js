@@ -11,7 +11,8 @@ const fantasyHelpers = require('./helpers/fantasyHelpers')
 router.post('/createleague', authHelpers.loginRequired, (req, res)  => {
   return createLeague(req, res)
     .then((league_id) => { 
-      return getSimpleLeague(league_id, res, C.CREATE_LEAGUE_SUCCESS)})
+      return fantasyHelpers.getLeague(league_id, req.user.user_id, res, C.CREATE_LEAGUE_SUCCESS)
+    })
     .catch((action) => {  
       handleReduxResponse(res, 400, action)})
 })
@@ -319,17 +320,17 @@ const handleOwnerSettingsErrors = async (req) => {
 
   let errorText = new ErrorText()
   if (!req.body.ownerName || req.body.ownerName.length < 5) {
-    errorText.addError('ownerName','Owner name must be longer than five characters')
+    errorText.addError(C.PAGES.TEAM_OPTIONS,'Owner name must be longer than five characters')
   }
   
   if (req.body.ownerName && req.body.ownerName.length > 15) {
-    errorText.addError('ownerName','Owner name must be shorter than fifteen characters')
+    errorText.addError(C.PAGES.TEAM_OPTIONS,'Owner name must be shorter than fifteen characters')
   }
   if (ownerNames.includes(req.body.ownerName)) {
-    errorText.addError('ownerName','Owner name must be unique')
+    errorText.addError(C.PAGES.TEAM_OPTIONS,'Owner name must be unique')
   }
   if (silkColors.includes(req.body.avatar.primary + ';' + req.body.avatar.secondary)) {
-    errorText.addError('color','This color combo has already been chosen. You must choose a unique set of colors.')
+    errorText.addError(C.PAGES.TEAM_OPTIONS,'This color combo has already been chosen. You must choose a unique set of colors.')
   }
    
   if (errorText.foundError()) {
@@ -450,3 +451,4 @@ const getInUseFantasyConf = (league_id, useEPL) =>
 
 
 module.exports = router
+
