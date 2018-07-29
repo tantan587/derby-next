@@ -44,7 +44,7 @@ class MainLeagueHome extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      startTime: Math.round((new Date(this.props.activeLeague.draftInfo.start_time)-new Date())/1000)
+      startTime: this.props.activeLeague.draftInfo ? Math.round((new Date(this.props.activeLeague.draftInfo.start_time)-new Date())/1000) : null
     }
   }
 

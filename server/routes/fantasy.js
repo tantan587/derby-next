@@ -154,7 +154,7 @@ const joinLeague = async (req) => {
         league_id: league_id,
         user_id: req.user.user_id,
         owner_id: owner_id,
-        owner_name:  req.body.league_name + '-owner-' + total_enrolled,
+        owner_name:  req.body.league_name + '-owner-' + total_enrolled+1,
         commissioner: false
       })
       .then(() => {

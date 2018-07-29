@@ -100,14 +100,14 @@ class Index extends React.Component {
           <div className={classes.section1} style={{display:'flex', flexDirection:'column', alignItems:'center'}}>
             <Typography 
               variant="display3" style={{color:'white'}}>
-              <div style={{ fontFamily:'museo-slab-bold'}}>
+              <div style={{ fontFamily:'museo-slab-bold', marginBottom:20}}>
               A New Way to Play Fantasy Sports
               </div>
-              <div style={{fontFamily:'museo-slab'}}>
+              <div style={{fontFamily:'museo-slab', marginBottom:20}}>
               Cheer for Teams, Not for Players. All Year Round.
               </div>
             </Typography>
-            <Typography variant='headline'style={{color:'white',width:'60%', lineHeight:1.6}}>
+            <Typography variant='headline'style={{color:'white',width:'60%', lineHeight:1.6,  marginBottom:20}}>
             Pick your teams in this race and ride them to victory! 
             In Derby Fantasy Wins League, compete with your friends
              by drafting teams across multiple sports.
@@ -133,8 +133,6 @@ class Index extends React.Component {
                 </div>
               </Button>
             </Link>
-            <br/>
-            <br/>
             <br/>
             <br/>
             <br/>

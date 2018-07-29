@@ -49,7 +49,7 @@ class MenuListComposition extends React.Component {
 
   getMenuList = (items, n, hoverIndex) =>
   {
-    return <MenuList role="menu" style={{display: 'inline-block' }}>
+    return <MenuList role="menu" style={{display:'flex', flexDirection:'column'}}>
       {items.map((item, i) => { 
         return <MenuItem key={i} disabled={item.disabled} onClick={() => this.handleCloseWithId(item.id)}>
           <Link href={item.link ? item.link : '/'}>
@@ -115,9 +115,9 @@ class MenuListComposition extends React.Component {
               <Grow in={open} id="menu-list-grow" style={{ transformOrigin: '0 0 0' }}>
                 <Paper>
                   {items2 ?
-                    <div>
+                    <div style={{display:'flex', flexDirection:'row'}}>
                       {this.getMenuList(items2,0, hoverIndex, true)}
-                      <div style={{borderRight:'1px solid grey', display: 'inline-block', height:'240px'}}/>
+                      <div style={{borderRight:'1px solid grey'}}/>
                       {this.getMenuList(items1,items2.length, hoverIndex)}
                     </div>
                     : 
