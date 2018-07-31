@@ -79,6 +79,7 @@ const createLeague = async (req) => {
         total_enrolled: 1,
         private_ind: true,
         scoring_type_id:1
+        //down here it should add in sport structure id. 
       })
       .returning('*')
       .then((response) => {

@@ -13,7 +13,7 @@ const create_data = async () => {
   await asyncForEach(regular_season_calls, async (season) => {
     let sport_id = season.sport_id
     let sport = sport_keys[sport_id]
-    data.push(...await getSchedInfo(knex, sport.sport_name, sport.api, sport.schedulePromiseToGet, season.api_pull_parameter))
+    data.push(...await getSchedInfo(knex, sport.sport_name, sport.api, sport.schedulePromiseToGet, season.api_pull_parameter, season.sport_season_id))
   })
 
   return data
@@ -48,7 +48,7 @@ const getSchedInfo = async (knex, sportName, api, promiseToGet, year) => {
   let cleanSched = JSON.parse(schedData)
   const idSpelling = sportName === 'EPL' ? 'Id' : 'ID'
   let sport_json = sport_JSON_functions[sport_id]
-  let schedInfo = db_helpers.createScheduleForInsert(cleanSched, sport_id, idSpelling, teamIdMap, fantasyHelpers, myNull, sport_json)
+  let schedInfo = db_helpers.createScheduleForInsert(cleanSched, sport_id, idSpelling, teamIdMap, fantasyHelpers, myNull, sport_json, sport_season_id)
 
   return schedInfo
 }

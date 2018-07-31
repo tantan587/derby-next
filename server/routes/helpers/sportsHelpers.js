@@ -156,7 +156,7 @@ const getOneTeam  = async(league_id, team_id, res) =>{
   const str2 = `select * from (
     select * from fantasy.team_points a, fantasy.leagues b 
       where a.team_id = ` + team_id +
-      `and a.scoring_type_id = b.scoring_type_id 
+      `and a.sport_structure_id = b.sport_structure_id 
       and b.league_id = '` +league_id + '\' ) x ' + 
     `left outer join ( 
       select c.team_id, d.owner_name, d.owner_id, c.overall_pick 

@@ -13,9 +13,9 @@ const filtered_fantasy_standings_data = async () => {
     let sport_id = season.sport_id
     let sport = sport_keys[sport_id]
     if(sport_id===105){
-      data.push(...await getCFBstandings(knex, sport.sport_name, sport.api, sport.standingsPromiseToGet, season.api_pull_parameter, season.year))
+      data.push(...await getCFBstandings(knex, sport.sport_name, sport.api, sport.standingsPromiseToGet, season.api_pull_parameter, season.year, season.sport_season_id))
     }else{
-      data.push(...await standingsBySport(knex, sport.sport_name, sport.api, sport.standingsPromiseToGet, season.api_pull_parameter, season.year))
+      data.push(...await standingsBySport(knex, sport.sport_name, sport.api, sport.standingsPromiseToGet, season.api_pull_parameter, season.year, season.sport_season_id))
     }
   })
 
@@ -27,15 +27,7 @@ const filtered_fantasy_standings_data = async () => {
 async function updateStandings()
 {
   let data = await filtered_fantasy_standings_data()
-  //let cbbData = await getCBBstandings(knex, 'CBB', 'CBBv3StatsClient', 'getTeamSeasonStatsPromise', '2018')
-  // let cbbData = await standingsBySport(knex, 'CBB', 'CBBv3StatsClient', 'getTeamSeasonStatsPromise', '2018')
-  // let cfbData = await getCFBstandings(knex, 'CFB', 'CFBv3ScoresClient', 'getTeamSeasonStatsStandingsPromise', '2017')
-  // let nhlData = await standingsBySport(knex, 'NHL', 'NHLv3StatsClient', 'getStandingsPromise', '2018')
-  // let nbaData = await standingsBySport(knex, 'NBA', 'NBAv3StatsClient', 'getStandingsPromise', '2018')
-  // let mlbData = await standingsBySport(knex, 'MLB', 'MLBv3StatsClient', 'getStandingsPromise', '2018')
-  // let nflData = await standingsBySport(knex, 'NFL', 'NFLv3StatsClient', 'getStandingsPromise', '2017')
-  // let eplData = await standingsBySport(knex, 'EPL', 'Soccerv3StatsClient', 'getStandingsPromise', '144')
-  // let data = nhlData.concat(nbaData).concat(mlbData).concat(nflData).concat(cfbData).concat(eplData).concat(cbbData)
+
 
   let result =  await db_helpers.updateStandings(knex, data)
   console.log('Number of Standings Updated: ' + result)
@@ -48,21 +40,21 @@ async function updateStandings()
 
 
 
-const standingsBySport = async (knex, sportName, api, promiseToGet, pull_parameter, year) => {
+const standingsBySport = async (knex, sportName, api, promiseToGet, pull_parameter, year, sport_season_id) => {
   let standings_info = await db_helpers.createStandingsData(knex, sportName, api, promiseToGet, pull_parameter)
   let newStandings = standings_info.map(team=>{
     let ties = sportName === 'NHL' ? team.OvertimeLosses : 
       sportName === 'NFL' ? team.Ties : 
         sportName === 'EPL' ? team.Draws : 0
 
-    return {team_id: team.team_id, wins: team.Wins, losses: team.Losses, ties: ties, year: year}
+    return {team_id: team.team_id, wins: team.Wins, losses: team.Losses, ties: ties, year: year, sport_season_id: sport_season_id}
   })
 
   return newStandings
 }
 
-const getCFBstandings = async (knex, sportName, api, promiseToGet, pull_parameter, year) =>{
-  const standings = await standingsBySport(knex, sportName, api, promiseToGet, pull_parameter, year)
+const getCFBstandings = async (knex, sportName, api, promiseToGet, pull_parameter, year, sport_season_id) =>{
+  const standings = await standingsBySport(knex, sportName, api, promiseToGet, pull_parameter, year, sport_season_id)
   //check if current week is after the start of the post season, or is null. 
   //This could also be done with dates and season status table, as had been discussed
   //table hasn't yet been created

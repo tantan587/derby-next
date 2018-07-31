@@ -5,7 +5,7 @@ const sport_keys = {
   103: {sport_name: 'MLB', api: 'MLBv3StatsClient', standingsPromiseToGet: 'getStandingsPromise', schedulePromiseToGet: 'getSchedulesPromise'},
   104: {sport_name: 'NHL', api: 'NHLv3StatsClient', standingsPromiseToGet: 'getStandingsPromise', schedulePromiseToGet: 'getSchedulesPromise'},
   105: {sport_name: 'CFB', api: 'CFBv3StatsClient', standingsPromiseToGet: 'getTeamSeasonStatsStandingsPromise', schedulePromiseToGet: 'getSchedulesPromise'},
-  106: {sport_name: 'CBB', api: 'CBBv3StatsClient', standingsPromiseToGet: 'getTeamSeasonStatsPromise', schedulePromiseToGet: 'getSchedulesPromise'},
+  106: {sport_name: 'CBB', api: 'CBBv3ScoresClient', standingsPromiseToGet: 'getTeamSeasonStatsPromise', schedulePromiseToGet: 'getSchedulesPromise', playoffSchedulePromiseToGet: 'getTournamentHierarchyPromise'},
   107: {sport_name: 'EPL', api: 'Soccerv3StatsClient', standingsPromiseToGet: 'getStandingsPromise', schedulePromiseToGet: 'getSchedulePromise'}
 
 }
