@@ -21,7 +21,7 @@ const getLeague = async (league_id, user_id, res, type) => {
   left outer join (select cc.* from fantasy.rosters cc, fantasy.owners dd where
    cc.owner_id = dd.owner_id and dd.league_id = '` + league_id + '\'' +
  `) c on a.team_id = c.team_id 
- where a.scoring_type_id = 1`
+ where a.scoring_type_id = 1` //MA - this should have sport_structure_id, right? for YS to figure out
  //need to fix this to do it based on league
  //, fantasy.leagues b
  //where b.league_id = '` + league_id + '\' and b.scoring_type_id = a.scoring_type_id'
@@ -385,6 +385,7 @@ const updateTeamPoints = async () =>
 const updateLeagueProjectedPoints = async (league_id) => {
   const math = require('mathjs')
 
+  //this needs to be fixed so it works, but this should be on fantasy.sport_structure_id
   let rosters = await knex('fantasy.rosters')
     .leftJoin('fantasy.leagues', 'fantasy.rosters.league_id', 'fantasy.leagues.league_id')
     .leftJoin('fantasy.projections', function(){
@@ -433,7 +434,7 @@ const updateLeagueProjectedPoints = async (league_id) => {
 }
 
 //runs for each league to run points
-//not sure if this is set up to run for each and every league - this hsould match up leagues with scoring type
+//not sure if this is set up to run for each and every league - this hsould match up leagues with sport structure id
 const updateLeaguePoints = (league_id) =>
 
 {
@@ -444,13 +445,13 @@ const updateLeaguePoints = (league_id) =>
     from fantasy.team_points a, fantasy.rosters b, fantasy.leagues c 
     where a.team_id = b.team_id 
     and c.league_id = b.league_id 
-    and c.scoring_type_id = a.scoring_type_id 
+    and c.sport_structure_id = a.sport_structure_id 
     and b.league_id = '` + league_id + '\''
     : `select a.reg_points, a.bonus_points, a.playoff_points, b.owner_id, b.league_id
     from fantasy.team_points a, fantasy.rosters b, fantasy.leagues c 
     where a.team_id = b.team_id 
     and c.league_id = b.league_id 
-    and c.scoring_type_id = a.scoring_type_id`
+    and c.sport_structure_id = a.sport_structure_id`
 
   return knex.raw(str)
     .then(result =>

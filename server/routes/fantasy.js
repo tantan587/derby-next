@@ -76,6 +76,7 @@ function createLeague(req, res) {
                 league_password: req.body.leagueInfo.league_password,
                 total_enrolled: 1,
                 private_ind: req.body.leagueInfo.privateInd,
+                //down here it should add in sport structure id. 
               })
               .returning('*')
               .then((response) => {

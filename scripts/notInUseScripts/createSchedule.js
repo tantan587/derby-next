@@ -28,6 +28,7 @@ async function createSchedule()
 
 async function getData(league, url)
 {
+  //get Schedule Data deleted, so this definitely doesn't work anymore
   return db_helpers.getScheduleData(knex, league, url)
     .then(result => { 
       let newSchedule = []

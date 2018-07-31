@@ -28,7 +28,7 @@ const GetDraftInfo = async (room_id) =>{
    '\' and a.league_id = b.league_id group by a.league_id) as total_teams, * from  draft.settings where room_id = \'' + room_id + '\''
 
   const knexStr2 = `select team_id from fantasy.team_points a, draft.settings b, fantasy.leagues c
-   where b.league_id = c.league_id and a.scoring_type_id = c.scoring_type_id and b.room_id = '` + room_id + '\' order by 1'
+   where b.league_id = c.league_id and a.sport_structure_id = c.sport_structure_id and b.room_id = '` + room_id + '\' order by 1'
 
   const knexStr3 = `select owner_id from fantasy.owners a, 
    draft.settings b where a.league_id = b.league_id and b.room_id = '` + room_id + '\' order by 1'

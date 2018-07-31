@@ -12,7 +12,7 @@ const create_active_playoff_standings_data = async () => {
     await asyncForEach(post_season_calls, async (season) => {
       let sport_id = season.sport_id
       let sport = sport_keys[sport_id]
-      data.push(...await getStandingsInfo(knex, sport.sport_name, sport.api, sport.standingsPromiseToGet, season.api_pull_parameter, season.year))
+      data.push(...await getStandingsInfo(knex, sport.sport_name, sport.api, sport.standingsPromiseToGet, season.api_pull_parameter, season.year, season.sport_season_id))
     })
   
     return data
@@ -34,7 +34,7 @@ async function createStandingsPO () {
           process.exit()
 })}
 
-const getStandingsInfo = async (knex, sportName, api, promiseToGet, pull_parameter, year) => {
+const getStandingsInfo = async (knex, sportName, api, promiseToGet, pull_parameter, year, sport_season_id) => {
     let standings_info = await db_helpers.createStandingsData(knex, sportName, api, promiseToGet, pull_parameter)
     let newStandings = standings_info.map(team=>{
         let status = 3
@@ -42,7 +42,7 @@ const getStandingsInfo = async (knex, sportName, api, promiseToGet, pull_paramet
             status = team.Wins===16 ? 6 : team.Wins>11 ? 5 : team.Losses%4 === 0 && team.Wins<team.Losses ? 4 : 3
         }
 
-        return {team_id: team.team_id, playoff_wins: team.Wins, playoff_losses: team.Losses, byes: 0, playoff_status: status, year: year}
+        return {team_id: team.team_id, playoff_wins: team.Wins, playoff_losses: team.Losses, byes: 0, playoff_status: status, year: year, sport_season_id: sport_season_id}
     })
     return newStandings
 }
