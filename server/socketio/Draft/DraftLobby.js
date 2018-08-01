@@ -50,7 +50,7 @@ class DraftLobby {
     let roomId
 
     const draftIsGood = () =>{
-      return this.draftRooms[roomId].Manager && this.draftRooms[roomId].Manager.DraftIsUp()
+      return this.draftRooms[roomId] && this.draftRooms[roomId].Manager && this.draftRooms[roomId].Manager.DraftIsUp()
     }
 
     socket.on('join', roomInfo =>
@@ -76,6 +76,12 @@ class DraftLobby {
       
       if(draftIsGood())
       {
+        this.draftRooms[roomId].Manager.StartAgain()
+      }
+      else{
+        this.draftRooms[roomId].Emitter = new DraftEmitter(this.draftNSP,roomId)
+        this.draftRooms[roomId].Manager = new DraftManager(roomId, this.draftRooms[roomId].Emitter)
+        await this.draftRooms[roomId].Manager.Create()
         this.draftRooms[roomId].Manager.StartAgain()
       }
     })

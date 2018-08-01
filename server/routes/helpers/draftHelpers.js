@@ -61,12 +61,10 @@ const GetTeamMap = async (roomId) =>{
 }
 
 const FilterDraftPick = (teamId, teamMap, draftRules, eligibleTeams, queue) =>{
-
   let confId = teamMap[teamId].conference_id
   let sportId = teamMap[teamId].sport_id
   let teamsInConf = teamMap[confId]
   let teamsInSport = teamMap[sportId]
-
 
   let sport = draftRules[sportId]
   let conf = sport.conferences[confId]
@@ -84,7 +82,7 @@ const FilterDraftPick = (teamId, teamMap, draftRules, eligibleTeams, queue) =>{
       eligibleTeams = filterByArr(eligibleTeams, teamsInConf)
       queue = filterByArr(queue, teamsInConf) 
     }
-    return {eligibleTeams:eligibleTeams, queue:queue}
+    return {eligibleTeams, queue}
   }
   return false
 }
