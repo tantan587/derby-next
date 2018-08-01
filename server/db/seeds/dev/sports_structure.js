@@ -1,5 +1,5 @@
 let structure_data = [
-  {sport_structure_id: 1, league_bundle_id: 1, scoring_type_id: 1, previous_sport_structure_id: 1, active: true},
+  {sport_structure_id: 1, league_bundle_id: 1, scoring_type_id: 1, previous_sport_structure_id: 2, active: true},
   {sport_structure_id: 2, league_bundle_id: 2, scoring_type_id: 1, active: false}
 ]
 
