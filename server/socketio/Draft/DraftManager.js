@@ -127,10 +127,12 @@ function DraftManager(roomId, draftEmitter) {
   }
 
   const waitToStartDraft = () => {
+    console.log(1,roomId)
     draftIsUp = true
     let counter = 0
     clearTimers()
     that.timer = setInterval(() => {
+      console.log(roomId, that.time, counter)
       if(that.time < counter){
         clearInterval(that.timer)
         draftEmitter.EmitDraftLive()

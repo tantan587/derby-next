@@ -154,7 +154,7 @@ const joinLeague = async (req) => {
         league_id: league_id,
         user_id: req.user.user_id,
         owner_id: owner_id,
-        owner_name:  req.body.league_name + '-owner-' + total_enrolled+1,
+        owner_name:  req.body.league_name + '-owner-' + (total_enrolled+1),
         commissioner: false
       })
       .then(() => {
@@ -359,14 +359,14 @@ const handleOwnerSettingsErrors = async (req) => {
     errorText.addError(C.PAGES.CUSTOMIZE_TEAMS,'Owner name must be longer than five characters')
   }
   
-  if (req.body.ownerName && req.body.ownerName.length > 15) {
-    errorText.addError(C.PAGES.CUSTOMIZE_TEAMS,'Owner name must be shorter than fifteen characters')
+  if (req.body.ownerName && req.body.ownerName.length > 20) {
+    errorText.addError(C.PAGES.CUSTOMIZE_TEAMS,'Owner name must be shorter than twenty characters')
   }
   if (ownerNames.includes(req.body.ownerName)) {
     errorText.addError(C.PAGES.CUSTOMIZE_TEAMS,'Owner name must be unique')
   }
   if (silkColors.includes(req.body.avatar.primary + ';' + req.body.avatar.secondary)) {
-    errorText.addError(C.PAGES.CUSTOMIZE_TEAMS,'This color combo has already been chosen. You must choose a unique set of colors.')
+    errorText.addError(C.PAGES.CUSTOMIZE_TEAMS,'Someone else has already chosen this color combo. You must choose a unique set of colors.')
   }
    
   if (errorText.foundError()) {
