@@ -1,5 +1,5 @@
 var methods = {}
-const rp = require('request-promise')
+//const rp = require('request-promise')
 const fdClientModule = require('fantasydata-node-client')
 
 
@@ -47,7 +47,7 @@ methods.getTeamAndGlobalId =  async function(knex, sportId)
     .select('team_id', 'global_team_id')
 }
 
-methods.createScheduleForInsert = function(cleanSched, sport_id, idSpelling, teamIdMap, fantasyHelpers, myNull, json_function) {
+methods.createScheduleForInsert = function(cleanSched, sport_id, idSpelling, teamIdMap, fantasyHelpers, myNull, json_function, sport_season_id) {
 
   return cleanSched.map(game => {
 //below is commented out, and kept, becasue it was there to catch teams that didn't go through, and didn't have IDs
@@ -91,50 +91,12 @@ methods.createScheduleForInsert = function(cleanSched, sport_id, idSpelling, tea
         sport_id === '102' ? game.LastUpdated ? game.LastUpdated : myNull :
           game.Updated ? game.Updated : myNull,
       season_type: game.SeasonType, year: game.Season, 
-      game_extra: json_function(game)
+      game_extra: json_function(game), sport_season_id: sport_season_id
     }
   })
 
 }
 
-methods.getScheduleData = (knex, sportName, url) => 
-{
-  return knex
-    .withSchema('sports')
-    .table('leagues')
-    .where('sport_name', sportName)
-    .then((league)=> {
-      const sportId = league[0].sport_id
-      const idSpelling = sportName === 'EPL' ? 'Id' : 'ID'
-      return methods.getTeamAndGlobalId(knex, sportId)
-        .then(teamIds => {
-          let teamIdMap = {}
-          teamIds.map(r => teamIdMap[r.global_team_id]= r.team_id)
-
-          const options = {
-            url: url,
-            headers: {
-              'User-Agent': 'request',
-              'Ocp-Apim-Subscription-Key':league[0].fantasy_data_key
-            },
-            json: true
-          }
-          return rp(options)
-            .then((fdata) => {
-              let games = []
-              fdata.filter(game => game['GlobalGame' + idSpelling] ).map(game => games.push({...game, //&& !game.Canceled
-                global_game_id:game['GlobalGame' + idSpelling], 
-                home_team_id:teamIdMap[game['GlobalHomeTeam' + idSpelling]],
-                away_team_id:teamIdMap[game['GlobalAwayTeam' + idSpelling]],
-                date_time:game.DateTime ? game.DateTime : game.Day,
-                sport_id:sportId
-              })
-              )
-              return games
-            })
-        })
-    })
-}
 
 methods.getFdata = async (knex, sportName,api, promiseToGet, parameters=false, second_parameter=false) =>
 {
@@ -160,6 +122,20 @@ methods.getFdata = async (knex, sportName,api, promiseToGet, parameters=false, s
   
 }
 
+methods.getSeasonCall = async (knex) => {
+  let today = new Date()
+
+  let seasons = 
+    await knex
+      .withSchema('sports')
+      .table('sport_season')
+      .where('start_pull_date', "<", today)
+      .andWhere('end_pull_date', ">", today)
+      .select('*')
+  
+  return seasons
+}
+
 methods.createStandingsData = async (knex, sportName, api, promiseToGet, year) =>{
   let standData = await methods.getFdata (knex, sportName, api, promiseToGet, year)
   let sport_id = await methods.getSportId(knex, sportName)
@@ -176,7 +152,6 @@ methods.createStandingsData = async (knex, sportName, api, promiseToGet, year) =
       })
   }else if(sportName==='EPL'){
     let newStand = cleanStand.filter(standings => standings.Scope === 'Total')
-    console.log(newStand.length)
     standInfo = newStand.map(team=>
       {
         let global = fantasy_2_global[sportName] + Number(team.TeamId)
@@ -266,7 +241,7 @@ methods.updateSchedule = (knex, newResults) =>
       }
       })
       gameErrors.forEach(game => console.log(game))
-      console.log(gameErrors.length)
+      console.log('Game Errors: ',gameErrors.length)
       if (updateList.length > 0)
       {
         return Promise.all(updateList)
@@ -318,6 +293,7 @@ methods.updateBowlWins = async (knex, bowl_wins, playoff_wins) => {
     return 0
 }
 
+//this should use sport_season_id
 methods.updatePlayoffStandings = (knex, newStandings) =>
 {
   return knex
@@ -326,16 +302,23 @@ methods.updatePlayoffStandings = (knex, newStandings) =>
     .then(results => {
       let oldStandings = {}
       var updateList =[]
-      results.map(result => oldStandings[result.team_id] =result)
+      results.map(result => {
+        if(!(result.sport_season_id in oldStandings)){
+          oldStandings[result.sport_season_id] = {}
+        }
+        oldStandings[result.sport_season_id][result.team_id] = result
+    })
 
       newStandings.map(teamRec =>
       {
-        if(oldStandings[teamRec.team_id].playoff_wins !== teamRec.playoff_wins)  
+        if(oldStandings[teamRec.sport_season_id][teamRec.team_id].playoff_wins !== teamRec.playoff_wins)  
           updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'playoff_wins', teamRec.playoff_wins, true )))
-        if(oldStandings[teamRec.team_id].playoff_losses !== teamRec.playoff_losses)  
+        if(oldStandings[teamRec.sport_season_id][teamRec.team_id].playoff_losses !== teamRec.playoff_losses)  
           updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'playoff_losses', teamRec.playoff_losses, true )))
-        if(oldStandings[teamRec.team_id].playoff_status !== teamRec.playoff_status)  
+        if(oldStandings[teamRec.sport_season_id][teamRec.team_id].playoff_status !== teamRec.playoff_status)  
           updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'playoff_status', teamRec.playoff_status, true )))
+        if(oldStandings[teamRec.sport_season_id][teamRec.team_id].year !== teamRec.year)
+          updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'year', teamRec.year, true )))
       })
       if (updateList.length > 0)
       {
@@ -350,36 +333,58 @@ methods.updatePlayoffStandings = (knex, newStandings) =>
     })
 }
 
-methods.updateStandings = (knex,newStandings) =>
+//this should use sport_season_id
+methods.updateStandings = async (knex,newStandings) =>
 {
-  return knex
+  let results = await knex
     .withSchema('sports')
     .table('standings')
-    .then(results => {
-      let oldStandings = {}
-      var updateList =[]
-      results.map(result => oldStandings[result.team_id] =result)
+  
+  let playoff_results = await knex('sports.playoff_standings')
+  let oldPlayoffStandings = {}
+  playoff_results.forEach(result => {
+    if(!(result.sport_season_id in oldPlayoffStandings)){
+      oldPlayoffStandings[result.sport_season_id] = {}
+    }
+    oldPlayoffStandings[result.sport_season_id][result.team_id] = result
+  })
+  
 
-      newStandings.map(teamRec =>
-      {
-        if(oldStandings[teamRec.team_id].wins !== teamRec.wins)  
-          updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'wins', teamRec.wins )))
-        if(oldStandings[teamRec.team_id].losses !== teamRec.losses)  
-          updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'losses', teamRec.losses )))
-        if(oldStandings[teamRec.team_id].ties !== teamRec.ties)  
-          updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'ties', teamRec.ties )))
+  let oldStandings = {}
+  var updateList =[]
+  results.map(result => {
+    if(!(result.sport_season_id in oldStandings)){
+      oldStandings[result.sport_season_id] = {}
+    }
+    oldStandings[result.sport_season_id][result.team_id] =result
+  })
+
+  newStandings.map(teamRec =>
+  {
+    if(oldStandings[teamRec.sport_season_id][teamRec.team_id].wins !== teamRec.wins)  
+      updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'wins', teamRec.wins )))
+    if(oldStandings[teamRec.sport_season_id][teamRec.team_id].losses !== teamRec.losses)  
+      updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'losses', teamRec.losses )))
+    if(oldStandings[teamRec.sport_season_id][teamRec.team_id].ties !== teamRec.ties)  
+      updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'ties', teamRec.ties )))
+    if(oldStandings[teamRec.sport_season_id][teamRec.team_id].year !== teamRec.year)  
+      updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'year', teamRec.year )))
+    //year doesnt need to be on here, necessarily - its to create it initially
+    //adds to sport season id bc base sport seasonid is 2 away
+    if(oldPlayoffStandings[Number(teamRec.sport_season_id)+2][teamRec.team_id].year !== teamRec.year)
+      updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'year', teamRec.year, true)))
+  })
+
+  if (updateList.length > 0)
+  {
+    return Promise.all(updateList)
+      .then(() => { 
+        //console.log("im done updating!")
+        return updateList.length
       })
-      if (updateList.length > 0)
-      {
-        return Promise.all(updateList)
-          .then(() => { 
-            //console.log("im done updating!")
-            return updateList.length
-          })
-      }
-      else
-        return 0
-    })
+  }
+  else
+    return 0
 }
 
 methods.updateOneStandingRow = (knex, team_id, column, value, playoffs=false) =>

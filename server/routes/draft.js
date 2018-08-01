@@ -24,7 +24,7 @@ router.post('/savedraft', authHelpers.loginRequired, (req, res)  => {
 const getDraft = async (room_id, owner_id) =>
 {
   const strTeams = `select b.team_id from draft.settings a, fantasy.team_points b, fantasy.leagues c
-where a.league_id = c.league_id and c.scoring_type_id = b.scoring_type_id and a.room_id = '` + room_id + '\''
+where a.league_id = c.league_id and c.sport_structure_id = b.sport_structure_id and a.room_id = '` + room_id + '\''
 
   const strOwners = `select b.owner_id from draft.settings a, fantasy.owners b
   where a.league_id = b.league_id and a.room_id = '` + room_id + '\''
