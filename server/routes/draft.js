@@ -63,7 +63,6 @@ const assembleDraft = (teams,owners, results, my_owner_id, rules, teamMap) =>{
     case 'STATE':
     {
       mode = element.action.mode ? element.action.mode : mode
-      console.log(mode)
       break
     }
     case 'PICK':
@@ -94,7 +93,7 @@ const assembleDraft = (teams,owners, results, my_owner_id, rules, teamMap) =>{
   queue = queue.filter(team => {
     return !draftedTeams.includes(team)
   })
-
+  
   ownersMap[my_owner_id].forEach(x => {
     let resp = draftHelpers.FilterDraftPick(x.teamId, teamMap, rules, eligibleTeams, queue)
     eligibleTeams = resp.eligibleTeams

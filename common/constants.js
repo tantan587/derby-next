@@ -69,6 +69,13 @@ const constants = {
     JOIN_LEAGUE : 'JOIN_LEAGUE',
     CUSTOMIZE_TEAMS : 'CUSTOMIZE_TEAMS',
     COMMISH_TOOLS : 'COMMISH_TOOLS'
+  },
+
+  DRAFT_STATE : {
+    PRE : 'pre',
+    LIVE : 'live',
+    TIMEOUT : 'timeout',
+    POST : 'post'
   }
 }
 

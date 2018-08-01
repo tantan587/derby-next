@@ -2,17 +2,20 @@ const draftHelpers = require('../../routes/helpers/draftHelpers')
 const fantasyHelpers = require('../../routes/helpers/fantasyHelpers')
 const socketIoHelpers = require('../socketioHelpers')
 const Owners = require('./Owners')
+const C = require('../../../common/constants')
 
 function DraftManager(roomId, draftEmitter) {
   
   var that = this
   let timeToDraft = 5
   var draftIsUp = false
+  let draftState = 'pre'
  
   this.Create = async () =>
   {
     const resp = await socketIoHelpers.GetDraftInfo(roomId)
     timeToDraft = resp.seconds_pick
+    draftState = resp.draftState
     that.draftPosition = resp.draft_position
     that.draftOrder =  fantasyHelpers.GetDraftOrder(resp.total_teams,resp.draft_position.length)
     that.allTeams = Array.from(resp.teams)
@@ -51,8 +54,9 @@ function DraftManager(roomId, draftEmitter) {
 
   this.EndDraft = () =>
   {
-    socketIoHelpers.InsertDraftAction(roomId, 'server', 'STATE', {'mode':'post'})
-    draftEmitter.EmitModeChange('post')
+    draftState = C.DRAFT_STATE.POST
+    socketIoHelpers.InsertDraftState(roomId,draftState)
+    draftEmitter.EmitModeChange(draftState)
     console.log('saving Teams')
     draftHelpers.enterDraftToDb(that.owners.AssembleTeams(), that.leagueId)
     //draftIsUp = false
@@ -110,9 +114,10 @@ function DraftManager(roomId, draftEmitter) {
   this.Timeout = (amountOfTime) =>
   {
     console.log('in timeout')
+    draftState = C.DRAFT_STATE.TIMEOUT
     clearTimers()
-    socketIoHelpers.InsertDraftAction(roomId, 'server', 'STATE', {'mode':'timeout'})
-    draftEmitter.EmitModeChange('timeout')
+    socketIoHelpers.InsertDraftState(roomId,draftState)
+    draftEmitter.EmitModeChange(draftState)
     if (amountOfTime) 
     {
       that.timer = setTimeout(() => {
@@ -132,11 +137,11 @@ function DraftManager(roomId, draftEmitter) {
     let counter = 0
     clearTimers()
     that.timer = setInterval(() => {
-      console.log(roomId, that.time, counter)
       if(that.time < counter){
         clearInterval(that.timer)
+        draftState = C.DRAFT_STATE.LIVE
         draftEmitter.EmitDraftLive()
-        socketIoHelpers.InsertDraftAction(roomId, 'server', 'STATE', {'mode':'live'})
+        socketIoHelpers.InsertDraftState(roomId, draftState)
         waitToAutoDraft(timeToDraft)
         return
       }
@@ -213,8 +218,9 @@ function DraftManager(roomId, draftEmitter) {
   }
 
   const timeIn = () => {
-    socketIoHelpers.InsertDraftAction(roomId, 'server', 'STATE', {'mode':'live'})
-    draftEmitter.EmitModeChange('live')
+    draftState = C.DRAFT_STATE.LIVE
+    socketIoHelpers.InsertDraftState(roomId, draftState)
+    draftEmitter.EmitModeChange(draftState)
     waitToAutoDraft(that.counter)
   }
 }

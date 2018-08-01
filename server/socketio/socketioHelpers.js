@@ -3,8 +3,9 @@ const knex = require('../db/connection')
 
 const GetActiveDrafts = async () =>
 {
-  const str1 = `SELECT room_id from draft.settings WHERE start_time  >
-   NOW() - INTERVAL '1 days' AND start_time < NOW() + INTERVAL '100 days'`
+  const str1 = `SELECT room_id from draft.settings 
+  WHERE start_time < NOW() + INTERVAL '100 days'
+  and state != 'post'`
 
   const resp = await knex.raw(str1)
   return resp.rows.map(x =>x.room_id)
@@ -21,7 +22,7 @@ const GetFutureDrafts = async () =>
 
 const GetDraftInfo = async (room_id) =>{
 
-  const knexStr0 = `select league_id, seconds_pick from draft.settings
+  const knexStr0 = `select league_id, seconds_pick, state from draft.settings
    where room_id = '` + room_id + '\''
 
   const knexStr1 = 'select (select sum(b.number_teams) from draft.settings a, fantasy.sports b where room_id = \'' + room_id +
@@ -45,7 +46,7 @@ const GetDraftInfo = async (room_id) =>{
   const owners = await knex.raw(knexStr3)
   const allQueues = await knex.raw(knexStr4)
   const numberOfPicks = await knex.raw(knexStr5)
-
+  
   const queueByOwner = {}
   allQueues.rows.map(x => {
     queueByOwner[x.initiator] = x.action.queue
@@ -62,6 +63,16 @@ const GetDraftInfo = async (room_id) =>{
     queueByOwner:queueByOwner,
     totalPicks:parseInt(numberOfPicks.rows[0].sum) * rtnOwners.length
   }
+}
+
+const InsertDraftState = (roomId, state) =>
+{
+  return knex.withSchema('draft').table('settings')
+    .update('state', state)
+    .where('room_id',roomId)
+    .then(() => {
+      return InsertDraftAction(roomId, 'server', 'STATE', {'mode':state} )
+    })
 }
 
 const InsertDraftAction = (roomId, initiator, actionType, action, client_ts ='' ) =>
@@ -99,6 +110,7 @@ module.exports = {
   GetActiveDrafts,
   GetFutureDrafts,
   GetDraftInfo,
+  InsertDraftState,
   InsertDraftAction,
   RestartDraft,
 }

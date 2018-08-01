@@ -5,9 +5,9 @@ import MenuBase from './MenuBase'
 
 
 class LeaguesButton extends React.Component {
-  handleClick = (league_id) => {
+  handleClick = () => {
     const { onClickedLeague } = this.props
-    onClickedLeague(league_id, this.props.user.id)
+    onClickedLeague(this.props.activeLeague.league_id, this.props.user.id)
   };
   render() {
     const { color, backgroundColor, leagues, useItems2 } = this.props
@@ -21,7 +21,8 @@ class LeaguesButton extends React.Component {
 
     items2.push({
       text:'League Home',
-      link:'/mainleaguehome'})
+      link:'/mainleaguehome',
+      onClick:this.handleClick})
     items2.push({
       text:'Draft Room',
       link:'/livedraft'})
@@ -43,7 +44,7 @@ class LeaguesButton extends React.Component {
     )
   }
 }
-export default connect(({ user, leagues }) => ({ user, leagues }),
+export default connect(({ user, leagues, activeLeague }) => ({ user, leagues, activeLeague }),
   dispatch =>
     ({
       onClickedLeague(league_id, user_id) {

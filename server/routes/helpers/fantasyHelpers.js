@@ -7,16 +7,10 @@ function handleReduxResponse(res, code, action){
 }
 
 const getLeague = async (league_id, user_id, res, type) => {
-  var leagueInfoStr = `select a.league_name, a.max_owners, a.league_id, b.room_id, b.start_time, b.draft_position, b.seconds_pick, c.total_teams 
+  var leagueInfoStr = `select a.league_name, a.max_owners, a.league_id, b.room_id, b.start_time, b.draft_position, b.seconds_pick, b.state, c.total_teams 
   from fantasy.leagues a, draft.settings b, (
     select league_id, sum(number_teams) as total_teams from fantasy.sports where league_id = '` + league_id + `' group by league_id) c
   where a.league_id = b.league_id and a.league_id = c.league_id`
-
-  let draftStateStr = `select b.action from draft.settings a, draft.results b 
-  where a.league_id = '` + league_id + `' 
-   and a.room_id = b.room_id 
-   and b.action_type = 'STATE' 
-   order by b.server_ts desc limit 1`
 
   var ownerInfoStr = `select a.*, b.username, c.total_points, c.rank from
   fantasy.owners a, users.users b, fantasy.points c
@@ -37,19 +31,17 @@ const getLeague = async (league_id, user_id, res, type) => {
   const leagueInfo = await knex.raw(leagueInfoStr)
   const ownerInfo = await knex.raw(ownerInfoStr)
   const teamInfo = await knex.raw(teamInfoStr)
-  const draftState = await knex.raw(draftStateStr)
   const rules = await getSportLeagues(league_id)
 
   if (leagueInfo.rows.length === 1)
   {
-    console.log(draftState.rows[0])
     var league_name = leagueInfo.rows[0].league_name
     var max_owners = leagueInfo.rows[0].max_owners
     var total_teams = leagueInfo.rows[0].total_teams
     var room_id = leagueInfo.rows[0].room_id
     var start_time = leagueInfo.rows[0].start_time
     let seconds_pick = leagueInfo.rows[0].seconds_pick
-    let mode = draftState.rows[0] ? draftState.rows[0].action.mode : 'pre'
+    let mode = leagueInfo.rows[0].state
     var draft_position = leagueInfo.rows[0].draft_position
     var my_owner_id = ''
     var owners = []
