@@ -27,12 +27,10 @@ async function createStandingsPO () {
     
     
     //let data = MLB_standPO.concat(NBA_standPO).concat(NHL_standPO).concat(NFL_standPO)//.concat(CBB_standPO).concat(CFB_standPO)//.concat(EPL_standPO)
-    db_helpers.updatePlayoffStandings(knex, data)
-        .then(()=>{
-
-          console.log('done')
-          process.exit()
-})}
+    let result = await db_helpers.updatePlayoffStandings(knex, data)
+    console.log('Number of Standings Updated: ' + result)
+    process.exit()
+}
 
 const getStandingsInfo = async (knex, sportName, api, promiseToGet, pull_parameter, year, sport_season_id) => {
     let standings_info = await db_helpers.createStandingsData(knex, sportName, api, promiseToGet, pull_parameter)

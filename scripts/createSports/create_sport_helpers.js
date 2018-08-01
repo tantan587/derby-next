@@ -10,22 +10,38 @@ const getSeasonData = async (knex, sport_id) => {
   
   let playoff_sport_seasons = []
   let regular_sport_seasons = []
+  let all_sport_seasons = []
   sport_seasons.forEach(season => {
     if(season.season_type === 1){
       regular_sport_seasons.push({sport_season_id: season.sport_season_id, year: season.year})
     }
-    if(season.season_type === 2){
+    if(season.season_type === 3){
       playoff_sport_seasons.push({sport_season_id: season.sport_season_id, year: season.year})
+    }
+    all_sport_seasons.push(season.sport_season_id)
+  })
+  
+  let sport_structure = 
+  await knex('fantasy.sports_structure')
+    .leftOuterJoin('fantasy.league_bundle', 'fantasy.sports_structure.league_bundle_id', 'fantasy.league_bundle.league_bundle_id')
+    .select('*')
+
+  let active_sport_structure = sport_structure.map(structure => {
+    if(structure.current_sport_seasons.some(sport_season => {
+      all_sport_seasons.includes(sport_season)
+    })){
+      return {sport_structure_id: structure.sport_structure_id, scoring_type_id: structure.scoring_type_id}
     }
   })
 
-  return {regular: regular_sport_seasons, playoff: playoff_sport_seasons}
+  return {regular: regular_sport_seasons, playoff: playoff_sport_seasons, structures: active_sport_structure}
 }
 
 const createCollegeSport = async (knex, sport_id, sportName, api, promiseToGet) => {
   let teamInfo = []
   let standings = []
   let playoff_standings = []
+  let teamPoints = []
   let teams_and_info = await db_helpers.createSportData(knex, sport_id, sportName, api, promiseToGet)
   let teamIdMap = teams_and_info[1]
   let college_teams = teams_and_info[0]
@@ -48,7 +64,11 @@ const createCollegeSport = async (knex, sport_id, sportName, api, promiseToGet) 
     })
     season_data.playoff.forEach(season => {
       playoff_standings.push({team_id: team_id, playoff_wins : 0, playoff_losses: 0, byes: 0, bowl_wins: 0, playoff_status: 1, year: season.year, sport_season_id: season.sport_season_id})
-  })
+    })
+
+    // season_data.structures.forEach(structure => {
+    //   teamPoints.push({team_id: team_id, reg_points: 0, playoff_points: 0, bonus_points: 0, scoring_type_id: structure.scoring_type_id, sport_structure_id: structure.sport_structure_id})
+    // })
 })
 
 
@@ -60,6 +80,7 @@ const createCollegeSport = async (knex, sport_id, sportName, api, promiseToGet) 
         {
           db_helpers.insertIntoTable(knex, 'sports', 'playoff_standings', playoff_standings)
             .then(()=> {
+              console.log(`${sportName}: ${teamInfo.length} teams added`)
               process.exit()
             })
         })
@@ -71,6 +92,7 @@ const createProfessionalSport = async (knex, sport_id, sportName, api, promiseTo
   let teamInfo = []
   let standings = []
   let playoff_standings = []
+  let teamPoints = []
   let teams_and_info = await db_helpers.createSportData(knex, sport_id, sportName, api, promiseToGet)
   let teamIdMap = teams_and_info[1]
   let professional_teams = teams_and_info[0]
@@ -95,6 +117,10 @@ const createProfessionalSport = async (knex, sport_id, sportName, api, promiseTo
       playoff_standings.push({team_id: team_id, playoff_wins : 0, playoff_losses: 0, byes: 0, bowl_wins: 0, playoff_status: 1, year: season.year, sport_season_id: season.sport_season_id})
     })
 
+    // season_data.structures.forEach(structure => {
+    //   teamPoints.push({team_id: team_id, reg_points: 0, playoff_points: 0, bonus_points: 0, scoring_type_id: structure.scoring_type_id, sport_structure_id: structure.sport_structure_id})
+    // })
+
   })
 
 
@@ -107,6 +133,7 @@ const createProfessionalSport = async (knex, sport_id, sportName, api, promiseTo
         {
           db_helpers.insertIntoTable(knex, 'sports', 'playoff_standings', playoff_standings)
             .then(()=> {
+              console.log(`${sportName}: ${teamInfo.length} teams added`)
               process.exit()
             })
         })
@@ -121,6 +148,7 @@ const createSoccerLeague = async (knex, sport_id, sportName, api, promiseToGet, 
   let teamInfo = []
   let standings = []
   let playoff_standings = []
+  let teamPoints = []
   let teams_and_info = await db_helpers.createSportData(knex, sport_id, sportName, api, promiseToGet, season_id_1)
   let teams_2 = await db_helpers.getFdata(knex, sportName, api, promiseToGet, season_id_2)
   let soccer_teams_2 = JSON.parse(teams_2)
@@ -154,6 +182,9 @@ const createSoccerLeague = async (knex, sport_id, sportName, api, promiseToGet, 
 
     premier_table.push({team_id: team_id, division_1: true})
     
+    // season_data.structures.forEach(structure => {
+    //   teamPoints.push({team_id: team_id, reg_points: 0, playoff_points: 0, bonus_points: 0, scoring_type_id: structure.scoring_type_id, sport_structure_id: structure.sport_structure_id})
+    // })
   })
 
   soccer_teams_2.forEach(team=>{
@@ -185,6 +216,7 @@ const createSoccerLeague = async (knex, sport_id, sportName, api, promiseToGet, 
             .then(()=> {
               db_helpers.insertIntoTable(knex, 'sports', 'premier_status', premier_table)
                 .then(()=>{
+                  console.log(`${sportName}: ${teamInfo.length} teams added`)
                   process.exit()
                 })
 
