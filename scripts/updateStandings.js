@@ -65,7 +65,6 @@ const getCFBstandings = async (knex, sportName, api, promiseToGet, pull_paramete
     return standings
   }else{
     //pull, and then make readable, playoff games (including bowl games)
-    let post_year = year.concat('POST')
     let non_parse_games = await db_helpers.getFdata(knex, sportName, api, 'getGamesByWeekPromise', pull_parameter, 1)
     let playoff_games = JSON.parse(non_parse_games)
     let teamIdMap = await db_helpers.getTeamIdMap(knex, '105')
