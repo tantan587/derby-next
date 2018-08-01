@@ -41,7 +41,7 @@ async function createSchedule()
     })
 }
 
-const getSchedInfo = async (knex, sportName, api, promiseToGet, year) => {
+const getSchedInfo = async (knex, sportName, api, promiseToGet, year, sport_season_id) => {
   let schedData = await db_helpers.getFdata (knex, sportName, api, promiseToGet, year)
   let sport_id = await db_helpers.getSportId(knex,sportName)
   let teamIdMap = await db_helpers.getTeamIdMap(knex, sport_id)

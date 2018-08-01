@@ -241,7 +241,7 @@ methods.updateSchedule = (knex, newResults) =>
       }
       })
       gameErrors.forEach(game => console.log(game))
-      console.log(gameErrors.length)
+      console.log('Game Errors: ',gameErrors.length)
       if (updateList.length > 0)
       {
         return Promise.all(updateList)
@@ -302,7 +302,12 @@ methods.updatePlayoffStandings = (knex, newStandings) =>
     .then(results => {
       let oldStandings = {}
       var updateList =[]
-      results.map(result => oldStandings[result.sport_season_id][result.team_id] = result)
+      results.map(result => {
+        if(!(result.sport_season_id in oldStandings)){
+          oldStandings[result.sport_season_id] = {}
+        }
+        oldStandings[result.sport_season_id][result.team_id] = result
+    })
 
       newStandings.map(teamRec =>
       {
@@ -337,11 +342,22 @@ methods.updateStandings = async (knex,newStandings) =>
   
   let playoff_results = await knex('sports.playoff_standings')
   let oldPlayoffStandings = {}
-  playoff_results.forEach(result => oldPlayoffStandings[result.sport_season_id][result.team_id] = result)
+  playoff_results.forEach(result => {
+    if(!(result.sport_season_id in oldPlayoffStandings)){
+      oldPlayoffStandings[result.sport_season_id] = {}
+    }
+    oldPlayoffStandings[result.sport_season_id][result.team_id] = result
+  })
   
+
   let oldStandings = {}
   var updateList =[]
-  results.map(result => oldStandings[result.sport_season_id][result.team_id] =result)
+  results.map(result => {
+    if(!(result.sport_season_id in oldStandings)){
+      oldStandings[result.sport_season_id] = {}
+    }
+    oldStandings[result.sport_season_id][result.team_id] =result
+  })
 
   newStandings.map(teamRec =>
   {
@@ -353,7 +369,9 @@ methods.updateStandings = async (knex,newStandings) =>
       updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'ties', teamRec.ties )))
     if(oldStandings[teamRec.sport_season_id][teamRec.team_id].year !== teamRec.year)  
       updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'year', teamRec.year )))
-    if(oldPlayoffStandings[teamRec.sport_season_id][teamRec.team_id].year !== teamRec.year)
+    //year doesnt need to be on here, necessarily - its to create it initially
+    //adds to sport season id bc base sport seasonid is 2 away
+    if(oldPlayoffStandings[Number(teamRec.sport_season_id)+2][teamRec.team_id].year !== teamRec.year)
       updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,'year', teamRec.year, true)))
   })
 

@@ -32,7 +32,7 @@ async function updateStandings()
   let result =  await db_helpers.updateStandings(knex, data)
   console.log('Number of Standings Updated: ' + result)
   await fantasyHelpers.updateTeamPoints()
-  // await fantasyHelpers.updateLeaguePoints()
+  await fantasyHelpers.updateLeaguePoints()
   console.log('im done')
   process.exit()
 
@@ -68,7 +68,6 @@ const getCFBstandings = async (knex, sportName, api, promiseToGet, pull_paramete
     let post_year = year.concat('POST')
     let non_parse_games = await db_helpers.getFdata(knex, sportName, api, 'getGamesByWeekPromise', pull_parameter, 1)
     let playoff_games = JSON.parse(non_parse_games)
-    console.log(playoff_games[0])
     let teamIdMap = await db_helpers.getTeamIdMap(knex, '105')
 
     let standings_by_team_id = {}

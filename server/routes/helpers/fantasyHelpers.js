@@ -328,7 +328,6 @@ const updateTeamPoints = async () =>
   })
 
   let data = await getStandingDataPlayoffAndRegular(seasons_for_pull, sport_structure)
-  console.log(data)
   //if we updated based on standings, then from each standing we would need the team id, and the year
   //then would pull from team_points based on those that had same year
   //we would then update those with active year...right?
@@ -525,16 +524,9 @@ const getStandingDataPlayoffAndRegular = async (seasons_for_pull, sport_structur
   let teamMap = {}
   let season_ids = []
   sport_structure.forEach(structure => {
-    console.log('structure id', structure.sport_structure_id)
+    //console.log('structure id', structure.sport_structure_id)
     teamMap[structure.sport_structure_id] = {}
-    console.log('current sport seasons',structure.current_sport_seasons)
-    structure.current_sport_seasons.forEach(number =>{
-      console.log(typeof number, number)
-    })
-    if(21 in structure.current_sport_seasons){
-      console.log(21)
-      process.exit()
-    }
+    //console.log('current sport seasons',structure.current_sport_seasons)
     if(structure.current_sport_seasons.length > 0){
       standings.forEach(team => {
         let m = 0
