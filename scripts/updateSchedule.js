@@ -127,7 +127,7 @@ const CBB_json = (game) => {
   }
 }
 
-const CFB_json = (game) => {
+const CFB_json = () => {
   return {
     //there is no last play: last_play: game.LastPlay
   }
@@ -146,7 +146,7 @@ const sport_JSON_functions = {
   104: NHL_json,
   105: CFB_json,
   106: CBB_json,
-  107: CBB_json
+  107: EPL_json
 }
 createSchedule()
 

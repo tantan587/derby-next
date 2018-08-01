@@ -293,8 +293,8 @@ const activeSeasons = async () => {
     await knex
       .withSchema('sports')
       .table('sport_season')
-      .where('start_pull_date', "<", today)
-      .andWhere('end_pull_date', ">", today)
+      .where('start_pull_date', '<', today)
+      .andWhere('end_pull_date', '>', today)
       .select('*')
   
   return seasons
@@ -356,27 +356,27 @@ const updateTeamPoints = async () =>
       const team = data[fteam.sport_structure_id][fteam.team_id]
       //const league = points.filter(league => league.sport_id == fteam.sport_id)[0]
       if(team){
-      let sport_id = fteam.sport_id
-      let bonus_win=0
-      let status = Number(team.playoff_status)
+        let sport_id = fteam.sport_id
+        let bonus_win=0
+        let status = Number(team.playoff_status)
 
-      if(sport_id === ('103'||'104')){
-        let milestone_parameter = sport_id === '103' ? team.wins : team.wins+team.ties/2
-        let milestone_points = points[fteam.scoring_type_id][sport_id].regular_season.milestone_points
-        bonus_win = milestone_parameter < points[fteam.scoring_type_id][sport_id].regular_season.milestones[0] ? 0 :
-          milestone_parameter < points[fteam.scoring_type_id][sport_id].regular_season.milestones[1] ? milestone_points :
-            milestone_parameter < points[fteam.scoring_type_id][sport_id].regular_season.milestones[2] ? milestone_points*2 : milestone_points*3
-      }
-      
-      let bonus_points = status > 5 ? points[fteam.scoring_type_id][sport_id].bonus.championship + points[fteam.scoring_type_id][sport_id].bonus.finalist + points[fteam.scoring_type_id][sport_id].bonus.appearance :
-        status > 4 ? points[fteam.scoring_type_id][sport_id].bonus.finalist + points[fteam.scoring_type_id][sport_id].bonus.appearance :
-        status > 2 ? points[fteam.scoring_type_id][sport_id].bonus.appearance : 0
-      fteam.reg_points = points[fteam.scoring_type_id][sport_id].regular_season.win * team.wins + points[fteam.scoring_type_id][sport_id].regular_season.tie * team.ties
-      fteam.playoff_points = points[fteam.scoring_type_id][sport_id].playoffs.win * team.playoff_wins
-      //below depends on how we format bowl wins
-      sport_id === '105' ? fteam.playoff_points += (points[fteam.scoring_type_id][sport_id].playoffs.bowl_win * team.bowl_wins) : 0
-      fteam.bonus_points = bonus_win + bonus_points
-      return fteam}
+        if(sport_id === ('103'||'104')){
+          let milestone_parameter = sport_id === '103' ? team.wins : team.wins+team.ties/2
+          let milestone_points = points[fteam.scoring_type_id][sport_id].regular_season.milestone_points
+          bonus_win = milestone_parameter < points[fteam.scoring_type_id][sport_id].regular_season.milestones[0] ? 0 :
+            milestone_parameter < points[fteam.scoring_type_id][sport_id].regular_season.milestones[1] ? milestone_points :
+              milestone_parameter < points[fteam.scoring_type_id][sport_id].regular_season.milestones[2] ? milestone_points*2 : milestone_points*3
+        }
+        
+        let bonus_points = status > 5 ? points[fteam.scoring_type_id][sport_id].bonus.championship + points[fteam.scoring_type_id][sport_id].bonus.finalist + points[fteam.scoring_type_id][sport_id].bonus.appearance :
+          status > 4 ? points[fteam.scoring_type_id][sport_id].bonus.finalist + points[fteam.scoring_type_id][sport_id].bonus.appearance :
+            status > 2 ? points[fteam.scoring_type_id][sport_id].bonus.appearance : 0
+        fteam.reg_points = points[fteam.scoring_type_id][sport_id].regular_season.win * team.wins + points[fteam.scoring_type_id][sport_id].regular_season.tie * team.ties
+        fteam.playoff_points = points[fteam.scoring_type_id][sport_id].playoffs.win * team.playoff_wins
+        //below depends on how we format bowl wins
+        sport_id === '105' ? fteam.playoff_points += (points[fteam.scoring_type_id][sport_id].playoffs.bowl_win * team.bowl_wins) : 0
+        fteam.bonus_points = bonus_win + bonus_points
+        return fteam}
     })
 
     let resp = await updateTeamPointsTable(teamPoints)
@@ -523,14 +523,14 @@ const getStandingDataPlayoffAndRegular = async (seasons_for_pull, sport_structur
   //   seasons_for_pull[team.sport_id].includes(team.year)
   // )
   let teamMap = {}
-  let season_ids = []
+  //let season_ids = []
   sport_structure.forEach(structure => {
     //console.log('structure id', structure.sport_structure_id)
     teamMap[structure.sport_structure_id] = {}
     //console.log('current sport seasons',structure.current_sport_seasons)
     if(structure.current_sport_seasons.length > 0){
       standings.forEach(team => {
-        let m = 0
+        //let m = 0
         //use includes below
         if(structure.current_sport_seasons.includes(team.sport_season_id)){
           teamMap[structure.sport_structure_id][team.team_id] = {...team}
