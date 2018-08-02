@@ -25,20 +25,21 @@ class SportsLobby {
 
   SportsListener(socket) {
 
-    socket.on('teamUpdateTime', () =>
-    {
-      this.sportsNSP.to(socket.id).emit('serverTeamUpdateTime', this.sportRoom.Manager.TeamInfoUpdateTime)
-    })
+    //turning this off for now
+    // socket.on('teamUpdateTime', () =>
+    // {
+    //   this.sportsNSP.to(socket.id).emit('serverTeamUpdateTime', this.sportRoom.Manager.TeamInfoUpdateTime)
+    // })
 
     socket.on('gameUpdateTime', () =>
     {
       this.sportsNSP.to(socket.id).emit('serverGameUpdateTime', this.sportRoom.Manager.GameInfoUpdateTime)
     })
-
-    socket.on('allTeamData', () =>
-    {
-      this.sportsNSP.to(socket.id).emit('serverAllTeamData', this.sportRoom.Manager.TeamInfo)
-    })
+    //turning this off for now
+    // socket.on('allTeamData', () =>
+    // {
+    //   this.sportsNSP.to(socket.id).emit('serverAllTeamData', this.sportRoom.Manager.TeamInfo)
+    // })
     socket.on('allGameData', () =>
     {
       this.sportsNSP.to(socket.id).emit('serverAllGameData', this.sportRoom.Manager.GameInfo)

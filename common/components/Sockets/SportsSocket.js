@@ -14,27 +14,27 @@ class SportsSocket extends React.Component {
   componentDidMount() {
     this.socket = io('/sports')
     this.socket.on('connect', () => {
-      this.socket.emit('teamUpdateTime')
+      //this.socket.emit('teamUpdateTime')
       this.socket.emit('gameUpdateTime')
     })
-    this.socket.on('serverTeamUpdateTime', this.checkTeamUpdateTime)
-    this.socket.on('serverAllTeamData', this.getTeams)
-    this.socket.on('serverDiffTeamData', this.getTeamsDiff)
+    //this.socket.on('serverTeamUpdateTime', this.checkTeamUpdateTime)
+    //this.socket.on('serverAllTeamData', this.getTeams)
+    //this.socket.on('serverDiffTeamData', this.getTeamsDiff)
     this.socket.on('serverGameUpdateTime', this.checkGameUpdateTime)
     this.socket.on('serverAllGameData', this.getGames)
     this.socket.on('serverDiffGameData', this.getGamesDiff)
   }
 
-  getTeams = (data) => {
-    this.props.onTeamUpdate(data)
-    //fire off action to update data
-  }
+  // getTeams = (data) => {
+  //   this.props.onTeamUpdate(data)
+  //   //fire off action to update data
+  // }
 
-  getTeamsDiff = (data) => {
-    this.props.onTeamUpdateDiff(data.diff)
-    this.props.onTeamUpdateTime(data.updateTime)
-    //fire off action to update data
-  }
+  // getTeamsDiff = (data) => {
+  //   this.props.onTeamUpdateDiff(data.diff)
+  //   this.props.onTeamUpdateTime(data.updateTime)
+  //   //fire off action to update data
+  // }
 
   getGames = (data) => {
 
@@ -49,15 +49,15 @@ class SportsSocket extends React.Component {
     //fire off action to update data
   }
 
-  checkTeamUpdateTime = (time) =>
-  {
+  // checkTeamUpdateTime = (time) =>
+  // {
 
-    if (!this.props.updateTime.teams || new Date(time) > new Date(this.props.updateTime.teams))
-    {
-      this.socket.emit('allTeamData')
-      this.props.onTeamUpdateTime(time)   
-    }
-  }
+  //   if (!this.props.updateTime.teams || new Date(time) > new Date(this.props.updateTime.teams))
+  //   {
+  //     this.socket.emit('allTeamData')
+  //     this.props.onTeamUpdateTime(time)   
+  //   }
+  // }
 
   checkGameUpdateTime = (time) =>
   {

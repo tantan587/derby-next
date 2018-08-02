@@ -38,9 +38,12 @@ function SportsManager(io) {
       if(Object.keys(teamInfoDiff).length > 0)
       {
         setTeamUpdateTime()
-        io.emit('serverDiffTeamData', 
-          {diff:teamInfoDiff, 
-            updateTime:this.TeamInfoUpdateTime})
+
+        //turning this off for now
+
+        // io.emit('serverDiffTeamData', 
+        //   {diff:teamInfoDiff, 
+        //     updateTime:this.TeamInfoUpdateTime})
       }
       let gameInfoDiff = await calculateDiffForGames()
       if(Object.keys(gameInfoDiff).length > 0)
