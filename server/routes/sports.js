@@ -5,7 +5,7 @@ const C = require('../../common/constants')
 const sportsHelpers = require('./helpers/sportsHelpers')
 
 router.post('/standings', authHelpers.loginRequired, (req, res)  => {
-  return sportsHelpers.getTeamInfoAndRespond(res, C.GET_TEAMS)
+  return sportsHelpers.getTeamInfoAndRespond(req.body.league_id,res, C.GET_TEAMS)
     .catch((err) => {
       handleResponse(res, 500, err)})
 })

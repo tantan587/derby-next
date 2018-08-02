@@ -2,7 +2,30 @@ const knex = require('../../db/connection')
 const C = require('../../../common/constants')
 const fantasyHelpers = require('./fantasyHelpers')
 
-const getTeamInfo = () => {
+const getSportSeasonsForPG = async (league_id) => {
+
+  let knexStr
+  if (league_id)
+    knexStr  =  `select current_sport_seasons from fantasy.sports_structure a, 
+      fantasy.league_bundle b, fantasy.leagues c
+      where c.league_id = '` + league_id + `' 
+      and a.sport_structure_id = c.sport_structure_id
+      and a.league_bundle_id = b.league_bundle_id`
+
+  else
+    knexStr  =  `select current_sport_seasons from fantasy.sports_structure a, 
+  fantasy.league_bundle b where sport_structure_id = 0 and a.league_bundle_id = b.league_bundle_id`
+
+  let sport_seasons = await knex.raw(knexStr)
+
+  return JSON.stringify(sport_seasons.rows[0].current_sport_seasons).replace('[', '(').replace(']', ')')
+}
+
+const getTeamInfo = async (league_id) => {
+
+
+  let pgSportsSeasons = await getSportSeasonsForPG(league_id)
+  console.log(pgSportsSeasons)
 
   var str = `select a.team_id, a.key, a.city, a.name, a.logo_url,
     c.conference_id, c.display_name, d.sport_name, d.sport_id, b.wins,
@@ -10,7 +33,8 @@ const getTeamInfo = () => {
   sports.team_info a, sports.standings b, sports.conferences c,
   sports.leagues d
   where a.team_id = b.team_id and c.conference_id = a.conference_id
-  and a.sport_id = d.sport_id` 
+  and a.sport_id = d.sport_id
+  and b.sport_season_id in ` + pgSportsSeasons 
 
   return knex.raw(str)
     .then(result =>
@@ -45,9 +69,9 @@ function handleReduxResponse(res, code, action) {
   res.status(code).json(action)
 }
 
-const getTeamInfoAndRespond = async (res, type) => {
+const getTeamInfoAndRespond = async (league_id,res, type) => {
 
-  let rtnTeams = await getTeamInfo()
+  let rtnTeams = await getTeamInfo(league_id)
   return handleReduxResponse(res,200, {
     type: type,
     teams : rtnTeams,
