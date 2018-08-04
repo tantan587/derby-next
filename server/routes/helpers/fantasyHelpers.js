@@ -31,6 +31,7 @@ const getLeague = async (league_id, user_id, res, type) => {
   const leagueInfo = await knex.raw(leagueInfoStr)
   const ownerInfo = await knex.raw(ownerInfoStr)
   const teamInfo = await knex.raw(teamInfoStr)
+  const seasonIds = await GetSportSeasonsByLeague(league_id)
   const rules = await getSportLeagues(league_id)
 
   if (leagueInfo.rows.length === 1)
@@ -89,6 +90,7 @@ const getLeague = async (league_id, user_id, res, type) => {
       teams,
       ownerGames,
       rules,
+      seasonIds
     })
   }
   else
@@ -119,6 +121,26 @@ const getSportLeagues = (league_id) =>{
       })
       return Object.values(leaguesToConferenceMap)
     })
+}
+
+const GetSportSeasonsByLeague = async (league_id) => {
+
+  let knexStr
+  if (league_id)
+    knexStr  =  `select current_sport_seasons from fantasy.sports_structure a, 
+      fantasy.league_bundle b, fantasy.leagues c
+      where c.league_id = '` + league_id + `' 
+      and a.sport_structure_id = c.sport_structure_id
+      and a.league_bundle_id = b.league_bundle_id`
+
+  else
+    knexStr  =  `select current_sport_seasons from fantasy.sports_structure a, 
+  fantasy.league_bundle b where sport_structure_id = 0 and a.league_bundle_id = b.league_bundle_id`
+
+  let sport_seasons = await knex.raw(knexStr)
+
+  //return JSON.stringify(sport_seasons.rows[0].current_sport_seasons).replace('[', '(').replace(']', ')')
+  return sport_seasons.rows[0].current_sport_seasons
 }
 
 const getOwnersUpcomingGames = async (ownerId) =>
@@ -606,4 +628,5 @@ module.exports = {
   formatAMPM,
   formatGameDate,
   GetDraftOrder,
+  GetSportSeasonsByLeague
 }

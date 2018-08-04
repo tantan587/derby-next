@@ -1,6 +1,6 @@
 import React from 'react'
 import io from 'socket.io-client'
-import {handleTeamUpdateTime, handleGameUpdateTime,
+import {getSportSeasons, handleTeamUpdateTime, handleGameUpdateTime,
   handleTeamUpdate, handleGameUpdate,
   handleTeamUpdateDiff, handleGameUpdateDiff } from '../../actions/sport-actions'
 import { connect } from 'react-redux'
@@ -9,59 +9,78 @@ import { connect } from 'react-redux'
 class SportsSocket extends React.Component {
 
   componentWillMount() {
+    
   }
   // connect to WS server and listen event
   componentDidMount() {
+    if(this.props.sportSeasons.length === 0)
+      this.props.onGetSportSeasons(this.props.activeLeague && this.props.activeLeague.league_id)
     this.socket = io('/sports')
     this.socket.on('connect', () => {
-      //this.socket.emit('teamUpdateTime')
+      this.socket.emit('teamUpdateTime')
       this.socket.emit('gameUpdateTime')
     })
-    //this.socket.on('serverTeamUpdateTime', this.checkTeamUpdateTime)
-    //this.socket.on('serverAllTeamData', this.getTeams)
-    //this.socket.on('serverDiffTeamData', this.getTeamsDiff)
+    this.socket.on('serverTeamUpdateTime', this.checkTeamUpdateTime)
+    this.socket.on('serverAllTeamData', this.getTeams)
+    this.socket.on('serverDiffTeamData', this.getTeamsDiff)
     this.socket.on('serverGameUpdateTime', this.checkGameUpdateTime)
     this.socket.on('serverAllGameData', this.getGames)
     this.socket.on('serverDiffGameData', this.getGamesDiff)
+
+    
+    setTimeout(
+      () => {
+        if(!this.props.teams)
+          this.socket.emit('allTeamData', this.props.sportSeasons)
+      },5000)
   }
 
-  // getTeams = (data) => {
-  //   this.props.onTeamUpdate(data)
-  //   //fire off action to update data
-  // }
+  getTeams = (data) => {
+    this.props.onTeamUpdate(data)
+  }
 
-  // getTeamsDiff = (data) => {
-  //   this.props.onTeamUpdateDiff(data.diff)
-  //   this.props.onTeamUpdateTime(data.updateTime)
-  //   //fire off action to update data
-  // }
+  getTeamsDiff = (data) => {
+    //needs to be handled better for playoffs
+    const {onTeamUpdateDiff, onTeamUpdateTime, sportSeasons} = this.props
+
+    
+    if(sportSeasons.length > 0)
+    {
+      let dataForMe = {}
+      sportSeasons.forEach(seasonId => {
+        if(data.diff[seasonId])
+        {
+          Object.assign(dataForMe, data.diff[seasonId])
+        }
+      })
+      if(dataForMe)
+        onTeamUpdateDiff(dataForMe)
+    }
+    onTeamUpdateTime(data.updateTime)
+  }
 
   getGames = (data) => {
 
     this.props.onGameUpdate(data)
-    //fire off action to update data
   }
 
   getGamesDiff = (data) => {
-    console.log(data)
     this.props.onGameUpdateDiff(data.diff)
     this.props.onGameUpdateTime(data.updateTime)
-    //fire off action to update data
   }
 
-  // checkTeamUpdateTime = (time) =>
-  // {
+  checkTeamUpdateTime = (time) =>
+  {
 
-  //   if (!this.props.updateTime.teams || new Date(time) > new Date(this.props.updateTime.teams))
-  //   {
-  //     this.socket.emit('allTeamData')
-  //     this.props.onTeamUpdateTime(time)   
-  //   }
-  // }
+    if (!this.props.updateTime.teams || new Date(time) > new Date(this.props.updateTime.teams))
+    {
+      this.socket.emit('allTeamData', this.props.sportSeasons)
+      this.props.onTeamUpdateTime(time)   
+    }
+  }
 
   checkGameUpdateTime = (time) =>
   {
-    console.log(time)
     if (!this.props.updateTime.games || new Date(time) > new Date(this.props.updateTime.games))
     {
       this.socket.emit('allGameData')
@@ -88,10 +107,15 @@ export default connect(
   state =>
     ({
       teams:state.teams,
-      updateTime:state.updateTime
+      updateTime:state.updateTime,
+      sportSeasons:state.sportSeasons,
+      activeLeague:state.activeLeague
     }),
   dispatch =>
     ({
+      onGetSportSeasons(league_id) {
+        dispatch(getSportSeasons(league_id))
+      },
       onTeamUpdateTime(updateTime) {
         dispatch(
           handleTeamUpdateTime(updateTime))

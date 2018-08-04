@@ -55,8 +55,9 @@ export const LeftRight = ({L, R, totalInd, classes = {}, ...rest}) => {
         variant="body2"
         xs={totalInd ? 4 : 6}
       >
-        {R.map(oneR => {
+        {R.map((oneR,i) => {
           return <Grid
+            key={i}
             container
             item
             className={classes.RValues}

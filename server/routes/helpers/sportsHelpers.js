@@ -2,40 +2,25 @@ const knex = require('../../db/connection')
 const C = require('../../../common/constants')
 const fantasyHelpers = require('./fantasyHelpers')
 
-const getSportSeasonsForPG = async (league_id) => {
+//const getTeamProjections = async (league)
 
-  let knexStr
-  if (league_id)
-    knexStr  =  `select current_sport_seasons from fantasy.sports_structure a, 
-      fantasy.league_bundle b, fantasy.leagues c
-      where c.league_id = '` + league_id + `' 
-      and a.sport_structure_id = c.sport_structure_id
-      and a.league_bundle_id = b.league_bundle_id`
+const GetRegularSeasonTeamInfo = async () => {
 
-  else
-    knexStr  =  `select current_sport_seasons from fantasy.sports_structure a, 
-  fantasy.league_bundle b where sport_structure_id = 0 and a.league_bundle_id = b.league_bundle_id`
-
-  let sport_seasons = await knex.raw(knexStr)
-
-  return JSON.stringify(sport_seasons.rows[0].current_sport_seasons).replace('[', '(').replace(']', ')')
-}
-
-const getTeamInfo = async (league_id) => {
-
-
-  let pgSportsSeasons = await getSportSeasonsForPG(league_id)
-  console.log(pgSportsSeasons)
-
-  var str = `select a.team_id, a.key, a.city, a.name, a.logo_url,
+  //this needs to change to reflect correct projections
+  //based on season,
+  //this only has 622 teams not 742 teams as expected
+  var str = `
+  SELECT b.sport_season_id, a.team_id, a.key, a.city, a.name, a.logo_url,
     c.conference_id, c.display_name, d.sport_name, d.sport_id, b.wins,
-     b.losses, b.ties from
-  sports.team_info a, sports.standings b, sports.conferences c,
-  sports.leagues d
-  where a.team_id = b.team_id and c.conference_id = a.conference_id
+    b.losses, b.ties, e.wins as projected_wins, e.losses as projected_losses,
+    e.ties as projected_ties, e.playoff as projected_playoff
+  FROM sports.team_info a, sports.standings b, sports.conferences c,
+  sports.leagues d, analysis.record_projections e
+  WHERE a.team_id = b.team_id and c.conference_id = a.conference_id
   and a.sport_id = d.sport_id
-  and b.sport_season_id in ` + pgSportsSeasons 
-
+  and e.day_count = (select max(day_count) from analysis.record_projections)
+  and a.team_id = e.team_id`
+ 
   return knex.raw(str)
     .then(result =>
     {
@@ -44,6 +29,7 @@ const getTeamInfo = async (league_id) => {
         var teams = []
         result.rows.map(team => teams.push(
           {
+            sport_season_id:team.sport_season_id,
             key:team.key,
             team_id:team.team_id,
             team_name:team.sport_name !== 'EPL' ? team.city + ' ' + team.name : team.name,
@@ -56,10 +42,15 @@ const getTeamInfo = async (league_id) => {
             ties:team.ties,
             logo_url:team.logo_url,
           }))
-        // teams.sort(function(a,b)
-        // { return a.team_name.toLowerCase() < b.team_name.toLowerCase() ? -1 : 1})
         let rtnTeams = {}
-        teams.map(team => rtnTeams[team.team_id] = team)
+        teams.forEach(team => 
+        {
+          if(!rtnTeams[team.sport_season_id])
+          {
+            rtnTeams[team.sport_season_id] = {}
+          }
+          rtnTeams[team.sport_season_id][team.team_id] = team
+        })
         return rtnTeams
       }
     })
@@ -69,13 +60,12 @@ function handleReduxResponse(res, code, action) {
   res.status(code).json(action)
 }
 
-const getTeamInfoAndRespond = async (league_id,res, type) => {
+const GetSportSeasonsAndRespond = async (league_id,res, type) => {
 
-  let rtnTeams = await getTeamInfo(league_id)
+  let seasonIds = await fantasyHelpers.GetSportSeasonsByLeague(league_id)
   return handleReduxResponse(res,200, {
-    type: type,
-    teams : rtnTeams,
-    updateTime:(new Date()).toJSON()
+    type,
+    seasonIds
   })
 }
 
@@ -271,10 +261,10 @@ const getOneTeam  = async(league_id, team_id, res) =>{
 
 module.exports = {
   getOneTeam,
-  getTeamInfoAndRespond,
-  getTeamInfo,
+  GetSportSeasonsAndRespond,
+  GetRegularSeasonTeamInfo,
   getNearSchedule,
   getLeagueSchedule,
-  getSportLeagues
+  getSportLeagues,
 }
 

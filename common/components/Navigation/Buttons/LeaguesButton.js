@@ -1,6 +1,5 @@
 import React from 'react'
 import {clickedLeague} from '../../../actions/fantasy-actions'
-import {clickedStandings} from '../../../actions/sport-actions'
 import { connect } from 'react-redux'
 import MenuBase from './MenuBase'
 const R = require('ramda')
@@ -8,10 +7,9 @@ const R = require('ramda')
 
 class LeaguesButton extends React.Component {
   handleClick = (league_id) => {
-    const { onClickedLeague, onGetTeams } = this.props
+    const { onClickedLeague } = this.props
     console.log(league_id)
     onClickedLeague(league_id || this.props.activeLeague.league_id, this.props.user.id)
-    onGetTeams(league_id || this.props.activeLeague.league_id)
   };
   render() {
     const { color, backgroundColor, leagues, useItems2 } = this.props
@@ -58,5 +56,5 @@ class LeaguesButton extends React.Component {
 //     }))(LeaguesButton)
 
 export default R.compose(
-  connect(R.pick(['activeLeague', 'leagues', 'user']), {onClickedLeague: clickedLeague, onGetTeams:clickedStandings})
+  connect(R.pick(['activeLeague', 'leagues', 'user']), {onClickedLeague: clickedLeague})
 )(LeaguesButton)

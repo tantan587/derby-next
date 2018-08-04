@@ -12,6 +12,7 @@ import oneTeamReducer from './oneTeamReducer'
 import updateTimeReducer from './updateTimeReducer'
 import liveGamesReducer from './liveGamesReducer'
 import contentFilterReducer from './contentFilterReducer'
+import sportSeasonsReducer from './sportSeasonsReducer'
 
 export default combineReducers({
   activeLeague: activeLeagueReducer,
@@ -26,5 +27,6 @@ export default combineReducers({
   oneTeam : oneTeamReducer,
   updateTime : updateTimeReducer,
   liveGames : liveGamesReducer,
-  contentFilter : contentFilterReducer
+  contentFilter : contentFilterReducer,
+  sportSeasons: sportSeasonsReducer
 })

@@ -4,8 +4,8 @@ const authHelpers = require('./helpers/authHelpers')
 const C = require('../../common/constants')
 const sportsHelpers = require('./helpers/sportsHelpers')
 
-router.post('/standings', authHelpers.loginRequired, (req, res)  => {
-  return sportsHelpers.getTeamInfoAndRespond(req.body.league_id,res, C.GET_TEAMS)
+router.post('/sportSeasons', (req, res)  => {
+  return sportsHelpers.GetSportSeasonsAndRespond(req.body.league_id,res, C.GET_SPORT_SEASONS)
     .catch((err) => {
       handleResponse(res, 500, err)})
 })

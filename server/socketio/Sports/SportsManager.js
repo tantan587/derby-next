@@ -1,20 +1,26 @@
 const sportsHelpers = require('../../routes/helpers/sportsHelpers')
+const fantasyHelpers = require('../../routes/helpers/fantasyHelpers')
 const hash = require('object-hash')
 
 function SportsManager(io) {
-  var teamInfoHash = {}
+  var teamInfoHashBySportSeason = {}
   var gameInfoHash = {}
+  let teamInfoBySportSeason = {}
    
   this.Create = async () =>
   {
-    var a = new Date()
-    console.log('the time time and offset is',a, -a.getTimezoneOffset()/60)
-    this.TeamInfo = await getSports()
+    teamInfoBySportSeason = await getSports()
     this.GameInfo = {}
     const gameInfoResults = await getNearGames()
     
-    Object.keys(this.TeamInfo).map((teamId) => {
-      teamInfoHash[teamId] = hash(this.TeamInfo[teamId])
+    Object.keys(teamInfoBySportSeason).forEach((sportSeasonId) => {
+      Object.keys(teamInfoBySportSeason[sportSeasonId]).forEach(teamId => {
+        if(!teamInfoHashBySportSeason[sportSeasonId])
+        {
+          teamInfoHashBySportSeason[sportSeasonId] = {}
+        }
+        teamInfoHashBySportSeason[sportSeasonId][teamId] = hash(teamInfoBySportSeason[sportSeasonId][teamId])
+      })
     })
 
     gameInfoResults.forEach(game =>{
@@ -32,6 +38,22 @@ function SportsManager(io) {
     waitToGetNewData()
   }
 
+  this.TeamInfoBySportsSeason = async (sportSeasons) => {
+    //need to be able to rectify playoffs here as well
+    if (!sportSeasons)
+    {
+      sportSeasons = await fantasyHelpers.GetSportSeasonsByLeague()
+    }
+    let rtnObj = {}
+
+    sportSeasons.forEach(x => {
+
+      if(teamInfoBySportSeason[x])
+        Object.assign(rtnObj, teamInfoBySportSeason[x])
+    })
+    return rtnObj
+  }
+
   const waitToGetNewData = async () => {
     setInterval(async () => {
       let teamInfoDiff =  await calculateDiffForTeam()
@@ -39,11 +61,9 @@ function SportsManager(io) {
       {
         setTeamUpdateTime()
 
-        //turning this off for now
-
-        // io.emit('serverDiffTeamData', 
-        //   {diff:teamInfoDiff, 
-        //     updateTime:this.TeamInfoUpdateTime})
+        io.emit('serverDiffTeamData', 
+          {diff:teamInfoDiff, 
+            updateTime:this.TeamInfoUpdateTime})
       }
       let gameInfoDiff = await calculateDiffForGames()
       if(Object.keys(gameInfoDiff).length > 0)
@@ -59,17 +79,21 @@ function SportsManager(io) {
 
   const calculateDiffForTeam = async () => {
 
-    const teamInfo = await getSports()
+    const teamInfoTemp = await getSports()
     let teamInfoDiff = {}
-    Object.keys(teamInfo).map((teamId) => {
-      const teamHash = hash(teamInfo[teamId])
-      if(teamHash !== teamInfoHash[teamId])
-      {
-        teamInfoHash[teamId] = teamHash
-        teamInfoDiff[teamId] = teamInfo[teamId]
-        this.TeamInfo[teamId] = teamInfo[teamId]
+    Object.keys(teamInfoTemp).forEach((sportSeasonId) => {
+      Object.keys(teamInfoTemp[sportSeasonId]).forEach(teamId => {
+        const teamHash = hash(teamInfoTemp[sportSeasonId][teamId])
+        if(teamHash !== teamInfoHashBySportSeason[sportSeasonId][teamId])
+        {
+          teamInfoHashBySportSeason[sportSeasonId][teamId] = teamHash
+          if(!teamInfoDiff[sportSeasonId])
+            teamInfoDiff[sportSeasonId] = {}
+          teamInfoDiff[sportSeasonId][teamId] = teamInfoTemp[sportSeasonId][teamId]
+          teamInfoBySportSeason[sportSeasonId][teamId] = teamInfoTemp[sportSeasonId][teamId]
 
-      }
+        }
+      })
     })
     return teamInfoDiff
   }
@@ -107,8 +131,9 @@ function SportsManager(io) {
     return gameInfoDiff
   }
 
+  //need to also get playoffs here as well
   const getSports = async () => {
-    return await sportsHelpers.getTeamInfo()
+    return await sportsHelpers.GetRegularSeasonTeamInfo()
   }
 
   const getNearGames = async () => {

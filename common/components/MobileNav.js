@@ -24,7 +24,7 @@ import Typography from '@material-ui/core/Typography'
 
 const pathnameEqToHref = R.curry((pathname, href) => pathname === href)
 
-const styles = (theme) => (console.log(theme), {
+const styles = (theme) => ({
   container: {
     background: theme.palette.primary.main,
     color: 'white',

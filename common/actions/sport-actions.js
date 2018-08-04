@@ -9,10 +9,10 @@ export const clickedSaveDraft = (league_id, allTeams) => dispatch =>
     JSON.stringify({league_id, allTeams})
   )
 
-export const clickedStandings = (league_id) => dispatch =>
+export const getSportSeasons = (league_id) => dispatch =>
   FetchThenDispatch(
     dispatch,
-    '/api/standings',
+    '/api/sportSeasons',
     'POST',
     JSON.stringify({league_id})
   )

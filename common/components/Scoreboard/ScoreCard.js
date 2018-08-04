@@ -67,6 +67,7 @@ class ScoreCard extends Component {
     const totalInd=scoreboardData.header[scoreboardData.header.length-1] === 'T'
     return (
       <Grid
+        item
         container
         className={classes.container}
         style={{maxWidth:useRightSide? 600: 400}}
@@ -75,6 +76,7 @@ class ScoreCard extends Component {
         component={Paper}
       > 
         <Grid
+          item
           className={classes.left}
           container
           xs={12}
@@ -85,7 +87,7 @@ class ScoreCard extends Component {
             className={classes.Header}
             classes={R.pick(['R', 'RValues'], classes)}
             L={<Typography children={<b>{scoreboardData.status}</b>} variant="subheading" color="primary"/>}
-            R={scoreboardData.header.map(x => <Typography children={x} variant="subheading" color="inherit" />)}
+            R={scoreboardData.header.map((x,i) => <Typography key={i} children={x} variant="subheading" color="inherit" />)}
           />
           <TeamScoreRow totalInd={totalInd} classes={classes} team={scoreboardData.away}/>
           <TeamScoreRow totalInd={totalInd} classes={classes} team={scoreboardData.home}/>
