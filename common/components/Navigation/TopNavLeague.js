@@ -2,11 +2,9 @@ import React from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
-import Button from '@material-ui/core/Button'
 import { connect } from 'react-redux'
 import MenuButton from './Buttons/MenuButton'
 import LeaguesButton from './Buttons/LeaguesButton'
-import HomeLogoIconSmall from '../Icons/HomeLogoIconSmall'
 
 const styles = () => ({
   root: {
@@ -55,7 +53,7 @@ class TopNavUser extends React.Component {
   }
 
   render() {
-    const {classes, user} = this.props
+    const {classes} = this.props
     
     return (
       <div className={classes.root}>
@@ -64,13 +62,14 @@ class TopNavUser extends React.Component {
           <Toolbar>
             {this.setHoverToButton('home', 0, '/')} 
             <div  className={classes.flex}>
-              {this.setHoverToButton('league', 1)}
+              {this.setHoverToButton('default', 1,  '/mainleaguehome', 'League Home')}
               {this.setHoverToButton('default', 2,  '/mainleaguestandings', 'Standings')}
               {this.setHoverToButton('default', 3,  '/mainleagueschedule', 'Schedules')}
               {this.setHoverToButton('default', 4,  '/mainleagueroster', 'Rosters')}
               {this.setHoverToButton('default', 5, '/mainleagueteams', 'Teams')}
+              {this.setHoverToButton('league', 6)}
               <div style={{float:'right'}}>
-                  {this.setHoverToButton('default', 7, '/logout', 'Logout')
+                {this.setHoverToButton('default', 7, '/logout', 'Logout')
                 }
               </div>
             </div>

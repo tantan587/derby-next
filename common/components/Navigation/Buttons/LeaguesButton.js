@@ -20,11 +20,6 @@ class LeaguesButton extends React.Component {
         link:'/mainleaguehome'} })
 
     const items2 = []
-
-    items2.push({
-      text:'League Home',
-      link:'/mainleaguehome',
-      onClick:this.handleClick})
     items2.push({
       text:'Draft Room',
       link:'/livedraft'})
@@ -42,7 +37,7 @@ class LeaguesButton extends React.Component {
         items={items}
         extraItems={useItems2 ? items2 : null}
         handleClick={this.handleClick} 
-        title='My Leagues'/>
+        title='Other'/>
     )
   }
 }
