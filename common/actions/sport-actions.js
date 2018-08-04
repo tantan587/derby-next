@@ -25,12 +25,12 @@ export const clickedDateChange = (league_id, date) => dispatch =>
     JSON.stringify({league_id, date})
   )
 
-export const clickedOneTeam = (team_id, league_id) => dispatch =>
+export const clickedOneTeam = (team_id) => dispatch =>
   FetchThenDispatch(
     dispatch,
     '/api/oneteam',
     'POST',
-    JSON.stringify({team_id,league_id})
+    JSON.stringify({team_id})
   )
 
 export const handleTeamUpdateTime = updateTime =>

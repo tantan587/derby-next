@@ -1,11 +1,10 @@
-import React from 'react'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
 import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 
-const DialogLastFive = ({ tableData, teams, lastFive, oneTeam }) => {
+const DialogLastFive = ({ tableData,lastFive }) => {
 
   return <Table>
     <TableHead style={{ backgroundColor: '#229246' }}>

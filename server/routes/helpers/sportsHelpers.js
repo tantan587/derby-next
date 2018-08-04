@@ -41,6 +41,12 @@ const GetRegularSeasonTeamInfo = async () => {
             losses:team.losses,
             ties:team.ties,
             logo_url:team.logo_url,
+            projected:{
+              wins:team.projected_wins,
+              losses:team.projected_losses,
+              ties:team.projected_ties,
+              playoff:team.projected_playoff
+            }
           }))
         let rtnTeams = {}
         teams.forEach(team => 
@@ -161,47 +167,22 @@ const getSportLeagues = (league_id, res, type) =>{
     })
 }
 
-const getOneTeam  = async(league_id, team_id, res) =>{
+const GetOneTeamSchedule  = async(team_id, res) =>{
 
-  const str1 = `select a.*, b.wins, b.losses, b.ties
-   from sports.team_info a, sports.standings b
-   where a.team_id = b.team_id and a.team_id = ` + team_id
-
-  const str2 = `select * from (
-    select * from fantasy.team_points a, fantasy.leagues b 
-      where a.team_id = ` + team_id +
-      `and a.sport_structure_id = b.sport_structure_id 
-      and b.league_id = '` +league_id + '\' ) x ' + 
-    `left outer join ( 
-      select c.team_id, d.owner_name, d.owner_id, c.overall_pick 
-      from fantasy.rosters c, fantasy.owners d 
-      where c.owner_id = d.owner_id 
-      and c.team_id = ` + team_id + 
-      ' and c.league_id = \'' +league_id + '\'' +
-    ' ) y on x.team_id = y.team_id'
-
-  const str3 = `select *
+  const str = `select *
     from sports.schedule a
     where (a.home_team_id = `+ team_id + ' or a.away_team_id = ' + team_id + ' ) order by day_count'
 
+  let schedule = await knex.raw(str)
 
-  let teamInfo = await knex.raw(str1)
-
-  let fantasyInfo = await knex.raw(str2)
-
-  let schedule = await knex.raw(str3)
-
-
-  teamInfo = teamInfo.rows[0]
-  fantasyInfo = fantasyInfo.rows[0]
   schedule = schedule.rows
   let oneTeam = {}
-  oneTeam.team_name = teamInfo.sport_name !== 'EPL' ? teamInfo.city + ' ' + teamInfo.name : teamInfo.name
-  oneTeam.owner = fantasyInfo.owner_name
-  oneTeam.owned_in_derby_leagues = 'TBD'
-  oneTeam.rank_in_league = 'TBD'
-  oneTeam.record = teamInfo.wins + '-' + teamInfo.losses + (teamInfo.ties > 0 ? '-' + teamInfo.ties : '')
-  oneTeam.curr_points = parseFloat(fantasyInfo.reg_points) + parseFloat(fantasyInfo.bonus_points)
+  // oneTeam.team_name = teamInfo.sport_name !== 'EPL' ? teamInfo.city + ' ' + teamInfo.name : teamInfo.name
+  // oneTeam.owner = fantasyInfo.owner_name
+  // oneTeam.owned_in_derby_leagues = 'TBD'
+  // oneTeam.rank_in_league = 'TBD'
+  // oneTeam.record = teamInfo.wins + '-' + teamInfo.losses + (teamInfo.ties > 0 ? '-' + teamInfo.ties : '')
+  // oneTeam.curr_points = parseFloat(fantasyInfo.reg_points) + parseFloat(fantasyInfo.bonus_points)
 
   const currDayCount =  fantasyHelpers.getDayCountStr((new Date()).toJSON())
   let lastFive = []
@@ -252,6 +233,7 @@ const getOneTeam  = async(league_id, team_id, res) =>{
       }
     }
   })
+  oneTeam.team_id = team_id
   oneTeam.nextFive = nextFive
   oneTeam.lastFive = lastFive
 
@@ -260,7 +242,7 @@ const getOneTeam  = async(league_id, team_id, res) =>{
 }
 
 module.exports = {
-  getOneTeam,
+  GetOneTeamSchedule,
   GetSportSeasonsAndRespond,
   GetRegularSeasonTeamInfo,
   getNearSchedule,

@@ -6,6 +6,19 @@ function handleReduxResponse(res, code, action){
   res.status(code).json(action)
 }
 
+// `select aa.*, bb.owner_id from (select a.team_id, a.reg_points, a.bonus_points, a.playoff_points, c.points as proj_points, c.ranking
+//   from fantasy.team_points a, fantasy.leagues b, fantasy.projections c
+//   where b.league_id = '06ccb52f-08b6-4da1-9b4f-cd59cb16ae49'
+//   and a.sport_structure_id = b.sport_structure_id
+//   and c.sport_structure_id = a.sport_structure_id
+//   and a.team_id = c.team_id
+//   and c.day_count = (select max(day_count) from fantasy.projections)) aa
+//   left outer join (select d.* from fantasy.rosters d, fantasy.owners e where
+//   d.owner_id = e.owner_id and e.league_id = '06ccb52f-08b6-4da1-9b4f-cd59cb16ae49') bb
+//   on aa.team_id = bb.team_id
+// `
+ 
+
 const getLeague = async (league_id, user_id, res, type) => {
   var leagueInfoStr = `select a.league_name, a.max_owners, a.league_id, b.room_id, b.start_time, b.draft_position, b.seconds_pick, b.state, c.total_teams 
   from fantasy.leagues a, draft.settings b, (
@@ -16,18 +29,16 @@ const getLeague = async (league_id, user_id, res, type) => {
   fantasy.owners a, users.users b, fantasy.points c
   where a.user_id = b.user_id and a.owner_id = c.owner_id and a.league_id = '` + league_id + '\''
 
-  var teamInfoStr = `select c.owner_id, a.team_id, a.reg_points as points
-  from fantasy.team_points a
-  left outer join (select cc.* from fantasy.rosters cc, fantasy.owners dd where
-   cc.owner_id = dd.owner_id and dd.league_id = '` + league_id + '\'' +
- `) c on a.team_id = c.team_id 
- where a.scoring_type_id = 1` //MA - this should have sport_structure_id, right? for YS to figure out
- //need to fix this to do it based on league
- //, fantasy.leagues b
- //where b.league_id = '` + league_id + '\' and b.scoring_type_id = a.scoring_type_id'
-  //
+  var teamInfoStr = `select aa.*, bb.owner_id, bb.overall_pick from (select a.team_id, a.reg_points, a.bonus_points, a.playoff_points, c.points as proj_points, c.ranking
+    from fantasy.team_points a, fantasy.leagues b, fantasy.projections c
+    where b.league_id = '` + league_id + '\'' +
+    `and a.sport_structure_id = (b.sport_structure_id + 1)
+    and a.team_id = c.team_id
+    and c.day_count = (select max(day_count) from fantasy.projections)) aa
+    left outer join (select d.* from fantasy.rosters d, fantasy.owners e where
+    d.owner_id = e.owner_id and e.league_id = '` + league_id + '\') bb ' +
+    'on aa.team_id = bb.team_id' 
   
-   
   const leagueInfo = await knex.raw(leagueInfoStr)
   const ownerInfo = await knex.raw(ownerInfoStr)
   const teamInfo = await knex.raw(teamInfoStr)
@@ -68,7 +79,18 @@ const getLeague = async (league_id, user_id, res, type) => {
 
     const ownerGames = await getOwnersUpcomingGames(my_owner_id)
     teamInfo.rows.forEach(teamRow => {
-      teams[teamRow.team_id] = {owner_id:teamRow.owner_id, points:parseFloat(teamRow.points)}
+      let reg_points = parseFloat(teamRow.reg_points)
+      let bonus_points = parseFloat(teamRow.bonus_points)
+      let playoff_points = parseFloat(teamRow.playoff_points)
+      teams[teamRow.team_id] = {
+        owner_id:teamRow.owner_id,
+        overall_pick:teamRow.overall_pick,
+        reg_points,
+        bonus_points,
+        playoff_points,
+        proj_points:parseFloat(teamRow.proj_points),
+        ranking:parseInt(teamRow.ranking),
+        points:reg_points+bonus_points+playoff_points}
     })
     const draftOrder = GetDraftOrder(total_teams,owners.length)
 

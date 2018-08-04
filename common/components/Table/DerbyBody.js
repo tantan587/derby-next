@@ -42,7 +42,7 @@ class DerbyBody extends React.Component {
 
   rowRender = (classes, columns, n) =>
   {
-    const {handleOpenDialog, clickedOneTeam, activeLeague, styleProps} = this.props
+    const {handleOpenDialog, clickedOneTeam, styleProps} = this.props
     return (
 
       columns.filter(
@@ -80,7 +80,7 @@ class DerbyBody extends React.Component {
                     className={classes.teamName}
                     onClick={() => {
                       handleOpenDialog(n)
-                      clickedOneTeam(n.team_id, activeLeague.league_id)
+                      clickedOneTeam(n.team_id)
                     }}
                   >
                     {n[header.id]}
@@ -145,11 +145,7 @@ class DerbyBody extends React.Component {
   }
 }
 
-const mapStateToProps = state => ({
-  activeLeague: state.activeLeague,
-})
-
 export default connect(
-  mapStateToProps,
+  () => {},
   { handleOpenDialog, clickedOneTeam }
 )(withStyles(styles)(DerbyBody))
