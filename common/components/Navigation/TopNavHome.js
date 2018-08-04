@@ -3,30 +3,56 @@ import React from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
+import Button from '@material-ui/core/Button'
+import HamburgerIcon from '@material-ui/icons/Reorder'
 import { connect } from 'react-redux'
 import LogoutButton from './Buttons/LogoutButton'
 import LoginButton from './Buttons/LoginButton'
 import MenuButton from './Buttons/MenuButton'
 import LeaguesButton from './Buttons/LeaguesButton'
-//import AdminButton from './Buttons/AdminButton'
+import AdminButton from './Buttons/AdminButton'
+import {toggleMobileNav, setMobileNavVariant} from '../../actions/status-actions'
 
-const styles = () => ({
+const styles = (theme) => ({
   root: {
     flexGrow: 1,
     backgroundColor:'white', 
     textAlign: 'center'
   },
-  flex: {
+  flexTop: {
     flex: 1,
+    marginBottom: 10,
+  },
+  flexBottom: {
+    flex: 1,
+    justifyContent: 'center',
+    top: -10,
+    [theme.breakpoints.down('sm')]: {
+      display: 'none',
+    },
   },
   menuButton: {
     marginLeft: -12,
     marginRight: 20,
     float: 'right'
   },
+  hamburger: {
+    color: theme.palette.primary.main,
+    [theme.breakpoints.up('md')]: {
+      display: 'none',
+    },
+  },
+  logo: {
+    maxWidth: 300,
+    maxHeight: 100,
+    width: '100%',
+    height: '100%',
+  }
 })
 class TopNavHome extends React.Component {
-  
+  componentDidMount() {
+    this.props.setMobileNavVariant('TopNavHomeVariant')
+  }
   state = {
     hoverIndex:-1
   };
@@ -52,14 +78,17 @@ class TopNavHome extends React.Component {
   }
 
   render() {
-    const {classes, user} = this.props
+    const {classes, user, toggleMobileNav} = this.props
     
     return (
       <div className={classes.root}>
         <AppBar position="static" style={{backgroundColor:'white', color:'black'}}>
           <Toolbar>
-            <div  className={classes.flex}>
-              <img src='/static/icons/derby_home_logo.svg' alt="ok" width="300" height="100"/>
+            <Button className={classes.hamburger} variant="extendedFab" onClick={toggleMobileNav}>
+              <HamburgerIcon />
+            </Button>
+            <div className={classes.flexTop}>
+              <img src='/static/icons/derby_home_logo.svg' alt="ok" className={classes.logo}/>
             </div> 
             {!this.props.user.loggedIn ?
               <LoginButton color='#707070' backgroundColor='#ffffff'/>
@@ -69,17 +98,13 @@ class TopNavHome extends React.Component {
                 {/* <AdminButton color='#707070' backgroundColor='#ffffff'/> */}
               </div>
             }
-            <br/>
-            
           </Toolbar>
-          <Toolbar>
-            <div  className={classes.flex}>                         
-              {this.setHoverToButton('league', 0, user.loggedIn)}  
-              {this.setHoverToButton('default', 1, user.loggedIn, '/participate', 'Create/Join League')}
-              {this.setHoverToButton('default', 2, user.loggedIn, '', 'Rules')}
-              {this.setHoverToButton('default', 3, user.loggedIn, '', 'FAQ')}
-              {this.setHoverToButton('default', 4, user.loggedIn, '/scoreboard', 'Scoreboard')}
-            </div>
+          <Toolbar className={classes.flexBottom}>
+            {this.setHoverToButton('league', 0, user.loggedIn)}  
+            {this.setHoverToButton('default', 1, user.loggedIn, '/participate', 'Create/Join League')}
+            {this.setHoverToButton('default', 2, user.loggedIn, '', 'Rules')}
+            {this.setHoverToButton('default', 3, user.loggedIn, '', 'FAQ')}
+            {this.setHoverToButton('default', 4, user.loggedIn, '/scoreboard', 'Scoreboard')}
           </Toolbar>
         </AppBar>
       </div>
@@ -90,5 +115,5 @@ class TopNavHome extends React.Component {
 
 export default R.compose(
   withStyles(styles),
-  connect(R.pick(['user'])),
+  connect(R.pick(['user']), {toggleMobileNav: toggleMobileNav('TopNavHomeVariant'), setMobileNavVariant}),
 )(TopNavHome)
