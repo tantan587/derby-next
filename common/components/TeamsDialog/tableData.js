@@ -3,11 +3,12 @@ export const organizeData = (data) => {
 
   const areWeHome = teams[game.home_team_id].team_name === oneTeam.team_name
 
-  const awayTeamName = teams[game.away_team_id].team_name
+  const awayTeamName = teams[game.away_team_id] ? teams[game.away_team_id].team_name : 'UNKNOWN'
   const awayTeamScore = game.away_team_score
 
-  const homeTeamName = teams[game.home_team_id].team_name
+  const homeTeamName = teams[game.home_team_id] ? teams[game.home_team_id].team_name : 'UNKNOWN'
   const homeTeamScore = game.home_team_score
+
 
   // console.log('away is', teams[game.away_team_id].team_name)
   // console.log('home is', teams[game.home_team_id].team_name)
