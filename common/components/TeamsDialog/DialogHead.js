@@ -13,7 +13,7 @@ const styles = {
   }
 }
 
-const DialogHead = ({ currTeam, data, oneTeam, classes }) =>
+const DialogHead = ({ currTeam, oneTeam, classes }) =>
 {
   if (!oneTeam)
   {
@@ -40,21 +40,21 @@ const DialogHead = ({ currTeam, data, oneTeam, classes }) =>
               {oneTeam.owner || 'XXX'} <span className={classes.key}>Owner</span>
             </div>
             <div className={classes.value}>
-              {oneTeam.owned_in_derby_leagues || 'XXX'} <span className={classes.key}>Owned in Derby Leagues</span>
+              {oneTeam.record || 'XXX'} <span className={classes.key}>Record</span>
             </div>
             <div className={classes.value}>
-              {oneTeam.rank_in_league || 'XXX'} <span className={classes.key}>MLB NL Rank</span>
+              {oneTeam.projected || 'XXX'} <span className={classes.key}>Projected Record</span>
             </div>
           </div>
           <div>
             <div className={classes.value}>
-              {oneTeam.record || 'XXX'} <span className={classes.key}>Record</span>
+              {oneTeam.points || 'XXX'} <span className={classes.key}>Current Points</span>
             </div>
             <div className={classes.value}>
-              {oneTeam.curr_points || 'XXX'} <span className={classes.key}>Current Points</span>
+              {Math.round(oneTeam.proj_points,0) || 'XXX'} <span className={classes.key}>Projected Points</span>
             </div>
             <div className={classes.value}>
-              {data || 'XXX'} <span className={classes.key}>Projected Points</span>
+              {oneTeam.ranking || 'XXX'} <span className={classes.key}>Overall Ranking</span>
             </div>
           </div>
         </div>

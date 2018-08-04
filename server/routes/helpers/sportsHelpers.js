@@ -177,13 +177,6 @@ const GetOneTeamSchedule  = async(team_id, res) =>{
 
   schedule = schedule.rows
   let oneTeam = {}
-  // oneTeam.team_name = teamInfo.sport_name !== 'EPL' ? teamInfo.city + ' ' + teamInfo.name : teamInfo.name
-  // oneTeam.owner = fantasyInfo.owner_name
-  // oneTeam.owned_in_derby_leagues = 'TBD'
-  // oneTeam.rank_in_league = 'TBD'
-  // oneTeam.record = teamInfo.wins + '-' + teamInfo.losses + (teamInfo.ties > 0 ? '-' + teamInfo.ties : '')
-  // oneTeam.curr_points = parseFloat(fantasyInfo.reg_points) + parseFloat(fantasyInfo.bonus_points)
-
   const currDayCount =  fantasyHelpers.getDayCountStr((new Date()).toJSON())
   let lastFive = []
   let nextFive = []

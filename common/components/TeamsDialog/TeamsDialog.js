@@ -47,17 +47,21 @@ class TeamsDialog extends Component {
     const { lastFive, nextFive } = oneTeam
 
     let teamId = oneTeam.team_id
-    //oneTeam.team_name = teams[teamId].team_name
+    oneTeam.team_name = teams[teamId].team_name
     if(activeLeague.teams[teamId])
     {
-      let owner = activeLeague.owners.find(x => x.owner_id = activeLeague.teams[teamId].owner_id)
+      let team = activeLeague.teams[teamId]
+      let owner = activeLeague.owners.find(x => x.owner_id === team.owner_id)
       oneTeam.owner = owner ? owner.owner_name : 'Not Owned'
+      oneTeam.points = team.points
+      oneTeam.proj_points = team.proj_points
+      oneTeam.ranking = team.ranking  + '/' + Object.keys(activeLeague.teams).length
     }
-
-    if(activeLeague.teams[teamId])
+    if(teams[teamId])
     {
-      let owner = activeLeague.owners.find(x => x.owner_id = activeLeague.teams[teamId].owner_id)
-      oneTeam.owner = owner ? owner.owner_name : 'Not Owned'
+      let team = teams[teamId]
+      oneTeam.record = team.wins + '-' + team.losses + (team.ties > 0 ? '-' + team.ties : '')
+      oneTeam.projected = Math.round(team.projected.wins) + '-' + Math.round(team.projected.losses) + (team.projected.ties > 0 ? '-' + team.projected.ties : '')
     }
 
     return (open && lastFive && nextFive ?

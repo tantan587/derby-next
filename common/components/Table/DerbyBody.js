@@ -62,7 +62,12 @@ class DerbyBody extends React.Component {
             {header.imageInd === true && n[header.id] && n[header.id] !== 'none'
               ?  header.id === 'sport_id' 
                 ? <SportIcon sportId={n[header.id]} style={{width:25, height:'auto', maxHeight:30}} color='#392007'/> 
-                :  <img src={n[header.id]} preserveAspectRatio='true'  style={{maxWidth:'40px', maxHeight:'40px'}}/>
+                :  <img
+                  className={classes.teamName} 
+                  onClick={() => {
+                    handleOpenDialog(n)
+                    clickedOneTeam(n.team_id)}} src={n[header.id]} 
+                  preserveAspectRatio='true'  style={{maxWidth:'40px', maxHeight:'40px'}}/>
               : header.button
                 ? <Button
                   key={i}
@@ -146,6 +151,6 @@ class DerbyBody extends React.Component {
 }
 
 export default connect(
-  () => {},
+  null,
   { handleOpenDialog, clickedOneTeam }
 )(withStyles(styles)(DerbyBody))

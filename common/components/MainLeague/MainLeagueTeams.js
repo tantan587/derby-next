@@ -43,7 +43,6 @@ class MainLeagueTeams extends React.Component {
         //points:activeLeague.teams[team.team_id].points
       }
     })
-    console.log(myTeams)
     myTeams.sort((a,b) => {
       if(a.team_name < b.team_name) return -1
       return 1})
