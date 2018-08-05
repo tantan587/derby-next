@@ -49,3 +49,10 @@ module.exports.verify = (user_id, verification_code) => knex('users.users')
       }
       else return false
     })
+
+module.exports.isLeagueMember = (user_id, league_id) => knex('fantasy.owners')
+  .where('user_id', user_id)
+  .andWhere('league_id', league_id)
+  .first()
+  .then(R.is(Object))
+
