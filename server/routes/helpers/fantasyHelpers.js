@@ -56,6 +56,7 @@ const getLeague = async (league_id, user_id, res, type) => {
     let mode = leagueInfo.rows[0].state
     var draft_position = leagueInfo.rows[0].draft_position
     var my_owner_id = ''
+    var imTheCommish = false
     var owners = []
     var teams = {}
 
@@ -63,6 +64,7 @@ const getLeague = async (league_id, user_id, res, type) => {
       if(owner.user_id === user_id)
       {
         my_owner_id = owner.owner_id
+        imTheCommish = owner.commissioner
       }
       owners.push(
         {
@@ -73,7 +75,8 @@ const getLeague = async (league_id, user_id, res, type) => {
           username:owner.username,
           user_id: owner.user_id,
           draft_position: draft_position.indexOf(owner.owner_id),
-          avatar:owner.avatar
+          avatar:owner.avatar,
+          commissioner:owner.commissioner
         })
     })
 
@@ -108,6 +111,7 @@ const getLeague = async (league_id, user_id, res, type) => {
         mode
       },
       my_owner_id,
+      imTheCommish,
       draftOrder,
       teams,
       ownerGames,

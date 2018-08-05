@@ -22,6 +22,7 @@ export default (state = {}, action={ type: null }) => {
       teams:action.teams,
       ownerGames:action.ownerGames,
       rules:action.rules,
+      imTheCommish:action.imTheCommish,
       error : {}
     }
 

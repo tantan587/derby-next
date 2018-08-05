@@ -13,7 +13,7 @@ class Standings extends React.Component {
     return (
       <div>
         <LayoutLeague >
-          <RouteProtector
+          <RouteProtector checkCommish
             ProtectedRoute={() =>
               <MainLeagueSettings />}
             previousPage={'mainleaguesettings'}/>

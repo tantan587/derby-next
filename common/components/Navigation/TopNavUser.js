@@ -83,7 +83,7 @@ class TopNavUser extends React.Component {
         <AppBar position="static" style={{backgroundColor:'229246', color:'white'}}>
           <div style={{backgroundColor:'#00642C', height:30}}/>
           <Toolbar className={classes.toolbar}>
-            <Button className={classes.hamburger} variant="extendedFab" onClick={toggleMobileNav}>
+            <Button className={classes.hamburger}  onClick={toggleMobileNav}>
               <HamburgerIcon />
             </Button>
             
