@@ -1,7 +1,5 @@
 const R = require('ramda')
-import React from 'react'
 import {connect} from 'react-redux'
-import classNames from 'classnames'
 import { withRouter } from 'next/router'
 import { slide as Menu } from 'react-burger-menu'
 import {withStyles} from '@material-ui/core/styles'
@@ -16,7 +14,7 @@ const styles = (theme) => ({
 })
 
 const closeAllMenusOnEsc = (e) => {
-  e = e || window.event;
+  e = e || window.event
   if (e.key === 'Escape' || e.keyCode === 27) {
     hideMobileNav()
   }
@@ -28,7 +26,6 @@ const Variants = {
 }
 
 const MobileNav = ({
-  router,
   classes,
   isVisible,
   hideMobileNav,

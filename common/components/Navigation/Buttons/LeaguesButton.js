@@ -19,16 +19,18 @@ class LeaguesButton extends React.Component {
         id:league.league_id,
         link:'/mainleaguehome'} })
 
-    const items2 = []
-    items2.push({
-      text:'Draft Room',
-      link:'/livedraft'})
-    items2.push({
-      text:'Team Settings',
-      link:'/mainleagueteamsettings'})
-    items2.push({
-      text:'Commish Tools',
-      link:'/mainleaguesettings'})
+    const items2 = [
+      {
+        text:'League Home',
+        link:'/mainleaguehome'},
+      {
+        text:'Draft Room',
+        link:'/livedraft'},
+      {
+        text:'Team Settings',
+        link:'/mainleagueteamsettings'},{
+        text:'Commish Tools',
+        link:'/mainleaguesettings'}]
 
     return (
       <MenuBase

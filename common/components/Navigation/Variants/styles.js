@@ -24,6 +24,13 @@ const styles = (theme) => ({
   },
   leagueIcon: {
     marginRight: 15,
+  },
+  text : {
+    fontSize:16,
+    color:'#392007'
+  },
+  activeText : {
+    color:'#EBAB38'
   }
 })
 

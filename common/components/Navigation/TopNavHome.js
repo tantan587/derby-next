@@ -97,7 +97,7 @@ class TopNavHome extends React.Component {
       <div className={classes.root}>
         <AppBar position="static" style={{backgroundColor:'white', color:'black'}}>
           <Toolbar>
-            <Button size='small' className={classes.hamburger} style={{marginLeft:-20}} variant="extendedFab" onClick={toggleMobileNav}> 
+            <Button size='small' className={classes.hamburger} style={{marginLeft:-20}}  onClick={toggleMobileNav}> 
               <HamburgerIcon/>
             </Button>
             <div className={classes.flexTop} >

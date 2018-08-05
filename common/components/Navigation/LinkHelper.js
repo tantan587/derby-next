@@ -1,13 +1,14 @@
 import Link from 'next/link'
 import ListItem from '@material-ui/core/ListItem'
-import ListItemIcon from '@material-ui/core/ListItemIcon'
+//import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemText from '@material-ui/core/ListItemText'
+//import Typography from '@material-ui/core/Typography'
 
 const LinkHelper = ({
   children,
   href,
   classes,
-  Icon,
+  //Icon,
   endAdornment,
   parent,
   onClick,
@@ -20,13 +21,14 @@ const LinkHelper = ({
     className={classes.link}
     disabled={disabled}
   >
-    <ListItemIcon>
+    {/* <ListItemIcon>
       <Icon style={{color: 'inherit'}} />
-    </ListItemIcon>
+    </ListItemIcon> */}
     {parent ? (
       <ListItemText
         inset
-        primary={children}
+        style={{marginLeft:-30, marginBottom:10}}
+        primary={<div className={classes.text}>{children}</div>}
         primaryTypographyProps={{
           variant: 'body1',
           className: classes.linkAnchor,
@@ -37,7 +39,8 @@ const LinkHelper = ({
       <Link href={href}>
         <ListItemText
           inset
-          primary={children}
+          style={{marginLeft:-30, marginBottom:10}}
+          primary={<div className={classes.text}>{children}</div>}
           primaryTypographyProps={{
             variant: 'body1',
             className: classes.linkAnchor,

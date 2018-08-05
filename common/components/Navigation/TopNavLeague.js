@@ -6,6 +6,7 @@ import Toolbar from '@material-ui/core/Toolbar'
 import { connect } from 'react-redux'
 import MenuButton from './Buttons/MenuButton'
 import LeaguesButton from './Buttons/LeaguesButton'
+import LeagueExtraButton from './Buttons/LeagueExtraButton'
 import HamburgerIcon from '@material-ui/icons/Reorder'
 import Button from '@material-ui/core/Button'
 import {toggleMobileNav, setMobileNavVariant} from '../../actions/status-actions'
@@ -67,10 +68,12 @@ class TopNavLeague extends React.Component {
       onMouseLeave={() => this.setHover(-1)} 
       style={{display:'inline-flex'}}>
       {buttonType == 'league'  
-        ? <LeaguesButton name='Other' color={hoverColor} useItems2={true} />
-        : buttonType == 'home' 
-          ? <MenuButton color={hoverColor} link={link} name={name} isHomeLogo={true}/>
-          : <MenuButton color={hoverColor} link={link} name={name}/>
+        ? <LeaguesButton name='Leagues' color={hoverColor}/>
+        : buttonType == 'extra' ?
+          <LeagueExtraButton color={hoverColor} name={name}/>
+          : buttonType == 'home' 
+            ? <MenuButton color={hoverColor} link={link} name={name} isHomeLogo={true}/>
+            : <MenuButton color={hoverColor} link={link} name={name}/>
       }
     </div> 
   }
@@ -89,7 +92,7 @@ class TopNavLeague extends React.Component {
 
             {this.setHoverToButton('home', 0, '/')} 
             <div  className={classes.flex}>
-              {this.setHoverToButton('default', 1,  '/mainleaguehome', 'League Home')}
+              {this.setHoverToButton('extra', 1,  null, this.props.activeLeague.league_name)}
               {this.setHoverToButton('default', 2,  '/mainleaguestandings', 'Standings')}
               {this.setHoverToButton('default', 3,  '/mainleagueschedule', 'Schedules')}
               {this.setHoverToButton('default', 4,  '/mainleagueroster', 'Rosters')}
@@ -110,5 +113,5 @@ class TopNavLeague extends React.Component {
 
 export default R.compose(
   withStyles(styles),
-  connect(R.pick(['user']), {toggleMobileNav: toggleMobileNav('TopNavLeagueVariant'), setMobileNavVariant}),
+  connect(R.pick(['user', 'activeLeague']), {toggleMobileNav: toggleMobileNav('TopNavLeagueVariant'), setMobileNavVariant}),
 )(TopNavLeague)

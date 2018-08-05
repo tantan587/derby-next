@@ -1,24 +1,20 @@
 const R = require('ramda')
-import React from 'react'
 import {connect} from 'react-redux'
 import Link from 'next/link'
 import classNames from 'classnames'
 import {withRouter} from 'next/router'
-
 import {withStyles} from '@material-ui/core/styles'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import Collapse from '@material-ui/core/Collapse'
 import ExpandLess from '@material-ui/icons/ExpandLess'
 import ExpandMore from '@material-ui/icons/ExpandMore'
-import Typography from '@material-ui/core/Typography'
 import HomeIcon from '@material-ui/icons/Home'
 import PublicIcon from '@material-ui/icons/Public'
 import HelpIcon from '@material-ui/icons/Help'
 import AssignmentIcon from '@material-ui/icons/Assignment'
 import PollIcon from '@material-ui/icons/Poll'
 import PersonIcon from '@material-ui/icons/Person'
-
 import HomeLogoIcon from '../../Icons/HomeLogoIcon'
 import LinkHelper from '../LinkHelper'
 import {hideMobileNav} from '../../../actions/status-actions'
@@ -42,6 +38,13 @@ const TopNavHomeVariant = ({
   const userLeagues = toggleData.userLeagues
   const userProfile = toggleData.userProfile
 
+  const allLinks = [
+    {name: 'Derby Home', link:'/', icon:HomeIcon},
+    {name: 'Create/Join League', link:'/participate', icon:PublicIcon},
+    {name: 'Rules', link:'/rules', icon:AssignmentIcon},
+    {name: 'FAQ', link:'/faq', icon:HelpIcon},
+    {name: 'Scoreboard', link:'/scoreboard', icon:PollIcon},
+  ]
   return (
     <List>
       <ListItem
@@ -58,57 +61,19 @@ const TopNavHomeVariant = ({
           </a>
         </Link>
       </ListItem>
-      <LinkHelper 
-        href="/"
-        children="DERBY HOME"
+      {allLinks.map((x,i) => <LinkHelper
+        key={i}
+        href={x.link}
+        children={x.name}
         classes={{
-          link: classNames(classes.link, {[classes.activeLink]: isActive('/')}),
+          link: classNames(classes.link, {[classes.activeLink]: isActive(x.link)}),
           linkAnchor: classes.linkAnchor,
+          text: classNames(classes.text, {[classes.activeText]: isActive(x.link)})
         }}
-        Icon={HomeIcon}
+        Icon={x.icon}
         onClick={hideMobileNav}
-      />
-      <LinkHelper 
-        href="/participate"
-        children="CREATE/JOIN LEAGUE"
-        classes={{
-          link: classNames(classes.link, {[classes.activeLink]: isActive('/participate')}),
-          linkAnchor: classes.linkAnchor,
-        }}
-        Icon={PublicIcon}
-        onClick={hideMobileNav}
-      />
-      <LinkHelper 
-        href="/"
-        children="RULES"
-        classes={{
-          link: classNames(classes.link, {[classes.activeLink]: isActive('/rules')}),
-          linkAnchor: classes.linkAnchor,
-        }}
-        Icon={AssignmentIcon}
-        onClick={hideMobileNav}
-      />
-      <LinkHelper 
-        href="/"
-        children="FAQ"
-        classes={{
-          link: classNames(classes.link, {[classes.activeLink]: isActive('/faq')}),
-          linkAnchor: classes.linkAnchor,
-        }}
-        Icon={HelpIcon}
-        onClick={hideMobileNav}
-      />
-      <LinkHelper 
-        href="/scoreboard"
-        children="SCOREBOARD"
-        classes={{
-          link: classNames(classes.link, {[classes.activeLink]: isActive('/scoreboard')}),
-          linkAnchor: classes.linkAnchor,
-        }}
-        Icon={PollIcon}
-        onClick={hideMobileNav}
-      />
-
+      />)}
+      
       {user.loggedIn && <LinkHelper 
         href="javascript:void(0)"
         children={user.username}
@@ -120,34 +85,35 @@ const TopNavHomeVariant = ({
       />}
 
       {user.loggedIn && <Collapse className={classes.nestedContainer} in={userProfile}>
-        <LinkHelper 
+        {/* <LinkHelper 
           href="/"
           children="SETTINGS"
           classes={{
             link: classes.link,
             linkAnchor: classNames(classes.nested, classes.linkAnchor, {[classes.activeLink]: isActive('/')}),
           }}
-          Icon={() => ""}
+          Icon={() => ''}
           onClick={hideMobileNav}
-        />
+        /> */}
         <LinkHelper 
           href="/logout"
-          children="LOGOUT"
+          children="Log Out"
           classes={{
             link: classes.link,
             linkAnchor: classNames(classes.nested, classes.linkAnchor, {[classes.activeLink]: isActive('/logout')}),
+            text:classNames(classes.text, {[classes.activeText]: isActive('/logout')})
           }}
-          Icon={() => ""}
+          Icon={() => ''}
           onClick={hideMobileNav}
         />
       </Collapse>}
 
-      {(user.loggedIn && leagues.length) && <LinkHelper 
+      {(user.loggedIn && leagues.length) && <LinkHelper
         href="javascript:void(0)"
-        children="LEAGUES"
+        children="Leagues"
         endAdornment={userLeagues ? <ExpandLess /> : <ExpandMore />}
         classes={classes}
-        Icon={() => ""}
+        Icon={() => ''}
         parent={true}
         onClick={() => toggle('userLeagues')}
       />}
@@ -162,8 +128,9 @@ const TopNavHomeVariant = ({
               classes={{
                 link: classes.link,
                 linkAnchor: classNames(classes.nested, classes.linkAnchor, {[classes.activeLink]: isActive('/mainleaguehome')}),
+                text:classNames(classes.text, {[classes.activeText]: isActive('/mainleaguehome')})
               }}
-              Icon={() => ""}
+              Icon={() => ''}
               onClick={() => {
                 hideMobileNav()
                 clickedLeague(league.league_id, user.id)
@@ -177,8 +144,9 @@ const TopNavHomeVariant = ({
             classes={{
               link: classes.link,
               linkAnchor: classNames(classes.nested, classes.linkAnchor),
+              text:classes.text
             }}
-            Icon={() => ""}
+            Icon={() => ''}
             disabled
           />
         )}
@@ -190,8 +158,9 @@ const TopNavHomeVariant = ({
         classes={{
           link: classes.link,
           linkAnchor: classNames(classes.linkAnchor, {[classes.activeLink]: isActive('/login')}),
+          text:classNames(classes.text, {[classes.activeText]: isActive('/login')})
         }}
-        Icon={() => ""}
+        Icon={() => ''}
         onClick={hideMobileNav}
       />}
 
@@ -201,8 +170,9 @@ const TopNavHomeVariant = ({
         classes={{
           link: classes.link,
           linkAnchor: classNames(classes.linkAnchor, {[classes.activeLink]: isActive('/signup')}),
+          text:classNames(classes.text, {[classes.activeText]: isActive('/signup')})
         }}
-        Icon={() => ""}
+        Icon={() => ''}
         onClick={hideMobileNav}
       />}
 
