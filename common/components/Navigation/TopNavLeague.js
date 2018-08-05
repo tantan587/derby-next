@@ -7,6 +7,7 @@ import { connect } from 'react-redux'
 import MenuButton from './Buttons/MenuButton'
 import LeaguesButton from './Buttons/LeaguesButton'
 import HamburgerIcon from '@material-ui/icons/Reorder'
+import Button from '@material-ui/core/Button'
 import {toggleMobileNav, setMobileNavVariant} from '../../actions/status-actions'
 
 const styles = (theme) => ({
@@ -66,7 +67,7 @@ class TopNavLeague extends React.Component {
       onMouseLeave={() => this.setHover(-1)} 
       style={{display:'inline-flex'}}>
       {buttonType == 'league'  
-        ? <LeaguesButton color={hoverColor} useItems2={true} />
+        ? <LeaguesButton name='Other' color={hoverColor} useItems2={true} />
         : buttonType == 'home' 
           ? <MenuButton color={hoverColor} link={link} name={name} isHomeLogo={true}/>
           : <MenuButton color={hoverColor} link={link} name={name}/>
@@ -75,7 +76,7 @@ class TopNavLeague extends React.Component {
   }
 
   render() {
-    const {classes, user, toggleMobileNav} = this.props
+    const {classes, toggleMobileNav} = this.props
     
     return (
       <div className={classes.root}>

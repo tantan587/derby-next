@@ -12,7 +12,7 @@ class LeaguesButton extends React.Component {
     onClickedLeague(league_id || this.props.activeLeague.league_id, this.props.user.id)
   };
   render() {
-    const { color, backgroundColor, leagues, useItems2 } = this.props
+    const { color, backgroundColor, leagues, useItems2, name } = this.props
     const items = leagues.map(league => { 
       return {
         text:league.league_name,
@@ -37,7 +37,7 @@ class LeaguesButton extends React.Component {
         items={items}
         extraItems={useItems2 ? items2 : null}
         handleClick={this.handleClick} 
-        title='Other'/>
+        title={name}/>
     )
   }
 }

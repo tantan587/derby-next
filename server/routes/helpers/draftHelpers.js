@@ -19,12 +19,10 @@ const GetDraftRules = async (roomId) => {
       {
         if(!rtnObj[rule.sport_id])
         {
-          rtnObj[rule.sport_id] = 
-          {max:parseInt(rule.sport_teams), total:0, conferences:{}}
+          rtnObj[rule.sport_id] = {max:parseInt(rule.sport_teams), total:0, conferences:{}}
         }
 
-        rtnObj[rule.sport_id].conferences[rule.conference_id] = 
-        {max:parseInt(rule.conf_teams), total:0, team:''}
+        rtnObj[rule.sport_id].conferences[rule.conference_id] = {max:parseInt(rule.conf_teams), total:0, team:''}
       })
       return rtnObj
     })
@@ -32,10 +30,10 @@ const GetDraftRules = async (roomId) => {
 
 const GetTeamMap = async (roomId) =>{
   const teamMapStr = `select c.team_id, c.sport_id, c.conference_id 
-  from draft.settings a, fantasy.team_points b, sports.team_info c, fantasy.leagues d
-  where a.league_id = d.league_id  
-  and d.sport_structure_id = b.sport_structure_id
-  and b.team_id = c.team_id and a.room_id = '` +  roomId + '\''
+  from draft.settings a, fantasy.conferences b, sports.team_info c 
+  where a.league_id = b.league_id  
+  and b.conference_id = c.conference_id 
+  and a.room_id = '` +  roomId + '\''
 
   const rtnObj = {}
   return knex.raw(teamMapStr)

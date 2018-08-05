@@ -69,7 +69,7 @@ class MainLeagueRoster extends React.Component {
         <DerbyTableContainer
           usePagination={true}
           myRows={filteredMyTeams}
-          orderInd={true}
+          //orderInd={true}
           myHeaders = {[
             {label: 'Logo', key: 'logo_url', sortId:'team_name', imageInd:true},
             {label: 'Team Name', key: 'team_name'},

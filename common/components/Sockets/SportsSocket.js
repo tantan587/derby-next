@@ -4,13 +4,29 @@ import {getSportSeasons, handleTeamUpdateTime, handleGameUpdateTime,
   handleTeamUpdate, handleGameUpdate,
   handleTeamUpdateDiff, handleGameUpdateDiff } from '../../actions/sport-actions'
 import { connect } from 'react-redux'
+const R = require('ramda')
 
 
 class SportsSocket extends React.Component {
 
-  componentWillMount() {
-    
+  constructor(props) {
+    super(props)
+    this.state = {
+      sportSeasons:[]
+    }
   }
+  static getDerivedStateFromProps(nextProps){
+    return {sportSeasons:nextProps.sportSeasons}
+  }
+
+  
+  componentDidUpdate(prevProps,prevState){
+
+    if (prevState.sportSeasons.length != prevState.sportSeasons.length ||
+    prevState.sportSeasons.some((x,i)=> x !== this.state.sportSeasons[i]))
+      this.socket.emit('allTeamData', this.props.sportSeasons)
+  }
+
   // connect to WS server and listen event
   componentDidMount() {
     if(this.props.sportSeasons.length === 0)
@@ -36,27 +52,49 @@ class SportsSocket extends React.Component {
   }
 
   getTeams = (data) => {
+    data = this.filterOnRules(data)
     this.props.onTeamUpdate(data)
+    
   }
 
   getTeamsDiff = (data) => {
     //needs to be handled better for playoffs
     const {onTeamUpdateDiff, onTeamUpdateTime, sportSeasons} = this.props
 
-    
+    let dataForMe = {}
     if(sportSeasons.length > 0)
     {
-      let dataForMe = {}
       sportSeasons.forEach(seasonId => {
         if(data.diff[seasonId])
         {
           Object.assign(dataForMe, data.diff[seasonId])
         }
-      })
-      if(dataForMe)
-        onTeamUpdateDiff(dataForMe)
+      })  
     }
+    
+    dataForMe = this.filterOnRules(dataForMe)
+    if(Object.keys(dataForMe).length > 0)
+    {
+      onTeamUpdateDiff(dataForMe)
+    }
+    
     onTeamUpdateTime(data.updateTime)
+  }
+
+  filterOnRules = (data) => {
+    const {activeLeague} = this.props
+    let rtnData = data
+    if(activeLeague && activeLeague.rules)
+    {
+      rtnData = {}
+      let conferences = R.flatten(activeLeague.rules.map(x => x.conferences)).map(x => x.conference_id)
+      let teams = Object.values(data).filter(x => conferences.includes(x.conference_id))
+      teams.forEach(x => {
+        rtnData[x.team_id] = x
+      })
+      
+    }
+    return rtnData
   }
 
   getGames = (data) => {
@@ -106,7 +144,6 @@ class SportsSocket extends React.Component {
 export default connect(
   state =>
     ({
-      teams:state.teams,
       updateTime:state.updateTime,
       sportSeasons:state.sportSeasons,
       activeLeague:state.activeLeague

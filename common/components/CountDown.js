@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react'
+import React from 'react'
 
 class CountDown extends React.PureComponent {
   constructor(props) {
@@ -12,8 +12,8 @@ class CountDown extends React.PureComponent {
   tick() {
     const { timeLeft } = this.state
     timeLeft 
-    ? this.setState({timeLeft: this.state.timeLeft - 1})
-    : this.props.onFinish()
+      ? this.setState({timeLeft: this.state.timeLeft - 1})
+      : this.props.onFinish()
   }
 
   componentWillUnmount() {

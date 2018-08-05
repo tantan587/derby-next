@@ -68,7 +68,7 @@ class TopNavUser extends React.Component {
       onMouseLeave={() => this.setHover(-1)} 
       style={{display:'inline-flex'}}>
       {buttonType == 'league'  
-        ? loggedIn ? <LeaguesButton color={hoverColor} /> : <div/> 
+        ? loggedIn ? <LeaguesButton name='My Leagues' color={hoverColor} /> : <div/> 
         : buttonType == 'home' 
           ? <MenuButton color={hoverColor} link={link} name={name} isHomeLogo={true}/>
           : <MenuButton color={hoverColor} link={link} name={name}/>

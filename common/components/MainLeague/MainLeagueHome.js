@@ -96,7 +96,7 @@ class MainLeagueHome extends React.Component {
               />
             </Card>
             {
-              activeLeague.draftInfo.mode !== C.DRAFT_STATE.POST ?
+              activeLeague.draftInfo && activeLeague.draftInfo.mode !== C.DRAFT_STATE.POST ?
                 <Card
                   title="Draft Countdown"
                   Button={() => <StyledButton text="Go to Draft Room" link='/livedraft'/>}

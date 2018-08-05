@@ -10,18 +10,24 @@ import LogoutButton from './Buttons/LogoutButton'
 import LoginButton from './Buttons/LoginButton'
 import MenuButton from './Buttons/MenuButton'
 import LeaguesButton from './Buttons/LeaguesButton'
-import AdminButton from './Buttons/AdminButton'
+//import AdminButton from './Buttons/AdminButton'
 import {toggleMobileNav, setMobileNavVariant} from '../../actions/status-actions'
 
 const styles = (theme) => ({
   root: {
-    flexGrow: 1,
+    //flexGrow: 1,
     backgroundColor:'white', 
     textAlign: 'center'
   },
   flexTop: {
-    flex: 1,
     marginBottom: 10,
+    flex:1,
+    [theme.breakpoints.down('sm')]: {
+      marginLeft:'-7%' 
+    },
+    [theme.breakpoints.up('md')]: {
+      marginLeft: 100,
+    }
   },
   flexBottom: {
     flex: 1,
@@ -37,8 +43,14 @@ const styles = (theme) => ({
     float: 'right'
   },
   hamburger: {
+    float:'left',
     color: theme.palette.primary.main,
     [theme.breakpoints.up('md')]: {
+      display: 'none',
+    }
+  },
+  logInOut: {
+    [theme.breakpoints.down('sm')]: {
       display: 'none',
     },
   },
@@ -71,7 +83,7 @@ class TopNavHome extends React.Component {
       onMouseLeave={() => this.setHover(-1)} 
       style={{display:'inline-flex'}}>
       {buttonType == 'league'  
-        ? loggedIn ? <LeaguesButton color={hoverColor} backgroundColor='white'/> : <div/> 
+        ? loggedIn ? <LeaguesButton name='My Leagues' color={hoverColor} backgroundColor='white'/> : <div/> 
         : <MenuButton color={hoverColor} backgroundColor='#ffffff' link={link} name={name}/>
       }
     </div> 
@@ -79,22 +91,25 @@ class TopNavHome extends React.Component {
 
   render() {
     const {classes, user, toggleMobileNav} = this.props
+    //className={classes.hamburger} 
     
     return (
       <div className={classes.root}>
         <AppBar position="static" style={{backgroundColor:'white', color:'black'}}>
           <Toolbar>
-            <Button className={classes.hamburger} variant="extendedFab" onClick={toggleMobileNav}>
-              <HamburgerIcon />
+            <Button size='small' className={classes.hamburger} style={{marginLeft:-20}} variant="extendedFab" onClick={toggleMobileNav}> 
+              <HamburgerIcon/>
             </Button>
-            <div className={classes.flexTop}>
+            <div className={classes.flexTop} >
               <img src='/static/icons/derby_home_logo.svg' alt="ok" className={classes.logo}/>
             </div> 
             {!this.props.user.loggedIn ?
-              <LoginButton color='#707070' backgroundColor='#ffffff'/>
+              <div className={classes.logInOut}>
+                <LoginButton className={classes.logInOut} color='#707070' backgroundColor='#ffffff'/>
+              </div>
               :
-              <div>
-                <LogoutButton color='#707070' backgroundColor='#ffffff'/>
+              <div className={classes.logInOut}>
+                <LogoutButton  color='#707070' backgroundColor='#ffffff'/>
                 {/* <AdminButton color='#707070' backgroundColor='#ffffff'/> */}
               </div>
             }
