@@ -5,6 +5,7 @@ import Typography from '@material-ui/core/Typography'
 import {connect} from 'react-redux'
 import {withRouter} from 'next/router'
 import DraftSettings from './DraftSettings'
+import ReorderDraft from './ReorderDraft'
 import {clickedUpdateLeague, updateError} from '../../../actions/fantasy-actions'
 import C from '../../../constants'
 const R = require('ramda')
@@ -144,6 +145,12 @@ class CommishTool extends React.Component {
                 <div>
                   <div className={classes.titleSmall}>Draft Settings</div>
                   <DraftSettings draftType={draftType} pickTime={pickTime} draftDate={draftDate} handleChange={this.handleChange}/>
+                </div>
+              </Grid>
+              <Grid item xs={12} md={12} lg={6} className={classes.gridMargins}>
+                <div>
+                  <div className={classes.titleSmall}>Reorder Draft</div>
+                  <ReorderDraft/>
                 </div>
               </Grid>
               <Grid item xs={12} md={12} className={classes.gridMargins}>
