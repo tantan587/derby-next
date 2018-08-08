@@ -2,7 +2,7 @@
 const Points = require('./getPointsStructure.js')
  
 class Team {
-    constructor(name, sport_id, elo, wins, losses, ties, division, conference, team_id){
+    constructor(name, sport_id, elo, wins, losses, ties, division, conference, team_id, sport_season_id, year, playoff_wins, playoff_losses, playoff_status){
         this.team_id = team_id
         this.name = name
         //this.league_id = league_id
@@ -13,6 +13,8 @@ class Team {
         this.wins = wins
         this.losses = losses
         this.sport_id = sport_id
+        this.sport_season_id = sport_season_id
+        this.year = year
         this.ties = ties
         this.original_ties = ties
         this.total_ties = 0
@@ -59,12 +61,13 @@ class Team {
         this.away_games_scheduled = 0
         //below is for figuring out projections and rankings -
         //each index of an array is equal to the fantasy scoring type -1
-        this.fantasy_points_projected = []
-        this.points_above_last_drafted = []
-        this.points_above_average = []
-        this.rank_above_last = []
-        this.rank_above_average = []
-        this.overall_ranking = []
+        this.fantasy_points_projected = {}
+        this.points_above_last_drafted = {}
+        this.points_above_average = {}
+        this.rank_above_last = {}
+        this.rank_above_average = {}
+        this.overall_ranking = {}
+        this.playoff_status = playoff_status
     }
     
     addInitialRpiWL(wins,losses){
@@ -203,10 +206,8 @@ class Team {
         this.average_bowl_wins = (this.total_bowl_wins / sims)
     }
 
-    calculateFantasyPoints(points){
-        points.forEach(point_type => {
+    calculateFantasyPoints(sport_points, sport_structure_id){
             let bonus_win = 0
-            let sport_points = point_type[this.sport_id]
             if(this.sport_id === ('103'||'104')){
                 let milestone_parameter = this.sport_id === '103' ? this.wins : this.wins+this.ties/2
                 let milestone_points = sport_points.regular_season.milestone_points
@@ -220,7 +221,7 @@ class Team {
 
               if(this.sport_id === '105'){bonus_win+= this.average_bowl_wins * sport_points.playoffs.bowl_win}
 
-            this.fantasy_points_projected.push(
+            this.fantasy_points_projected[sport_structure_id] =
                 this.average_wins * sport_points.regular_season.win +
                 this.average_ties * sport_points.regular_season.tie +
                 this.average_champions * sport_points.bonus.championship +
@@ -228,17 +229,12 @@ class Team {
                 this.average_playoff_appearances * sport_points.bonus.appearance +
                 this.average_playoff_wins * sport_points.playoffs.win +
                 bonus_win
-            )
-        })
 
     }
 
-    calculateAboveValuesForRanking(last_drafted, averages){
-        let total_scoring_types = averages.length
-        for(let index = 0; index<total_scoring_types; index++){
-            this.points_above_average.push(this.fantasy_points_projected[index]-averages[index])
-            this.points_above_last_drafted.push(this.fantasy_points_projected[index]-last_drafted[index]) 
-        }
+    calculateAboveValuesForRanking(last_drafted, average, sport_structure_id){
+        this.points_above_average[sport_structure_id] = this.fantasy_points_projected[sport_structure_id]-averages[index]
+        this.points_above_last_drafted[sport_structure_id] = this.fantasy_points_projected[sport_structure_id]-last_drafted[index]
     }
    
 }
