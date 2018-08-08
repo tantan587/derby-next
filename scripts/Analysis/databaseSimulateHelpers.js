@@ -92,6 +92,9 @@ const getTeamInfo = (knex) =>
 {
     return knex('sports.team_info')
         .innerJoin('sports.standings', 'sports.standings.team_id', 'sports.team_info.team_id')
+        .leftOuterJoin('sports.playoff_standings', function(){
+            this.on('sports.playoff_standings.team_id','=', 'sports.standings.team_id').andOn('sports.playoff_standings.team_id','=', 'sports.standings.team_id')
+        })
         .innerJoin('analysis.current_elo','analysis.current_elo.team_id', 'sports.team_info.team_id')
         .select('*')
         .then(teams => {

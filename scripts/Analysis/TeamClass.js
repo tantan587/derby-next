@@ -22,8 +22,8 @@ class Team {
         this.original_losses = losses
         this.total_wins = 0
         this.total_losses = 0
-        this.total_playoff_wins = 0
-        this.total_playoff_losses = 0
+        this.total_playoff_wins = playoff_wins
+        this.total_playoff_losses = playoff_losses
         this.total_bowl_wins = 0
         this.playoff_wins = [0, 0, 0, 0, 0, 0, 0] //this is wins in each round of playoffs
         this.playoff_losses = [0, 0, 0, 0, 0, 0, 0] //this is losses in each round of playoffs
@@ -204,6 +204,15 @@ class Team {
         this.average_losses = (this.total_losses / sims)
         this.average_ties = (this.total_ties / sims)
         this.average_bowl_wins = (this.total_bowl_wins / sims)
+        if(this.playoff_status>2){
+            this.average_playoff_appearances=1
+            if(this.playoff_status>4){
+                this.average_finalists=1
+            }
+            if(this.playoff_status === 6){
+                this.average_champions = 1
+            }
+        }
     }
 
     calculateFantasyPoints(sport_points, sport_structure_id){

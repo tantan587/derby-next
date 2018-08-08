@@ -111,6 +111,11 @@ const simulateProfessionalLeague = (all_games_list, teams, sport_id, points, sim
     years.forEach(year => { 
         let sport_teams = individualSportTeamsWithYear(teams, sport_id, year)
         if(seasonsFinished[sport_id][year]){
+            sport_teams.forEach(team =>
+            {
+                team.reset()
+                team.averages(1)
+            })
             all_seasons_sport_teams.push(...sport_teams)
         }else{
             let sport_games = year in all_games_list[sport_id] ? all_games_list[sport_id][year] : createRandomGameSchedule(sport_id, year, teams)
@@ -416,7 +421,6 @@ const league_conference = {
 }
 
 const createRandomGameSchedule = (sport_id, year, all_teams) => {
-    console.log(sport_id)
     let sportRandom = randomSchedules.randomScheduleBySportID[sport_id].random(all_teams[sport_id][year])
     let fake_global = 1
     let game_list = sportRandom.map(game => {
