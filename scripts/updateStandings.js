@@ -14,7 +14,8 @@ const filtered_fantasy_standings_data = async () => {
     let sport = sport_keys[sport_id]
     if(sport_id===105){
       data.push(...await getCFBstandings(knex, sport.sport_name, sport.api, sport.standingsPromiseToGet, season.api_pull_parameter, season.year, season.sport_season_id))
-    }else{
+    }else if(sport_id===107){}
+    else{
       data.push(...await standingsBySport(knex, sport.sport_name, sport.api, sport.standingsPromiseToGet, season.api_pull_parameter, season.year, season.sport_season_id))
     }
   })
@@ -34,7 +35,7 @@ async function updateStandings()
   await fantasyHelpers.updateTeamPoints()
   await fantasyHelpers.updateLeaguePoints()
   console.log('im done')
-  process.exit()
+  //process.exit()
 
 }
 

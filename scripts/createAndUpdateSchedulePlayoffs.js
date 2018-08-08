@@ -34,8 +34,8 @@ async function createSchedule()
   //still needs to be fixed for non null values
   db_helpers.updateSchedule(knex, data)
     .then(result => {
-      console.log('Number of Schedules Updated: ' + result)
-      process.exit()
+      console.log('Number of Playoff Schedules Updated: ' + result)
+      //process.exit()
     })
 }
 
@@ -111,10 +111,4 @@ const getSchedInfo = async (knex, sportName, api, promiseToGet, year, sport_seas
   return schedInfo
   }
 
-
-
-
-
-
 createSchedule()
-

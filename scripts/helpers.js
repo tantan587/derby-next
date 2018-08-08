@@ -4,7 +4,7 @@ const fdClientModule = require('fantasydata-node-client')
 
 
 
-methods.insertIntoTable = function(knex, schema, table, data) {
+methods.insertIntoTable = async function(knex, schema, table, data) {
   return knex
     .withSchema(schema)
     .table(table)
