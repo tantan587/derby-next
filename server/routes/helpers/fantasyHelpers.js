@@ -359,13 +359,13 @@ const updateTeamPoints = async () =>
       let bonus_win=0
       let status = Number(team.playoff_status)
 
-      if(sport_id === ('103'||'104')){
-        let milestone_parameter = sport_id === '103' ? team.wins : team.wins+team.ties/2
+      if(sport_id === '103' || sport_id==='104'){
+        let milestone_parameter = sport_id === '103' ? team.wins : team.wins*2//+team.ties
         let milestone_points = points[fteam.scoring_type_id][sport_id].regular_season.milestone_points
         bonus_win = milestone_parameter < points[fteam.scoring_type_id][sport_id].regular_season.milestones[0] ? 0 :
           milestone_parameter < points[fteam.scoring_type_id][sport_id].regular_season.milestones[1] ? milestone_points :
             milestone_parameter < points[fteam.scoring_type_id][sport_id].regular_season.milestones[2] ? milestone_points*2 : milestone_points*3
-      }
+          }
       
       let bonus_points = status > 5 ? points[fteam.scoring_type_id][sport_id].bonus.championship + points[fteam.scoring_type_id][sport_id].bonus.finalist + points[fteam.scoring_type_id][sport_id].bonus.appearance :
         status > 4 ? points[fteam.scoring_type_id][sport_id].bonus.finalist + points[fteam.scoring_type_id][sport_id].bonus.appearance :
