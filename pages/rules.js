@@ -1,12 +1,14 @@
 import React from 'react'
 import LayoutUser from '../common/components/LayoutUser'
-import ParticipateForm from '../common/components/ParticipateForm'
+import RulesPage from '../common/components/CopyPages/Rules'
 import withRoot from '../common/components/withRoot'
 import withRedux from 'next-redux-wrapper'
 import storeFactory from '../common/store'
 import RouteProtector from '../common/components/RouteProtector'
 
-class Participate extends React.Component {
+// const RulesPage = () => <div>I am rules</div>
+
+class Rules extends React.Component {
 
   render() {
     return (
@@ -14,12 +16,12 @@ class Participate extends React.Component {
         <LayoutUser >
           <RouteProtector
             ProtectedRoute={() =>
-              <ParticipateForm />}
-            previousPage={'participate'}/>
+              <RulesPage />}
+            previousPage={'rles'}/>
         </LayoutUser>
       </div>
     )
   }
 }
 
-export default withRedux(storeFactory)(withRoot(Participate))
+export default withRedux(storeFactory)(withRoot(Rules))

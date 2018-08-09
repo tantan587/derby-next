@@ -13,7 +13,7 @@ import AdminButton from './Buttons/AdminButton'
 const styles = () => ({
   root: {
     flexGrow: 1,
-    backgroundColor:'white', 
+    backgroundColor:'white',
     textAlign: 'center'
   },
   flex: {
@@ -26,7 +26,7 @@ const styles = () => ({
   },
 })
 class TopNavHome extends React.Component {
-  
+
   state = {
     hoverIndex:-1
   };
@@ -41,26 +41,26 @@ class TopNavHome extends React.Component {
   {
     let hoverColor = this.state.hoverIndex===index?'#EBAB38':'#269349'
     return <div
-      onMouseEnter={() => this.setHover(index)} 
-      onMouseLeave={() => this.setHover(-1)} 
+      onMouseEnter={() => this.setHover(index)}
+      onMouseLeave={() => this.setHover(-1)}
       style={{display:'inline-flex'}}>
-      {buttonType == 'league'  
-        ? loggedIn ? <LeaguesButton color={hoverColor} backgroundColor='white'/> : <div/> 
+      {buttonType == 'league'
+        ? loggedIn ? <LeaguesButton color={hoverColor} backgroundColor='white'/> : <div/>
         : <MenuButton color={hoverColor} backgroundColor='#ffffff' link={link} name={name}/>
       }
-    </div> 
+    </div>
   }
 
   render() {
     const {classes, user} = this.props
-    
+
     return (
       <div className={classes.root}>
         <AppBar position="static" style={{backgroundColor:'white', color:'black'}}>
           <Toolbar>
             <div  className={classes.flex}>
               <img src='/static/icons/derby_home_logo.svg' alt="ok" width="300" height="100"/>
-            </div> 
+            </div>
             {!this.props.user.loggedIn ?
               <LoginButton color='#707070' backgroundColor='#ffffff'/>
               :
@@ -70,13 +70,13 @@ class TopNavHome extends React.Component {
               </div>
             }
             <br/>
-            
+
           </Toolbar>
           <Toolbar>
-            <div  className={classes.flex}>                         
-              {this.setHoverToButton('league', 0, user.loggedIn)}  
+            <div  className={classes.flex}>
+              {this.setHoverToButton('league', 0, user.loggedIn)}
               {this.setHoverToButton('default', 1, user.loggedIn, '/participate', 'Create/Join League')}
-              {this.setHoverToButton('default', 2, user.loggedIn, '', 'Rules')}
+              {this.setHoverToButton('default', 2, user.loggedIn, '/rules', 'Rules')}
               {this.setHoverToButton('default', 3, user.loggedIn, '', 'FAQ')}
               {this.setHoverToButton('default', 4, user.loggedIn, '/scoreboard', 'Scoreboard')}
             </div>
