@@ -74,33 +74,6 @@ async function simulate(knex)
     console.log('done')
     process.exit()
 
-    /*
-    //insert record, game, and fantasy projections into table
-    return db_helpers.insertIntoTable(knex,'analysis', 'record_projections', projections)
-    .then(()=>{
-        console.log('inserted record projections')
-        //the insert for game_projections should be the second value of each array
-        return db_helpers.insertIntoTable(knex, 'fantasy', 'projections', fantasy_projections)
-        .then(() => {
-            console.log('inserted fantasy projections')
-            //breaking up inserting game projections into two: college basketball and everything but college basketball
-            return db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', game_projections)
-            .then(()=> {
-                console.log('1')
-                return db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', cbb_teams[1])
-                .then(() =>{
-                    console.log('inserted game projections')
-                    // return fantasyHelpers.updateLeagueProjectedPoints()
-                    // .then(()=>{
-
-
-                    console.log('done')
-                    process.exit()
-                    // })
-                })
-            })
-        })
-    })*/
 }
 
 //function which simulates NBA, NFL, NHL, MLB - default set to 10 for now to modify later
@@ -172,7 +145,11 @@ const simulateCFB = (all_games_list, teams, points, simulations = 10) => {
     let all_seasons_cfb_teams = []
     years.forEach(year => { 
         let cfb_teams = individualSportTeamsWithYear(teams, '105', year)
-        if(seasonsFinished['105'][year]){
+        if(seasonsFinished[105][year]){
+            cfb_teams.forEach(team =>{
+                team.reset()
+                team.averages(1)
+            })
             all_seasons_cfb_teams.push(...cfb_teams)
         }else{
             //need to build in functionality to randomize college football schedule, and insert that below
@@ -239,7 +216,6 @@ const simulateCFB = (all_games_list, teams, points, simulations = 10) => {
     })
     //creates game projections for impact, and also calculating each temas iwnning percentage
     //let game_projections = simulateHelpers.createImpactArray(all_games_list, '105', points, years)
-
     return [all_seasons_cfb_teams, game_projections]
     }
 
@@ -250,7 +226,11 @@ const simulateCBB = (all_games_list, teams, points, simulations = 10) => {
     let all_seasons_cbb_teams = []
     years.forEach(year => {
         let cbb_teams = individualSportTeamsWithYear(teams, '106', year)
-        if(seasonsFinished['106'][year]){
+        if(seasonsFinished[106][year]){
+            cbb_teams.forEach(team => {
+                team.reset()
+                team.averages(1)
+            })
             all_seasons_cbb_teams.push(...cbb_teams)
         }else{
             let cbb_games = year in all_games_list['106'] ? all_games_list['106'][year] : all_games_list['106'][year-1]
@@ -349,6 +329,10 @@ const simulateEPL = (all_games_list, teams, points, simulations = 10) => {
     years.forEach(year => { 
         const epl_teams = individualSportTeamsWithYear(teams, '107', year)
         if(seasonsFinished[107][year]){
+            epl_teams.forEach(team =>{
+                team.reset()
+                team.averages(1)
+            })
             all_seasons_epl_teams.push(...epl_teams)
         }else{
             let epl_games =  all_games_list['107'][year]

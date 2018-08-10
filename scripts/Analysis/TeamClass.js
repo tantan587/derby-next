@@ -242,8 +242,8 @@ class Team {
     }
 
     calculateAboveValuesForRanking(last_drafted, average, sport_structure_id){
-        this.points_above_average[sport_structure_id] = this.fantasy_points_projected[sport_structure_id]-averages[index]
-        this.points_above_last_drafted[sport_structure_id] = this.fantasy_points_projected[sport_structure_id]-last_drafted[index]
+        this.points_above_average[sport_structure_id] = this.fantasy_points_projected[sport_structure_id]-average
+        this.points_above_last_drafted[sport_structure_id] = this.fantasy_points_projected[sport_structure_id]-last_drafted
     }
    
 }

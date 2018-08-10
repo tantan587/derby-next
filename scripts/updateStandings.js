@@ -14,8 +14,6 @@ const filtered_fantasy_standings_data = async () => {
     let sport = sport_keys[sport_id]
     if(sport_id===105){
       data.push(...await getCFBstandings(knex, sport.sport_name, sport.api, sport.standingsPromiseToGet, season.api_pull_parameter, season.year, season.sport_season_id))
-    }else if(sport_id===107){
-      //do nothing
     }
     else{
       data.push(...await standingsBySport(knex, sport.sport_name, sport.api, sport.standingsPromiseToGet, season.api_pull_parameter, season.year, season.sport_season_id))
@@ -64,8 +62,20 @@ const getCFBstandings = async (knex, sportName, api, promiseToGet, pull_paramete
   //table hasn't yet been created
 
   //need to use this 
-  let current_week = await db_helpers.getFdata(knex, sportName, api, 'getCurrentWeekPromise')
-  if(current_week !== '' && current_week < 16){
+  let playoff_pull = 
+    await knex('sports.sport_season')
+      .where('year', year)
+      .andWhere('sport_id', 105)
+      .andWhere('season_type', 3)
+      .select('*')
+  
+
+  let today = new Date()
+  if(true){
+    return standings
+  }
+  //below needs to be fixed: for now, just return standings
+  else if(playoff_pull[0].start_pull_date>today){
     return standings
   }else{
     //pull, and then make readable, playoff games (including bowl games)
@@ -138,7 +148,7 @@ const getCFBstandings = async (knex, sportName, api, promiseToGet, pull_paramete
     let new_bowl_wins = bowl_wins.filter(team => finalist_team_ids.includes(team.team_id)===false)
     let new_standings = Object.keys(standings_by_team_id).map(key => standings_by_team_id[key])
     
-    await db_helpers.updateBowlWins(knex, new_bowl_wins, new_playoff_teams)
+    await db_helpers.updateBowlWins(knex, new_bowl_wins, new_playoff_teams, playoff_pull[0].sport_season_id)
 
     return new_standings
   }
