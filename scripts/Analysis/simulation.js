@@ -145,7 +145,11 @@ const simulateCFB = (all_games_list, teams, points, simulations = 10) => {
     let all_seasons_cfb_teams = []
     years.forEach(year => { 
         let cfb_teams = individualSportTeamsWithYear(teams, '105', year)
-        if(seasonsFinished['105'][year]){
+        if(seasonsFinished[105][year]){
+            cfb_teams.forEach(team =>{
+                team.reset()
+                team.averages(1)
+            })
             all_seasons_cfb_teams.push(...cfb_teams)
         }else{
             //need to build in functionality to randomize college football schedule, and insert that below
@@ -222,7 +226,11 @@ const simulateCBB = (all_games_list, teams, points, simulations = 10) => {
     let all_seasons_cbb_teams = []
     years.forEach(year => {
         let cbb_teams = individualSportTeamsWithYear(teams, '106', year)
-        if(seasonsFinished['106'][year]){
+        if(seasonsFinished[106][year]){
+            cbb_teams.forEach(team => {
+                team.reset()
+                team.averages(1)
+            })
             all_seasons_cbb_teams.push(...cbb_teams)
         }else{
             let cbb_games = year in all_games_list['106'] ? all_games_list['106'][year] : all_games_list['106'][year-1]
@@ -321,6 +329,10 @@ const simulateEPL = (all_games_list, teams, points, simulations = 10) => {
     years.forEach(year => { 
         const epl_teams = individualSportTeamsWithYear(teams, '107', year)
         if(seasonsFinished[107][year]){
+            epl_teams.forEach(team =>{
+                team.reset()
+                team.averages(1)
+            })
             all_seasons_epl_teams.push(...epl_teams)
         }else{
             let epl_games =  all_games_list['107'][year]
