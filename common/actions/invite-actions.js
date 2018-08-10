@@ -1,6 +1,14 @@
 import C from '../constants'
 
-export const getInvites = () => ({
+export const getInvites = () => (dispatch) => {
+  dispatch(getInvitesRequest())
+  return fetch('/api/invites')
+  .then(res => res.json())
+  .then(invites => dispatch(getInvitesSuccess(invites)))
+  .catch(error => dispatch(getInvitesFail(error)))
+}
+
+export const getInvitesRequest = () => ({
   type: C.GET_INVITES,
 })
 
@@ -14,8 +22,15 @@ export const getInvitesFail = (error) => ({
   error,
 })
 
+export const createInvite = (invite) => (dispatch) => {
+  dispatch(createInviteRequest())
+  return fetch('/api/invites', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(invite)})
+  .then(res => res.json())
+  .then(invite => dispatch(createInviteSuccess(invite)))
+  .catch(error => dispatch(createInviteFail(error)))
+}
 
-export const createInvite = () => ({
+export const createInviteRequest = () => ({
   type: C.CREATE_INVITE,
 })
 
@@ -29,8 +44,15 @@ export const createInviteFail = (error) => ({
   error,
 })
 
+export const sendInvite = (invite_id) => (dispatch) => {
+  dispatch(createInviteRequest())
+  return fetch(`/api/invites/${invite_id}/send`, {method: 'POST'})
+  .then(res => res.json())
+  .then(invite => dispatch(sendInviteSuccess(invite)))
+  .catch(error => dispatch(sendInviteFail(error)))
+}
 
-export const sendInvite = () => ({
+export const sendInviteRequest = () => ({
   type: C.SEND_INVITE,
 })
 
@@ -44,8 +66,15 @@ export const sendInviteFail = (error) => ({
   error,
 })
 
+export const deleteInvite = (invite_id) => (dispatch) => {
+  dispatch(createInviteRequest())
+  return fetch(`/api/invites/${invite_id}`, {method: 'DELETE'})
+  .then(res => res.json())
+  .then(invite => dispatch(deleteInviteSuccess(invite)))
+  .catch(error => dispatch(deleteInviteFail(error)))
+}
 
-export const deleteInvite = () => ({
+export const deleteInviteRequest = () => ({
   type: C.DELETE_INVITE,
 })
 

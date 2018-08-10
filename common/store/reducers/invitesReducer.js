@@ -1,16 +1,16 @@
 const R = require('ramda')
 import C from '../../constants'
 
-const INDEX_KEY = 'invitation_id'
+const INDEX_KEY = 'invite_id'
 
 const dataReducer = (state=initialState.data, action) => {
-  const indexById = R.indexBy(INDEX_KEY)
+  const indexById = R.indexBy(R.prop(INDEX_KEY))
   switch(action.type) {
     case C.GET_INVITES_SUCCESS:
-      return R.mergeDeepRight(state, indexById(action.payload))
+      return R.merge(state, indexById(action.payload))
     case C.CREATE_INVITE_SUCCESS:
     case C.SEND_INVITE_SUCCESS:
-      return R.mergeDeepRight(state, indexById([action.payload]))
+      return R.merge(state, indexById([action.payload]))
     case C.DELETE_INVITE_SUCCESS:
       return R.dissoc(action.payload)
   }
@@ -19,6 +19,7 @@ const dataReducer = (state=initialState.data, action) => {
 const initialState = {
   data: {},
   isLoading: false,
+  error: null,
 }
 
 export default (state=initialState, action) => {
