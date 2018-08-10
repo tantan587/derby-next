@@ -13,10 +13,11 @@ const updateOneElo = (knex, team_id, team_elo) =>
         .update('elo',team_elo)
         .then(() => {
             var today = new Date()
+            let dayCount = getDayCount(today)
             return knex
             .withSchema('analysis')
             .table('historical_elo')
-            .insert({'team_id': team_id, 'elo': team_elo, 'date': today})
+            .insert({'team_id': team_id, 'elo': team_elo, 'day_count': dayCount})
             .then(() => {console.log('done')})
 })}
 

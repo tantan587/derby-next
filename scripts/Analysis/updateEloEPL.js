@@ -2,6 +2,8 @@ const rp = require('request-promise')
 const knex = require('../../server/db/connection')
 const db_helpers = require('../helpers.js').data
 const math = require('mathjs')
+const getDayCount = require('./dayCount.js')
+
 
 const team_ids_elo_names = {'Man City': 107111,
 'Man United': 107112,
@@ -22,11 +24,15 @@ const team_ids_elo_names = {'Man City': 107111,
 'Stoke': 107115,
 'Newcastle': 107113,
 'West Brom': 107119,
-'Swansea': 107116}
+'Swansea': 107116,
+'Wolves': 107123,
+'Fulham': 107122,
+'Cardiff': 107121
+}
 
 
 var options = {
-    uri: 'http://api.clubelo.com/2018-06-23',
+    uri: 'http://api.clubelo.com/2018-08-01',
     headers: {
         'User-Agent': 'Request-Promise'
     },
@@ -72,7 +78,7 @@ rp(options)
             process.exit() */
         const updateList = []
         premier_one_data.forEach(team => {
-            updateList.push(Promise.resolve(db_helpers.updateOneElo(knex, team.team_id, team.elo)))
+            updateList.push(Promise.resolve(updateOneElo(knex, team.team_id, team.elo)))
         })
         return Promise.all(updateList).then(()=>{
             console.log('done!')
@@ -84,6 +90,26 @@ rp(options)
     .catch(function (err) {
         console.log(err)// API call failed...
     })
+
+
+
+const updateOneElo = (knex, team_id, team_elo) =>
+{
+    return knex
+        .withSchema('analysis')
+        .table('current_elo')
+        .where('team_id', team_id)    
+        .update('elo',team_elo)
+        .then(() => {
+            var today = new Date()
+            let dayCount = getDayCount(today)
+            return knex
+            .withSchema('analysis')
+            .table('historical_elo')
+            .insert({'team_id': team_id, 'elo': team_elo, 'day_count': dayCount})
+            .then(() => {console.log('done')})
+})}
+    
 
 
 

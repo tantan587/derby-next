@@ -2,13 +2,15 @@ const simulateHelpers = require('./simulateHelpers.js')
 
 
 class Game{
-    constructor(global_game_id, home, away, sport_id, home_result=0, away_result=0){
+    constructor(global_game_id, home, away, sport_id, sport_season_id, year, home_result=0, away_result=0){
         this.global_game_id = global_game_id
         this.home = home
         this.away = away
         this.home_result = home_result
         this.away_result = away_result
         this.sport_id = sport_id
+        this.sport_season_id = sport_season_id
+        this.year = year
         //this.day = day
         this.all_simulate_results = {home: {wins: 0, losses: 0, ties: 0},  away: {wins: 0, losses: 0, ties: 0}}
         this.last_result = {home: {wins: 0, losses: 0, ties: 0},  away: {wins: 0, losses: 0, ties: 0}}
@@ -197,7 +199,9 @@ class Game{
 
     calculateRawPointsImpactByTeam(team, result, pointsObject){
         let sport_id = this.sport_id
-        let points = pointsObject[0]
+        //setting point structure for impact to be 1, default
+        //since we now have so much sport structure info, this can be used in the 
+        let points = pointsObject[1]
         let regular_wins = this.EOS_results[team][result].regular.wins
         let milestone_wins = sport_id === '104' ? regular_wins + (this.EOS_results[team][result].regular.ties/2) : regular_wins
         let milestone_points = points[sport_id].regular_season.milestone_points

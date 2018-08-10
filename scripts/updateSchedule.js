@@ -37,7 +37,7 @@ async function createSchedule()
   db_helpers.updateSchedule(knex, data)
     .then(result => {
       console.log('Number of Schedules Updated: ' + result)
-      process.exit()
+      //process.exit()
     })
 }
 
@@ -148,6 +148,7 @@ const sport_JSON_functions = {
   106: CBB_json,
   107: EPL_json
 }
+
 createSchedule()
 
   

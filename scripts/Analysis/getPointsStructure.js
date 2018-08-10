@@ -18,4 +18,18 @@ const getPointsStructure = async (knex) => {
     })
   }
 
-module.exports = {getPointsStructure}
+const getScoringTypes = async (knex) => {
+  let points = 
+    await knex('fantasy.scoring')
+  
+  let point_map = {}
+  points.forEach(type => {
+    if(!(type.scoring_type_id in point_map)){
+      point_map[type.scoring_type_id] = {}
+    }
+    point_map[type.scoring_type_id][type.sport_id] = {...type}
+  })
+  return point_map
+}
+
+module.exports = {getPointsStructure, getScoringTypes}

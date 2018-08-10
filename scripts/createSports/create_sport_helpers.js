@@ -37,7 +37,7 @@ const getSeasonData = async (knex, sport_id) => {
   return {regular: regular_sport_seasons, playoff: playoff_sport_seasons, structures: active_sport_structure}
 }
 
-const createCollegeSport = async (knex, sport_id, sportName, api, promiseToGet) => {
+const createCollegeSport = async (knex, sport_id, sportName, api, promiseToGet, exit = false) => {
   let teamInfo = []
   let standings = []
   let playoff_standings = []
@@ -81,14 +81,14 @@ const createCollegeSport = async (knex, sport_id, sportName, api, promiseToGet) 
           db_helpers.insertIntoTable(knex, 'sports', 'playoff_standings', playoff_standings)
             .then(()=> {
               console.log(`${sportName}: ${teamInfo.length} teams added`)
-              process.exit()
+              exit ? process.exit() : 0
             })
         })
     }) 
 }
 
 //this is for NBA, NHL, MLB, NFL
-const createProfessionalSport = async (knex, sport_id, sportName, api, promiseToGet) => {
+const createProfessionalSport = async (knex, sport_id, sportName, api, promiseToGet, exit = false) => {
   let teamInfo = []
   let standings = []
   let playoff_standings = []
@@ -134,14 +134,14 @@ const createProfessionalSport = async (knex, sport_id, sportName, api, promiseTo
           db_helpers.insertIntoTable(knex, 'sports', 'playoff_standings', playoff_standings)
             .then(()=> {
               console.log(`${sportName}: ${teamInfo.length} teams added`)
-              process.exit()
+              exit ? process.exit() : 0
             })
         })
     }) 
 }
 
 //eventually, below needs to pull from each and every season. A change needed for 2019/20
-const createSoccerLeague = async (knex, sport_id, sportName, api, promiseToGet, season_id_1, season_id_2) => {
+const createSoccerLeague = async (knex, sport_id, sportName, api, promiseToGet, season_id_1, season_id_2, exit = false) => {
   //need to pull in data from 2 seasons, since teams get promoted and relegated.
   //upcoming season is season 1 - currently, 2018/19
   //last season is season 2 - 2017/18
@@ -217,7 +217,7 @@ const createSoccerLeague = async (knex, sport_id, sportName, api, promiseToGet, 
               db_helpers.insertIntoTable(knex, 'sports', 'premier_status', premier_table)
                 .then(()=>{
                   console.log(`${sportName}: ${teamInfo.length} teams added`)
-                  process.exit()
+                  exit ? process.exit() : 0
                 })
 
             })

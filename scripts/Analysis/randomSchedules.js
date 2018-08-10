@@ -1,4 +1,3 @@
-const knex = require('../../server/db/connection')
 const Team = require('./TeamClass.js')
 const math = require('mathjs')
 
@@ -7,20 +6,22 @@ const math = require('mathjs')
 //leaving it for now: don't want to work on finding error
 //second note: this is currently only set up for baseball.
 
-const getTeams = async(knex, sportId) => {
+/* const getTeams = async(knex, sportId) => {
     return knex
         .withSchema('sports')
         .table('team_info')
         .where('sport_id', sportId)
-}
+} */
 
-const randomNBASchedule = async (knex) => {
-    let teams = await getTeams(knex, '101')
+const randomNBASchedule =  (teams) => {
+    //let teams = await getTeams(knex, '101')
     //schedule contains home team id, away team id, sport id, game id
-    let team_list = teams.map(team => {
-        return new Team(team.name, team.sport_id, 0, 0, 0, 0, team.division, team.conference_id, team.team_id)
-    })
+    // let team_list = teams.map(team => {
+    //     return new Team(team.name, team.sport_id, 0, 0, 0, 0, team.division, team.conference_id, team.team_id)
+    // })
+
     //console.log(team_list)
+    let team_list = Object.keys(teams).map(key => teams[key])
     let schedule = []
     let x = 0
     let divisions = [['Atlantic', '10101'], ['Central', '10101'], ['Southeast', '10101'],['Northwest','10102'],['Pacific','10102'],['Southwest','10102']]
@@ -51,13 +52,14 @@ const randomNBASchedule = async (knex) => {
     return schedule
     }
 
-const randomMLBSchedule = async (knex) => {
-    let teams = await getTeams(knex, '103')
+const randomMLBSchedule =  (teams) => {
+    // let teams = await getTeams(knex, '103')
     //schedule contains home team id, away team id, sport id, game id
-    let team_list = teams.map(team => {
-        return new Team(team.name, team.sport_id, 0, 0, 0, 0, team.division, team.conference_id, team.team_id)
-    })
+    // let team_list = teams.map(team => {
+    //     return new Team(team.name, team.sport_id, 0, 0, 0, 0, team.division, team.conference_id, team.team_id)
+    // })
     //console.log(team_list)
+    let team_list = Object.keys(teams).map(key => teams[key])
     let schedule = []
     let teams_for_sched = []
     let x = 0
@@ -236,6 +238,11 @@ const randomizeSchedule = (schedule) => {
 }
 
 
-randomMLBSchedule(knex)
+//randomMLBSchedule(knex)
 
-module.exports = {randomMLBSchedule, randomNBASchedule}
+const randomScheduleBySportID = {
+    101: {random: randomNBASchedule},
+    103: {random: randomMLBSchedule}
+}
+
+module.exports = {randomMLBSchedule, randomNBASchedule, randomScheduleBySportID}

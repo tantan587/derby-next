@@ -11,23 +11,12 @@ const reset_tables = async () => {
         knex('sports.premier_status').truncate()
         ])
         .then(()=>{
-            process.exit()
-            // const create_cbb = require('./createSports/create_cbb')
-            // const create_cfb = require('./createSports/create_cfb')
-            // const create_nfl = require('./createSports/create_nfl')
-            // const create_mlb = require('./createSports/create_mlb')
-            // const create_nba = require('./createSports/create_nba')
-            // const create_epl = require('./createSports/create_epl')
-            // const create_nhl = require('./createSports/create_nhl')
-            // console.log('sports_added')
-            // updateList = []
-            // const updateSchedule = require('./updateSchedule')
-            // console.log('reg_schedule_updated')
-            // const updateStandings = require('./updateStandings')
-            // const updatePlayoffSchedule = require('./createAndUpdateSchedulePlayoffs')
-            // const updatePlayoffStandings = require('./updatePlayoffStandings')
+            require('./createSports/createAllSports')
+            require('./update')
+            .then(()=>{
+                process.exit()
+            })
         })
-
 }
 
 reset_tables()

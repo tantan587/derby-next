@@ -111,16 +111,13 @@ const updateProjections = (teams, day) => {
     let rows = teams.map(team => {
         //let playoff_json = JSON.stringify({wins: team.average_playoff_wins, playoffs: team.average_playoff_appearances, finalists: team.average_finalists, champions: team.average_champions})
         //console.log(playoff_json)
-        return {team_id: team.team_id, wins: team.average_wins,
+        return {team_id: team.team_id, wins: team.average_wins, year: team.year,
              losses: team.average_losses, ties: team.average_ties, day_count: day, 
              playoff: {wins: team.average_playoff_wins, playoffs: team.average_playoff_appearances, finalists: team.average_finalists, champions: team.average_champions, bowl_wins: team.average_bowl_wins}}
     })
-    console.log(rows.length)
+    console.log('amount of teams projections updated', rows.length)
     return rows
-   /*  return knex
-        .withSchema('analysis')
-        .table('record_projections')
-        .insert(rows) */
+
     }
 
 const normalizeImpact = (games) => {
@@ -140,34 +137,90 @@ const normalizeImpact = (games) => {
     })
 }
 
-const createImpactArray = (all_games_list, sport_id, points) => {
+const createImpactArray = (sport_games, sport_id, points) => {
     let game_projections = []
-    all_games_list[sport_id].forEach(game => {
+    // years.forEach(year => {
+    sport_games.forEach(game => {
         game.calculateRawImpact(points)
     })
-    normalizeImpact(all_games_list[sport_id])
-        
+    normalizeImpact(sport_games)
+
     //console.log(game.raw_impact['home'])
-    all_games_list[sport_id].forEach(game => {
-        game_projections.push({ team_id: game.home.team_id, global_game_id: game.global_game_id, win_percentage: game.home_win_percentage, impact: game.adjusted_impact })
-        game_projections.push({ team_id: game.away.team_id, global_game_id: game.global_game_id, win_percentage: game.away_win_percentage, impact: game.adjusted_impact})
+    sport_games.forEach(game => {
+        game_projections.push({ team_id: game.home.team_id, global_game_id: game.global_game_id, win_percentage: game.home_win_percentage, impact: game.adjusted_impact, scoring_type_id: 1 })
+        game_projections.push({ team_id: game.away.team_id, global_game_id: game.global_game_id, win_percentage: game.away_win_percentage, impact: game.adjusted_impact, scoring_type_id: 1})
     })
+
     return game_projections
 }
 
 
-const fantasyProjections = (all_teams, day, points) => {
+const fantasyProjections = (all_teams, day, points, sport_structures, year_seasons) => {
     let array_for_copy = []
-    let array_of_all_teams = []
-    let total_point_structures = points.length
     let data_for_insert = []
-    points.forEach(type => {
-        array_for_copy.push([])
+    let sport_ids = Object.keys(all_teams)
+    //let sport_ids = ['101','102', '103', '104', '105', '106', '107']
+
+    sport_structures.forEach(structure => {
+        let array_of_all_teams = []
+        sport_ids.forEach(sport => {
+            let sport_years = Object.keys(all_teams[sport])
+            sport_years.forEach(year =>{
+                if(year_seasons[sport][year].some(season_id => {
+                    structure.current_sport_seasons.includes(season_id)
+                })){
+                    let sport_teams = Object.keys(all_teams[sport][year]).map(team => {return all_teams[sport][year][team]})
+                    let points_array = []
+                    //let points_array = array_for_copy.slice(0)
+            
+                    sport_teams.forEach(team => {
+                        team.calculateFantasyPoints(points[structure.scoring_type_id][sport], structure.sport_structure_id)
+                        points_array.push(team.fantasy_points_projected)
+                    })
+
+                    points_array.sort(function(a,b){return b-a})
+                    //normalize size of leagues for rankings
+                    let size = 12
+                    let roster_size_for_ranking = sport === ('106'||'105') ? size*3 : sport === '107' ? size : size*2
+                    let drafted_teams = points_array.slice(0, roster_size_for_ranking)
+                    let average = math.mean(drafted_teams)
+                    let standard_dev = math.std(drafted_teams)
+                    let last_drafted = points_array[roster_size_for_ranking]
+ 
+                    sport_teams.forEach(team => {
+                        team.calculateAboveValuesForRanking(last_drafted, averages, structure.sport_structure_id)
+                    })
+                    array_of_all_teams.push(...sport_teams)
+                }
+            })
+        })
+        array_of_all_teams.sort(function(a,b){return b.points_above_last_drafted[structure.sport_structure_id]-a.points_above_last_drafted[structure.sport_structure_id]})
+        rank = 0
+        array_of_all_teams.forEach(team => {
+            team.rank_above_last[structure.sport_structure_id] = rank
+            rank++
+        })
+        array_of_all_teams.sort(function(a,b){return b.points_above_average[structure.sport_structure_id]-a.points_above_average[structure.sport_structure_id]})
+        rank = 0
+        array_of_all_teams.forEach(team => {
+            team.rank_above_average[structure.sport_structure_id] = rank
+            rank++
+        })
+        array_of_all_teams.sort(function(a,b){return a.rank_above_last[structure.sport_structure_id]+a.rank_above_average[structure.sport_structure_id]-b.rank_above_last[structure.sport_structure_id]-b.rank_above_average[structure.sport_structure_id]})
+        rank = 1
+        array_of_all_teams.forEach(team => {
+            team.overall_ranking[structure.sport_structure_id] = rank
+            let f_points = math.round(team.fantasy_points_projected[structure.sport_structure_id], 2)
+            data_for_insert.push({
+                team_id: team.team_id, scoring_type_id: structure.scoring_type_id, points: f_points, day_count: day, ranking: rank, sport_structure_id: structure.sport_structure_id
+            })
+            rank++
+        })
     })
 
     //i should be dividing this up by conference and not just by league
     //this no longer checks for each different point type: error: will fix later
-    let sport_ids = ['101','102', '103', '104', '105', '106', '107']
+    /*
     sport_ids.forEach(sport => {
         let sport_teams = Object.keys(all_teams[sport]).map(team => {return all_teams[sport][team]})
         let x = 0
@@ -200,7 +253,8 @@ const fantasyProjections = (all_teams, day, points) => {
         })
         array_of_all_teams.push(...sport_teams)
     })
-    let rank = 0
+    
+    //let rank = 0
     //below goes through each point structure, sorts each team by how far they are above average and last_drafted, and then resorts based upon rankings
     //it then uses 
     for(let index = 0; index < total_point_structures; index++){
@@ -222,13 +276,14 @@ const fantasyProjections = (all_teams, day, points) => {
             team.overall_ranking.push(rank)
             let f_points = math.round(team.fantasy_points_projected[index], 2)
             data_for_insert.push({
-                team_id: team.team_id, scoring_type_id: index+1, points: f_points, day_count: day, ranking: rank
+                team_id: team.team_id, scoring_type_id: structure.scoring_type_id, points: f_points, day_count: day, ranking: rank, sport_structure_id: structure.sport_structure_id
             })
             rank++
         })
 
         return data_for_insert
-    }
+    }*/
+
 }
 
 module.exports = {Series, moreWins, simulateGame, updateProjections, simulateNHLGame, createImpactArray, fantasyProjections, simulateBowlGame, simulateEPLGame}
