@@ -91,7 +91,8 @@ methods.createScheduleForInsert = function(cleanSched, sport_id, idSpelling, tea
         sport_id === '102' ? game.LastUpdated ? game.LastUpdated : myNull :
           game.Updated ? game.Updated : myNull,
       season_type: game.SeasonType, year: game.Season, 
-      game_extra: json_function(game), sport_season_id: sport_season_id
+      game_extra: JSON.stringify(json_function(game)), 
+      sport_season_id: sport_season_id
     }
   })
 
@@ -230,7 +231,7 @@ methods.updateSchedule = (knex, newResults) =>
           }
           else if(oldResults[x.global_game_id] !== x.updated_time)
           { 
-            updateList.push(Promise.resolve(methods.updateOneResultRow(knex, x.global_game_id, x)))
+            updateList.push(Promise.resolve(methods.newUpdateOneResultRow(knex, x.global_game_id, x)))
           }
           //this is only needed to add in years the first time
 /*           else if(oldResults[x.global_game_id].year !== x.year){
@@ -255,7 +256,23 @@ methods.updateSchedule = (knex, newResults) =>
     })
 }
 
-methods.updateBowlWins = async (knex, bowl_wins, playoff_wins) => {
+methods.updateScheduleFromBoxScore = (knex, data) => {
+  let updateList = []
+  data.forEach(x => {
+    console.log(x)
+    updateList.push(Promise.resolve(methods.newUpdateOneResultRow(knex, x.global_game_id, x, false)))
+  })
+  if(updateList.length>0)
+  {
+      return Promise.all(updateList)
+      .then(()=>{
+          return updateList.length
+      })
+  }else
+      return 0
+}
+
+methods.updateBowlWins = async (knex, bowl_wins, playoff_wins, sport_season_id) => {
   let results = 
     await knex
     .withSchema('sports')
@@ -269,16 +286,16 @@ methods.updateBowlWins = async (knex, bowl_wins, playoff_wins) => {
 
   bowl_wins.forEach(teamRec => {
     if(oldStandings[teamRec.team_id].bowl_wins !== teamRec.bowl_wins)  
-        updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id, teamRec.sport_season_id, 'bowl_wins', teamRec.bowl_wins, true )))
+        updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id, sport_season_id, 'bowl_wins', teamRec.bowl_wins, true )))
   })
 
   playoff_wins.forEach(teamRec => {
     if(oldStandings[teamRec.team_id].playoff_status !== teamRec.playoff_status)  
-        updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id, teamRec.sport_season_id, 'playoff_status', teamRec.playoff_status, true )))
+        updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id, sport_season_id, 'playoff_status', teamRec.playoff_status, true )))
     if(oldStandings[teamRec.team_id].playoff_wins !== teamRec.playoff_wins)  
-        updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,teamRec.sport_season_id, 'playoff_wins', teamRec.playoff_wins, true )))
+        updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,sport_season_id, 'playoff_wins', teamRec.playoff_wins, true )))
     if(oldStandings[teamRec.team_id].playoff_losses !== teamRec.playoff_losses)  
-        updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,teamRec.sport_season_id,'playoff_losses', teamRec.playoff_losses, true )))
+        updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,sport_season_id,'playoff_losses', teamRec.playoff_losses, true )))
   })
 
   if (updateList.length > 0)
@@ -424,6 +441,24 @@ methods.updateOneResultRow = (knex, global_game_id, row) =>
           .table('schedule')
           .insert(row)
       })
+      .then(()=>{t.commit})
+      .catch(t.rollback)
+  })
+}
+
+methods.newUpdateOneResultRow = (knex, global_game_id, row, from_schedule_pull = true) =>
+{
+  if(from_schedule_pull){
+    let box_score_sports = [101, 103, 104, 105, 106]
+    if(box_score_sports.includes(row.sport_id)){
+      delete row[game_extra]
+    } 
+  }
+  return knex.transaction(function (t) {
+    return knex.withSchema('sports').table('schedule')
+      .transacting(t)
+      .where('global_game_id',global_game_id)
+      .update(row)
       .then(()=>{t.commit})
       .catch(t.rollback)
   })

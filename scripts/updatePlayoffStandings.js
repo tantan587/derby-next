@@ -47,4 +47,5 @@ const getStandingsInfo = async (knex, sportName, api, promiseToGet, pull_paramet
 
 
 
+
 createStandingsPO()
