@@ -93,7 +93,7 @@ const getTeamInfo = (knex) =>
     return knex('sports.team_info')
         .innerJoin('sports.standings', 'sports.standings.team_id', 'sports.team_info.team_id')
         .leftOuterJoin('sports.playoff_standings', function(){
-            this.on('sports.playoff_standings.team_id','=', 'sports.standings.team_id').andOn('sports.playoff_standings.team_id','=', 'sports.standings.team_id')
+            this.on('sports.playoff_standings.year','=', 'sports.standings.year').andOn('sports.playoff_standings.team_id','=', 'sports.standings.team_id')
         })
         .innerJoin('analysis.current_elo','analysis.current_elo.team_id', 'sports.team_info.team_id')
         .select('*')
@@ -113,7 +113,8 @@ async function createTeams(knex) {
                     all_teams[team.sport_id][team.year] = {}
                 }
                 //test formula with no wins for every team
-                all_teams[team.sport_id][team.year][team.team_id]= new Team(team.name, team.sport_id, team.elo, team.wins, team.losses, team.ties, team.division, team.conference_id, team.team_id, team.sport_season_id, team.year, team.playoff_wins, team.playoff_losses, team.playoff_status)
+                all_teams[team.sport_id][team.year][team.team_id]= new Team(team.name, team.sport_id, team.elo, team.wins, team.losses, team.ties, team.division,
+                     team.conference_id, team.team_id, team.sport_season_id, team.year, team.playoff_wins, team.playoff_losses, team.playoff_status)
                 //actual formula below
                 // all_teams[team.sport_id][team.team_id]= new Team(team.name, team.sport_id, team.elo, team.wins, team.losses, team.ties, team.division, team.conference_id, team.team_id)
             })
