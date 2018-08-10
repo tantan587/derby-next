@@ -1,4 +1,4 @@
-import styles, { Indent, UL, H2, H3, B, Top } from './style'
+import styles, { Indent, UL, SubUL, H2, H3, B, Top } from './style'
 import { withStyles } from '@material-ui/core/styles'
 
 const RulesPage = withStyles(theme => ({
@@ -119,11 +119,11 @@ Playoff Qualification bonus points are awarded at the conclusion of the given sp
         <Top />
         <B>4. Additional Considerations.</B>
 
-        <Indent>i. Wins in a title game for any sport count as both a Playoff Win and a Title Win bonus.</Indent>
-        <Indent>ii. Play-in games for any sport (e.g., Game 163 in MLB to determine a division or Wild Card winner) do not count for Derby points.</Indent>
-        <Indent>iii. The NHL and Premier League use a point system rather than winning percentage and record to rank teams. Derby point values correspond to each sport’s system.</Indent>
-        <Indent><UL>Since NHL overtime losses are worth one half of a regular season win, Derby points for overtime losses are worth one half of a regular season win.</UL></Indent>
-        <Indent><UL>Since Premier League draws are worth one third of a regular season win, Derby points for draws are worth one third of a regular season win.</UL></Indent>
+        <UL>Wins in a title game for any sport count as both a Playoff Win and a Title Win bonus.</UL>
+        <UL>Play-in games for any sport (e.g., Game 163 in MLB to determine a division or Wild Card winner) do not count for Derby points.</UL>
+        <UL>The NHL and Premier League use a point system rather than winning percentage and record to rank teams. Derby point values correspond to each sport’s system.</UL>
+        <Indent><SubUL>Since NHL overtime losses are worth one half of a regular season win, Derby points for overtime losses are worth one half of a regular season win.</SubUL></Indent>
+        <Indent><SubUL>Since Premier League draws are worth one third of a regular season win, Derby points for draws are worth one third of a regular season win.</SubUL></Indent>
 
         <Top />
         <B>5. Season Cycle.</B> The Derby season lasts for one complete cycle of each sport’s season. For example, in a Derby draft in August 2018, the following schedule, in chronological order would apply:
