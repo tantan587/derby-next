@@ -156,7 +156,6 @@ const createImpactArray = (sport_games, sport_id, points) => {
 
 
 const fantasyProjections = (all_teams, day, points, sport_structures, year_seasons) => {
-    let array_for_copy = []
     let data_for_insert = []
     let sport_ids = Object.keys(all_teams)
     //let sport_ids = ['101','102', '103', '104', '105', '106', '107']
@@ -166,16 +165,16 @@ const fantasyProjections = (all_teams, day, points, sport_structures, year_seaso
         sport_ids.forEach(sport => {
             let sport_years = Object.keys(all_teams[sport])
             sport_years.forEach(year =>{
-                if(year_seasons[sport][year].some(season_id => {
+                if(year_seasons[sport][year].some(season_id => 
                     structure.current_sport_seasons.includes(season_id)
-                })){
+                )){
                     let sport_teams = Object.keys(all_teams[sport][year]).map(team => {return all_teams[sport][year][team]})
                     let points_array = []
                     //let points_array = array_for_copy.slice(0)
             
                     sport_teams.forEach(team => {
                         team.calculateFantasyPoints(points[structure.scoring_type_id][sport], structure.sport_structure_id)
-                        points_array.push(team.fantasy_points_projected)
+                        points_array.push(team.fantasy_points_projected[structure.sport_structure_id])
                     })
 
                     points_array.sort(function(a,b){return b-a})
@@ -188,7 +187,7 @@ const fantasyProjections = (all_teams, day, points, sport_structures, year_seaso
                     let last_drafted = points_array[roster_size_for_ranking]
  
                     sport_teams.forEach(team => {
-                        team.calculateAboveValuesForRanking(last_drafted, averages, structure.sport_structure_id)
+                        team.calculateAboveValuesForRanking(last_drafted, average, structure.sport_structure_id)
                     })
                     array_of_all_teams.push(...sport_teams)
                 }
@@ -217,6 +216,8 @@ const fantasyProjections = (all_teams, day, points, sport_structures, year_seaso
             rank++
         })
     })
+    console.log(data_for_insert)
+    return data_for_insert
 
     //i should be dividing this up by conference and not just by league
     //this no longer checks for each different point type: error: will fix later
