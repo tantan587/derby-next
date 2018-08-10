@@ -14,7 +14,9 @@ const filtered_fantasy_standings_data = async () => {
     let sport = sport_keys[sport_id]
     if(sport_id===105){
       data.push(...await getCFBstandings(knex, sport.sport_name, sport.api, sport.standingsPromiseToGet, season.api_pull_parameter, season.year, season.sport_season_id))
-    }else if(sport_id===107){}
+    }else if(sport_id===107){
+      //do nothing
+    }
     else{
       data.push(...await standingsBySport(knex, sport.sport_name, sport.api, sport.standingsPromiseToGet, season.api_pull_parameter, season.year, season.sport_season_id))
     }
@@ -25,7 +27,7 @@ const filtered_fantasy_standings_data = async () => {
 //note: college basketball has an extra, old functino below: waiting to be sure we don't need this again
 
 //for CFB - this function also updates the post season standings.
-async function updateStandings()
+async function updateStandings(exitProcess)
 {
   let data = await filtered_fantasy_standings_data()
 
@@ -35,7 +37,8 @@ async function updateStandings()
   await fantasyHelpers.updateTeamPoints()
   await fantasyHelpers.updateLeaguePoints()
   console.log('im done')
-  //process.exit()
+  if(exitProcess)
+    process.exit()
 
 }
 
@@ -182,5 +185,4 @@ const getCFBstandings = async (knex, sportName, api, promiseToGet, pull_paramete
 //   2019: 274
 // }
 
-
-updateStandings()
+module.exports = {updateStandings}

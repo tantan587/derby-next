@@ -20,7 +20,7 @@ const create_data = async () => {
 
   return data
 }
-async function createSchedule()
+async function createSchedule(exitProcess)
 {
   let data = await create_data()
   // let CBB_schedPO = await getSchedInfo(knex, 'CBB', 'CBBv3ScoresClient', 'getTournamentHierarchyPromise','2018POST')
@@ -35,7 +35,8 @@ async function createSchedule()
   db_helpers.updateSchedule(knex, data)
     .then(result => {
       console.log('Number of Playoff Schedules Updated: ' + result)
-      //process.exit()
+      if(exitProcess)
+        process.exit()
     })
 }
 
@@ -111,4 +112,6 @@ const getSchedInfo = async (knex, sportName, api, promiseToGet, year, sport_seas
   return schedInfo
   }
 
-createSchedule()
+  module.exports = {
+    createSchedule
+    }

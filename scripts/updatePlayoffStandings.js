@@ -17,7 +17,7 @@ const create_active_playoff_standings_data = async () => {
   
   return data
 }
-async function createStandingsPO () {
+async function createStandingsPO (exitProcess) {
 
   let data = await create_active_playoff_standings_data()
   // let MLB_standPO = await getStandingsInfo(knex, 'MLB','MLBv3ScoresClient','getStandingsPromise', '2017POST')
@@ -26,10 +26,11 @@ async function createStandingsPO () {
   // let NFL_standPO = await getStandingsInfo(knex, 'NFL','NFLv3StatsClient','getStandingsPromise', '2017POST')
     
     
-    //let data = MLB_standPO.concat(NBA_standPO).concat(NHL_standPO).concat(NFL_standPO)//.concat(CBB_standPO).concat(CFB_standPO)//.concat(EPL_standPO)
-    let result = await db_helpers.updatePlayoffStandings(knex, data)
-    console.log('Number of Standings Updated: ' + result)
-    //process.exit()
+  //let data = MLB_standPO.concat(NBA_standPO).concat(NHL_standPO).concat(NFL_standPO)//.concat(CBB_standPO).concat(CFB_standPO)//.concat(EPL_standPO)
+  let result = await db_helpers.updatePlayoffStandings(knex, data)
+  console.log('Number of Standings Updated: ' + result)
+  if(exitProcess)
+    process.exit()
 }
 
 const getStandingsInfo = async (knex, sportName, api, promiseToGet, pull_parameter, year, sport_season_id) => {
@@ -47,4 +48,6 @@ const getStandingsInfo = async (knex, sportName, api, promiseToGet, pull_paramet
 
 
 
-createStandingsPO()
+module.exports = {
+  createStandingsPO
+}

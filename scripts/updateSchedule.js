@@ -19,7 +19,7 @@ const create_data = async () => {
   return data
 }
 
-async function createSchedule()
+async function createSchedule(exitProcess)
 {
   let data = await create_data()
   
@@ -37,7 +37,8 @@ async function createSchedule()
   db_helpers.updateSchedule(knex, data)
     .then(result => {
       console.log('Number of Schedules Updated: ' + result)
-      //process.exit()
+      if(exitProcess)
+        process.exit()
     })
 }
 
@@ -149,7 +150,9 @@ const sport_JSON_functions = {
   107: EPL_json
 }
 
-createSchedule()
+module.exports = {
+  createSchedule
+}
 
   
 
