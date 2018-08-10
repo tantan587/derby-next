@@ -29,10 +29,12 @@ const GetDraftRules = async (roomId) => {
 }
 
 const GetTeamMap = async (roomId) =>{
-  const teamMapStr = `select c.team_id, c.sport_id, c.conference_id 
-  from draft.settings a, fantasy.conferences b, sports.team_info c 
+  //this needs to adjust better for relgated teams
+  const teamMapStr = `select distinct c.team_id, c.sport_id, c.conference_id
+  from draft.settings a, fantasy.conferences b, sports.team_info c, sports.premier_status d
   where a.league_id = b.league_id  
-  and b.conference_id = c.conference_id 
+  and b.conference_id = c.conference_id
+  and ((c.sport_id = 107 and d.division_1 = 't' and c.team_id = d.team_id) OR c.sport_id != 107)
   and a.room_id = '` +  roomId + '\''
 
   const rtnObj = {}

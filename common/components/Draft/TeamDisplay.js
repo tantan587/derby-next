@@ -56,8 +56,7 @@ class TeamDisplay extends React.Component {
           teamsToShow.push({...teams[teamId], eligible:true, checkbox:true})
         else
           teamsToShow.push({...teams[teamId], queueOverride:'Remove',onClickOverride:this.removeItem, eligible:true, checkbox:true })
-      })
-    
+      })    
       R.values(contentFilter[page]).forEach(filter => {
         teamsToShow = Filterer(teamsToShow, filter)
         if(filter.type === 'tab'){
@@ -79,9 +78,6 @@ class TeamDisplay extends React.Component {
         })
       }
     }
-
-    console.log(teamsToShow)
-
     const filters = [{
       type:'tab',
       displayType:'sportsName',

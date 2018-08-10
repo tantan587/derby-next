@@ -8,6 +8,14 @@ export const clickedEnterDraft = (room_id, owner_id) => dispatch =>
     'POST',
     JSON.stringify({room_id, owner_id})
   )
+
+export const handleReorderDraft = (draftOrder, league_id) => dispatch =>
+  FetchThenDispatch(
+    dispatch,
+    '/api/updateDraftOrder',
+    'POST',
+    JSON.stringify({draftOrder, league_id})
+  )
   
 export const handleStartDraft = () =>
   ({

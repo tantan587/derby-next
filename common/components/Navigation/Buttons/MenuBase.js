@@ -104,7 +104,7 @@ class MenuListComposition extends React.Component {
                 onClick={this.handleToggle}
                 style={{backgroundColor:backgroundColor, color: color, marginTop:-1}}
               >
-                {title}
+                {title || ''}
               </Button>
             </div>
           </Target>

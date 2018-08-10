@@ -21,6 +21,18 @@ router.post('/savedraft', authHelpers.loginRequired, (req, res)  => {
       handleResponse(res, 500, err) })
 })
 
+router.post('/updateDraftOrder', authHelpers.loginRequired, (req, res)  => {
+  return knex.withSchema('draft')
+    .table('settings')
+    .where('league_id', req.body.league_id)
+    .update('draft_position', JSON.stringify(req.body.draftOrder))
+    .then(() => { 
+      handleReduxResponse(res, 200, {type:C.UPDATE_DRAFT_ORDER, draftOrder:req.body.draftOrder})})
+    .catch((err) => { 
+      console.log(err)
+      handleResponse(res, 500,err)})
+})
+
 const getDraft = async (room_id, owner_id) =>
 {
 

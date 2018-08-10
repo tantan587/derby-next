@@ -68,9 +68,3 @@ export const handleGameUpdateDiff = gamesDiff =>
     type: C.UPDATE_GAME_DIFF,
     gamesDiff
   })
-  
-export const handleUpdateDraftOrder = draftOrder =>
-  ({
-    type: C.UPDATE_DRAFT_ORDER,
-    draftOrder
-  })

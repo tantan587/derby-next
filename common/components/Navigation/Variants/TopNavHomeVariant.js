@@ -154,7 +154,7 @@ const TopNavHomeVariant = ({
 
       {(user.loggedIn === false) && <LinkHelper 
         href="/login"
-        children="LOGIN"
+        children="Log In"
         classes={{
           link: classes.link,
           linkAnchor: classNames(classes.linkAnchor, {[classes.activeLink]: isActive('/login')}),
@@ -166,7 +166,7 @@ const TopNavHomeVariant = ({
 
       {(user.loggedIn === false) && <LinkHelper 
         href="/signup"
-        children="SIGNUP"
+        children="Sign Up"
         classes={{
           link: classes.link,
           linkAnchor: classNames(classes.linkAnchor, {[classes.activeLink]: isActive('/signup')}),

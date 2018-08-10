@@ -10,6 +10,7 @@ import {clickedUpdateLeague, updateError} from '../../../actions/fantasy-actions
 import C from '../../../constants'
 const R = require('ramda')
 import StyledButton from '../../Navigation/Buttons/StyledButton'
+import {handleReorderDraft} from '../../../actions/draft-actions'
 
 const styles = theme =>({
   root: {
@@ -63,9 +64,11 @@ class CommishTool extends React.Component {
         {
           draftType: 'Online - Snake Format',
           pickTime: props.activeLeague.draftInfo.seconds_pick,
-          draftDate: props.activeLeague.draftInfo.start_time
+          draftDate: props.activeLeague.draftInfo.start_time,
+
         },
-      fireRedirect:false
+      fireRedirect:false,
+      owners:this.props.activeLeague.owners.sort((a,b) => a.draft_position > b.draft_position)
     }
   }
 
@@ -92,6 +95,14 @@ class CommishTool extends React.Component {
     
   }
 
+  onUpdateOrder= (start, end) => {
+    let {owners} = this.state
+    let newOwners = Array.from(owners)
+    const [removed] = newOwners.splice(start, 1)
+    newOwners.splice(end, 0, removed)
+    this.setState({owners:newOwners})
+  }
+
   getErrorText = () => 
   {
     const {leagueInfo} = this.state
@@ -105,7 +116,6 @@ class CommishTool extends React.Component {
   onSubmit = () => {
 
     let errorText = this.getErrorText()
-    console.log(errorText)
     if (errorText)
     {
       this.props.onUpdateError(C.PAGES.COMMISH_TOOLS, errorText)
@@ -114,6 +124,7 @@ class CommishTool extends React.Component {
     {
       this.setState({fireRedirect:true})
       this.props.onUpdateLeague(this.state.leagueInfo, this.props.activeLeague.league_id)
+      this.props.onRedorderDraft(this.state.owners.map(x => x.owner_id),this.props.activeLeague.league_id)
     }
   }
 
@@ -130,11 +141,9 @@ class CommishTool extends React.Component {
 
   render() {
     const { classes, user} = this.props
-    const {leagueInfo} = this.state
+    const {leagueInfo, owners} = this.state
     const {draftType, pickTime, draftDate} = leagueInfo
-    
     let errorText = user.error[C.PAGES.COMMISH_TOOLS]
-    
     return (
       <div>
         
@@ -150,7 +159,7 @@ class CommishTool extends React.Component {
               <Grid item xs={12} md={12} lg={6} className={classes.gridMargins}>
                 <div>
                   <div className={classes.titleSmall}>Reorder Draft</div>
-                  <ReorderDraft/>
+                  <ReorderDraft owners={owners} onUpdateOrder={this.onUpdateOrder}/>
                 </div>
               </Grid>
               <Grid item xs={12} md={12} className={classes.gridMargins}>
@@ -178,5 +187,6 @@ class CommishTool extends React.Component {
 export default R.compose(
   withRouter,
   withStyles(styles),
-  connect(R.pick(['user', 'activeLeague']), {onUpdateLeague: clickedUpdateLeague, onUpdateError: updateError}),
+  connect(R.pick(['user', 'activeLeague']), 
+    {onUpdateLeague: clickedUpdateLeague, onUpdateError: updateError, onRedorderDraft:handleReorderDraft}),
 )(CommishTool)

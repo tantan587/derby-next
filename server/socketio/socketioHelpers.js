@@ -28,8 +28,13 @@ const GetDraftInfo = async (room_id) =>{
   const knexStr1 = 'select (select sum(b.number_teams) from draft.settings a, fantasy.sports b where room_id = \'' + room_id +
    '\' and a.league_id = b.league_id group by a.league_id) as total_teams, * from  draft.settings where room_id = \'' + room_id + '\''
 
-  const knexStr2 = `select team_id from fantasy.team_points a, draft.settings b, fantasy.leagues c
-   where b.league_id = c.league_id and a.sport_structure_id = c.sport_structure_id and b.room_id = '` + room_id + '\' order by 1'
+  //this needs to adjust for relgated teams.
+  const knexStr2 = `select distinct c.team_id, c.sport_id, c.conference_id
+  from draft.settings a, fantasy.conferences b, sports.team_info c, sports.premier_status d
+  where a.league_id = b.league_id  
+  and b.conference_id = c.conference_id
+  and ((c.sport_id = 107 and d.division_1 = 't' and c.team_id = d.team_id) OR c.sport_id != 107)
+  and a.room_id = '` + room_id + '\' order by 1'
 
   const knexStr3 = `select owner_id from fantasy.owners a, 
    draft.settings b where a.league_id = b.league_id and b.room_id = '` + room_id + '\' order by 1'

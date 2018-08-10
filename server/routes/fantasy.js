@@ -44,7 +44,7 @@ router.post('/saveownersettings', authHelpers.loginRequired, async (req, res)  =
 router.post('/updateleague', authHelpers.loginRequired, (req, res)  => {
   return updateLeague(req, res)
     .then(() => { 
-      return fantasyHelpers.getLeague(req.body.league_id, req.user.user_id, res, C.CREATE_LEAGUE_SUCCESS)
+      return fantasyHelpers.getLeague(req.body.league_id, req.user.user_id, res, C.UPDATE_LEAGUE_SUCCESS)
     })
     .catch((action) => {  
       handleReduxResponse(res, 400, action)})

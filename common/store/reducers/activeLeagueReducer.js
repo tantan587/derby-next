@@ -7,6 +7,7 @@ export default (state = {}, action={ type: null }) => {
   case C.CLICKED_LEAGUE:
   case C.CREATE_LEAGUE_SUCCESS:
   case C.JOIN_LEAGUE_SUCCESS:
+  case C.UPDATE_LEAGUE_SUCCESS:
     return {
       success : true,
       league_id : action.league_id,
@@ -44,7 +45,8 @@ export const owners = (state = [], action={ type: null }) => {
   switch (action.type){
   case C.UPDATE_DRAFT_ORDER:
   {
-    action.draftOrder.map((order,i) => state.filter(owner => owner.user_id === order.id)[0].draft_position = i)
+    //console.log(action.draftOrder, state)
+    action.draftOrder.map((order,i) => state.find(owner => owner.owner_id === order).draft_position = i)
     return state
   }
   case C.SAVE_OWNER_SETTINGS_SUCCESS:

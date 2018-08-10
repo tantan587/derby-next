@@ -1,30 +1,21 @@
-import  { Component } from 'react'
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
-
-
 //TODO:
 //https://github.com/atlassian/react-beautiful-dnd/issues/219
+import { Component } from 'react'
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
+import { Scrollbars } from 'react-custom-scrollbars'
 
-
-const getItemStyle = (draggableStyle, isDragging) => ({
-
+const getItemStyle = (draggableStyle, marginBottom) => ({
+  // some basic styles to make the items look a bit nicer
   userSelect: 'none',
-
-  margin:10,
-
-  // change background colour if dragging
-  background: isDragging ? 'lightgreen' : 'lightgrey',
-
+  //margin: `0 0 ${grid}px 0`,
+  marginBottom,
   // styles we need to apply on draggables
   ...draggableStyle,
 })
 
 export default class SortableList extends Component {
-  constructor(props) {
-    super(props)
-    this.onDragEnd = this.onDragEnd.bind(this)
-  }
-  onDragEnd(result) {
+
+  onDragEnd = (result) => {
     // dropped outside the list
     if (!result.destination) {
       return
@@ -35,33 +26,36 @@ export default class SortableList extends Component {
   // Normally you would want to split things out into separate components.
   // But in this example everything is just done in one place for simplicity
   render() {
+    const {items, maxHeight} = this.props
     return (
       <DragDropContext onDragEnd={this.onDragEnd}>
         <Droppable droppableId="droppable">
           {(provided) => (
             <div
               ref={provided.innerRef}
-              style={{display:'flex', flexDirection:'column', alignItems:'center'}}
+              style={{display:'flex', flexDirection:'column',maxHeight }}
             >
-              {this.props.items.map(item => (
-                <Draggable key={item.id} draggableId={item.id}>
-                  {(provided, snapshot) => (
-                    <div>
+              <Scrollbars autoHide style={{ height: maxHeight }}>
+                {items && items.map((item, index) => (
+                  <Draggable key={item.id} draggableId={item.id} index={index}>
+                    {(provided) => (
                       <div
                         ref={provided.innerRef}
-                        style={getItemStyle(
-                          provided.draggableStyle,
-                          snapshot.isDragging)}
+                        {...provided.draggableProps}
                         {...provided.dragHandleProps}
+                        style={getItemStyle(
+                          provided.draggableProps.style,
+                          this.props.marginBottom
+                        )}
                       >
+                    
                         {item.card}
                       </div>
-                      {provided.placeholder}
-                    </div>
-                  )}
-                </Draggable>
-              ))}
-              {provided.placeholder}
+                    )}
+                  </Draggable>
+                ))}
+                {provided.placeholder}
+              </Scrollbars>
             </div>
           )}
         </Droppable>

@@ -10,16 +10,18 @@ const GetRegularSeasonTeamInfo = async () => {
   //based on season,
   //this only has 622 teams not 742 teams as expected
   var str = `
-  SELECT b.sport_season_id, a.team_id, a.key, a.city, a.name, a.logo_url,
+  SELECT aa.*, ee.wins as projected_wins, ee.losses as projected_losses,
+  ee.ties as projected_ties, ee.playoff as projected_playoff from
+  (SELECT b.sport_season_id, a.team_id, a.key, a.city, a.name, a.logo_url,
     c.conference_id, c.display_name, d.sport_name, d.sport_id, b.wins,
-    b.losses, b.ties, e.wins as projected_wins, e.losses as projected_losses,
-    e.ties as projected_ties, e.playoff as projected_playoff
+    b.losses, b.ties
   FROM sports.team_info a, sports.standings b, sports.conferences c,
-  sports.leagues d, analysis.record_projections e
+  sports.leagues d
   WHERE a.team_id = b.team_id and c.conference_id = a.conference_id
-  and a.sport_id = d.sport_id
-  and e.day_count = (select max(day_count) from analysis.record_projections)
-  and a.team_id = e.team_id`
+  and a.sport_id = d.sport_id) aa
+  left outer join analysis.record_projections ee on aa.team_id = ee.team_id
+  and ee.day_count = (select max(day_count) from analysis.record_projections)`
+  //need to make sure analysis.record_projections align
  
   return knex.raw(str)
     .then(result =>

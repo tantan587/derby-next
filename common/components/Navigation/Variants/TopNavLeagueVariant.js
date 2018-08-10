@@ -20,21 +20,8 @@ import LinkHelper from '../LinkHelper'
 
 const pathnameEqToHref = R.curry((pathname, href) => pathname === href)
 
-const LEAGUE_LINKS = [
-  {
-    text:'League Home',
-    link:'/mainleague',
-  }, {
-    text:'Draft Room',
-    link:'/livedraft',
-  }, {
-    text:'League Settings',
-    link:'/mainleagues',
-  }, {
-    text:'Commish Tools',
-    link:'/livedraft',
-  }
-]
+
+
 
 const TopNavLeagueVariant = ({
   classes,
@@ -51,7 +38,24 @@ const TopNavLeagueVariant = ({
   const userLeagues = toggleData.userLeagues
   const userProfile = toggleData.userProfile
   const userActiveLeague = toggleData.userActiveLeague
-
+  const LEAGUE_LINKS = [
+    {
+      text:'League Home',
+      link:'/mainleague',
+    }, {
+      text:'Draft Room',
+      link:'/livedraft',
+    }, {
+      text:'League Settings',
+      link:'/mainleagues',
+    }
+  ]
+  if(activeLeague.imTheCommish)
+  {
+    LEAGUE_LINKS.push({ 
+      text:'Commish Tools', 
+      link:'/mainleaguesettings'})
+  }
   return (
     <List>
       <ListItem
