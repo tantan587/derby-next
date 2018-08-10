@@ -1,6 +1,6 @@
 import TopNavUser from './Navigation/TopNavUser'
 import SportsSocket from './Sockets/SportsSocket'
-import MobileNav from './MobileNav'
+import MobileNav from './Navigation/MobileNav'
 
 const layoutStyle = {
   padding: 0,

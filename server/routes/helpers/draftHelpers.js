@@ -19,23 +19,23 @@ const GetDraftRules = async (roomId) => {
       {
         if(!rtnObj[rule.sport_id])
         {
-          rtnObj[rule.sport_id] = 
-          {max:parseInt(rule.sport_teams), total:0, conferences:{}}
+          rtnObj[rule.sport_id] = {max:parseInt(rule.sport_teams), total:0, conferences:{}}
         }
 
-        rtnObj[rule.sport_id].conferences[rule.conference_id] = 
-        {max:parseInt(rule.conf_teams), total:0, team:''}
+        rtnObj[rule.sport_id].conferences[rule.conference_id] = {max:parseInt(rule.conf_teams), total:0, team:''}
       })
       return rtnObj
     })
 }
 
 const GetTeamMap = async (roomId) =>{
-  const teamMapStr = `select c.team_id, c.sport_id, c.conference_id 
-  from draft.settings a, fantasy.team_points b, sports.team_info c, fantasy.leagues d
-  where a.league_id = d.league_id  
-  and d.scoring_type_id = b.scoring_type_id
-  and b.team_id = c.team_id and a.room_id = '` +  roomId + '\''
+  //this needs to adjust better for relgated teams
+  const teamMapStr = `select distinct c.team_id, c.sport_id, c.conference_id
+  from draft.settings a, fantasy.conferences b, sports.team_info c, sports.premier_status d
+  where a.league_id = b.league_id  
+  and b.conference_id = c.conference_id
+  and ((c.sport_id = 107 and d.division_1 = 't' and c.team_id = d.team_id) OR c.sport_id != 107)
+  and a.room_id = '` +  roomId + '\''
 
   const rtnObj = {}
   return knex.raw(teamMapStr)
@@ -61,12 +61,10 @@ const GetTeamMap = async (roomId) =>{
 }
 
 const FilterDraftPick = (teamId, teamMap, draftRules, eligibleTeams, queue) =>{
-
   let confId = teamMap[teamId].conference_id
   let sportId = teamMap[teamId].sport_id
   let teamsInConf = teamMap[confId]
   let teamsInSport = teamMap[sportId]
-
 
   let sport = draftRules[sportId]
   let conf = sport.conferences[confId]
@@ -84,7 +82,7 @@ const FilterDraftPick = (teamId, teamMap, draftRules, eligibleTeams, queue) =>{
       eligibleTeams = filterByArr(eligibleTeams, teamsInConf)
       queue = filterByArr(queue, teamsInConf) 
     }
-    return {eligibleTeams:eligibleTeams, queue:queue}
+    return {eligibleTeams, queue}
   }
   return false
 }

@@ -1,3 +1,4 @@
+const R = require('ramda')
 import React from 'react'
 import {connect} from 'react-redux'
 import {withStyles} from '@material-ui/core/styles'
@@ -8,7 +9,7 @@ import HamburgerIcon from '@material-ui/icons/Reorder'
 
 import MenuButton from './Buttons/MenuButton'
 import LeaguesButton from './Buttons/LeaguesButton'
-import {toggleMobileNav} from '../../actions/status-actions'
+import {toggleMobileNav, setMobileNavVariant} from '../../actions/status-actions'
 
 const styles = (theme) => ({
   root: {
@@ -46,7 +47,9 @@ const styles = (theme) => ({
   },
 })
 class TopNavUser extends React.Component {
-  
+  componentDidMount() {
+    this.props.setMobileNavVariant('TopNavHomeVariant')
+  }
   state = {
     hoverIndex:-1
   };
@@ -65,7 +68,7 @@ class TopNavUser extends React.Component {
       onMouseLeave={() => this.setHover(-1)} 
       style={{display:'inline-flex'}}>
       {buttonType == 'league'  
-        ? loggedIn ? <LeaguesButton color={hoverColor} /> : <div/> 
+        ? loggedIn ? <LeaguesButton name='My Leagues' color={hoverColor} /> : <div/> 
         : buttonType == 'home' 
           ? <MenuButton color={hoverColor} link={link} name={name} isHomeLogo={true}/>
           : <MenuButton color={hoverColor} link={link} name={name}/>
@@ -80,7 +83,7 @@ class TopNavUser extends React.Component {
         <AppBar position="static" style={{backgroundColor:'229246', color:'white'}}>
           <div style={{backgroundColor:'#00642C', height:30}}/>
           <Toolbar className={classes.toolbar}>
-            <Button className={classes.hamburger} variant="extendedFab" onClick={toggleMobileNav}>
+            <Button className={classes.hamburger}  onClick={toggleMobileNav}>
               <HamburgerIcon />
             </Button>
             
@@ -105,10 +108,11 @@ class TopNavUser extends React.Component {
           </Toolbar>
         </AppBar>
       </div>
-
     )
   }
 }
 
-export default connect(({ user }) => ({ user }),
-  {toggleMobileNav})(withStyles(styles)(TopNavUser))
+export default R.compose(
+  withStyles(styles),
+  connect(R.pick(['user']), {toggleMobileNav: toggleMobileNav('TopNavHomeVariant'), setMobileNavVariant}),
+)(TopNavUser)

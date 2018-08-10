@@ -2,16 +2,27 @@ const knex = require('../../db/connection')
 const C = require('../../../common/constants')
 const fantasyHelpers = require('./fantasyHelpers')
 
-const getTeamInfo = () => {
+//const getTeamProjections = async (league)
 
-  var str = `select a.team_id, a.key, a.city, a.name, a.logo_url,
+const GetRegularSeasonTeamInfo = async () => {
+
+  //this needs to change to reflect correct projections
+  //based on season,
+  //this only has 622 teams not 742 teams as expected
+  var str = `
+  SELECT aa.*, ee.wins as projected_wins, ee.losses as projected_losses,
+  ee.ties as projected_ties, ee.playoff as projected_playoff from
+  (SELECT b.sport_season_id, a.team_id, a.key, a.city, a.name, a.logo_url,
     c.conference_id, c.display_name, d.sport_name, d.sport_id, b.wins,
-     b.losses, b.ties from
-  sports.team_info a, sports.standings b, sports.conferences c,
+    b.losses, b.ties
+  FROM sports.team_info a, sports.standings b, sports.conferences c,
   sports.leagues d
-  where a.team_id = b.team_id and c.conference_id = a.conference_id
-  and a.sport_id = d.sport_id` 
-
+  WHERE a.team_id = b.team_id and c.conference_id = a.conference_id
+  and a.sport_id = d.sport_id) aa
+  left outer join analysis.record_projections ee on aa.team_id = ee.team_id
+  and ee.day_count = (select max(day_count) from analysis.record_projections)`
+  //need to make sure analysis.record_projections align
+ 
   return knex.raw(str)
     .then(result =>
     {
@@ -20,6 +31,7 @@ const getTeamInfo = () => {
         var teams = []
         result.rows.map(team => teams.push(
           {
+            sport_season_id:team.sport_season_id,
             key:team.key,
             team_id:team.team_id,
             team_name:team.sport_name !== 'EPL' ? team.city + ' ' + team.name : team.name,
@@ -31,11 +43,22 @@ const getTeamInfo = () => {
             losses:team.losses,
             ties:team.ties,
             logo_url:team.logo_url,
+            projected:{
+              wins:team.projected_wins,
+              losses:team.projected_losses,
+              ties:team.projected_ties,
+              playoff:team.projected_playoff
+            }
           }))
-        // teams.sort(function(a,b)
-        // { return a.team_name.toLowerCase() < b.team_name.toLowerCase() ? -1 : 1})
         let rtnTeams = {}
-        teams.map(team => rtnTeams[team.team_id] = team)
+        teams.forEach(team => 
+        {
+          if(!rtnTeams[team.sport_season_id])
+          {
+            rtnTeams[team.sport_season_id] = {}
+          }
+          rtnTeams[team.sport_season_id][team.team_id] = team
+        })
         return rtnTeams
       }
     })
@@ -45,13 +68,12 @@ function handleReduxResponse(res, code, action) {
   res.status(code).json(action)
 }
 
-const getTeamInfoAndRespond = async (res, type) => {
+const GetSportSeasonsAndRespond = async (league_id,res, type) => {
 
-  let rtnTeams = await getTeamInfo()
+  let seasonIds = await fantasyHelpers.GetSportSeasonsByLeague(league_id)
   return handleReduxResponse(res,200, {
-    type: type,
-    teams : rtnTeams,
-    updateTime:(new Date()).toJSON()
+    type,
+    seasonIds
   })
 }
 
@@ -147,48 +169,16 @@ const getSportLeagues = (league_id, res, type) =>{
     })
 }
 
-const getOneTeam  = async(league_id, team_id, res) =>{
+const GetOneTeamSchedule  = async(team_id, res) =>{
 
-  const str1 = `select a.*, b.wins, b.losses, b.ties
-   from sports.team_info a, sports.standings b
-   where a.team_id = b.team_id and a.team_id = ` + team_id
-
-  const str2 = `select * from (
-    select * from fantasy.team_points a, fantasy.leagues b 
-      where a.team_id = ` + team_id +
-      `and a.scoring_type_id = b.scoring_type_id 
-      and b.league_id = '` +league_id + '\' ) x ' + 
-    `left outer join ( 
-      select c.team_id, d.owner_name, d.owner_id, c.overall_pick 
-      from fantasy.rosters c, fantasy.owners d 
-      where c.owner_id = d.owner_id 
-      and c.team_id = ` + team_id + 
-      ' and c.league_id = \'' +league_id + '\'' +
-    ' ) y on x.team_id = y.team_id'
-
-  const str3 = `select *
+  const str = `select *
     from sports.schedule a
     where (a.home_team_id = `+ team_id + ' or a.away_team_id = ' + team_id + ' ) order by day_count'
 
+  let schedule = await knex.raw(str)
 
-  let teamInfo = await knex.raw(str1)
-
-  let fantasyInfo = await knex.raw(str2)
-
-  let schedule = await knex.raw(str3)
-
-
-  teamInfo = teamInfo.rows[0]
-  fantasyInfo = fantasyInfo.rows[0]
   schedule = schedule.rows
   let oneTeam = {}
-  oneTeam.team_name = teamInfo.sport_name !== 'EPL' ? teamInfo.city + ' ' + teamInfo.name : teamInfo.name
-  oneTeam.owner = fantasyInfo.owner_name
-  oneTeam.owned_in_derby_leagues = 'TBD'
-  oneTeam.rank_in_league = 'TBD'
-  oneTeam.record = teamInfo.wins + '-' + teamInfo.losses + (teamInfo.ties > 0 ? '-' + teamInfo.ties : '')
-  oneTeam.curr_points = parseFloat(fantasyInfo.reg_points) + parseFloat(fantasyInfo.bonus_points)
-
   const currDayCount =  fantasyHelpers.getDayCountStr((new Date()).toJSON())
   let lastFive = []
   let nextFive = []
@@ -238,6 +228,7 @@ const getOneTeam  = async(league_id, team_id, res) =>{
       }
     }
   })
+  oneTeam.team_id = team_id
   oneTeam.nextFive = nextFive
   oneTeam.lastFive = lastFive
 
@@ -246,11 +237,11 @@ const getOneTeam  = async(league_id, team_id, res) =>{
 }
 
 module.exports = {
-  getOneTeam,
-  getTeamInfoAndRespond,
-  getTeamInfo,
+  GetOneTeamSchedule,
+  GetSportSeasonsAndRespond,
+  GetRegularSeasonTeamInfo,
   getNearSchedule,
   getLeagueSchedule,
-  getSportLeagues
+  getSportLeagues,
 }
 

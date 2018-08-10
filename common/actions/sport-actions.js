@@ -9,6 +9,14 @@ export const clickedSaveDraft = (league_id, allTeams) => dispatch =>
     JSON.stringify({league_id, allTeams})
   )
 
+export const getSportSeasons = (league_id) => dispatch =>
+  FetchThenDispatch(
+    dispatch,
+    '/api/sportSeasons',
+    'POST',
+    JSON.stringify({league_id})
+  )
+
 export const clickedDateChange = (league_id, date) => dispatch =>
   FetchThenDispatch(
     dispatch,
@@ -17,12 +25,12 @@ export const clickedDateChange = (league_id, date) => dispatch =>
     JSON.stringify({league_id, date})
   )
 
-export const clickedOneTeam = (team_id, league_id) => dispatch =>
+export const clickedOneTeam = (team_id) => dispatch =>
   FetchThenDispatch(
     dispatch,
     '/api/oneteam',
     'POST',
-    JSON.stringify({team_id,league_id})
+    JSON.stringify({team_id})
   )
 
 export const handleTeamUpdateTime = updateTime =>
@@ -59,10 +67,4 @@ export const handleGameUpdateDiff = gamesDiff =>
   ({
     type: C.UPDATE_GAME_DIFF,
     gamesDiff
-  })
-  
-export const handleUpdateDraftOrder = draftOrder =>
-  ({
-    type: C.UPDATE_DRAFT_ORDER,
-    draftOrder
   })

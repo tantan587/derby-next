@@ -35,10 +35,12 @@ class SportsLobby {
       this.sportsNSP.to(socket.id).emit('serverGameUpdateTime', this.sportRoom.Manager.GameInfoUpdateTime)
     })
 
-    socket.on('allTeamData', () =>
+    socket.on('allTeamData', async (sportSeasons) =>
     {
-      this.sportsNSP.to(socket.id).emit('serverAllTeamData', this.sportRoom.Manager.TeamInfo)
+      let teamInfo = await this.sportRoom.Manager.TeamInfoBySportsSeason(sportSeasons)
+      this.sportsNSP.to(socket.id).emit('serverAllTeamData', teamInfo)
     })
+    
     socket.on('allGameData', () =>
     {
       this.sportsNSP.to(socket.id).emit('serverAllGameData', this.sportRoom.Manager.GameInfo)

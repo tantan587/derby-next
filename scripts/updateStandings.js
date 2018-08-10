@@ -1,22 +1,33 @@
 const db_helpers = require('./helpers').data
 const fantasyHelpers = require('../server/routes/helpers/fantasyHelpers')
 const knex = require('../server/db/connection')
+const sport_keys = require('./sportKeys')
+const asyncForEach = require('./asyncForEach')
 //const getDayCount = require('./Analysis/dayCount.js')
 
+const filtered_fantasy_standings_data = async () => {
+  let data = []
+  let season_calls = await db_helpers.getSeasonCall(knex)
+  let regular_season_calls = season_calls.filter(season => season.season_type === 1)
+  await asyncForEach(regular_season_calls, async (season) => {
+    let sport_id = season.sport_id
+    let sport = sport_keys[sport_id]
+    if(sport_id===105){
+      data.push(...await getCFBstandings(knex, sport.sport_name, sport.api, sport.standingsPromiseToGet, season.api_pull_parameter, season.year, season.sport_season_id))
+    }else{
+      data.push(...await standingsBySport(knex, sport.sport_name, sport.api, sport.standingsPromiseToGet, season.api_pull_parameter, season.year, season.sport_season_id))
+    }
+  })
+
+  return data
+}
 //note: college basketball has an extra, old functino below: waiting to be sure we don't need this again
 
 //for CFB - this function also updates the post season standings.
 async function updateStandings()
 {
-  //let cbbData = await getCBBstandings(knex, 'CBB', 'CBBv3StatsClient', 'getTeamSeasonStatsPromise', '2018')
-  let cbbData = await standingsBySport(knex, 'CBB', 'CBBv3StatsClient', 'getTeamSeasonStatsPromise', '2018')
-  let cfbData = await getCFBstandings(knex, 'CFB', 'CFBv3ScoresClient', 'getTeamSeasonStatsStandingsPromise', '2017')
-  let nhlData = await standingsBySport(knex, 'NHL', 'NHLv3StatsClient', 'getStandingsPromise', '2018')
-  let nbaData = await standingsBySport(knex, 'NBA', 'NBAv3StatsClient', 'getStandingsPromise', '2018')
-  let mlbData = await standingsBySport(knex, 'MLB', 'MLBv3StatsClient', 'getStandingsPromise', '2018')
-  let nflData = await standingsBySport(knex, 'NFL', 'NFLv3StatsClient', 'getStandingsPromise', '2017')
-  let eplData = await standingsBySport(knex, 'EPL', 'Soccerv3StatsClient', 'getStandingsPromise', '144')
-  let data = nhlData.concat(nbaData).concat(mlbData).concat(nflData).concat(cfbData).concat(eplData).concat(cbbData)
+  let data = await filtered_fantasy_standings_data()
+
 
   let result =  await db_helpers.updateStandings(knex, data)
   console.log('Number of Standings Updated: ' + result)
@@ -27,33 +38,35 @@ async function updateStandings()
 
 }
 
-const standingsBySport = async (knex, sportName, api, promiseToGet, year) => {
-  let standings_info = await db_helpers.createStandingsData(knex, sportName, api, promiseToGet, year)
+
+
+const standingsBySport = async (knex, sportName, api, promiseToGet, pull_parameter, year, sport_season_id) => {
+  let standings_info = await db_helpers.createStandingsData(knex, sportName, api, promiseToGet, pull_parameter)
   let newStandings = standings_info.map(team=>{
     let ties = sportName === 'NHL' ? team.OvertimeLosses : 
       sportName === 'NFL' ? team.Ties : 
         sportName === 'EPL' ? team.Draws : 0
 
-    return {team_id: team.team_id, wins: team.Wins, losses: team.Losses, ties: ties, year: team.Season}
+    return {team_id: team.team_id, wins: team.Wins, losses: team.Losses, ties: ties, year: year, sport_season_id: sport_season_id}
   })
 
   return newStandings
 }
 
-const getCFBstandings = async (knex, sportName, api, promiseToGet, year) =>{
-  const standings = await standingsBySport(knex, sportName, api, promiseToGet, year)
+const getCFBstandings = async (knex, sportName, api, promiseToGet, pull_parameter, year, sport_season_id) =>{
+  const standings = await standingsBySport(knex, sportName, api, promiseToGet, pull_parameter, year, sport_season_id)
   //check if current week is after the start of the post season, or is null. 
   //This could also be done with dates and season status table, as had been discussed
   //table hasn't yet been created
+
+  //need to use this 
   let current_week = await db_helpers.getFdata(knex, sportName, api, 'getCurrentWeekPromise')
   if(current_week !== '' && current_week < 16){
     return standings
   }else{
     //pull, and then make readable, playoff games (including bowl games)
-    let post_year = year.concat('POST')
-    let non_parse_games = await db_helpers.getFdata(knex, sportName, api, 'getGamesByWeekPromise', post_year, 1)
+    let non_parse_games = await db_helpers.getFdata(knex, sportName, api, 'getGamesByWeekPromise', pull_parameter, 1)
     let playoff_games = JSON.parse(non_parse_games)
-
     let teamIdMap = await db_helpers.getTeamIdMap(knex, '105')
 
     let standings_by_team_id = {}
@@ -111,7 +124,7 @@ const getCFBstandings = async (knex, sportName, api, promiseToGet, year) =>{
             }
           }else //if the team made a new years 6 bowl, just add them to playoffs as normal
           {
-            playoff_teams.push({team_id: teamIdMap[game.GlobalHomeTeamID], playoff_status: 4, playoff_wins: 0, playoff_losses: 0, year: game.Season}, {team_id: teamIdMap[game.GlobalAwayTeamID], playoff_status: 4, playoff_wins: 0, playoff_losses: 0, year: game.Season})
+            playoff_teams.push({team_id: teamIdMap[game.GlobalHomeTeamID], playoff_status: 4, playoff_wins: 0, playoff_losses: 0, year: year}, {team_id: teamIdMap[game.GlobalAwayTeamID], playoff_status: 4, playoff_wins: 0, playoff_losses: 0, year: year})
           }
         }
         //note: still need to figure out a way to differentiate between playoff wins and normal bowl wins. NY6 teams all get playoff appearance points

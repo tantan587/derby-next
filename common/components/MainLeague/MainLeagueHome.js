@@ -12,6 +12,7 @@ import Standings from '../Home/Cards/Standings'
 import Countdown from '../Home/Cards/Countdown'
 import Upcoming from '../Home/Cards/Upcoming'
 import StyledButton from '../Navigation/Buttons/StyledButton'
+import C from '../../constants'
 
 const styles = theme => ({
   section1: {
@@ -94,16 +95,18 @@ class MainLeagueHome extends React.Component {
                 teams={teams}
               />
             </Card>
-
-            <Card
-              title="Draft Countdown"
-              Button={() => <StyledButton text="Go to Draft Room" link='/livedraft'/>}
-            >
-              <Countdown
-                startTime={startTime}
-              />
-            </Card>
-
+            {
+              activeLeague.draftInfo && activeLeague.draftInfo.mode !== C.DRAFT_STATE.POST ?
+                <Card
+                  title="Draft Countdown"
+                  Button={() => <StyledButton text="Go to Draft Room" link='/livedraft'/>}
+                >
+                  <Countdown
+                    startTime={startTime}
+                  />
+                </Card> :
+                null
+            }
             <Card
               title="Standings"
               scroll

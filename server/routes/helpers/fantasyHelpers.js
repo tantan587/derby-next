@@ -6,8 +6,21 @@ function handleReduxResponse(res, code, action){
   res.status(code).json(action)
 }
 
+// `select aa.*, bb.owner_id from (select a.team_id, a.reg_points, a.bonus_points, a.playoff_points, c.points as proj_points, c.ranking
+//   from fantasy.team_points a, fantasy.leagues b, fantasy.projections c
+//   where b.league_id = '06ccb52f-08b6-4da1-9b4f-cd59cb16ae49'
+//   and a.sport_structure_id = b.sport_structure_id
+//   and c.sport_structure_id = a.sport_structure_id
+//   and a.team_id = c.team_id
+//   and c.day_count = (select max(day_count) from fantasy.projections)) aa
+//   left outer join (select d.* from fantasy.rosters d, fantasy.owners e where
+//   d.owner_id = e.owner_id and e.league_id = '06ccb52f-08b6-4da1-9b4f-cd59cb16ae49') bb
+//   on aa.team_id = bb.team_id
+// `
+ 
+
 const getLeague = async (league_id, user_id, res, type) => {
-  var leagueInfoStr = `select a.league_name, a.max_owners, a.league_id, b.room_id, b.start_time, b.draft_position, b.seconds_pick, c.total_teams 
+  var leagueInfoStr = `select a.league_name, a.max_owners, a.league_id, b.room_id, b.start_time, b.draft_position, b.seconds_pick, b.state, c.total_teams 
   from fantasy.leagues a, draft.settings b, (
     select league_id, sum(number_teams) as total_teams from fantasy.sports where league_id = '` + league_id + `' group by league_id) c
   where a.league_id = b.league_id and a.league_id = c.league_id`
@@ -16,34 +29,34 @@ const getLeague = async (league_id, user_id, res, type) => {
   fantasy.owners a, users.users b, fantasy.points c
   where a.user_id = b.user_id and a.owner_id = c.owner_id and a.league_id = '` + league_id + '\''
 
-  var teamInfoStr = `select c.owner_id, a.team_id, a.reg_points as points
-  from fantasy.team_points a
-  left outer join (select cc.* from fantasy.rosters cc, fantasy.owners dd where
-   cc.owner_id = dd.owner_id and dd.league_id = '` + league_id + '\'' +
- `) c on a.team_id = c.team_id 
- where a.scoring_type_id = 1`
- //need to fix this to do it based on league
- //, fantasy.leagues b
- //where b.league_id = '` + league_id + '\' and b.scoring_type_id = a.scoring_type_id'
-  //
+  var teamInfoStr = `select aa.*, bb.owner_id, bb.overall_pick from (select a.team_id, a.reg_points, a.bonus_points, a.playoff_points, c.points as proj_points, c.ranking
+    from fantasy.team_points a, fantasy.leagues b, fantasy.projections c
+    where b.league_id = '` + league_id + '\'' +
+    `and a.sport_structure_id = (b.sport_structure_id + 1)
+    and a.team_id = c.team_id
+    and c.day_count = (select max(day_count) from fantasy.projections)) aa
+    left outer join (select d.* from fantasy.rosters d, fantasy.owners e where
+    d.owner_id = e.owner_id and e.league_id = '` + league_id + '\') bb ' +
+    'on aa.team_id = bb.team_id' 
   
-   
   const leagueInfo = await knex.raw(leagueInfoStr)
   const ownerInfo = await knex.raw(ownerInfoStr)
   const teamInfo = await knex.raw(teamInfoStr)
+  const seasonIds = await GetSportSeasonsByLeague(league_id)
   const rules = await getSportLeagues(league_id)
 
   if (leagueInfo.rows.length === 1)
   {
-
     var league_name = leagueInfo.rows[0].league_name
     var max_owners = leagueInfo.rows[0].max_owners
     var total_teams = leagueInfo.rows[0].total_teams
     var room_id = leagueInfo.rows[0].room_id
     var start_time = leagueInfo.rows[0].start_time
     let seconds_pick = leagueInfo.rows[0].seconds_pick
+    let mode = leagueInfo.rows[0].state
     var draft_position = leagueInfo.rows[0].draft_position
     var my_owner_id = ''
+    var imTheCommish = false
     var owners = []
     var teams = {}
 
@@ -51,6 +64,7 @@ const getLeague = async (league_id, user_id, res, type) => {
       if(owner.user_id === user_id)
       {
         my_owner_id = owner.owner_id
+        imTheCommish = owner.commissioner
       }
       owners.push(
         {
@@ -61,13 +75,25 @@ const getLeague = async (league_id, user_id, res, type) => {
           username:owner.username,
           user_id: owner.user_id,
           draft_position: draft_position.indexOf(owner.owner_id),
-          avatar:owner.avatar
+          avatar:owner.avatar,
+          commissioner:owner.commissioner
         })
     })
 
     const ownerGames = await getOwnersUpcomingGames(my_owner_id)
     teamInfo.rows.forEach(teamRow => {
-      teams[teamRow.team_id] = {owner_id:teamRow.owner_id, points:parseFloat(teamRow.points)}
+      let reg_points = parseFloat(teamRow.reg_points)
+      let bonus_points = parseFloat(teamRow.bonus_points)
+      let playoff_points = parseFloat(teamRow.playoff_points)
+      teams[teamRow.team_id] = {
+        owner_id:teamRow.owner_id,
+        overall_pick:teamRow.overall_pick,
+        reg_points,
+        bonus_points,
+        playoff_points,
+        proj_points:parseFloat(teamRow.proj_points),
+        ranking:parseInt(teamRow.ranking),
+        points:reg_points+bonus_points+playoff_points}
     })
     const draftOrder = GetDraftOrder(total_teams,owners.length)
 
@@ -81,13 +107,16 @@ const getLeague = async (league_id, user_id, res, type) => {
       room_id,
       draftInfo: {
         start_time,
-        seconds_pick
+        seconds_pick,
+        mode
       },
       my_owner_id,
+      imTheCommish,
       draftOrder,
       teams,
       ownerGames,
       rules,
+      seasonIds
     })
   }
   else
@@ -118,6 +147,26 @@ const getSportLeagues = (league_id) =>{
       })
       return Object.values(leaguesToConferenceMap)
     })
+}
+
+const GetSportSeasonsByLeague = async (league_id) => {
+
+  let knexStr
+  if (league_id)
+    knexStr  =  `select current_sport_seasons from fantasy.sports_structure a, 
+      fantasy.league_bundle b, fantasy.leagues c
+      where c.league_id = '` + league_id + `' 
+      and a.sport_structure_id = c.sport_structure_id
+      and a.league_bundle_id = b.league_bundle_id`
+
+  else
+    knexStr  =  `select current_sport_seasons from fantasy.sports_structure a, 
+  fantasy.league_bundle b where sport_structure_id = 0 and a.league_bundle_id = b.league_bundle_id`
+
+  let sport_seasons = await knex.raw(knexStr)
+
+  //return JSON.stringify(sport_seasons.rows[0].current_sport_seasons).replace('[', '(').replace(']', ')')
+  return sport_seasons.rows[0].current_sport_seasons
 }
 
 const getOwnersUpcomingGames = async (ownerId) =>
@@ -172,27 +221,27 @@ const updateTeamPointsTable = async (newTeamPoints) =>
   var updateList =[]
   results.map(result => {
     //console.log(result)
-    if (!oldTeamPoints[result.scoring_type_id]){
-      oldTeamPoints[result.scoring_type_id] = {}
+    if (!oldTeamPoints[result.sport_structure_id]){
+      oldTeamPoints[result.sport_structure_id] = {}
     }
-    oldTeamPoints[result.scoring_type_id][result.team_id] = result})
+    oldTeamPoints[result.sport_structure_id][result.team_id] = result})
   newTeamPoints.map(teamPoints =>
   {
     //needs to be != because of 100.00 vs 100
-    if(!oldTeamPoints[teamPoints.scoring_type_id][teamPoints.team_id] ||
-      oldTeamPoints[teamPoints.scoring_type_id][teamPoints.team_id].reg_points != teamPoints.reg_points)
+    if(!oldTeamPoints[teamPoints.sport_structure_id][teamPoints.team_id] ||
+      oldTeamPoints[teamPoints.sport_structure_id][teamPoints.team_id].reg_points != teamPoints.reg_points)
     {
-      updateList.push(Promise.resolve(updateOneRowTeamPoints(teamPoints.scoring_type_id,teamPoints.team_id,'reg_points',teamPoints.reg_points )))
+      updateList.push(Promise.resolve(updateOneRowTeamPoints(teamPoints.sport_structure_id,teamPoints.team_id,'reg_points',teamPoints.reg_points )))
     }
 
-    if(!oldTeamPoints[teamPoints.scoring_type_id][teamPoints.team_id] ||
-      oldTeamPoints[teamPoints.scoring_type_id][teamPoints.team_id].bonus_points != teamPoints.bonus_points){
-      updateList.push(Promise.resolve(updateOneRowTeamPoints(teamPoints.scoring_type_id,teamPoints.team_id,'bonus_points',teamPoints.bonus_points )))}
+    if(!oldTeamPoints[teamPoints.sport_structure_id][teamPoints.team_id] ||
+      oldTeamPoints[teamPoints.sport_structure_id][teamPoints.team_id].bonus_points != teamPoints.bonus_points){
+      updateList.push(Promise.resolve(updateOneRowTeamPoints(teamPoints.sport_structure_id,teamPoints.team_id,'bonus_points',teamPoints.bonus_points )))}
     
-    if(!oldTeamPoints[teamPoints.scoring_type_id][teamPoints.team_id] ||
-      oldTeamPoints[teamPoints.scoring_type_id][teamPoints.team_id].playoff_points != teamPoints.playoff_points){
+    if(!oldTeamPoints[teamPoints.sport_structure_id][teamPoints.team_id] ||
+      oldTeamPoints[teamPoints.sport_structure_id][teamPoints.team_id].playoff_points != teamPoints.playoff_points){
       {
-        updateList.push(Promise.resolve(updateOneRowTeamPoints(teamPoints.scoring_type_id,teamPoints.team_id,'playoff_points',teamPoints.playoff_points )))}
+        updateList.push(Promise.resolve(updateOneRowTeamPoints(teamPoints.sport_structure_id,teamPoints.team_id,'playoff_points',teamPoints.playoff_points )))}
     }
   })
   
@@ -253,13 +302,13 @@ const updateOneRow = (schema, table, column_link, column_link_val, column, value
     })
 }
 
-const updateOneRowTeamPoints = (scoring_type_id,team_id, column, value ) =>
+const updateOneRowTeamPoints = (sport_structure_id,team_id, column, value ) =>
 {
   return knex
     .withSchema('fantasy')
     .table('team_points')
-    .where('scoring_type_id',scoring_type_id)
-    .andWhere('team_id',parseInt(team_id))
+    .where('sport_structure_id',sport_structure_id)
+    .andWhere('team_id', parseInt(team_id))
     .update(column, value)
     .then(() =>
     {
@@ -282,48 +331,101 @@ const getPointsStructure = async () => {
       return point_map
     })
 }
+
+//below function is the same thing that is in helpers.
+//Was unsure if could pull in the same structure
+const activeSeasons = async () => {
+  let today = new Date()
+
+  let seasons = 
+    await knex
+      .withSchema('sports')
+      .table('sport_season')
+      .where('start_pull_date', '<', today)
+      .andWhere('end_pull_date', '>', today)
+      .select('*')
   
+  return seasons
+}
 //this should be updated to do all the different team points structures
 //similar to the way i did that before with the update fantasy projected points
 //need to set up this table somewhere...
 const updateTeamPoints = async () =>
 {
-  let points = await getPointsStructure()
-  let data = await getStandingDataPlayoffAndRegular()
+  // let standings_for_update =
+  //   await knex
+  //     .withSchema('fantasy')
+  //     .table('team_points')
+  //     .leftOuterJoin('fantasy.sports_structure', 'fantasy.sports_structure.sport_structure_id', 'fantasy.team_points.sport_structure_id')
+  //     .leftOuterJoin('fantasy.league_bundle', 'fantasy.sports_structure.league_bundle_id', 'fantasy.league_bundle.league_bundle_id')
+  //     .select('*')
   
+  //first - pulls all the sports structures
+  let sport_structure = 
+    await knex('fantasy.sports_structure')
+      .leftOuterJoin('fantasy.league_bundle', 'fantasy.sports_structure.league_bundle_id', 'fantasy.league_bundle.league_bundle_id')
+      .select('*')
+  
+  //this is the active seaons - so that we can filter out the not active seasons, and only pull data for the active ones
+  let seasons = await activeSeasons()
+  //we only want to pull standing data for active seasons. 
+  //this means need to update the standings and playoff standings to have the sports season ids in there for both
+
+  let seasons_for_pull = []
+  seasons.forEach(season => {
+    seasons_for_pull.push(season.sport_season_id)
+  })
+
+  let data = await getStandingDataPlayoffAndRegular(seasons_for_pull, sport_structure)
+  //if we updated based on standings, then from each standing we would need the team id, and the year
+  //then would pull from team_points based on those that had same year
+  //we would then update those with active year...right?
+
+  
+  //what about if we updated based upon standings instead? what would that look like?
+
+  let points = await getPointsStructure()
+
   //somewhere, this needs to check to be sure the league scoring type is 1 and input it here
-  let str = `select a.*, b.sport_id
-      from fantasy.team_points a, sports.team_info b
-      where a.team_id = b.team_id`
+  // let str = `select a.*, b.sport_id
+  //     from fantasy.team_points a, sports.team_info b
+  //     where a.team_id = b.team_id`
      
-  let result = await knex.raw(str)
+  let result = 
+    await knex('fantasy.team_points')
+      .innerJoin('sports.team_info', 'sports.team_info.team_id', 'fantasy.team_points.team_id')
+      .select('fantasy.team_points.*', 'sports.team_info.sport_id')
 
-  if (result.rows.length > 0)
+
+
+  if (result.length > 0)
   {
-    const teamPoints = result.rows.map(fteam => {
-      const team = data[fteam.team_id]
+    const teamPoints = result.map(fteam => {
+      const team = data[fteam.sport_structure_id][fteam.team_id]
       //const league = points.filter(league => league.sport_id == fteam.sport_id)[0]
-      let sport_id = fteam.sport_id
-      let bonus_win=0
-      let status = Number(team.playoff_status)
+      if(team){
+        let sport_id = fteam.sport_id
+        let bonus_win=0
+        let status = Number(team.playoff_status)
 
-      if(sport_id === ('103'||'104')){
-        let milestone_parameter = sport_id === '103' ? team.wins : team.wins+team.ties/2
-        let milestone_points = points[fteam.scoring_type_id][sport_id].regular_season.milestone_points
-        bonus_win = milestone_parameter < points[fteam.scoring_type_id][sport_id].regular_season.milestones[0] ? 0 :
-          milestone_parameter < points[fteam.scoring_type_id][sport_id].regular_season.milestones[1] ? milestone_points :
-            milestone_parameter < points[fteam.scoring_type_id][sport_id].regular_season.milestones[2] ? milestone_points*2 : milestone_points*3
-      }
-      
-      let bonus_points = status > 5 ? points[fteam.scoring_type_id][sport_id].bonus.championship + points[fteam.scoring_type_id][sport_id].bonus.finalist + points[fteam.scoring_type_id][sport_id].bonus.appearance :
-        status > 4 ? points[fteam.scoring_type_id][sport_id].bonus.finalist + points[fteam.scoring_type_id][sport_id].bonus.appearance :
-          status >2 ? points[fteam.scoring_type_id][sport_id].bonus.appearance : 0
-      fteam.reg_points = points[fteam.scoring_type_id][sport_id].regular_season.win * team.wins + points[fteam.scoring_type_id][sport_id].regular_season.tie * team.ties
-      fteam.playoff_points = points[fteam.scoring_type_id][sport_id].playoffs.win * team.playoff_wins
-      //below depends on how we format bowl wins
-      sport_id === '105' ? fteam.playoff_points += (points[fteam.scoring_type_id][sport_id].playoffs.bowl_win * team.bowl_wins) : 0
-      fteam.bonus_points = bonus_win + bonus_points
-      return fteam})
+        if(sport_id === ('103'||'104')){
+          let milestone_parameter = sport_id === '103' ? team.wins : team.wins+team.ties/2
+          let milestone_points = points[fteam.scoring_type_id][sport_id].regular_season.milestone_points
+          bonus_win = milestone_parameter < points[fteam.scoring_type_id][sport_id].regular_season.milestones[0] ? 0 :
+            milestone_parameter < points[fteam.scoring_type_id][sport_id].regular_season.milestones[1] ? milestone_points :
+              milestone_parameter < points[fteam.scoring_type_id][sport_id].regular_season.milestones[2] ? milestone_points*2 : milestone_points*3
+        }
+        
+        let bonus_points = status > 5 ? points[fteam.scoring_type_id][sport_id].bonus.championship + points[fteam.scoring_type_id][sport_id].bonus.finalist + points[fteam.scoring_type_id][sport_id].bonus.appearance :
+          status > 4 ? points[fteam.scoring_type_id][sport_id].bonus.finalist + points[fteam.scoring_type_id][sport_id].bonus.appearance :
+            status > 2 ? points[fteam.scoring_type_id][sport_id].bonus.appearance : 0
+        fteam.reg_points = points[fteam.scoring_type_id][sport_id].regular_season.win * team.wins + points[fteam.scoring_type_id][sport_id].regular_season.tie * team.ties
+        fteam.playoff_points = points[fteam.scoring_type_id][sport_id].playoffs.win * team.playoff_wins
+        //below depends on how we format bowl wins
+        sport_id === '105' ? fteam.playoff_points += (points[fteam.scoring_type_id][sport_id].playoffs.bowl_win * team.bowl_wins) : 0
+        fteam.bonus_points = bonus_win + bonus_points
+        return fteam}
+    })
 
     let resp = await updateTeamPointsTable(teamPoints)
     console.log('Number of Teams Updated: ' + resp)
@@ -335,6 +437,7 @@ const updateTeamPoints = async () =>
 const updateLeagueProjectedPoints = async (league_id) => {
   const math = require('mathjs')
 
+  //this needs to be fixed so it works, but this should be on fantasy.sport_structure_id
   let rosters = await knex('fantasy.rosters')
     .leftJoin('fantasy.leagues', 'fantasy.rosters.league_id', 'fantasy.leagues.league_id')
     .leftJoin('fantasy.projections', function(){
@@ -383,7 +486,7 @@ const updateLeagueProjectedPoints = async (league_id) => {
 }
 
 //runs for each league to run points
-//not sure if this is set up to run for each and every league - this hsould match up leagues with scoring type
+//not sure if this is set up to run for each and every league - this hsould match up leagues with sport structure id
 const updateLeaguePoints = (league_id) =>
 
 {
@@ -394,13 +497,13 @@ const updateLeaguePoints = (league_id) =>
     from fantasy.team_points a, fantasy.rosters b, fantasy.leagues c 
     where a.team_id = b.team_id 
     and c.league_id = b.league_id 
-    and c.scoring_type_id = a.scoring_type_id 
+    and c.sport_structure_id = a.sport_structure_id 
     and b.league_id = '` + league_id + '\''
     : `select a.reg_points, a.bonus_points, a.playoff_points, b.owner_id, b.league_id
     from fantasy.team_points a, fantasy.rosters b, fantasy.leagues c 
     where a.team_id = b.team_id 
     and c.league_id = b.league_id 
-    and c.scoring_type_id = a.scoring_type_id`
+    and c.sport_structure_id = a.sport_structure_id`
 
   return knex.raw(str)
     .then(result =>
@@ -451,18 +554,41 @@ const updateLeaguePoints = (league_id) =>
 //   })
 // }
 
-const getStandingDataPlayoffAndRegular = () =>
+const getStandingDataPlayoffAndRegular = async (seasons_for_pull, sport_structure) =>
 {
-  return new Promise((resolve) => {
-    return knex('sports.standings')
-      .leftOuterJoin('sports.playoff_standings', 'sports.standings.team_id', 'sports.playoff_standings.team_id')
-      .select('*')
-      .then(result => {
-        let teamMap = {}
-        result.map(team => {teamMap[team.team_id] = {...team}})
-        resolve(teamMap)
+  //this needs to be fixed to have playoff_standings.sport_season_id be separate from other id
+  let standings = 
+    await knex('sports.standings')
+      .leftOuterJoin('sports.playoff_standings', function(){
+        this.on('sports.standings.team_id', '=', 'sports.playoff_standings.team_id').andOn('sports.standings.year', '=', 'sports.playoff_standings.year')
       })
+      .whereIn('sports.standings.sport_season_id', seasons_for_pull)
+      .orWhereIn('sports.playoff_standings.sport_season_id', seasons_for_pull)
+      .select('*')
+  
+
+  // let new_results = results.filter(team => 
+  //   seasons_for_pull[team.sport_id].includes(team.year)
+  // )
+  let teamMap = {}
+  //let season_ids = []
+  sport_structure.forEach(structure => {
+    //console.log('structure id', structure.sport_structure_id)
+    teamMap[structure.sport_structure_id] = {}
+    //console.log('current sport seasons',structure.current_sport_seasons)
+    if(structure.current_sport_seasons.length > 0){
+      standings.forEach(team => {
+        //let m = 0
+        //use includes below
+        if(structure.current_sport_seasons.includes(team.sport_season_id)){
+          teamMap[structure.sport_structure_id][team.team_id] = {...team}
+        }
+      })
+    }
   })
+
+ 
+  return teamMap
 }
 
 const updateFantasy = (league_id, res) =>
@@ -528,4 +654,5 @@ module.exports = {
   formatAMPM,
   formatGameDate,
   GetDraftOrder,
+  GetSportSeasonsByLeague
 }

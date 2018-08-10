@@ -67,6 +67,7 @@ export default (state = {}, action={ type: null }) => {
   }  
 
   case C.CREATE_LEAGUE_SUCCESS:
+  case C.UPDATE_LEAGUE_SUCCESS:
   case C.JOIN_LEAGUE_SUCCESS:
   case C.FORGOT_PASSWORD_SUCCESS:
   case C.FORGOT_USERNAME_SUCCESS:

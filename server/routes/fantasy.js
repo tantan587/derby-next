@@ -44,7 +44,7 @@ router.post('/saveownersettings', authHelpers.loginRequired, async (req, res)  =
 router.post('/updateleague', authHelpers.loginRequired, (req, res)  => {
   return updateLeague(req, res)
     .then(() => { 
-      return fantasyHelpers.getLeague(req.body.league_id, req.user.user_id, res, C.CREATE_LEAGUE_SUCCESS)
+      return fantasyHelpers.getLeague(req.body.league_id, req.user.user_id, res, C.UPDATE_LEAGUE_SUCCESS)
     })
     .catch((action) => {  
       handleReduxResponse(res, 400, action)})
@@ -79,6 +79,7 @@ const createLeague = async (req) => {
         total_enrolled: 1,
         private_ind: true,
         scoring_type_id:1
+        //down here it should add in sport structure id. 
       })
       .returning('*')
       .then((response) => {
@@ -154,7 +155,7 @@ const joinLeague = async (req) => {
         league_id: league_id,
         user_id: req.user.user_id,
         owner_id: owner_id,
-        owner_name:  req.body.league_name + '-owner-' + total_enrolled+1,
+        owner_name:  req.body.league_name + '-owner-' + (total_enrolled+1),
         commissioner: false
       })
       .then(() => {
@@ -359,14 +360,14 @@ const handleOwnerSettingsErrors = async (req) => {
     errorText.addError(C.PAGES.CUSTOMIZE_TEAMS,'Owner name must be longer than five characters')
   }
   
-  if (req.body.ownerName && req.body.ownerName.length > 15) {
-    errorText.addError(C.PAGES.CUSTOMIZE_TEAMS,'Owner name must be shorter than fifteen characters')
+  if (req.body.ownerName && req.body.ownerName.length > 20) {
+    errorText.addError(C.PAGES.CUSTOMIZE_TEAMS,'Owner name must be shorter than twenty characters')
   }
   if (ownerNames.includes(req.body.ownerName)) {
     errorText.addError(C.PAGES.CUSTOMIZE_TEAMS,'Owner name must be unique')
   }
   if (silkColors.includes(req.body.avatar.primary + ';' + req.body.avatar.secondary)) {
-    errorText.addError(C.PAGES.CUSTOMIZE_TEAMS,'This color combo has already been chosen. You must choose a unique set of colors.')
+    errorText.addError(C.PAGES.CUSTOMIZE_TEAMS,'Someone else has already chosen this color combo. You must choose a unique set of colors.')
   }
    
   if (errorText.foundError()) {

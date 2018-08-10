@@ -21,22 +21,31 @@ router.post('/savedraft', authHelpers.loginRequired, (req, res)  => {
       handleResponse(res, 500, err) })
 })
 
+router.post('/updateDraftOrder', authHelpers.loginRequired, (req, res)  => {
+  return knex.withSchema('draft')
+    .table('settings')
+    .where('league_id', req.body.league_id)
+    .update('draft_position', JSON.stringify(req.body.draftOrder))
+    .then(() => { 
+      handleReduxResponse(res, 200, {type:C.UPDATE_DRAFT_ORDER, draftOrder:req.body.draftOrder})})
+    .catch((err) => { 
+      console.log(err)
+      handleResponse(res, 500,err)})
+})
+
 const getDraft = async (room_id, owner_id) =>
 {
-  const strTeams = `select b.team_id from draft.settings a, fantasy.team_points b, fantasy.leagues c
-where a.league_id = c.league_id and c.scoring_type_id = b.scoring_type_id and a.room_id = '` + room_id + '\''
 
   const strOwners = `select b.owner_id from draft.settings a, fantasy.owners b
   where a.league_id = b.league_id and a.room_id = '` + room_id + '\''
 
-  let teams = await knex.raw(strTeams)
   let owners = await knex.raw(strOwners)
   let rules = await draftHelpers.GetDraftRules(room_id)
   let teamMap = await draftHelpers.GetTeamMap(room_id)
   let results = await knex.withSchema('draft').table('results')
     .where('room_id', room_id)
     .orderBy('server_ts')
-  return assembleDraft(teams.rows,owners.rows, results, owner_id, rules, teamMap)
+  return assembleDraft(owners.rows, results, owner_id, rules, teamMap)
 }
 
 const handleReduxResponse =(res, code, action) => {
@@ -47,7 +56,7 @@ const handleResponse = (res, code, statusMsg) => {
   res.status(code).json({status: statusMsg})
 }
 
-const assembleDraft = (teams,owners, results, my_owner_id, rules, teamMap) =>{
+const assembleDraft = (owners, results, my_owner_id, rules, teamMap) =>{
   let mode = 'pre'
   let pick = 0
   let ownersMap = {}
@@ -55,7 +64,7 @@ const assembleDraft = (teams,owners, results, my_owner_id, rules, teamMap) =>{
   let queue = []
   let messages = []
   owners.map(x => ownersMap[x.owner_id] = [])
-  let allTeams = teams.map(x => x.team_id)
+  let allTeams = Object.keys(teamMap).filter(x => x > 99999)
   let availableTeams = [].concat(allTeams)
   let eligibleTeams = [].concat(allTeams)
   results.forEach(element => {
@@ -63,7 +72,6 @@ const assembleDraft = (teams,owners, results, my_owner_id, rules, teamMap) =>{
     case 'STATE':
     {
       mode = element.action.mode ? element.action.mode : mode
-      console.log(mode)
       break
     }
     case 'PICK':
@@ -94,7 +102,7 @@ const assembleDraft = (teams,owners, results, my_owner_id, rules, teamMap) =>{
   queue = queue.filter(team => {
     return !draftedTeams.includes(team)
   })
-
+  
   ownersMap[my_owner_id].forEach(x => {
     let resp = draftHelpers.FilterDraftPick(x.teamId, teamMap, rules, eligibleTeams, queue)
     eligibleTeams = resp.eligibleTeams

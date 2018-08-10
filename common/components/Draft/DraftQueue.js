@@ -1,64 +1,15 @@
 import React from 'react'
-import { withStyles } from '@material-ui/core/styles'
-import List from '@material-ui/core/List'
-import ListItem from '@material-ui/core/ListItem'
-import ListItemText from '@material-ui/core/ListItemText'
 import Typography from '@material-ui/core/Typography'
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
-import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
 import ReorderIcon from '@material-ui/icons/Reorder'
-import { Scrollbars } from 'react-custom-scrollbars'
+//import { Scrollbars } from 'react-custom-scrollbars'
+import SortableList from '../SortableList'
+import Card from '@material-ui/core/Card'
+import Grid from '@material-ui/core/Grid'
+import ContainerDimensions from 'react-container-dimensions'
 
-const styles = theme => ({
-  button : {
-    backgroundColor: theme.palette.secondary.A700,
-    color: theme.palette.secondary.A100,
-  },
-  banner : {
-    color: theme.palette.secondary[100],
-    backgroundColor: theme.palette.primary[500],
-  }
-})
-
-const reorder = (list, startIndex, endIndex) => {
-  const result = Array.from(list)
-  const [removed] = result.splice(startIndex, 1)
-  result.splice(endIndex, 0, removed)
-
-  return result
-}
-
-// using some little inline style helpers to make the app look okay
-const grid = 10
-const getItemStyle = (draggableStyle, isDragging) => ({
-  // some basic styles to make the items look a bit nicer
-  //userSelect: 'none',
-  // //padding: grid * 2,
-  margin: `0px 20px ${grid}px ${grid}px`,
-
-  height:40,
-  // paddingTop:-10,
-
-  // // change background colour if dragging
-  // background: isDragging ? '#333333' : '#333333',
-  backgroundColor: '#333333' ,
-  // styles we need to apply on draggables
-  ...draggableStyle,
-})
-const getListStyle = isDraggingOver => ({
-  background: isDraggingOver ? 'black' : 'black',
-  //padding: grid,
-  //width: 250,
-  margin:'auto'
-})
 
 export default class DraftQueue extends React.Component {
-
-  constructor(props) {
-    super(props)
-    this.onDragEnd = this.onDragEnd.bind(this)
-  }
 
   onClose = (item) =>
   {
@@ -68,89 +19,62 @@ export default class DraftQueue extends React.Component {
     this.props.updateOrder(result)
   }
 
-  onDragEnd(result) {
-    // dropped outside the list
-    if (!result.destination) {
-      return
-    }
+  onUpdateOrder= (start, end) => {
 
-    const items = reorder(
-      this.props.items,
-      result.source.index,
-      result.destination.index
-    )
+    let {items} = this.props
+    const [removed] = items.splice(start, 1)
+    items.splice(end, 0, removed)
+    this.props.updateOrder(items) 
+  }
 
-    this.props.updateOrder(items)
+  Card = (team,item) => {
+
+    return (
+      <Card style={{height: 40, width:'90%', marginLeft:'5%',  backgroundColor:'#555555'}}>
+        <ContainerDimensions>
+          { ({width}) => 
+          {return <Grid container style={{flexGrow:1, height:'100%'}}>
+            <Grid item xs={12}>
+              <Grid
+                container
+                style={{height:'100%'}}
+                alignItems={'center'}
+                direction={'row'}
+                justify={'flex-start'}
+              >
+                <Grid item xs={2}>
+                  <ReorderIcon style={{width:'auto',height:20, marginTop:3, color:'white'}}/>
+                </Grid>
+                <Grid item xs={8}>
+                  <Typography variant="body2" style={{ color: '#FFFFFF', 
+                    fontSize:team.team_name.length > 13 ? team.team_name.length > 22 ? width*0.05 : width*0.06 :  width*0.08,}}>
+                    {team.team_name}
+                  </Typography>
+                </Grid>
+                <Grid item xs={2}>
+                  <CloseIcon onClick={() => this.onClose(item)} style={{width:16,height:16,marginTop:4, color:'white'}}/>
+                </Grid>
+              </Grid>
+            </Grid>
+          </Grid>
+          }}
+        </ContainerDimensions>
+
+      </Card>)
   }
 
   // Normally you would want to split things out into separate components.
   // But in this example everything is just done in one place for simplicity
   render() {
     const {items, teams} = this.props
+    let queueList = items ? items.map((item) => {return {id:item, card:
+      this.Card(teams[item],item)}}) : []
     return (
-      <DragDropContext onDragEnd={this.onDragEnd}>
-        <Droppable droppableId="droppable">
-          {(provided, snapshot) => (
-            <List style={{maxHeight: 290, overflow: 'auto'}}>
-              <Scrollbars autoHide style={{ height: 290 }}>
-                <div
-                  ref={provided.innerRef}
-                  style={getListStyle(snapshot.isDraggingOver)}
-                >
-                  {items && items.map(item => (
-                    <Draggable key={item} draggableId={item}>
-                      {(provided, snapshot) => (
-                        <div>
-                          <div
-                            ref={provided.innerRef}
-                            style={getItemStyle(
-                              provided.draggableStyle,
-                              snapshot.isDragging)}
-                            {...provided.dragHandleProps}
-                          >
-                            <ListItem style={{display: 'flex'}}>
-                              <IconButton
-                                key="drag"
-                                aria-label="Close"
-                                style={{color:'white', marginTop:-14, padding:0, marginLeft:-35}}
-                              >
-                                <ReorderIcon style={{width:20,height:20}}/>
-                              </IconButton>
-                              <ListItemText style={{marginTop:-15, padding:0, marginLeft:-10}} disableTypography primary=
-                                {<Typography variant="body2" style={{ color: '#FFFFFF' }}>
-                                  {teams[item].team_name}
-                                </Typography>}  />
-
-                              <IconButton
-                                key="close"
-                                aria-label="Close"
-                                style={{color:'white', marginTop:-15, marginLeft:-30, padding:0,marginRight:-30, float:'right'}}
-                                //className={classes.close}
-                                onClick={() => this.onClose(item)}
-                              >
-                                <CloseIcon style={{width:16,height:16}}/>
-                              </IconButton>
-
-                            </ListItem>
-                          </div>
-                          {provided.placeholder}
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
-                </div>
-              </Scrollbars>
-            </List>
-          )}
-        </Droppable>
-      </DragDropContext>
+      <div style={{maxHeight:290, marginTop:10}}>
+        <SortableList items={queueList} updateOrder={this.onUpdateOrder} maxHeight={290} marginBottom={10}/> 
+      </div>
+      
     )
   }
 }
-
-// DraftQueue.propTypes = {
-//   classes: PropTypes.object.isRequired,
-// }
-
-// export default withStyles(styles)(DraftQueue)
+      

@@ -51,7 +51,7 @@ class Scoreboard extends Component {
   render() {
     const {classes, scoreData} = this.props
     const {date} = this.state
-    const scoreCards = scoreData.map(x => <ScoreCard useRightSide={false} scoreboardData={x}/>)
+    const scoreCards = scoreData.map((x,i) => <ScoreCard key={i} useRightSide={false} scoreboardData={x}/>)
  
     return (
       <div className={classes.container}>

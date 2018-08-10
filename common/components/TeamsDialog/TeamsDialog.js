@@ -4,18 +4,14 @@ import Dialog from '@material-ui/core/Dialog'
 import Tabs from '@material-ui/core/Tabs'
 import Tab from '@material-ui/core/Tab'
 import { withStyles } from '@material-ui/core/styles'
-
 import { handleCloseDialog } from '../../actions/dialog-actions'
-import { clickedOneTeam } from '../../actions/sport-actions'
 import { organizeData } from './tableData'
-
 import DialogHead from './DialogHead'
 import DialogInfo from './DialogInfo'
-import DialogTable from './DialogTable/DialogTable'
 import DialogLastFive from './DialogTable/DialogLastFive'
 import DialogNextFive from './DialogTable/DialogNextFive'
 
-const styles = theme => {
+const styles = () => {
   return {
     root: {
       minHeight: 48,
@@ -46,11 +42,32 @@ class TeamsDialog extends Component {
 
   render() {
     const { value } = this.state
-    const { teamsDialog, handleCloseDialog, oneTeam, classes, teams } = this.props
+    const { teamsDialog, handleCloseDialog, oneTeam, activeLeague, classes, teams } = this.props
     const { open } = teamsDialog
     const { lastFive, nextFive } = oneTeam
+    console.log(1, oneTeam)
 
-    // organizeData({ oneTeam, lastFive, nextFive, teams })
+    if (!oneTeam.team_id)
+    {
+      return <div/>
+    }
+    let teamId = oneTeam.team_id
+    oneTeam.team_name = teams[teamId].team_name
+    if(activeLeague.teams[teamId])
+    {
+      let team = activeLeague.teams[teamId]
+      let owner = activeLeague.owners.find(x => x.owner_id === team.owner_id)
+      oneTeam.owner = owner ? owner.owner_name : 'Not Owned'
+      oneTeam.points = team.points
+      oneTeam.proj_points = team.proj_points
+      oneTeam.ranking = team.ranking  + '/' + Object.keys(activeLeague.teams).length
+    }
+    if(teams[teamId])
+    {
+      let team = teams[teamId]
+      oneTeam.record = team.wins + '-' + team.losses + (team.ties > 0 ? '-' + team.ties : '')
+      oneTeam.projected = Math.round(team.projected.wins) + '-' + Math.round(team.projected.losses) + (team.projected.ties > 0 ? '-' + team.projected.ties : '')
+    }
 
     return (open && lastFive && nextFive ?
       <Dialog
@@ -145,8 +162,9 @@ const mapStateToProps = state => ({
   teamsDialog: state.teamsDialog,
   oneTeam: state.oneTeam,
   teams: state.teams,
+  activeLeague : state.activeLeague
 })
 
-const mapDispatchToProps = { handleCloseDialog, clickedOneTeam }
+const mapDispatchToProps = { handleCloseDialog }
 
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(TeamsDialog))
