@@ -52,6 +52,25 @@ const standingsBySport = async (knex, sportName, api, promiseToGet, pull_paramet
     return {team_id: team.team_id, wins: team.Wins, losses: team.Losses, ties: ties, year: year, sport_season_id: sport_season_id}
   })
 
+  if(sportName === 'EPL'){
+    if(newStandings.every(team => team.wins+team.losses+team.ties === 38)){
+      newStandings.sort(function(a,b){return b.wins*3+b.ties - a.wins*3 - a.ties})
+      let order = 1
+      // let playoff_standings = newStandings.map(team =>{
+      //   let status = order === 1 ? 6 : order === 2 ? 5 : order<5 ? 4 : 2
+      //   order++
+      //   return {team_id: team.team_id, playoff_status: status}
+      // })
+      await asyncForEach(newStandings, async (team) => {
+        let status = order === 1 ? 6 : order === 2 ? 5 : order<5 ? 4 : 2
+        order++
+        await knex('sports.playoff_standings')
+          .where('team_id', team.team_id)
+          .andWhere('year', year)
+          .update('playoff_status', status)
+      })
+    }
+  }
   return newStandings
 }
 
@@ -71,15 +90,16 @@ const getCFBstandings = async (knex, sportName, api, promiseToGet, pull_paramete
   
 
   let today = new Date()
-  if(true){
-    return standings
-  }
-  //below needs to be fixed: for now, just return standings
-  else if(playoff_pull[0].start_pull_date>today){
+  //if pulling it in the middle of the season, could maybe use this: 
+  // let current_week = await db_helpers.getFdata(knex, sportName, api, 'getCurrentWeekPromise') 
+  // if(current_week !== '' && current_week < 16){ 
+
+  //this is how it should be when first running it
+  if(playoff_pull[0].start_pull_date>today){
     return standings
   }else{
     //pull, and then make readable, playoff games (including bowl games)
-    let non_parse_games = await db_helpers.getFdata(knex, sportName, api, 'getGamesByWeekPromise', pull_parameter, 1)
+    let non_parse_games = await db_helpers.getFdata(knex, sportName, api, 'getGamesByWeekPromise', playoff_pull[0].api_pull_parameter, 1)
     let playoff_games = JSON.parse(non_parse_games)
     let teamIdMap = await db_helpers.getTeamIdMap(knex, '105')
 
@@ -107,6 +127,7 @@ const getCFBstandings = async (knex, sportName, api, promiseToGet, pull_paramete
           standings_by_team_id[results[0]].wins--
           standings_by_team_id[results[1]].losses--
           bowl_wins.push({team_id: results[0], bowl_wins: 1})
+          bowl_wins.push({team_id: results[1], bowl_wins: 0})
         }
       }
       //first - check to see if games was played in a playoff stadium
