@@ -29,7 +29,6 @@ async function updateStandings(exitProcess)
 {
   let data = await filtered_fantasy_standings_data()
 
-
   let result =  await db_helpers.updateStandings(knex, data)
   console.log('Number of Standings Updated: ' + result)
   await fantasyHelpers.updateTeamPoints()
@@ -79,7 +78,6 @@ const getCFBstandings = async (knex, sportName, api, promiseToGet, pull_paramete
   //check if current week is after the start of the post season, or is null. 
   //This could also be done with dates and season status table, as had been discussed
   //table hasn't yet been created
-
   //need to use this 
   let playoff_pull = 
     await knex('sports.sport_season')

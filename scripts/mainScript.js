@@ -2,23 +2,27 @@ const script1 = require('./updatePlayoffsSchedule')
 const script2 = require('./updateSchedule')
 const script3 = require('./updatePlayoffStandings')
 const script4 = require('./updateStandings')
-const script5 = require('./tableReset')
-const script6 = require('./createSports/createAllSports')
+const script5 = require('./updateDayOfSchedule')
+const scriptReset = require('./tableReset')
+const scriptAll = require('./createSports/createAllSports')
 const asyncForEach = require('./asyncForEach')
 
 const runUpdate = async () => {
   await asyncForEach(process.argv, async (val,i) => {
     console.log('next script: '  +val)
     let exitProcessInd = process.argv.length-1 === i
-    switch (val) {
+
+    let arr = val.split('=')
+
+    switch (arr[0]) {
     case 'reset':
     {
-      await script5.resetTables(exitProcessInd)
+      await scriptReset.resetTables(exitProcessInd)
       break
     }
     case 'allSports':
     {
-      await script6.createSports(exitProcessInd)
+      await scriptAll.createSports(exitProcessInd)
       break
     }
     case '1':
@@ -39,6 +43,11 @@ const runUpdate = async () => {
     case '4':
     {
       await script4.updateStandings(exitProcessInd)
+      break
+    }
+    case '5':
+    {
+      await script5.updateBoxScoreJSON(exitProcessInd, arr[1])
       break
     }
     default:

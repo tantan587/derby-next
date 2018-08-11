@@ -271,7 +271,7 @@ methods.updateScheduleFromBoxScore = (knex, data) => {
     return 0
 }
 
-methods.updateBowlWins = async (knex, bowl_wins, playoff_wins) => {
+methods.updateBowlWins = async (knex, bowl_wins, playoff_wins, sport_season_id) => {
   let results = 
     await knex
       .withSchema('sports')
@@ -285,16 +285,18 @@ methods.updateBowlWins = async (knex, bowl_wins, playoff_wins) => {
 
   bowl_wins.forEach(teamRec => {
     if(oldStandings[teamRec.team_id].bowl_wins !== teamRec.bowl_wins)  
-      updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id, teamRec.sport_season_id, 'bowl_wins', teamRec.bowl_wins, true )))
+    {
+      updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id, sport_season_id, 'bowl_wins', teamRec.bowl_wins, true )))
+    }
   })
 
   playoff_wins.forEach(teamRec => {
     if(oldStandings[teamRec.team_id].playoff_status !== teamRec.playoff_status)  
-      updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id, teamRec.sport_season_id, 'playoff_status', teamRec.playoff_status, true )))
+      updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id, sport_season_id, 'playoff_status', teamRec.playoff_status, true )))
     if(oldStandings[teamRec.team_id].playoff_wins !== teamRec.playoff_wins)  
-      updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,teamRec.sport_season_id, 'playoff_wins', teamRec.playoff_wins, true )))
+      updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,sport_season_id, 'playoff_wins', teamRec.playoff_wins, true )))
     if(oldStandings[teamRec.team_id].playoff_losses !== teamRec.playoff_losses)  
-      updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,teamRec.sport_season_id,'playoff_losses', teamRec.playoff_losses, true )))
+      updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id,sport_season_id,'playoff_losses', teamRec.playoff_losses, true )))
   })
 
   if (updateList.length > 0)

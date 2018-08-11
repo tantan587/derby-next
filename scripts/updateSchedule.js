@@ -16,7 +16,6 @@ const create_data = async () => {
     let sport = sport_keys[sport_id]
     data.push(...await getSchedInfo(knex, sport.sport_name, sport.api, sport.schedulePromiseToGet, season.api_pull_parameter, season.sport_season_id))
   })
-
   return data
 }
 
