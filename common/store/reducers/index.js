@@ -29,6 +29,6 @@ export default combineReducers({
   updateTime : updateTimeReducer,
   liveGames : liveGamesReducer,
   contentFilter : contentFilterReducer,
-  sportSeasons: sportSeasonsReducer
+  sportSeasons: sportSeasonsReducer,
   invites: invitesReducer,
 })
