@@ -45,6 +45,10 @@ const runUpdate = async () => {
       await script4.updateStandings(exitProcessInd)
       break
     }
+    //'active':
+    //'near':
+    //'previous',102 
+    //'specific',1634
     case '5':
     {
       await script5.updateBoxScoreJSON(exitProcessInd, arr[1])

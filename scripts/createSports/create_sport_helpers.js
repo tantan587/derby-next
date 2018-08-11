@@ -37,11 +37,11 @@ const getSeasonData = async (knex, sport_id) => {
   return {regular: regular_sport_seasons, playoff: playoff_sport_seasons, structures: active_sport_structure}
 }
 
-const createCollegeSport = async (knex, sport_id, sportName, api, promiseToGet, exit = false) => {
+const createCollegeSport = async (knex, sport_id, sportName, api, promiseToGet) => {
   let teamInfo = []
   let standings = []
   let playoff_standings = []
-  let teamPoints = []
+  //let teamPoints = []
   let teams_and_info = await db_helpers.createSportData(knex, sport_id, sportName, api, promiseToGet)
   let teamIdMap = teams_and_info[1]
   let college_teams = teams_and_info[0]
@@ -69,30 +69,22 @@ const createCollegeSport = async (knex, sport_id, sportName, api, promiseToGet, 
     // season_data.structures.forEach(structure => {
     //   teamPoints.push({team_id: team_id, reg_points: 0, playoff_points: 0, bonus_points: 0, scoring_type_id: structure.scoring_type_id, sport_structure_id: structure.sport_structure_id})
     // })
-})
+  })
 
 
-  db_helpers.insertIntoTable(knex, 'sports', 'team_info', teamInfo)
-    .then(() =>
-    {
-      db_helpers.insertIntoTable(knex, 'sports', 'standings', standings)
-        .then(() =>
-        {
-          db_helpers.insertIntoTable(knex, 'sports', 'playoff_standings', playoff_standings)
-            .then(()=> {
-              console.log(`${sportName}: ${teamInfo.length} teams added`)
-              exit ? process.exit() : 0
-            })
-        })
-    }) 
+  await db_helpers.insertIntoTable(knex, 'sports', 'team_info', teamInfo)
+  await db_helpers.insertIntoTable(knex, 'sports', 'standings', standings)
+  await db_helpers.insertIntoTable(knex, 'sports', 'playoff_standings', playoff_standings) 
+  console.log(`${sportName}: ${teamInfo.length} teams added`)
+
 }
 
 //this is for NBA, NHL, MLB, NFL
-const createProfessionalSport = async (knex, sport_id, sportName, api, promiseToGet, exit = false) => {
+const createProfessionalSport = async (knex, sport_id, sportName, api, promiseToGet) => {
   let teamInfo = []
   let standings = []
   let playoff_standings = []
-  let teamPoints = []
+  //let teamPoints = []
   let teams_and_info = await db_helpers.createSportData(knex, sport_id, sportName, api, promiseToGet)
   let teamIdMap = teams_and_info[1]
   let professional_teams = teams_and_info[0]
@@ -123,32 +115,23 @@ const createProfessionalSport = async (knex, sport_id, sportName, api, promiseTo
 
   })
 
+  await db_helpers.insertIntoTable(knex, 'sports', 'team_info', teamInfo)
+  await db_helpers.insertIntoTable(knex, 'sports', 'standings', standings)
+  await db_helpers.insertIntoTable(knex, 'sports', 'playoff_standings', playoff_standings)
+  console.log(`${sportName}: ${teamInfo.length} teams added`)
 
-
-  db_helpers.insertIntoTable(knex, 'sports', 'team_info', teamInfo)
-    .then(() =>
-    {
-      db_helpers.insertIntoTable(knex, 'sports', 'standings', standings)
-        .then(() =>
-        {
-          db_helpers.insertIntoTable(knex, 'sports', 'playoff_standings', playoff_standings)
-            .then(()=> {
-              console.log(`${sportName}: ${teamInfo.length} teams added`)
-              exit ? process.exit() : 0
-            })
-        })
-    }) 
 }
 
 //eventually, below needs to pull from each and every season. A change needed for 2019/20
-const createSoccerLeague = async (knex, sport_id, sportName, api, promiseToGet, season_id_1, season_id_2, exit = false) => {
+const createSoccerLeague = async (knex, sport_id, sportName, api, promiseToGet, season_id_1, season_id_2) => {
   //need to pull in data from 2 seasons, since teams get promoted and relegated.
   //upcoming season is season 1 - currently, 2018/19
   //last season is season 2 - 2017/18
+  
   let teamInfo = []
   let standings = []
   let playoff_standings = []
-  let teamPoints = []
+  //let teamPoints = []
   let teams_and_info = await db_helpers.createSportData(knex, sport_id, sportName, api, promiseToGet, season_id_1)
   let teams_2 = await db_helpers.getFdata(knex, sportName, api, promiseToGet, season_id_2)
   let soccer_teams_2 = JSON.parse(teams_2)
@@ -159,12 +142,11 @@ const createSoccerLeague = async (knex, sport_id, sportName, api, promiseToGet, 
   let premier_table = []
   let team_conference = confMap[sportName]
 
-  let season_data = await getSeasonData(knex, sport_id)
+  //let season_data = await getSeasonData(knex, sport_id)
   //check out what the pull is, and see if it has the year. After, push each season into its corresponding standings
   
   soccer_teams.forEach(team => {
     let team_id = teamIdMap[team.Team.GlobalTeamId]
-    console.log(team_id)
     season_1_team_ids.push(team_id)
         
     teamInfo.push({sport_id: sport_id, team_id: team_id, key: team.Team.Key, city: team.Team.City, 
@@ -196,33 +178,22 @@ const createSoccerLeague = async (knex, sport_id, sportName, api, promiseToGet, 
         global_team_id: team.Team.GlobalTeamId})
       
       premier_table.push({team_id: team_id, division_1: false})
-      }
+    }
 
-      standings.push({team_id: team_id, wins : 0, losses: 0, ties: 0, year: 2018, sport_season_id: 19})
+    standings.push({team_id: team_id, wins : 0, losses: 0, ties: 0, year: 2018, sport_season_id: 19})
             
-      playoff_standings.push({team_id: team_id, playoff_wins : 0, playoff_losses: 0, byes: 0, bowl_wins: 0, playoff_status: 1, year: 2018, sport_season_id: 21})
+    playoff_standings.push({team_id: team_id, playoff_wins : 0, playoff_losses: 0, byes: 0, bowl_wins: 0, playoff_status: 1, year: 2018, sport_season_id: 21})
     
   })
 
 
+  await db_helpers.insertIntoTable(knex, 'sports', 'team_info', teamInfo)
+  await db_helpers.insertIntoTable(knex, 'sports', 'standings', standings)   
+  await db_helpers.insertIntoTable(knex, 'sports', 'playoff_standings', playoff_standings)        
+  await db_helpers.insertIntoTable(knex, 'sports', 'premier_status', premier_table)
 
+  console.log(`${sportName}: ${teamInfo.length} teams added`)
 
-
-  db_helpers.insertIntoTable(knex, 'sports', 'team_info', teamInfo)
-    .then(() => {
-      db_helpers.insertIntoTable(knex, 'sports', 'standings', standings)
-        .then(() => {
-          db_helpers.insertIntoTable(knex, 'sports', 'playoff_standings', playoff_standings)
-            .then(()=> {
-              db_helpers.insertIntoTable(knex, 'sports', 'premier_status', premier_table)
-                .then(()=>{
-                  console.log(`${sportName}: ${teamInfo.length} teams added`)
-                  exit ? process.exit() : 0
-                })
-
-            })
-        })
-    }) 
 }
 
 module.exports = {createCollegeSport, createProfessionalSport, createSoccerLeague}
