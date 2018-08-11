@@ -1,4 +1,4 @@
-const script1 = require('./UpdateSchedulePlayoffs')
+const script1 = require('./updatePlayoffsSchedule')
 const script2 = require('./updateSchedule')
 const script3 = require('./updatePlayoffStandings')
 const script4 = require('./updateStandings')
@@ -8,6 +8,7 @@ const asyncForEach = require('./asyncForEach')
 
 const runUpdate = async () => {
   await asyncForEach(process.argv, async (val,i) => {
+    console.log('next script: '  +val)
     let exitProcessInd = process.argv.length-1 === i
     switch (val) {
     case 'reset':

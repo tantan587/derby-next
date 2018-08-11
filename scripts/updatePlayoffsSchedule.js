@@ -20,7 +20,7 @@ const create_data = async () => {
 
   return data
 }
-async function createSchedule()
+const createSchedule = async (exitProcess) => 
 {
   let data = await create_data()
   // let CBB_schedPO = await getSchedInfo(knex, 'CBB', 'CBBv3ScoresClient', 'getTournamentHierarchyPromise','2018POST')
@@ -35,14 +35,15 @@ async function createSchedule()
   db_helpers.updateSchedule(knex, data)
     .then(result => {
       console.log('Number of Playoff Schedules Updated: ' + result)
-      //process.exit()
+      if(exitProcess)
+        process.exit()
     })
 }
 
 
 
 const getSchedInfo = async (knex, sportName, api, promiseToGet, year, sport_season_id) => {
-  let schedData = await db_helpers.getFdata (knex, sportName, api, promiseToGet, year)
+  let schedData = await db_helpers.getFdata(knex, sportName, api, promiseToGet, year)
   let sport_id = await db_helpers.getSportId(knex,sportName)
   let teamIdMap = await db_helpers.getTeamIdMap(knex, sport_id)
   let cleanSched = JSON.parse(schedData)
@@ -91,24 +92,26 @@ const getSchedInfo = async (knex, sportName, api, promiseToGet, year, sport_seas
     })
     let standings_for_insert = Object.keys(playoff_standings).map(key => playoff_standings[key])
     return db_helpers.updatePlayoffStandings(knex, standings_for_insert)
-    .then(()=>{
-      return schedInfo
-    })
+      .then(()=>{
+        return schedInfo
+      })
   }else if(sportName==='MLB' && schedInfo.length>0){
     //this isn't doing anything yet. Will eventually be used to find playoff byes for baseball
-      let non_byes = [schedInfo[0].home_team_id, schedInfo[0].away_team_id, schedInfo[1].home_team_id, schedInfo[1].away_team_id]
-      let playoff_teams = await knex('sports.playoff_standings').where('team_id',"<",103999).andWhere('team_id',">",103000).andWhere('playoff_status',">",2).select('team_id')
-      let playoff_team_ids = playoff_teams.map(team => team.team_id)
-      let byes = []
-      playoff_team_ids.forEach(team =>{
-        if(!(non_byes.includes(team))){
-          byes.push(team)
-        }
-      })
-    }
+    let non_byes = [schedInfo[0].home_team_id, schedInfo[0].away_team_id, schedInfo[1].home_team_id, schedInfo[1].away_team_id]
+    let playoff_teams = await knex('sports.playoff_standings').where('team_id','<',103999).andWhere('team_id','>',103000).andWhere('playoff_status','>',2).select('team_id')
+    let playoff_team_ids = playoff_teams.map(team => team.team_id)
+    let byes = []
+    playoff_team_ids.forEach(team =>{
+      if(!(non_byes.includes(team))){
+        byes.push(team)
+      }
+    })
+  }
   //console.log('here')
   //console.log(stadiumInfo[0])
   return schedInfo
-  }
+}
 
-createSchedule()
+module.exports = {
+  createSchedule
+}

@@ -13,11 +13,11 @@ const sport_json = require('./scheduleJsons')
 //this takes a while, because it needs to pull every date individually. So for baseball: it is over 120+ games
 //it cannot be done pulling all of it
 const updateBoxScoreJSON = async () => {
-    // let today_games = await pullTodaysGamesFromKnex()
-    // let games_by_sport = arrangeGamesBySport(today_games)
+    let today_games = await pullTodaysGamesFromKnex()
+    let games_by_sport = arrangeGamesBySport(today_games)
     
-    let sport_games = await previousGamesFromKnexBySport(106)
-    let games_by_sport = arrangeGamesBySport(sport_games)
+    // let sport_games = await previousGamesFromKnexBySport(106)
+    // let games_by_sport = arrangeGamesBySport(sport_games)
 
     let cleanGames = await pullGamesFromFantasyData(games_by_sport)
 
@@ -67,8 +67,8 @@ const pullTodaysGamesFromKnex = async () => {
     let now = new Date()
     let dayCount = getDayCount(now)
     let today_games = await knex('sports.schedule')
-        .where('day_count', "<", dayCount + 1)
-        .whereNotIn('status', ['Final', 'Postponed', 'Canceled', 'F/OT, F/SO'])
+        .where('day_count', '<', dayCount + 1)
+        .whereNotIn('status', ['Final', 'Postponed', 'Canceled', 'F/OT', 'F/SO'])
         .whereIn('sport_id', [101,103,104,105,106])
     return today_games
 }

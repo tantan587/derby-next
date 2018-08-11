@@ -144,7 +144,6 @@ methods.createStandingsData = async (knex, sportName, api, promiseToGet, year) =
   let teamIdMap = await methods.getTeamIdMap(knex, sport_id)
   
   let standInfo = []
-  console.log(sportName)
   if(sportName === 'CFB'||sportName ==='CBB'){
     cleanStand.forEach(team => {
       if(teamIdMap[team.GlobalTeamID]!== undefined){
@@ -264,12 +263,12 @@ methods.updateScheduleFromBoxScore = (knex, data) => {
   })
   if(updateList.length>0)
   {
-      return Promise.all(updateList)
+    return Promise.all(updateList)
       .then(()=>{
-          return updateList.length
+        return updateList.length
       })
   }else
-      return 0
+    return 0
 }
 
 methods.updateBowlWins = async (knex, bowl_wins, playoff_wins, sport_season_id) => {
