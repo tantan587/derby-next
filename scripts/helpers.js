@@ -271,7 +271,7 @@ methods.updateScheduleFromBoxScore = (knex, data) => {
     return 0
 }
 
-methods.updateBowlWins = async (knex, bowl_wins, playoff_wins, sport_season_id) => {
+methods.updateBowlWins = async (knex, bowl_wins, playoff_wins) => {
   let results = 
     await knex
       .withSchema('sports')
@@ -450,7 +450,7 @@ methods.newUpdateOneResultRow = (knex, global_game_id, row, from_schedule_pull =
   if(from_schedule_pull){
     let box_score_sports = [101, 103, 104, 105, 106]
     if(box_score_sports.includes(row.sport_id)){
-      delete row[game_extra]
+      delete row['game_extra']
     } 
   }
   return knex.transaction(function (t) {
