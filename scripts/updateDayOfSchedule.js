@@ -68,7 +68,7 @@ const pullTodaysGamesFromKnex = async () => {
     let dayCount = getDayCount(now)
     let today_games = await knex('sports.schedule')
         .where('day_count', "<", dayCount + 1)
-        .whereNotIn('status', ['Final', 'Postponed', 'Canceled', 'F/OT, F/SO'])
+        .whereNotIn('status', ['Final', 'Postponed', 'Canceled', 'F/OT', 'F/SO'])
         .whereIn('sport_id', [101,103,104,105,106])
     return today_games
 }

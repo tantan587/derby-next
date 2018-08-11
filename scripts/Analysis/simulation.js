@@ -342,7 +342,7 @@ const simulateEPL = (all_games_list, teams, points, simulations = 10) => {
                 game.play_EPL_game()})
                 
                 //sort by EPL points
-                epl_teams.sort(function(a,b){return 2*b.wins+b.ties-2*a.wins-a.ties})
+                epl_teams.sort(function(a,b){return 3*b.wins+b.ties-3*a.wins-a.ties})
                 
                 //EPL does not have playoffs, just a top 4 that qualify for champions league
                 let playoffs = epl_teams.slice(0,4)
