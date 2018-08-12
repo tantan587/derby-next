@@ -117,7 +117,7 @@ class TopNavHome extends React.Component {
 
           </Toolbar>
           <Toolbar>
-            <div  className={classes.flex}>
+            <div  className={classes.flexBottom}>
               {this.setHoverToButton('league', 0, user.loggedIn)}
               {this.setHoverToButton('default', 1, user.loggedIn, '/participate', 'Create/Join League')}
               {this.setHoverToButton('default', 2, user.loggedIn, '/rules', 'Rules')}
