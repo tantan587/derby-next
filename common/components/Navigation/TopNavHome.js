@@ -16,7 +16,7 @@ import {toggleMobileNav, setMobileNavVariant} from '../../actions/status-actions
 const styles = (theme) => ({
   root: {
     //flexGrow: 1,
-    backgroundColor:'white', 
+    backgroundColor:'white',
     textAlign: 'center'
   },
   flexTop: {
@@ -113,13 +113,17 @@ class TopNavHome extends React.Component {
                 {/* <AdminButton color='#707070' backgroundColor='#ffffff'/> */}
               </div>
             }
+            <br/>
+
           </Toolbar>
-          <Toolbar className={classes.flexBottom}>
-            {this.setHoverToButton('league', 0, user.loggedIn)}  
-            {this.setHoverToButton('default', 1, user.loggedIn, '/participate', 'Create/Join League')}
-            {this.setHoverToButton('default', 2, user.loggedIn, '', 'Rules')}
-            {this.setHoverToButton('default', 3, user.loggedIn, '', 'FAQ')}
-            {this.setHoverToButton('default', 4, user.loggedIn, '/scoreboard', 'Scoreboard')}
+          <Toolbar>
+            <div  className={classes.flex}>
+              {this.setHoverToButton('league', 0, user.loggedIn)}
+              {this.setHoverToButton('default', 1, user.loggedIn, '/participate', 'Create/Join League')}
+              {this.setHoverToButton('default', 2, user.loggedIn, '/rules', 'Rules')}
+              {this.setHoverToButton('default', 3, user.loggedIn, '', 'FAQ')}
+              {this.setHoverToButton('default', 4, user.loggedIn, '/scoreboard', 'Scoreboard')}
+            </div>
           </Toolbar>
         </AppBar>
       </div>
