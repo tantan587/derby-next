@@ -104,32 +104,58 @@ const getSchedule = (str) => {
   return knex.raw(str)
     .then(result =>
     {
-      const scheduleRows = []
+      let scheduleRows = []
       if (result.rows.length > 0)
       {
-        result.rows.map(row =>
-        {
-          scheduleRows.push({
-            global_game_id:row.global_game_id,
-            home_team_id:row.home_team_id,
-            away_team_id:row.away_team_id,
-            date_time:row.date_time,
-            sport_id:row.sport_id,
-            time:fantasyHelpers.formatAMPM(new Date(row.date_time)),
-            home_team_score:row.home_team_score,
-            away_team_score:row.away_team_score,
-            status:row.status,
-            winner:row.winner,
-            game_time:row.time,
-            period:row.period,
-            dayCount:row.day_count
-          })
-
-
+        scheduleRows = result.rows.map(row => {
+          return createGame(row)
         })
       }
       return scheduleRows
     })
+}
+
+const createGame = row => {
+  let baseGame = {
+    global_game_id : row.global_game_id,
+    status:row.status,
+    sport_id:parseInt(row.sport_id),
+    date_time:row.date_time,
+    time:fantasyHelpers.formatAMPM(new Date(row.date_time)),
+    dayCount:row.day_count,
+    period:row.period,
+    home : {
+      team_id:row.home_team_id,
+      lost:row.winner === 'T'
+    },
+    away : {
+      team_id:row.home_team_id,
+      lost:row.winner === 'H'
+    },
+    stadium : 'Unavaliable'
+  }
+  let gameExtra = row.game_extra
+  switch (row.sport_id)
+  {
+  case '103':
+  {
+    baseGame.header = ['R','H','E']
+    baseGame.home.score = [row.home_team_score,gameExtra.home_hits, gameExtra.home_errors]
+    baseGame.away.score = [row.away_team_score,gameExtra.away_hits, gameExtra.away_errors]
+    return baseGame
+  }
+  case '107':
+  {
+    baseGame.header = ['1','2','T']
+    baseGame.home.score = [gameExtra.home_first_half,gameExtra.home_second_half, row.home_team_score]
+    baseGame.away.score = [gameExtra.away_first_half,gameExtra.away_second_half, row.away_team_score]
+    return baseGame
+  }
+  default:
+  {
+    return {}
+  }
+  } 
 }
 
 const getSportLeagues = (league_id, res, type) =>{

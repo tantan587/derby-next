@@ -84,6 +84,10 @@ function SportsManager(io) {
     Object.keys(teamInfoTemp).forEach((sportSeasonId) => {
       Object.keys(teamInfoTemp[sportSeasonId]).forEach(teamId => {
         const teamHash = hash(teamInfoTemp[sportSeasonId][teamId])
+        if(!teamInfoHashBySportSeason[sportSeasonId])
+        {
+          teamInfoHashBySportSeason[sportSeasonId] = {}
+        }
         if(teamHash !== teamInfoHashBySportSeason[sportSeasonId][teamId])
         {
           teamInfoHashBySportSeason[sportSeasonId][teamId] = teamHash

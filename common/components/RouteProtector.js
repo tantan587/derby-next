@@ -35,7 +35,7 @@ class RouteProtector extends React.Component {
       return(<CircularProgress className={classes.progress} size={50} />)
     }
     else{
-      if(user.loggedIn === false || (checkCommish && !this.props.activeLeague.imTheCommish)) {
+      if(Object.keys(user).length === 0 || user.loggedIn === false || (checkCommish && !this.props.activeLeague.imTheCommish)) {
         if (typeof document !== 'undefined'){
           this.props.updateForceLogin(this.props.previousPage)
           Router.push('/redirectlogin')

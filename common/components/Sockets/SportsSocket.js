@@ -33,8 +33,8 @@ class SportsSocket extends React.Component {
       this.props.onGetSportSeasons(this.props.activeLeague && this.props.activeLeague.league_id)
     this.socket = io('/sports')
     this.socket.on('connect', () => {
-      this.socket.emit('teamUpdateTime')
       this.socket.emit('gameUpdateTime')
+      this.socket.emit('teamUpdateTime')
     })
     this.socket.on('serverTeamUpdateTime', this.checkTeamUpdateTime)
     this.socket.on('serverAllTeamData', this.getTeams)
@@ -43,12 +43,10 @@ class SportsSocket extends React.Component {
     this.socket.on('serverAllGameData', this.getGames)
     this.socket.on('serverDiffGameData', this.getGamesDiff)
 
-    
-    setTimeout(
-      () => {
-        if(!this.props.teams)
-          this.socket.emit('allTeamData', this.props.sportSeasons)
-      },5000)
+    setTimeout(() => {
+      if(!this.props.teams)
+        this.socket.emit('allTeamData', this.props.sportSeasons)
+    },5000)
   }
 
   getTeams = (data) => {
@@ -98,7 +96,6 @@ class SportsSocket extends React.Component {
   }
 
   getGames = (data) => {
-
     this.props.onGameUpdate(data)
   }
 
@@ -144,6 +141,7 @@ class SportsSocket extends React.Component {
 export default connect(
   state =>
     ({
+      teams:state.teams,
       updateTime:state.updateTime,
       sportSeasons:state.sportSeasons,
       activeLeague:state.activeLeague
