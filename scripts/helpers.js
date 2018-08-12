@@ -333,8 +333,10 @@ methods.updatePlayoffStandings = async (knex, newStandings) =>
       updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id, teamRec.sport_season_id,'playoff_losses', teamRec.playoff_losses, true )))
     if(oldStandings[teamRec.sport_season_id][teamRec.team_id].playoff_status !== teamRec.playoff_status)  
       updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id, teamRec.sport_season_id,'playoff_status', teamRec.playoff_status, true )))
-    if(oldStandings[teamRec.sport_season_id][teamRec.team_id].year !== teamRec.year)
-      updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id, teamRec.sport_season_id,'year', teamRec.year, true )))
+    if(oldStandings[teamRec.sport_season_id][teamRec.team_id].byes !== teamRec.byes)  
+      updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id, teamRec.sport_season_id,'byes', teamRec.byes, true )))
+    // if(oldStandings[teamRec.sport_season_id][teamRec.team_id].year !== teamRec.year)
+    //   updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id, teamRec.sport_season_id,'year', teamRec.year, true )))
   })
   if (updateList.length > 0)
   {
