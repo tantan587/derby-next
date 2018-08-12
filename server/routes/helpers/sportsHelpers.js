@@ -139,9 +139,10 @@ const createGame = row => {
     status:row.status,
     sport_id:parseInt(row.sport_id),
     date_time:row.date_time,
-    time:fantasyHelpers.formatAMPM(new Date(row.date_time)),
+    start_time:fantasyHelpers.formatAMPM(new Date(row.date_time)),
     dayCount:row.day_count,
     period:row.period,
+    time:row.time,
     home : {
       team_name:row.sport_id !== '107' ? row.h_city + ' ' + row.h_name : row.h_name,
       url:row.h_url,
@@ -158,7 +159,13 @@ const createGame = row => {
     },
     stadium : 'Unavaliable'
   }
+  
+  if(baseGame.status === 'Scheduled')
+  {
+    baseGame.status = baseGame.start_time
+  }
   let gameExtra = row.game_extra
+
   switch (row.sport_id)
   {
   case '101': case '102':
@@ -183,10 +190,6 @@ const createGame = row => {
     if(baseGame.status === 'InProgress')
     {
       baseGame.status = (baseGame.period[0] === 'T' ? 'Top ' : 'Bottom ') + baseGame.period.substring(1)
-    }
-    else if(baseGame.status === 'Scheduled')
-    {
-      baseGame.status = baseGame.time
     }
 
     baseGame.header = ['R','H','E']
@@ -236,8 +239,14 @@ const createGame = row => {
   case '106': case'107':
   {
     baseGame.header = ['1','2','T']
-    baseGame.home.score = [gameExtra.home_first_half,gameExtra.home_second_half, row.home_team_score]
-    baseGame.away.score = [gameExtra.away_first_half,gameExtra.away_second_half, row.away_team_score]
+    baseGame.home.score = [
+      gameExtra.home_first_half || 0,
+      gameExtra.home_second_half || 0,
+      row.home_team_score]
+    baseGame.away.score = [
+      gameExtra.away_first_half || 0,
+      gameExtra.away_second_half || 0,
+      row.away_team_score]
     return baseGame
   }
   

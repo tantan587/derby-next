@@ -4,6 +4,7 @@ const script3 = require('./updatePlayoffStandings')
 const script4 = require('./updateStandings')
 const script5 = require('./updateDayOfSchedule')
 const scriptReset = require('./tableReset')
+const scriptSimulate = require('./Analysis/simulation')
 const scriptAll = require('./createSports/createAllSports')
 const asyncForEach = require('./asyncForEach')
 
@@ -23,6 +24,12 @@ const runUpdate = async () => {
     case 'allSports':
     {
       await scriptAll.createSports(exitProcessInd)
+      break
+    }
+
+    case 'simulate':
+    {
+      await scriptSimulate.simulate(exitProcessInd,arr[1])
       break
     }
     case '1':

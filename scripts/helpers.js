@@ -258,7 +258,6 @@ methods.updateSchedule = (knex, newResults) =>
 methods.updateScheduleFromBoxScore = (knex, data) => {
   let updateList = []
   data.forEach(x => {
-    console.log(x)
     updateList.push(Promise.resolve(methods.newUpdateOneResultRow(knex, x.global_game_id, x, false)))
   })
   if(updateList.length>0)
