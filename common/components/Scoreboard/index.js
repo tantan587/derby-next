@@ -41,16 +41,8 @@ const formatDate = (date) => `${MonthNames[date.getMonth()]} ${date.getDate()}, 
 
 class Scoreboard extends Component {
 
-  state = {date : new Date()}
-
-
-  onUpdateDate =  (date) => {
-    this.setState({date})
-  }
-
   render() {
-    const {classes, scoreData} = this.props
-    const {date} = this.state
+    const {classes, scoreData, date, onUpdateDate} = this.props
     const scoreCards = scoreData.map((x,i) => <ScoreCard key={i} useRightSide={false} scoreboardData={x}/>)
  
     return (
@@ -68,7 +60,7 @@ class Scoreboard extends Component {
         />
         <DayPicker
           date={date}
-          onUpdateDate={this.onUpdateDate}
+          onUpdateDate={onUpdateDate}
         />
         <br/>
         <Typography

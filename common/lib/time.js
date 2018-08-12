@@ -73,7 +73,8 @@ export const GetDayCount = (year, month, day) => {
 }
 
 export const GetDayCountStr = (date) => {
-  var split = date.split('T')[0].split('-')
+  let dateStr = date.toLocaleDateString()
+  var split = dateStr.split('/')
   return GetDayCount(split[0],split[1],split[2])
 }
 

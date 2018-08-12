@@ -44,7 +44,7 @@ export default (initialState) => {
 
     persistStore(store)
 
-  }, 1000)
+  }, 10)
 
   return store
 }

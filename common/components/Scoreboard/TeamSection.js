@@ -21,7 +21,7 @@ const TeamSection = ({
     L={(
       <img
         preserveAspectRatio='true' 
-        alt={`${team_name} Logo`}
+        //alt={`${team_name} Logo`}
         src={logo_url}
         style={{maxWidth:'40px', maxHeight:'40px'}}
       />

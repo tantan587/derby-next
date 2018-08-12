@@ -75,22 +75,37 @@ const GetSportSeasonsAndRespond = async (league_id,res, type) => {
   })
 }
 
+const baseScheduleStr = `
+  select a.*, 
+  b.city as h_city, b.name as h_name, b.logo_url as h_url,
+  c.city as a_city, c.name as a_name, c.logo_url as a_url,
+  d.wins as h_wins, d.losses as h_losses, d.ties as h_ties,
+  e.wins as a_wins, e.losses as a_losses, e.ties as a_ties
+  from 
+  sports.schedule a, sports.team_info b, sports.team_info c,
+  sports.standings d, sports.standings e 
+  where a.home_team_id = b.team_id 
+  and a.away_team_id = c.team_id
+  and b.team_id = d.team_id
+  and a.sport_season_id = d.sport_season_id
+  and c.team_id = e.team_id
+  and a.sport_season_id = e.sport_season_id `
+
 const getNearSchedule = () => {
   var d = new Date()
   //-60 for eastern time zone. 
   var nd = new Date(d.getTime() - ((d.getTimezoneOffset()-60) * 60000))
   const dayCount = fantasyHelpers.getDayCountStr(nd.toJSON())
-  var str =  `select * from sports.schedule where
-   day_count in(` + dayCount + ', ' + (dayCount + 1) + ', ' + (dayCount - 1) + ')'    
+  var str =  baseScheduleStr + `
+    and a.day_count in (` + dayCount + ', ' + (dayCount + 1) + ', ' + (dayCount - 1) + ')'    
   return getSchedule(str)
 }
 
-const getLeagueSchedule = (league_id, date, res) => {
-  const dayCount = fantasyHelpers.getDayCountStr(date)
-  var str =  `select a.*, b.* from sports.schedule a, fantasy.sports b where
-          b.league_id = '` + league_id + `' and a.sport_id = b.sport_id
-          and day_count = ` + dayCount
 
+
+const getOneDaySchedule = (dayCount, res) => {
+  var str =  baseScheduleStr + `
+  and a.day_count = ` + dayCount
   return getSchedule(str)
     .then((resp) => {
       return handleReduxResponse(res,200, {
@@ -116,6 +131,9 @@ const getSchedule = (str) => {
 }
 
 const createGame = row => {
+  row.away_team_score = row.away_team_score === -1 ? 0 : row.away_team_score
+  row.home_team_score = row.home_team_score === -1 ? 0 : row.home_team_score
+
   let baseGame = {
     global_game_id : row.global_game_id,
     status:row.status,
@@ -125,32 +143,104 @@ const createGame = row => {
     dayCount:row.day_count,
     period:row.period,
     home : {
+      team_name:row.sport_id !== '107' ? row.h_city + ' ' + row.h_name : row.h_name,
+      url:row.h_url,
       team_id:row.home_team_id,
-      lost:row.winner === 'T'
+      lost:row.winner === 'T',
+      record:(row.h_wins + '-' + row.h_losses) + (row.h_ites > 0 ? '-' + row.h_ties : '')
     },
     away : {
-      team_id:row.home_team_id,
-      lost:row.winner === 'H'
+      team_name:row.sport_id !== '107' ? row.a_city + ' ' + row.a_name : row.a_name,
+      url:row.a_url,
+      team_id:row.away_team_id,
+      lost:row.winner === 'H',
+      record:(row.a_wins + '-' + row.a_losses) + (row.a_ites > 0 ? '-' + row.a_ties : '') 
     },
     stadium : 'Unavaliable'
   }
   let gameExtra = row.game_extra
   switch (row.sport_id)
   {
-  case '103':
+  case '101': case '102':
   {
-    baseGame.header = ['R','H','E']
-    baseGame.home.score = [row.home_team_score,gameExtra.home_hits, gameExtra.home_errors]
-    baseGame.away.score = [row.away_team_score,gameExtra.away_hits, gameExtra.away_errors]
+    baseGame.header = ['1','2','3','4','T']
+    baseGame.home.score = [
+      gameExtra.home_quarter_1 || 0,
+      gameExtra.home_quarter_2 || 0,
+      gameExtra.home_quarter_3 || 0,
+      gameExtra.home_quarter_4 || 0,
+      row.home_team_score]
+    baseGame.away.score = [
+      gameExtra.away_quarter_1 || 0,
+      gameExtra.away_quarter_2 || 0,
+      gameExtra.away_quarter_3 || 0,
+      gameExtra.away_quarter_4 || 0,
+      row.away_team_score]
     return baseGame
   }
-  case '107':
+  case '103':
+  {
+    if(baseGame.status === 'InProgress')
+    {
+      baseGame.status = (baseGame.period[0] === 'T' ? 'Top ' : 'Bottom ') + baseGame.period.substring(1)
+    }
+    else if(baseGame.status === 'Scheduled')
+    {
+      baseGame.status = baseGame.time
+    }
+
+    baseGame.header = ['R','H','E']
+    baseGame.home.score = [
+      row.home_team_score,
+      gameExtra.home_hits || 0, 
+      gameExtra.home_errors || 0]
+    baseGame.away.score = [
+      row.away_team_score
+      ,gameExtra.away_hits || 0
+      ,gameExtra.away_errors ||0
+    ]
+    return baseGame
+  }
+  case '104':
+  {
+    baseGame.header = ['1','2','3','T']
+    baseGame.home.score = [
+      gameExtra.home_period_1 || 0,
+      gameExtra.home_period_2 || 0,
+      gameExtra.home_period_3 || 0,
+      row.home_team_score]
+    baseGame.away.score = [
+      gameExtra.away_period_1 || 0,
+      gameExtra.away_period_2 || 0,
+      gameExtra.away_period_3 || 0,
+      row.away_team_score]
+    return baseGame
+  }
+  case '105':
+  {
+    baseGame.header = ['1','2','3','4','T']
+    baseGame.home.score = [
+      gameExtra.home_period_1 || 0,
+      gameExtra.home_period_2 || 0,
+      gameExtra.home_period_3 || 0,
+      gameExtra.home_period_4 || 0,
+      row.home_team_score]
+    baseGame.away.score = [
+      gameExtra.away_period_1 || 0,
+      gameExtra.away_period_2 || 0,
+      gameExtra.away_period_3 || 0,
+      gameExtra.home_period_4 || 0,
+      row.away_team_score]
+    return baseGame
+  }
+  case '106': case'107':
   {
     baseGame.header = ['1','2','T']
     baseGame.home.score = [gameExtra.home_first_half,gameExtra.home_second_half, row.home_team_score]
     baseGame.away.score = [gameExtra.away_first_half,gameExtra.away_second_half, row.away_team_score]
     return baseGame
   }
+  
   default:
   {
     return {}
@@ -265,7 +355,7 @@ module.exports = {
   GetSportSeasonsAndRespond,
   GetRegularSeasonTeamInfo,
   getNearSchedule,
-  getLeagueSchedule,
+  getOneDaySchedule,
   getSportLeagues,
 }
 

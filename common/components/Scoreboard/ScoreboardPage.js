@@ -1,14 +1,13 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { compose } from 'redux'
+//import { compose } from 'redux'
 import { withStyles } from '@material-ui/core/styles'
 import { handleOpenDialog } from '../../actions/dialog-actions'
+import {clickedDateChange} from '../../actions/sport-actions'
 import Title from '../Navigation/Title'
 import {GetDayCountStr} from '../../lib/time'
-//import TabFilter from '../Table/Filters/TabFilter' 
 import sportLeagues from '../../../data/sportLeagues.json'
 import ScoreboardBody from './'
-import scoreData from '../../../data/scoreData.js'
 import FilterCreator from '../Filters/FilterCreator'
 import Filterer from '../Filters/Filterer'
 const R = require('ramda')
@@ -45,24 +44,52 @@ class ScoreboardPage extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      dayCount: GetDayCountStr((new Date()).toJSON()),
+      dayCount: GetDayCountStr(new Date()),
+      date: new Date(),
       startTime: 1,
       sportId:null
     }
   }
-  test = (x) => {
-    console.log(x.scoreboard[0])
+  
+  onUpdateDate = (date) =>
+  {
+    let dayCount = GetDayCountStr(date)
+    if(!this.props.liveGames[dayCount])
+    {
+      this.props.onDateChange(dayCount)
+    }
+    this.setState({date, dayCount})
+  }
+
+  sortGames = (games) =>
+  {
+    games.sort((a,b) => {
+      if (a.date_time < b.date_time)
+        return -1
+      return 1
+    })
+    return games
   }
 
   render() {
     //const { classes, liveGames} = this.props
 
-    const {contentFilter} = this.props
+    const {contentFilter, liveGames, schedule} = this.props
+    const {dayCount, date} = this.state
     const page='scoreboard'
 
-    let filteredScoreData = scoreData
+    let data = []
+    if(liveGames[dayCount])
+    {
+      data = this.sortGames(Object.values(liveGames[dayCount]))
+    }
+    else if (schedule.length > 0){
+      data = this.sortGames(schedule)
+    }
+
+    let filteredScoreData = data
     R.values(contentFilter[page]).forEach(filter => {
-      filteredScoreData = Filterer(scoreData, filter)
+      filteredScoreData = Filterer(data, filter)
     })
     const sports = R.values(sportLeagues).sort((x,y) => x.order > y.order).map(x => x.sport_id)
     sports.unshift('All')
@@ -81,33 +108,15 @@ class ScoreboardPage extends React.Component {
       <div>
         <Title color='white' backgroundColor='#EBAB38' title={'Scoreboard'}/>
         <FilterCreator filters={[filter]} page={page}/>
-        <ScoreboardBody scoreData={filteredScoreData}/>
+        <ScoreboardBody scoreData={filteredScoreData} date={date} onUpdateDate={this.onUpdateDate}/>
       </div>
 
     )
-
-        
-    //     const { startTime } = this.state
-    //     //const myOwner =owners.find(owner => owner.owner_id === activeLeague.my_owner_id)
-    //     return (
-    //       <div>
-    //         <Title color='white' backgroundColor='#EBAB38' title={'Scoreboard'}/>
-    //       </div>
-    //     )
   }
 }
 
-const mapDispatchToProps = (dispatch) => ({
-  openDialog: () => dispatch(handleOpenDialog)
-})
-
-export default compose(
-  connect(state => ({
-    contentFilter:state.contentFilter,
-    teams: state.teams,
-    liveGames: state.liveGames,
-    activeLeague: state.activeLeague
-  }),
-  mapDispatchToProps),
-  withStyles(styles)
+export default R.compose(
+  withStyles(styles),
+  connect(R.pick(['contentFilter', 'teams', 'liveGames', 'activeLeague', 'schedule'])
+    , {openDialog: handleOpenDialog,onDateChange:clickedDateChange })
 )(ScoreboardPage)

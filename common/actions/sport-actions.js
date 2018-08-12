@@ -17,13 +17,14 @@ export const getSportSeasons = (league_id) => dispatch =>
     JSON.stringify({league_id})
   )
 
-export const clickedDateChange = (league_id, date) => dispatch =>
+export const clickedDateChange = (dayCount) => dispatch =>
   FetchThenDispatch(
     dispatch,
     '/api/schedule',
     'POST',
-    JSON.stringify({league_id, date})
+    JSON.stringify({dayCount})
   )
+
 
 export const clickedOneTeam = (team_id) => dispatch =>
   FetchThenDispatch(
