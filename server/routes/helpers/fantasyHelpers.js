@@ -403,7 +403,8 @@ const updateTeamPoints = async () =>
 
   if (result.length > 0)
   {
-    const teamPoints = result.map(fteam => {
+    const teamPoints = []
+    result.forEach(fteam => {
       const team = data[fteam.sport_structure_id][fteam.team_id]
       //const league = points.filter(league => league.sport_id == fteam.sport_id)[0]
       if(team){
@@ -427,9 +428,9 @@ const updateTeamPoints = async () =>
         //below depends on how we format bowl wins
         sport_id === '105' ? fteam.playoff_points += (points[fteam.scoring_type_id][sport_id].playoffs.bowl_win * team.bowl_wins) : 0
         fteam.bonus_points = bonus_win + bonus_points
-        return fteam}
-    })
 
+        teamPoints.push(fteam)}
+    })
     let resp = await updateTeamPointsTable(teamPoints)
     console.log('Number of Teams Updated: ' + resp)
 
@@ -481,7 +482,7 @@ const updateLeagueProjectedPoints = async (league_id) => {
   process.exit()
   return updatePointsTable(fantasyPoints, true)
     .then(result => {
-      console.log('Number of Fantasy Points Updated: ' + result)
+      console.log('Number of Fantasy Owner Points Updated: ' + result)
       return 0
     })
 
