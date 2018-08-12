@@ -74,7 +74,7 @@ methods.createScheduleForInsert = function(cleanSched, sport_id, idSpelling, tea
       sport_id: sport_id,
       home_team_score: home_score !== null ? home_score : -1,
       away_team_score: away_score !== null ? away_score : -1,
-      winner: status[0] === 'F' ? home_score > away_score ? 'H' : away_score < home_score ? 'A' : 'T' : myNull,
+      winner: status[0] === 'F' ? home_score > away_score ? 'H' : away_score > home_score ? 'A' : 'T' : myNull,
       time: sport_id === '103' ? game.Outs === null ? myNull : game.Outs :
         sport_id === '107' ? game.Clock === null ? myNull : game.Clock :
           sport_id === '102' ? game.TimeRemaining === null ? myNull : game.TimeRemaining :
