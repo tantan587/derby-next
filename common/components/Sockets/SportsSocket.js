@@ -86,7 +86,10 @@ class SportsSocket extends React.Component {
     {
       rtnData = {}
       let conferences = R.flatten(activeLeague.rules.map(x => x.conferences)).map(x => x.conference_id)
-      let teams = Object.values(data).filter(x => conferences.includes(x.conference_id))
+      let teams = Object.values(data).map(x => {
+        x.eligible = conferences.includes(x.conference_id)
+        return x
+      })
       teams.forEach(x => {
         rtnData[x.team_id] = x
       })

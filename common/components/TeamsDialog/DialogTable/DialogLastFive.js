@@ -20,7 +20,6 @@ const DialogLastFive = ({ tableData,lastFive }) => {
     <TableBody>
       {
         lastFive.map((game, idx) => {
-
           return <TableRow key={game.game_id}>
             <TableCell>{game.date_time|| '4/322/18'}</TableCell>
             <TableCell>
@@ -39,7 +38,7 @@ const DialogLastFive = ({ tableData,lastFive }) => {
                 `${tableData[idx].score}` || '5-2'
               }
             </TableCell>
-            <TableCell>{tableData && tableData.location || 'Boston Celtics Stadium'}</TableCell>
+            <TableCell>{tableData && tableData[idx].location || 'Boston Celtics Stadium'}</TableCell>
             <TableCell>{tableData && tableData.derby_points || '0'}</TableCell>
           </TableRow>
         }

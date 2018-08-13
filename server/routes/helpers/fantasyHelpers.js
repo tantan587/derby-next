@@ -16,6 +16,17 @@ const getLeague = async (league_id, user_id, res, type) => {
   fantasy.owners a, users.users b, fantasy.points c
   where a.user_id = b.user_id and a.owner_id = c.owner_id and a.league_id = '` + league_id + '\''
 
+  //var seasonDateStr = `select a.* from sports.sport_season a, `
+
+  // select a.* 
+  // from sports.sport_season a, 
+  // (select ok as sport_season_id, league_bundle_id from fantasy.league_bundle, json_array_elements(current_sport_seasons->'ok')) b,
+  // fantasy.leagues c, fantasy.sports_structure d
+  // where a.sport_season_id = b.sport_season_id
+  // and c.sport_structure_id = d.sport_structure_id
+  // and d.league_bundle_id = b.league_bundle_id
+  // and c.leauge_id = '06ccb52f-08b6-4da1-9b4f-cd59cb16ae49'
+
   var teamInfoStr = `
   SELECT aaa.*, bbb.owner_id, bbb.overall_pick 
   FROM (

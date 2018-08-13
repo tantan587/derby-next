@@ -25,7 +25,8 @@ export const organizeData = (data) => {
     let tableData = {
       opponent: `vs. ${awayTeamName}`,
       result: homeTeamScore > awayTeamScore ? 'W' : 'L',
-      score: `${Math.max(homeTeamScore, awayTeamScore)}-${Math.min(homeTeamScore, awayTeamScore)}`
+      score: `${Math.max(homeTeamScore, awayTeamScore)}-${Math.min(homeTeamScore, awayTeamScore)}`,
+      location: 'Home'
     }
     return tableData
   } else {
@@ -36,7 +37,8 @@ export const organizeData = (data) => {
     let tableData = {
       opponent: `@ ${homeTeamName}`,
       result: awayTeamScore > homeTeamScore ? 'W' : 'L',
-      score: `${Math.max(awayTeamScore, homeTeamScore)}-${Math.min(awayTeamScore, homeTeamScore)}`
+      score: `${Math.max(awayTeamScore, homeTeamScore)}-${Math.min(awayTeamScore, homeTeamScore)}`,
+      location: 'Away'
     }
     return tableData
   }

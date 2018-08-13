@@ -9,17 +9,16 @@ const GetRegularSeasonTeamInfo = async () => {
   var str = `
   SELECT aa.*, ee.wins as projected_wins, ee.losses as projected_losses,
   ee.ties as projected_ties, ee.playoff as projected_playoff from
-  (SELECT b.sport_season_id, a.team_id, a.key, a.city, a.name, a.logo_url, b.year,
-    c.conference_id, c.display_name, d.sport_name, d.sport_id, b.wins,
-    b.losses, b.ties
-  FROM sports.team_info a, sports.standings b, sports.conferences c,
-  sports.leagues d
-  WHERE a.team_id = b.team_id and c.conference_id = a.conference_id
-  and a.sport_id = d.sport_id) aa
+    (select a.*, b.sport_season_id, b.year, c.sport_name, c.sport_id, b.wins, b.losses, b.ties
+      from (select x.team_id, x.sport_id, x.key, x.city, x.name, x.logo_url, y.conference_id, y.display_name
+      from sports.team_info x
+      left outer join sports.conferences y on x.conference_id = y.conference_id) a,
+      sports.standings b, sports.leagues c
+      WHERE a.team_id = b.team_id
+      and a.sport_id = c.sport_id) aa
   left outer join analysis.record_projections ee on aa.team_id = ee.team_id
   and ee.day_count = (select max(day_count) from analysis.record_projections)
   and aa.year = ee.year`
-
  
   return knex.raw(str)
     .then(result =>

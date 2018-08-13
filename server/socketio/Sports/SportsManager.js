@@ -45,9 +45,8 @@ function SportsManager(io) {
       sportSeasons = await fantasyHelpers.GetSportSeasonsByLeague()
     }
     let rtnObj = {}
-
+    console.log(sportSeasons)
     sportSeasons.forEach(x => {
-
       if(teamInfoBySportSeason[x])
         Object.assign(rtnObj, teamInfoBySportSeason[x])
     })

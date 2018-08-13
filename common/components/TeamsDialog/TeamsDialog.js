@@ -123,15 +123,6 @@ class TeamsDialog extends Component {
                 }}
                 label="ADDITIONAL INFO" />
             </Tabs>
-            {console.log('val is', this.state.value)}
-            {/* {
-              [0, 1].includes(this.state.value) ?
-                <DialogLastFive
-                  lastFive={lastFive}
-                  teams={teams}
-                /> :
-                <DialogInfo />
-            } */}
             <div style={{ height: '89%', }}> { /* scrolling div */ }
               {{
                 0: <DialogLastFive

@@ -1,6 +1,5 @@
-import React from 'react'
 
-const DialogInfo = ({ data }) =>
+const DialogInfo = () =>
   <div style={{
     borderTop: '10px solid #229246',
     paddingTop: 40,
@@ -10,11 +9,11 @@ const DialogInfo = ({ data }) =>
   }}>
     <div style={{ width: 700 }}>
       <div style={{ fontSize: 24 }}>
-        Headline
+        Stats Coming Soon
       </div>
-      <div style={{ fontSize: 16, marginTop: 40, color: 'grey' }}>
+      {/* <div style={{ fontSize: 16, marginTop: 40, color: 'grey' }}>
         Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna wirl aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisinuli.
-      </div>
+      </div> */}
     </div>
   </div>
 

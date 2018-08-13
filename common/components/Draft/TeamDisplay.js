@@ -39,7 +39,7 @@ class TeamDisplay extends React.Component {
   }
   render() {
     const page = 'draft-teams'
-    const {  draft,teams, allowDraft, contentFilter} = this.props
+    const {  draft, teams, allowDraft, contentFilter} = this.props
     const allTeams = draft.allTeams
     const queue = draft.queue
     let confs = []

@@ -30,7 +30,7 @@ class MainLeagueTeams extends React.Component {
     const page = 'teams'
     const {teams, activeLeague, contentFilter} = this.props
     const sportLeagueIds = R.keys(sportLeagues)
-    let myTeams = Object.values(teams).filter(team => sportLeagueIds.includes(team.sport_id)).map(team => 
+    let myTeams = Object.values(teams).filter(team => sportLeagueIds.includes(team.sport_id) && team.eligible).map(team => 
     {
       let owner = null 
       let points = 0
