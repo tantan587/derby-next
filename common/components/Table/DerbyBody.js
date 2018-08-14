@@ -10,7 +10,7 @@ import { clickedOneTeam } from '../../actions/sport-actions.js'
 import SportIcon from '../Icons/SportIcon'
 import Tooltip from '@material-ui/core/Tooltip'
 import Icon from '@material-ui/core/Icon'
-import { Typography } from '../../../node_modules/@material-ui/core'
+import Typography from '@material-ui/core/Typography'
 
 const styles = () => ({
   deeppadding: {
@@ -84,8 +84,8 @@ class DerbyBody extends React.Component {
                         fontStyle: header.button.disabled && n[header.button.disabled] ? 'italic' :'normal',}}
                       onClick={() => header.button.onClickOverride && n['onClickOverride'] ? n['onClickOverride'](n[header.id]) : header.button.onClick(n[header.id])}>
                       {/* {header.button.labelOverride && n[header.button.labelOverride] || header.button.label} */}
-                      <Icon style={{height:18, width:18}}>
-                        <Typography style={{marginTop:-5, color:header.button.color, fontSize:18}}> 
+                      <Icon style={{height:18, width:44}}>
+                        <Typography style={{color:header.button.color, fontSize:12}}> 
                           {
                             header.button.labelOverride && n[header.button.labelOverride]
                             && n[header.button.labelOverride].icon || header.button.iconLabel}

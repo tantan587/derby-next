@@ -13,6 +13,7 @@ export default (state = {}, action={ type: null }) => {
       username: action.username,
       loggedIn: true,
       progress:null,
+      admin:action.admin,
       error: new ErrorText()
     }
   case C.SIGNUP_SUCCESS:

@@ -15,7 +15,7 @@ const signupTemplates = require('../email-templates/signup')
 //https://github.com/trandainhan/next.js-example-authentication-with-jwt/blob/master/utils/CookieUtils.js
 //https://github.com/zeit/next.js/issues/153
 
-router.post('/signup', authHelpers.loginRedirect, (req, res, next)  => {
+router.post('/signup', authHelpers.loginRedirect, (req, res)  => {
   return authHelpers.createUser(req, res)
     .then((response) => {
       if (response) {
@@ -36,11 +36,11 @@ router.post('/signup', authHelpers.loginRedirect, (req, res, next)  => {
 })
 
 router.post('/login', authHelpers.loginRedirect, (req, res, next) => {
-  passport.authenticate('local', (err, user, info) => {
+  passport.authenticate('local', (err, user) => {
     if (err) { handleResponse(res, 500, 'error') }
     if (!user || user.verified === false) {
       const errMsg = !user ? 'Username / Password does not match' : `
-        You can\'t login if your email is not verified.<br />
+        You can't login if your email is not verified.<br />
         <a href="/email-verification?i=${user.user_id}">Click here to verify.</a>
       `
       var errorText = new ErrorText()
@@ -62,7 +62,8 @@ router.post('/login', authHelpers.loginRedirect, (req, res, next) => {
               first_name : user1.first_name,
               username : user1.username,
               leagues : leagues,
-              verified: user1.verified
+              verified: user1.verified,
+              admin: user1.admin
             })
           )
         }
@@ -71,19 +72,19 @@ router.post('/login', authHelpers.loginRedirect, (req, res, next) => {
   })(req, res, next)
 })
 
-router.post('/logout', (req, res, next) => {
+router.post('/logout', (req, res) => {
   req.logout()
   handleReduxResponse(res, 200, {
     type: C.LOGOUT  })
 })
 
-router.post('/adminupdates', (req, res, next) => {
+router.post('/adminupdates', (req) => {
   adminHelpers.admin1(req.body.id)
     .then(() => console.log('complete'))
     .catch((err) => console.log(err))
 })
 
-router.post('/forgotpassword', (req, res, next) => {
+router.post('/forgotpassword', (req, res) => {
   return authHelpers.createNewPassword(req, res)
     .then((user) => {
       if (user) {
@@ -111,7 +112,7 @@ router.post('/forgotusername', (req, res) => {
 })
 
 router.post('/createpassword', authHelpers.loginRedirect, (req, res, next) => {
-  passport.authenticate('local', (err, user, info) => {
+  passport.authenticate('local', (err, user) => {
     if (err) { handleResponse(res, 500, 'error') }
     if (!user) {
       var errorText = new ErrorText()
@@ -146,12 +147,12 @@ router.post('/verify-email', (req, res) => {
   const { i: user_id, c: verification_code } = req.body
   return userHelpers.verify(user_id, verification_code).then(payload => {
     switch(payload.type) {
-      case EMAIL_VERIFICATION.CORRECT:
-        return res.sendStatus(200)
-      case EMAIL_VERIFICATION.INCORRECT:
-      case EMAIL_VERIFICATION.NOT_FOUND:
-      case EMAIL_VERIFICATION.LIMIT_EXCEEDED:
-        return res.status(400).json(payload)
+    case EMAIL_VERIFICATION.CORRECT:
+      return res.sendStatus(200)
+    case EMAIL_VERIFICATION.INCORRECT:
+    case EMAIL_VERIFICATION.NOT_FOUND:
+    case EMAIL_VERIFICATION.LIMIT_EXCEEDED:
+      return res.status(400).json(payload)
     }
   })
 })

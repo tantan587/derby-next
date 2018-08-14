@@ -27,7 +27,6 @@ function createUser(req, res) {
           last_name: req.body.last_name,
           email: req.body.email,
           admin: false,
-          
           verified: false,
           verification_code: Math.floor(1000 + Math.random() * 9000),
         })

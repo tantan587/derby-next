@@ -49,13 +49,13 @@ class TeamDisplay extends React.Component {
     {
       allTeams.map(teamId => {
         if (draft.draftedTeams.includes(teamId))
-          teamsToShow.push({...teams[teamId],disableQueue:true, draftOverride:{text:'Drafted', icon:'X'}, queueOverride:{text:'Not eligible', icon:'X'}, eligible:false, checkbox:'Drafted' })
+          teamsToShow.push({...teams[teamId],disableQueue:true, draftOverride:{text:'Drafted', icon:'Taken'}, queueOverride:{text:'Not eligible', icon:'N/A'}, eligible:false, checkbox:'Drafted' })
         else if(!draft.eligibleTeams.includes(teamId))
-          teamsToShow.push({...teams[teamId],disableQueue:true, queueOverride:{text:'Not eligible', icon:'X'}, eligible:false, checkbox:'Available' })
+          teamsToShow.push({...teams[teamId],disableQueue:true, queueOverride:{text:'Not eligible', icon:'N/A'}, eligible:false, checkbox:'Available' })
         else if(queue.indexOf(teamId) === -1)
           teamsToShow.push({...teams[teamId], eligible:true, checkbox:true})
         else
-          teamsToShow.push({...teams[teamId], queueOverride:{text:'Remove', icon:'-'},onClickOverride:this.removeItem, eligible:true, checkbox:true })
+          teamsToShow.push({...teams[teamId], queueOverride:{text:'Remove From Queue', icon:'Remove'},onClickOverride:this.removeItem, eligible:true, checkbox:true })
       })
       
       teamsToShow = teamsToShow.map(x => {
@@ -63,6 +63,11 @@ class TeamDisplay extends React.Component {
           projectedPoints:activeLeague.teams[x.team_id].proj_points,
           lastYearPoints:activeLeague.teams[x.team_id].lastYearPoints, 
           ranking:activeLeague.teams[x.team_id].ranking }
+      })
+
+      teamsToShow.sort((x,y) => {return x.ranking > y.ranking ?  1 : - 1})
+      teamsToShow.forEach((x,i) => {
+        x.ranking = i+1
       })
 
       R.values(contentFilter[page]).forEach(filter => {
@@ -132,7 +137,7 @@ class TeamDisplay extends React.Component {
                 onClickOverride:'true',
                 onClick:this.addItem,
                 label:'Add to Queue',
-                iconLabel:'+',
+                iconLabel:'Queue',
                 color:'white',
                 backgroundColor: '#269349'//'#EBAB38',
               }},
@@ -143,13 +148,13 @@ class TeamDisplay extends React.Component {
                 labelOverride:'draftOverride',
                 onClick:this.draftTeam,
                 label:'Draft Team',
-                iconLabel:'✓',
+                iconLabel:'Draft',
                 color:'white',
                 backgroundColor: '#EBAB38',
               }},
-            {label: 'Projected', key: 'projectedPoints'},
-            {label: 'Ranking', key: 'ranking'},
-            {label: 'Last Year Points', key: 'lastYearPoints'},
+            {label: 'Proj. Rank', key: 'ranking'},
+            {label: 'Proj. Points', key: 'projectedPoints'},
+            {label: 'Prev. Points', key: 'lastYearPoints'},
             // {label: 'Points', key: 'points'}
           ]}/>
       </div>

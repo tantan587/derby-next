@@ -190,6 +190,17 @@ const TopNavLeagueVariant = ({
         Icon={() => <Typography variant="title" color="inherit" className={classes.leagueIcon}>S</Typography>}
         onClick={hideMobileNav}
       />
+      <LinkHelper
+        href="/scoreboard"
+        children="Scoreboard"
+        classes={{
+          link: classNames(classes.link, {[classes.activeLink]: isActive('/scoreboard')}),
+          linkAnchor: classes.linkAnchor,
+          text: classNames(classes.text, {[classes.activeText]: isActive('/scoreboard')}),
+        }}
+        Icon={() => <Typography variant="title" color="inherit" className={classes.leagueIcon}>S</Typography>}
+        onClick={hideMobileNav}
+      />
       <LinkHelper 
         href="/mainleagueroster"
         children="Rosters"

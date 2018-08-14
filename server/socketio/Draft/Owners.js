@@ -8,12 +8,12 @@ function Owners() {
   var draftRules
   var teamMap
   
-  this.CreateOwners = async (ownerIds, queueByOwner, roomId, allTeams) =>
+  this.CreateOwners = async (ownerIds, queueByOwner, roomId, allTeamsByRank) =>
   {
     draftRules = await draftHelpers.GetDraftRules(roomId)
     teamMap = await draftHelpers.GetTeamMap(roomId)
     ownerIds.map(x => owners[x] = 
-      new Owner(x, JSON.parse(JSON.stringify(draftRules)), [].concat(allTeams), teamMap))
+      new Owner(x, JSON.parse(JSON.stringify(draftRules)), [].concat(allTeamsByRank), teamMap))
     Object.keys(queueByOwner).map(x => 
       owners[x].SetQueue(queueByOwner[x]))
   }

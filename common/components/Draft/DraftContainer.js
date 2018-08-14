@@ -270,7 +270,7 @@ class DraftContainer extends React.Component {
   }
 
   render() {
-    const { classes, activeLeague ,draft, teams } = this.props
+    const { classes, activeLeague ,draft, teams, user } = this.props
     const {countdownTime, startTime,
       snackbarOpen,snackbarMessage, ownerMap} = this.state
     
@@ -327,27 +327,34 @@ class DraftContainer extends React.Component {
                         onDraftButton={this.onDraftButton}
                         allowDraft={allowDraft}/>
                     </Grid>
-                    <Button onClick={draft.mode === 'timeout' ? 
-                      this.onTimeIn : 
-                      draft.mode ==='live' ? 
-                        this.onTimeout : null}>
-                      {draft.mode === 'timeout' ? 'Continue' : 'Pause'}
-                    </Button>
-                    <Button onClick={this.onRestartDraft}>
-                      {'Restart Draft'}
-                    </Button>
-                    <form  noValidate>
-                      <TextField
-                        id="number"
-                        label="Draft Time (secs)"
-                        onChange={this.onTimeToDraftChange}
-                        type="number"
-                        defaultValue={activeLeague.draftInfo.seconds_pick}
-                        InputLabelProps={{
-                          shrink: true,
-                        }}
-                      />
-                    </form>
+                    {
+                      user.admin ?
+                        <div>
+                          <Button onClick={draft.mode === 'timeout' ? 
+                            this.onTimeIn : 
+                            draft.mode ==='live' ? 
+                              this.onTimeout : null}>
+                            {draft.mode === 'timeout' ? 'Continue' : 'Pause'}
+                          </Button>
+                          <Button onClick={this.onRestartDraft}>
+                            {'Restart Draft'}
+                          </Button>
+                          <form  noValidate>
+                            <TextField
+                              id="number"
+                              label="Draft Time (secs)"
+                              onChange={this.onTimeToDraftChange}
+                              type="number"
+                              defaultValue={activeLeague.draftInfo.seconds_pick}
+                              InputLabelProps={{
+                                shrink: true,
+                              }}
+                            />
+                          </form>
+                          
+                        </div>
+                        : null
+                    }
                     
                     <Grid item xs={12} style={{backgroundColor:'white'}} >
                     </Grid>

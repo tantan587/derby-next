@@ -29,13 +29,20 @@ const GetDraftInfo = async (room_id) =>{
    '\' and a.league_id = b.league_id group by a.league_id) as total_teams, * from  draft.settings where room_id = \'' + room_id + '\''
 
   //this needs to adjust for relgated teams.
-  const knexStr2 = `select distinct c.team_id, c.sport_id, c.conference_id
-  from draft.settings a, fantasy.conferences b, sports.team_info c, sports.premier_status d
+  const knexStr2 = `select distinct c.team_id, c.sport_id, c.conference_id, f.ranking
+  from draft.settings a, fantasy.conferences b, sports.team_info c, sports.premier_status d, fantasy.leagues e, fantasy.projections f
   where a.league_id = b.league_id  
   and b.conference_id = c.conference_id
   and ((c.sport_id = 107 and d.division_1 = 't' and c.team_id = d.team_id) OR c.sport_id != 107)
-  and a.room_id = '` + room_id + '\' order by 1'
-
+  and a.league_id = e.league_id
+  and e.sport_structure_id = f.sport_structure_id
+  and f.team_id = c.team_id
+  AND f.day_count = (
+    SELECT max(day_count) 
+    FROM fantasy.projections
+  )
+  and a.room_id = '` + room_id + '\' order by 4'
+ 
   const knexStr3 = `select owner_id from fantasy.owners a, 
    draft.settings b where a.league_id = b.league_id and b.room_id = '` + room_id + '\' order by 1'
  
@@ -47,7 +54,7 @@ const GetDraftInfo = async (room_id) =>{
 
   const simpleSettings = await knex.raw(knexStr0)
   const settings = await knex.raw(knexStr1)
-  const teams = await knex.raw(knexStr2)
+  const teamsByRank = await knex.raw(knexStr2)
   const owners = await knex.raw(knexStr3)
   const allQueues = await knex.raw(knexStr4)
   const numberOfPicks = await knex.raw(knexStr5)
@@ -63,7 +70,7 @@ const GetDraftInfo = async (room_id) =>{
     ...settings.rows[0],
     leagueId:simpleSettings.rows[0].league_id,
     seconds_pick:simpleSettings.rows[0].seconds_pick,
-    teams:teams.rows.map(x =>x.team_id),
+    allTeamsByRank:teamsByRank.rows.map(x =>x.team_id),
     owners:rtnOwners,
     queueByOwner:queueByOwner,
     totalPicks:parseInt(numberOfPicks.rows[0].sum) * rtnOwners.length

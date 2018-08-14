@@ -18,12 +18,12 @@ function DraftManager(roomId, draftEmitter) {
     draftState = resp.draftState
     that.draftPosition = resp.draft_position
     that.draftOrder =  fantasyHelpers.GetDraftOrder(resp.total_teams,resp.draft_position.length)
-    that.allTeams = Array.from(resp.teams)
+    that.allTeams = Array.from(resp.allTeamsByRank)
     that.time = new Date(resp.start_time)- new Date()
     that.totalPicks = resp.totalPicks
     that.leagueId = resp.league_id
     that.owners = new Owners()
-    await that.owners.CreateOwners(resp.owners, resp.queueByOwner, roomId, resp.teams)
+    await that.owners.CreateOwners(resp.owners, resp.queueByOwner, roomId, resp.allTeamsByRank)
     that.counter = 0
   }
 

@@ -1,20 +1,20 @@
 const draftHelpers = require('../../routes/helpers/draftHelpers')
 
-function Owner(ownerId, draftRules, allTeams, teamMap) {
+function Owner(ownerId, draftRules, allTeamsByRank, teamMap) {
   this.ownerId = ownerId
 
-  const shuffle = (array) => {
-    for (let i = array.length - 1; i > 0; i--) {
-      let j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]]
-    }
-  }
+  // const shuffle = (array) => {
+  //   for (let i = array.length - 1; i > 0; i--) {
+  //     let j = Math.floor(Math.random() * (i + 1));
+  //     [array[i], array[j]] = [array[j], array[i]]
+  //   }
+  // }
 
   var queue = []
   var teams = []
   var here = false
-  shuffle(allTeams)
-  var eligibleTeams = [].concat(allTeams)
+  //shuffle(allTeamsByRank)
+  var eligibleTeams = [].concat(allTeamsByRank)
   var theDraftRules = JSON.parse(JSON.stringify(draftRules))
   
   this.TryUpdateQueue = (teamId) =>
@@ -34,7 +34,7 @@ function Owner(ownerId, draftRules, allTeams, teamMap) {
   
   this.ResetEligible = () =>
   {
-    eligibleTeams = [].concat(allTeams)
+    eligibleTeams = [].concat(allTeamsByRank)
     theDraftRules = JSON.parse(JSON.stringify(draftRules))
   }
 
