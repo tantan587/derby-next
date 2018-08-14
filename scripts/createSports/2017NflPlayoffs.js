@@ -1,5 +1,5 @@
-const knex = require('../server/db/connection')
-const asyncForEach = require('./asyncForEach')
+const knex = require('../../server/db/connection')
+const asyncForEach = require('../asyncForEach')
 
 const NFL_playoff_info = 
     [{
