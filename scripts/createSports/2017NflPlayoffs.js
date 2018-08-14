@@ -268,4 +268,4 @@ const updateNFL = async () =>{
     })
 }
 
-module.export = {updateNFL}
+module.exports = updateNFL
