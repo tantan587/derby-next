@@ -32,12 +32,12 @@ const runUpdate = async () => {
       await scriptSimulate.simulate(exitProcessInd,arr[1])
       break
     }
-    case '1':
+    case '1': //playoff schedule
     {
       await script1.createSchedule(exitProcessInd)
       break
     }
-    case '2':
+    case '2': //regular schedule
     {
       await script2.createSchedule(exitProcessInd)
       break

@@ -8,7 +8,8 @@ const resetTables = async (exitProcess) => {
     knex('sports.schedule').truncate(),
     knex('sports.team_info').truncate(),
     knex('sports.playoff_standings').truncate(),
-    knex('sports.premier_status').truncate()
+    knex('sports.premier_status').truncate(),
+    knex('fantasy.team_points').truncate()
   ])
     .then(()=>{
       if(exitProcess)

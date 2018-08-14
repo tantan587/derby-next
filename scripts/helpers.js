@@ -74,7 +74,7 @@ methods.createScheduleForInsert = function(cleanSched, sport_id, idSpelling, tea
       sport_id: sport_id,
       home_team_score: home_score !== null ? home_score : -1,
       away_team_score: away_score !== null ? away_score : -1,
-      winner: status[0] === 'F' ? home_score > away_score ? 'H' : away_score < home_score ? 'A' : 'T' : myNull,
+      winner: status[0] === 'F' ? home_score > away_score ? 'H' : away_score > home_score ? 'A' : 'T' : myNull,
       time: sport_id === '103' ? game.Outs === null ? myNull : game.Outs :
         sport_id === '107' ? game.Clock === null ? myNull : game.Clock :
           sport_id === '102' ? game.TimeRemaining === null ? myNull : game.TimeRemaining :
@@ -331,10 +331,12 @@ methods.updatePlayoffStandings = async (knex, newStandings) =>
       updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id, teamRec.sport_season_id,'playoff_wins', teamRec.playoff_wins, true )))
     if(oldStandings[teamRec.sport_season_id][teamRec.team_id].playoff_losses !== teamRec.playoff_losses)  
       updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id, teamRec.sport_season_id,'playoff_losses', teamRec.playoff_losses, true )))
-    if(oldStandings[teamRec.sport_season_id][teamRec.team_id].playoff_status !== teamRec.playoff_status)  
+    if(oldStandings[teamRec.sport_season_id][teamRec.team_id].playoff_status < teamRec.playoff_status)  
       updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id, teamRec.sport_season_id,'playoff_status', teamRec.playoff_status, true )))
-    if(oldStandings[teamRec.sport_season_id][teamRec.team_id].year !== teamRec.year)
-      updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id, teamRec.sport_season_id,'year', teamRec.year, true )))
+    if(oldStandings[teamRec.sport_season_id][teamRec.team_id].byes !== teamRec.byes)  
+      updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id, teamRec.sport_season_id,'byes', teamRec.byes, true )))
+    // if(oldStandings[teamRec.sport_season_id][teamRec.team_id].year !== teamRec.year)
+    //   updateList.push(Promise.resolve(methods.updateOneStandingRow(knex, teamRec.team_id, teamRec.sport_season_id,'year', teamRec.year, true )))
   })
   if (updateList.length > 0)
   {
