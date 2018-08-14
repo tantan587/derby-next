@@ -57,12 +57,11 @@ class TeamDisplay extends React.Component {
         else
           teamsToShow.push({...teams[teamId], queueOverride:{text:'Remove From Queue', icon:'Remove'},onClickOverride:this.removeItem, eligible:true, checkbox:true })
       })
-      
       teamsToShow = teamsToShow.map(x => {
-        return {...x, 
+        return activeLeague.teams[x.team_id] ? {...x, 
           projectedPoints:activeLeague.teams[x.team_id].proj_points,
           lastYearPoints:activeLeague.teams[x.team_id].lastYearPoints, 
-          ranking:activeLeague.teams[x.team_id].ranking }
+          ranking:activeLeague.teams[x.team_id].ranking } : x
       })
 
       teamsToShow.sort((x,y) => {return x.ranking > y.ranking ?  1 : - 1})
