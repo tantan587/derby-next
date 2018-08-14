@@ -8,6 +8,9 @@ import { withStyles } from '@material-ui/core/styles'
 import { handleOpenDialog } from '../../actions/dialog-actions.js'
 import { clickedOneTeam } from '../../actions/sport-actions.js'
 import SportIcon from '../Icons/SportIcon'
+import Tooltip from '@material-ui/core/Tooltip'
+import Icon from '@material-ui/core/Icon'
+import { Typography } from '../../../node_modules/@material-ui/core'
 
 const styles = () => ({
   deeppadding: {
@@ -69,17 +72,28 @@ class DerbyBody extends React.Component {
                     clickedOneTeam(n.team_id)}} src={n[header.id]} 
                   preserveAspectRatio='true'  style={{maxWidth:'40px', maxHeight:'40px'}}/>
               : header.button
-                ? <Button
-                  key={i}
-                  disabled={header.button.disabled && n[header.button.disabled]}
-                  classes={{root: classes.deepbutton}} // eslint-disable-line
-                  style={{color:header.button.color,
-                    backgroundColor:  header.button.disabled && n[header.button.disabled] ? header.button.disabledBackgroundColor : header.button.backgroundColor,
-                    fontStyle: header.button.disabled && n[header.button.disabled] ? 'italic' :'normal',
-                    fontSize:10, height:22, width:100}}
-                  onClick={() => header.button.onClickOverride && n['onClickOverride'] ? n['onClickOverride'](n[header.id]) : header.button.onClick(n[header.id])}>
-                  {header.button.labelOverride && n[header.button.labelOverride] || header.button.label}
-                </Button>
+                ? <Tooltip title={header.button.labelOverride && n[header.button.labelOverride] && 
+                n[header.button.labelOverride].text || header.button.label} placement='top'>
+                  <div>
+                    <Button
+                      key={i}
+                      disabled={header.button.disabled && n[header.button.disabled]}
+                      classes={{root: classes.deepbutton}} // eslint-disable-line
+                      style={{
+                        backgroundColor:  header.button.disabled && n[header.button.disabled] ? header.button.disabledBackgroundColor : header.button.backgroundColor,
+                        fontStyle: header.button.disabled && n[header.button.disabled] ? 'italic' :'normal',}}
+                      onClick={() => header.button.onClickOverride && n['onClickOverride'] ? n['onClickOverride'](n[header.id]) : header.button.onClick(n[header.id])}>
+                      {/* {header.button.labelOverride && n[header.button.labelOverride] || header.button.label} */}
+                      <Icon style={{height:18, width:18}}>
+                        <Typography style={{marginTop:-5, color:header.button.color, fontSize:18}}> 
+                          {
+                            header.button.labelOverride && n[header.button.labelOverride]
+                            && n[header.button.labelOverride].icon || header.button.iconLabel}
+                        </Typography>
+                      </Icon>
+                    </Button>
+                  </div>
+                </Tooltip>
                 : header.id == 'team_name' && n['team_name'] !== 'none' ?
                   <div
                     className={classes.teamName}

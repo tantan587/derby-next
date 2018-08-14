@@ -9,7 +9,7 @@ const DialogNextFive = ({ tableData, nextFive, }) =>
     <TableHead style={{ backgroundColor: '#229246' }}>
       <TableRow>
         <TableCell style={{ color: 'white' }}>Date</TableCell>
-        <TableCell style={{ color: 'white' }}>Opponent</TableCell>s
+        <TableCell style={{ color: 'white' }}>Opponent</TableCell>
         <TableCell style={{ color: 'white' }}>Location</TableCell>
         <TableCell style={{ color: 'white' }}>Derby Points</TableCell>
       </TableRow>

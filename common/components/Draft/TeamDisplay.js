@@ -39,7 +39,7 @@ class TeamDisplay extends React.Component {
   }
   render() {
     const page = 'draft-teams'
-    const {  draft, teams, allowDraft, contentFilter} = this.props
+    const {  draft, teams,activeLeague, allowDraft, contentFilter} = this.props
     const allTeams = draft.allTeams
     const queue = draft.queue
     let confs = []
@@ -49,14 +49,22 @@ class TeamDisplay extends React.Component {
     {
       allTeams.map(teamId => {
         if (draft.draftedTeams.includes(teamId))
-          teamsToShow.push({...teams[teamId],disableQueue:true, draftOverride:'Drafted', queueOverride:'Not eligible', eligible:false, checkbox:'Drafted' })
+          teamsToShow.push({...teams[teamId],disableQueue:true, draftOverride:{text:'Drafted', icon:'X'}, queueOverride:{text:'Not eligible', icon:'X'}, eligible:false, checkbox:'Drafted' })
         else if(!draft.eligibleTeams.includes(teamId))
-          teamsToShow.push({...teams[teamId],disableQueue:true, queueOverride:'Not eligible', eligible:false, checkbox:'Available' })
+          teamsToShow.push({...teams[teamId],disableQueue:true, queueOverride:{text:'Not eligible', icon:'X'}, eligible:false, checkbox:'Available' })
         else if(queue.indexOf(teamId) === -1)
           teamsToShow.push({...teams[teamId], eligible:true, checkbox:true})
         else
-          teamsToShow.push({...teams[teamId], queueOverride:'Remove',onClickOverride:this.removeItem, eligible:true, checkbox:true })
-      })    
+          teamsToShow.push({...teams[teamId], queueOverride:{text:'Remove', icon:'-'},onClickOverride:this.removeItem, eligible:true, checkbox:true })
+      })
+      
+      teamsToShow = teamsToShow.map(x => {
+        return {...x, 
+          projectedPoints:activeLeague.teams[x.team_id].proj_points,
+          lastYearPoints:activeLeague.teams[x.team_id].lastYearPoints, 
+          ranking:activeLeague.teams[x.team_id].ranking }
+      })
+
       R.values(contentFilter[page]).forEach(filter => {
         teamsToShow = Filterer(teamsToShow, filter)
         if(filter.type === 'tab'){
@@ -116,7 +124,7 @@ class TeamDisplay extends React.Component {
             {label: 'Team Name', key: 'team_name'},
             {label: 'Sport', key: 'sport_id', imageInd:true},
             {label: 'Conference', key: 'conference'},
-            {key: 'team_id', sortId:'eligible', label:'Eligible Teams',
+            {key: 'team_id', sortId:'eligible',
               button:{
                 disabledBackgroundColor:'#d3d3d3',
                 disabled:'disableQueue',
@@ -124,6 +132,7 @@ class TeamDisplay extends React.Component {
                 onClickOverride:'true',
                 onClick:this.addItem,
                 label:'Add to Queue',
+                iconLabel:'+',
                 color:'white',
                 backgroundColor: '#269349'//'#EBAB38',
               }},
@@ -134,11 +143,13 @@ class TeamDisplay extends React.Component {
                 labelOverride:'draftOverride',
                 onClick:this.draftTeam,
                 label:'Draft Team',
+                iconLabel:'✓',
                 color:'white',
                 backgroundColor: '#EBAB38',
               }},
-            {label: 'Record', key: 'record', sortId:'percentage'},
-            {label: 'Win Percentage', key: 'percentage'},
+            {label: 'Projected', key: 'projectedPoints'},
+            {label: 'Ranking', key: 'ranking'},
+            {label: 'Last Year Points', key: 'lastYearPoints'},
             // {label: 'Points', key: 'points'}
           ]}/>
       </div>
