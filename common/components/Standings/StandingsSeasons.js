@@ -1,5 +1,3 @@
-import React from 'react'
-
 const StandingsSeasons = () => <img
   src='/static/images/standings/Derby_Standings_BG_01.svg'
 />

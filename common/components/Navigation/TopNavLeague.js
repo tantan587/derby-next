@@ -94,7 +94,7 @@ class TopNavLeague extends React.Component {
             <div  className={classes.flex}>
               {this.setHoverToButton('extra', 1,  null, this.props.activeLeague.league_name)}
               {this.setHoverToButton('default', 2,  '/mainleaguestandings', 'Standings')}
-              {this.setHoverToButton('default', 3,  '/scoreboard', 'Scoreboard')}
+              {this.setHoverToButton('default', 3,  '/mainleaguescoreboard', 'Scoreboard')}
               {this.setHoverToButton('default', 4,  '/mainleagueroster', 'Rosters')}
               {this.setHoverToButton('default', 5, '/mainleagueteams', 'Teams')}
               {this.setHoverToButton('league', 6)}

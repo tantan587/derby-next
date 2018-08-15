@@ -57,6 +57,7 @@ class MenuListComposition extends React.Component {
         return <MenuItem key={i} disabled={item.disabled} onClick={() => this.handleCloseWithId(item.id, item.onClick)}>
           <Link href={item.link ? item.link : '/'}>
             <div
+              onClick={() => this.handleCloseWithId(item.id, item.onClick)}
               onMouseEnter={() => this.setHover(i+n)} 
               onMouseLeave={() => this.setHover(-1)} 
               style={{fontWeight:'bold',fontSize:16, height:17, color:hoverIndex===i+n?'#269349':'#555555'}}>

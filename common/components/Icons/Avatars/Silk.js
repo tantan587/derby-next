@@ -7,7 +7,6 @@ const Silk = ({ primary, secondary, style, pattern, darkPrimaryColorInd }) =>
     viewBox="-5 -5 80.7 73.3"
     style={{ ...{ height: 25, zIndex: 10}, ...style }}
   >
-    <title>Artboard 1</title>
     <g id="background">
       <polygon id="svg_3"  fill={ primary || '#CCCCCC' } points="61.87 67.01 54.06 37.52 50.29 65.05 21.71 65.05 17.94 37.52 10.13 67.01 0.3 67.01 9.16 16.34 26.76 6 26.76 0.25 45.24 0.25 45.24 6 62.84 16.34 71.7 67.01 61.87 67.01"/>
     </g>

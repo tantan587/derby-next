@@ -87,7 +87,7 @@ class Index extends React.Component {
   
 
   render() {
-    const {classes} = this.props
+    const {classes, user} = this.props
     const howToPlay = [
       {name:'1) Create Your Free Account', src:'/static/icons/HowToPlayIcons/CreateAccount.svg', link:'/signup'}, //create account
       {name:'2) Join a League of Friends', src:'/static/icons/HowToPlayIcons/DraftTeam.svg', link:'/participate'}, //particpate form remove protection 
@@ -127,14 +127,19 @@ class Index extends React.Component {
             }
             <br/>
             <br/>
-            <Link href="/signup">
-              <Button style={{color:'white', backgroundColor:'#ebab38',height:50, width:125}}>
-              
-                <div>
-                  sign up
-                </div>
-              </Button>
-            </Link>
+            {
+              !user.loggedIn ? 
+                <Link href="/signup">
+                  <Button style={{color:'white', backgroundColor:'#ebab38',height:50, width:125}}>
+                  
+                    <div>
+                      sign up
+                    </div>
+                  </Button>
+                </Link>
+                : null
+            }
+            
             <br/>
             <br/>
             <br/>
