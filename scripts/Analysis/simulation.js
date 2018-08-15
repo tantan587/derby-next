@@ -70,7 +70,7 @@ const simulateProfessionalLeague = (all_games_list, teams, sport_id, points, sim
   let game_projections = []
   let all_seasons_sport_teams = []
   years.forEach(year => { 
-    let sport_teams = individualSportTeamsWithYear(teams, sport_id, year)
+    let sport_teams = simulateHelpers.individualSportTeamsWithYear(teams, sport_id, year)
     if(seasonsFinished[sport_id][year]){
       sport_teams.forEach(team =>
       {
@@ -132,7 +132,7 @@ const simulateCFB = (all_games_list, teams, points, simulations = 10) => {
   let game_projections = []
   let all_seasons_cfb_teams = []
   years.forEach(year => { 
-    let cfb_teams = individualSportTeamsWithYear(teams, '105', year)
+    let cfb_teams = simulateHelpers.individualSportTeamsWithYear(teams, '105', year)
     if(seasonsFinished[105][year]){
       cfb_teams.forEach(team =>{
         team.reset()
@@ -214,7 +214,7 @@ const simulateCBB = (all_games_list, teams, points, simulations = 10) => {
   let game_projections = []
   let all_seasons_cbb_teams = []
   years.forEach(year => {
-    let cbb_teams = individualSportTeamsWithYear(teams, '106', year)
+    let cbb_teams = simulateHelpers.individualSportTeamsWithYear(teams, '106', year)
     if(seasonsFinished[106][year]){
       cbb_teams.forEach(team => {
         team.reset()
@@ -316,7 +316,7 @@ const simulateEPL = (all_games_list, teams, points, simulations = 10) => {
   let game_projections = []
   let all_seasons_epl_teams = []
   years.forEach(year => { 
-    const epl_teams = individualSportTeamsWithYear(teams, '107', year)
+    const epl_teams = simulateHelpers.individualSportTeamsWithYear(teams, '107', year)
     if(seasonsFinished[107][year]){
       epl_teams.forEach(team =>{
         team.reset()
@@ -357,10 +357,7 @@ const simulateEPL = (all_games_list, teams, points, simulations = 10) => {
   return [all_seasons_epl_teams, game_projections]
 
 }
-const individualSportTeamsWithYear = (all_teams, sport_id, year) => {
-  let sport_teams = Object.keys(all_teams[sport_id][year]).map(team => {return all_teams[sport_id][year][team]})
-  return sport_teams
-}
+
 
 //variable that stores conferences for each sport. CBB is missing 10617, which is independents.
 const league_conference = {

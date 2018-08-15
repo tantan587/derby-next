@@ -90,19 +90,31 @@ const getSchedInfo = async (knex, sportName, api, promiseToGet, year, sport_seas
     let standings_for_insert = Object.keys(playoff_standings).map(key => playoff_standings[key])
     let standings_updated = await db_helpers.updatePlayoffStandings(knex, standings_for_insert)
     console.log('CBB playoff standings updated: ', standings_updated)
+  
+  // }else if(sportName==='MLB' && schedInfo.length>0){
+  //   //this isn't doing anything yet. Will eventually be used to find playoff byes for baseball
+  //   let non_byes = [schedInfo[0].home_team_id, schedInfo[0].away_team_id, schedInfo[1].home_team_id, schedInfo[1].away_team_id]
+  //   let playoff_teams = await knex('sports.playoff_standings').where('team_id','<',103999).andWhere('team_id','>',103000).andWhere('playoff_status','>',2).whereNot('byes',1).select('team_id')
+  //   if(playoff_teams>4){
+  //     let playoff_team_ids = playoff_teams.map(team => team.team_id)
+  //     let byes = []
+  //     playoff_team_ids.forEach(team =>{
+  //       if(!(non_byes.includes(team))){
+  //         byes.push(team)
+  //       }
+  //     })
+      // asyncForEach(playoff_team_ids, (team) => {
+      //   if(!(non_byes.includes(team.team_id))){
+      //     await knex('sports.playoff_standings')
+      //       .where('team_id', team.team_id)
+      //       .andWhere('sport_season_id', sport_season_id)
 
-  }else if(sportName==='MLB' && schedInfo.length>0){
-    //this isn't doing anything yet. Will eventually be used to find playoff byes for baseball
-    let non_byes = [schedInfo[0].home_team_id, schedInfo[0].away_team_id, schedInfo[1].home_team_id, schedInfo[1].away_team_id]
-    let playoff_teams = await knex('sports.playoff_standings').where('team_id','<',103999).andWhere('team_id','>',103000).andWhere('playoff_status','>',2).select('team_id')
-    let playoff_team_ids = playoff_teams.map(team => team.team_id)
-    let byes = []
-    playoff_team_ids.forEach(team =>{
-      if(!(non_byes.includes(team))){
-        byes.push(team)
-      }
-    })
-  }
+      //   }
+
+      // })
+    }
+
+  
   //console.log('here')
   //console.log(stadiumInfo[0])
   return schedInfo

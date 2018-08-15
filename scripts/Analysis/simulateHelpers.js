@@ -2,6 +2,11 @@ const leagues = require('./leagues.js')
 const math = require('mathjs')
 
 
+const individualSportTeamsWithYear = (all_teams, sport_id, year) => {
+    let sport_teams = Object.keys(all_teams[sport_id][year]).map(team => {return all_teams[sport_id][year][team]})
+    return sport_teams
+  }
+
 //Function to simulate an entire series - round is what round of the playoffs this is (1,2,3, etc.)
 const Series = (home, away, games, sport_id, round, neutral=false) => {
     round--
@@ -219,4 +224,4 @@ const fantasyProjections = (all_teams, day, points, sport_structures, year_seaso
     return data_for_insert
 }
 
-module.exports = {Series, moreWins, simulateGame, updateProjections, simulateNHLGame, createImpactArray, fantasyProjections, simulateBowlGame, simulateEPLGame}
+module.exports = {Series, moreWins, simulateGame, updateProjections, simulateNHLGame, createImpactArray, fantasyProjections, simulateBowlGame, simulateEPLGame, individualSportTeamsWithYear}
