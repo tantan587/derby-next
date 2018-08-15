@@ -34,7 +34,7 @@ const pullPastGames = (knex, day) =>
 {
     return knex('sports.schedule')
         .where('sports.schedule.day_count', "<", day) //need to test if want to go past today, or e this day count
-        .where('season_type',1) 
+        //.where('season_type',1) 
         .select('*')
         .then(game => {
             //console.log(game)
@@ -163,7 +163,7 @@ const createPastGamesArrayWithScores = async (knex, all_teams, day) => {
     return pullPastGames(knex, day)
     .then(games => {
         games.forEach(game => {
-            all_games[game.sport_id].push(new Game(game.global_game_id, all_teams[game.sport_id][game.home_team_id], all_teams[game.sport_id][game.away_team_id], game.sport_id, game.home_team_score, game.away_team_score))
+            all_games[game.sport_id].push(new Game(game.global_game_id, all_teams[game.sport_id][game.year][game.home_team_id], all_teams[game.sport_id][game.year][game.away_team_id], game.sport_id, game.sport_season_id, game.year, game.home_team_score, game.away_team_score))
         })
     return all_games
     })}

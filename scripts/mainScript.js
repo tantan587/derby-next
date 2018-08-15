@@ -6,6 +6,7 @@ const script5 = require('./updateDayOfSchedule')
 const scriptReset = require('./tableReset')
 const scriptSimulate = require('./Analysis/simulation')
 const scriptAll = require('./createSports/createAllSports')
+const scriptPoints = require('./updateFantasyPointsOnly')
 const asyncForEach = require('./asyncForEach')
 
 const runUpdate = async () => {
@@ -32,6 +33,7 @@ const runUpdate = async () => {
       await scriptSimulate.simulate(exitProcessInd,arr[1])
       break
     }
+
     case '1': //playoff schedule
     {
       await script1.createSchedule(exitProcessInd)
@@ -59,6 +61,11 @@ const runUpdate = async () => {
     case '5':
     {
       await script5.updateBoxScoreJSON(exitProcessInd, arr[1])
+      break
+    }
+
+    case 'points': {
+      await scriptPoints.updatePoints(exitProcessInd)
       break
     }
     default:
