@@ -76,7 +76,7 @@ class SignupForm extends React.Component {
       this.setState({loading: true}, () => {
         onSignup(...R.props(['username', 'first_name', 'last_name', 'email', 'password'], this.state))
           .then((response) => {
-            const {id} = this.props.user
+            const {id} = response
             response.type === 'SIGNUP_FAIL'
               ? this.setState({dirty: false, loading: false, errors: Object.assign(
                 {},

@@ -91,7 +91,7 @@ class ScoreCard extends Component {
           />
           <TeamScoreRow totalInd={totalInd} classes={classes} team={scoreboardData.away}/>
           <TeamScoreRow totalInd={totalInd} classes={classes} team={scoreboardData.home}/>
-          <Typography className={classes.venue} variant="caption"><b>Location</b>{': ' + scoreboardData.stadium}</Typography>
+          {/* <Typography className={classes.venue} variant="caption"><b>Location</b>{': ' + scoreboardData.stadium}</Typography> */}
         </Grid>
         {useRightSide ? 
           <Grid
