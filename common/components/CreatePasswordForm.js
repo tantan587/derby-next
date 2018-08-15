@@ -1,6 +1,5 @@
 const R = require('ramda')
-import React, {Component} from 'react'
-import Link from 'next/link'
+import {Component} from 'react'
 import { connect } from 'react-redux'
 import {withRouter} from 'next/router'
 import autobind from 'react-autobind'
@@ -57,7 +56,7 @@ class CreatePasswordForm extends Component {
 
   handleSubmit(e) {
     e.preventDefault()
-    const {onCreatePassword, router} = this.props
+    const {onCreatePassword} = this.props
     this.setState({loading: true}, () => {
       onCreatePassword(...R.props(['username', 'password', 'newPassword'], this.state))
         .then(() => {

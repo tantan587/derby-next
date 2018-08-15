@@ -204,11 +204,16 @@ Playoff Qualification bonus points are awarded at the conclusion of the given sp
         <Top />
         <B>2. All Teams Active.</B> All teams are active for every game. No “bench” feature exists.
         <Top />
-        <B>3. Points-Based Scoring.</B> Scoring is “points-only” style; all Derby league members compete against each other throughout the entire season.
+        <B>3. Points-Based Scoring.</B> Scoring is “points-only” style; all Derby league members compete against each other 
+        throughout the entire season.
         <Top />
-        <B>4. Score Updates.</B> Derby scores are updated at the conclusion of each game. Scores are subject to any changes promulgated by the governing body of each sport (e.g., NFL, NCAA)
+        <B>4. Score Updates.</B> Derby scores are updated at the conclusion of each game. Scores are subject to
+         any changes promulgated by the governing body of each sport (e.g., NFL, NCAA)
         <Top />
-        <B>5. Private Leagues; Renewal of Leagues.</B> Derby leagues are all private and renewed. Each League will have a commissioner who invites new players to the league and administers functions throughout the season. Leagues are automatically renewed, though commissioners can choose to alter the number of rosters and the members of each league with each new cycle, so long as the overall number of rosters remains between 8 and 15.
+        <B>5. Private Leagues; Renewal of Leagues.</B> Derby leagues are all private and renewed. Each League will
+         have a commissioner who invites new players to the league and administers functions throughout the season.
+          Leagues are automatically renewed, though commissioners can choose to alter the number of rosters and the
+           members of each league with each new cycle, so long as the overall number of rosters remains between 8 and 15.
       </H3>
     </div>
     <br/>
