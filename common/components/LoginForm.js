@@ -22,7 +22,7 @@ const styles = (theme) => ({
     }
   },
   title: {
-    fontFamily: 'HorsebackSlab',
+    fontFamily: 'museo-slab-bold',
     color: theme.palette.primary.main,
   },
   textField: {
@@ -111,7 +111,7 @@ class LoginForm extends Component {
           gutterBottom
           align="center"
         >
-          Login
+          LOG IN
         </Typography>
         {FIELDS.map(this.renderField)}
         <Button

@@ -9,7 +9,9 @@ import Paper from '@material-ui/core/Paper'
 import MenuItem from '@material-ui/core/MenuItem'
 import MenuList from '@material-ui/core/MenuList'
 import { withStyles } from '@material-ui/core/styles'
-import Link from 'next/link'
+const R = require('ramda')
+import {withRouter} from 'next/router'
+
 
 const styles = theme => ({
   paper: {
@@ -34,9 +36,11 @@ class MenuListComposition extends React.Component {
     this.setState({ open: false })
   }
 
-  handleCloseWithId = (id, onClick) => {
+  handleCloseWithId = (id, onClick, link) => {
 
-    const {handleClick} = this.props
+    const {handleClick, router} = this.props
+
+    router.push(link || '/')
     if (id && handleClick && typeof id === 'string')
       handleClick(id)
 
@@ -54,15 +58,12 @@ class MenuListComposition extends React.Component {
   {
     return <MenuList role="menu" style={{display:'flex', flexDirection:'column'}}>
       {items.map((item, i) => { 
-        return <MenuItem key={i} disabled={item.disabled} onClick={() => this.handleCloseWithId(item.id, item.onClick)}>
-          <Link href={item.link ? item.link : '/'}>
-            <div
-              onClick={() => this.handleCloseWithId(item.id, item.onClick)}
-              onMouseEnter={() => this.setHover(i+n)} 
-              onMouseLeave={() => this.setHover(-1)} 
-              style={{fontWeight:'bold',fontSize:16, height:17, color:hoverIndex===i+n?'#269349':'#555555'}}>
-              {item.text}</div>                
-          </Link>
+        return <MenuItem key={i} disabled={item.disabled} onClick={() => this.handleCloseWithId(item.id, item.onClick, item.link)}> 
+          <div
+            onMouseEnter={() => this.setHover(i+n)} 
+            onMouseLeave={() => this.setHover(-1)} 
+            style={{fontWeight:'bold',fontSize:16, height:17, color:hoverIndex===i+n?'#269349':'#555555'}}>
+            {item.text}</div>                
         </MenuItem>
       })
       }
@@ -141,4 +142,7 @@ MenuListComposition.propTypes = {
   classes: PropTypes.object.isRequired,
 }
 
-export default withStyles(styles)(MenuListComposition)
+export default R.compose(
+  withRouter,
+  withStyles(styles)
+)(MenuListComposition)

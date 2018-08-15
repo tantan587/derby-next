@@ -35,10 +35,10 @@ class ManageEmails extends Component {
     const { classes } = this.props
     const { post, notifications } = this.state
 
-    const reportsCopy = 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard Lorem Ipsum is simply dummy text of the printing and typesetting industry.'
-    const postCopy = 'Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur'
-    const notificationsCopy = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate'
-    const noticesCopy = 'On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in'
+    const reportsCopy = 'We may send you a few different types of emails. Here’s our promise to you: we won’t spam your inbox, and we won’t sell access to your email to third parties. You can toggle most of them on and off here. Some critical emails are required.'
+    const postCopy = 'The Post is our review and preview of strategy tips, key games, and fun facts relating to Derby’s games. Occasionally, The Post may contain commercial offers via third-party partners that we think will improve your Derby experience. Once we launch it, we will send The Post approximately every Monday and Friday'
+    const notificationsCopy = 'League Notifications are specific to you and your league mates and will contain information such as updates to your draft date and time, league renewal information, or other material your league commissioner may wish to send you. Though you should expect a few more notifications in between the time when you register for your league and when you draft, we strive to keep League Notifications to the minimum number needed to guide you through your Derby season'
+    const noticesCopy = 'Sometimes, we are required by law to update you on changes to certain company policies. Sometimes we need to let you know of modifications to our services that require action on your part. As part of registration on our site, you consent to our right to send these emails when they are necessary. And we hope as much as you do that they are very rarely necessary'
 
     return (
       <div className={classes.root}>

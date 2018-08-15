@@ -8,7 +8,7 @@ import Router from 'next/router'
 
 import { connect } from 'react-redux'
 
-const styles = {
+const styles = (theme) =>  ({
   container: {
     left: '50%',
     textAlign: 'center',
@@ -16,8 +16,12 @@ const styles = {
   },
   field: {
     textAlign: 'center',
-  }
-}
+  },
+  title: {
+    fontFamily: 'museo-slab-bold',
+    color: theme.palette.primary.main,
+  },
+})
 
 class Logout extends React.Component {
   
@@ -46,8 +50,13 @@ class Logout extends React.Component {
     else{
       return (
         <form className={classes.container} noValidate autoComplete="off">
-          <Typography variant="display2" style={{color:'black'}} gutterBottom>
-            Logout?
+          <Typography
+            className={classes.title}
+            variant="display1"
+            gutterBottom
+            align="center"
+          >
+            LOG OUT?
           </Typography>
           
           <br/>

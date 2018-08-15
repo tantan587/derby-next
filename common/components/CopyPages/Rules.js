@@ -50,20 +50,16 @@ const RulesPage = withStyles(theme => ({
         <UL>Regular Season Win: 2 points</UL>
         <UL>Playoff Win: 5 points</UL>
         <UL>Playoff Bye (i.e. winning regular season division title): 5 points</UL>
-        <UL>Milestone bonus #1: 81-89 wins: +15 points</UL>
-        <UL>Milestone bonus #2: 90-98 wins: +15 points</UL>
-        <UL>Milestone bonus #3: 99+ wins: +15 points</UL>
+        <UL>Milestone bonus: Reach 85 wins: +25 points</UL>
       </H3></Indent>
       <Top />
       <Indent><H3>
         NHL
 
-        <UL>Regular Season Wins: 4 points</UL>
-        <UL>Regular Season Overtime Loss: 2 points</UL>
-        <UL>Playoff Win: 4 points</UL>
-        <UL>Milestone bonus #1: 92-99 NHL standings points: +15 points</UL>
-        <UL>Milestone bonus #2: 100-108 NHL standings points: +15 points</UL>
-        <UL>Milestone bonus #3: 109+ NHL standings points: +15 points</UL>
+        <UL>Regular Season Wins: 3 points</UL>
+        <UL>Regular Season Overtime Loss: 1.5 points</UL>
+        <UL>Playoff Win: 3 points</UL>
+        <UL>Milestone: Reach 100 standings points: +25 points</UL>
       </H3></Indent>
       <Top />
       <Indent><H3>
@@ -193,6 +189,8 @@ Playoff Qualification bonus points are awarded at the conclusion of the given sp
         <B>5. Private Leagues; Renewal of Leagues.</B> Derby leagues are all private and renewed. Each League will have a commissioner who invites new players to the league and administers functions throughout the season. Leagues are automatically renewed, though commissioners can choose to alter the number of rosters and the members of each league with each new cycle, so long as the overall number of rosters remains between 8 and 15.
       </H3>
     </div>
+    <br/>
+    <br/>
   </div>
 )
 

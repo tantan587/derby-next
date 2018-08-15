@@ -112,7 +112,7 @@ class MainLeagueHome extends React.Component {
               scroll
               Button={() => <StyledButton text="View Complete Standings" link='/mainleaguestandings'/>}
             >
-              <Standings owners={owners.sort((a, b) => a.rank - b.rank)} />
+              <Standings owners={owners.sort((x,y) => x.rank > y.rank ? 1 : -1)} />
             </Card>
 
             {/* <Card title="The Wire" scroll>

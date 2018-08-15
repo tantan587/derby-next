@@ -69,8 +69,6 @@ class TeamDisplay extends React.Component {
         x.ranking = i+1
       })
 
-      console.log(teamsToShow)
-
       R.values(contentFilter[page]).forEach(filter => {
         teamsToShow = Filterer(teamsToShow, filter)
         if(filter.type === 'tab'){
