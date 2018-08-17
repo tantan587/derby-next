@@ -7,9 +7,9 @@ const asyncForEach = require('./asyncForEach')
 const sport_JSON_functions = require('./scheduleJsons')
 
 
-const create_data = async () => {
+const create_data = async (all) => {
   let data = []
-  let season_calls = await db_helpers.getSeasonCall(knex)
+  let season_calls = await db_helpers.getSeasonCall(knex, all)
   let regular_season_calls = season_calls.filter(season => season.season_type === 1)
   await asyncForEach(regular_season_calls, async (season) => {
     let sport_id = season.sport_id
@@ -19,9 +19,10 @@ const create_data = async () => {
   return data
 }
 
-async function createSchedule(exitProcess)
+async function createSchedule(exitProcess, reset='false')
 {
-  let data = await create_data()
+  let data = await create_data(reset)
+
   
 
   // let cbbData = await getSchedInfo(knex, 'CBB', 'CBBv3ScoresClient', 'getSchedulesPromise','2018')

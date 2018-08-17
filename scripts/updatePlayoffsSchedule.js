@@ -7,9 +7,9 @@ const sport_keys = require('./sportKeys')
 const asyncForEach = require('./asyncForEach')
 
 
-const create_data = async () => {
+const create_data = async (all) => {
   let data = []
-  let season_calls = await db_helpers.getSeasonCall(knex)
+  let season_calls = await db_helpers.getSeasonCall(knex, all)
   let post_season_calls = season_calls.filter(season => season.season_type === 3)
   await asyncForEach(post_season_calls, async (season) => {
     let sport_id = season.sport_id
@@ -20,9 +20,10 @@ const create_data = async () => {
 
   return data
 }
-const createSchedule = async (exitProcess) => 
+
+const createSchedule = async (exitProcess, reset = false) => 
 {
-  let data = await create_data()
+  let data = await create_data(reset)
   // let CBB_schedPO = await getSchedInfo(knex, 'CBB', 'CBBv3ScoresClient', 'getTournamentHierarchyPromise','2018POST')
   // let MLB_schedPO = await getSchedInfo(knex, 'MLB', 'MLBv3StatsClient', 'getSchedulesPromise', '2017POST')
   // let NBA_schedPO = await getSchedInfo(knex, 'NBA', 'NBAv3ScoresClient', 'getSchedulesPromise','2017POST')

@@ -22,10 +22,21 @@ const runUpdate = async () => {
     switch (arr[0]) {
     case 'reset':
     {
-      await scriptReset.resetTables(exitProcessInd)
+      await scriptReset.resetTables()
+      await scriptAll.createSports()
+      await script1.createSchedule(false, true)
+      await script2.createSchedule(false, true)
+      await script3.createStandingsPO(false, true)
+      await script4.updateStandings(false, true)
+      // await asyncForEach([101,102,103,104,105,106,107], async (sport_id) => {
+      //   await script5.updateBoxScoreJSON(false, ['previous', sport_id])
+      // })
+      await scriptPoints.updatePoints()
+      await scriptAfterSeasonElos.adjustElosAfterSeason(false,'all')
+      await scriptSimulate.simulate(exitProcessInd, 10) //setting this for ten on reset to make sure it doesn't take as long - aferwards should run simulate
       break
     }
-    case 'allSports':
+    case 'allSports': 
     {
       await scriptAll.createSports(exitProcessInd)
       break

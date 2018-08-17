@@ -94,7 +94,7 @@ const sport_new_years = {
     106: 2019,
     107: 2019
 }
-
+//all adjust values below are just for this upcoming season
 const nba_adjust = {
     101106: -1, //Cavaliers
     101103: -0.3, //Nets
@@ -678,15 +678,17 @@ const copy_epl_elo = async () => {
 }
 
 const adjustElosAfterSeason = async (exitProcess, sports='baseball') => {
-    await adjustPastElosBySportEOS(102)
     if(sports === 'all'){
         await updatePastElos(knex)
         await adjustPastElosBySportEOS(101)
+        await adjustPastElosBySportEOS(102)
         await adjustPastElosBySportEOS(103)
         await adjustPastElosBySportEOS(104)
         await adjustPastElosBySportEOS(105)
         await adjustPastElosBySportEOS(106)
         await copy_epl_elo()
+    }else{
+        await adjustPastElosBySportEOS(102)
     }
     if(exitProcess)
         process.exit()

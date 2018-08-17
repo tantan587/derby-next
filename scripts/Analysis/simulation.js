@@ -13,7 +13,7 @@ const updateGameProjections = require('./updateGameProjections')
 
 //this is the overall simulate function - runs for each sport
 //eventually needs to add in how it detects if in the middle of a season
-async function simulate(exitProcess, simulations = 10)
+async function simulate(exitProcess, simulations = 10000)
 {
   console.log('Simulation with ' + simulations + ' simulations')
   const sport_structures = await dbSimulateHelpers.getSportStructures(knex)
@@ -24,7 +24,7 @@ async function simulate(exitProcess, simulations = 10)
   //let all_points = await points.getPointsStructure(knex)
   var today = new Date()
   //this is the calculation of day count normally:
-  let day_count = getDayCount(today) +1 //note that this is changed
+  let day_count = getDayCount(today)
   //this is the first day of the season of 2017
   //day_count = 1469
   /* this to be added back in later
