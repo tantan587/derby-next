@@ -1,8 +1,8 @@
 const knex = require('../../server/db/connection')
 const math = require('mathjs')
 const getDayCount = require('./dayCount.js')
-
-
+const asyncForEach = require('../asyncForEach')
+const updatePastElos = require('./updatePastElos')
 
 const adjustPastElosBySportEOS = async (sport_id) => {
     let teams = 
@@ -45,24 +45,44 @@ const adjustPastElosBySportEOS = async (sport_id) => {
         Object.keys(elos_by_conference).forEach(conference => {
             average_elo_by_conference[conference] = math.mean(elos_by_conference[conference])
         })
-        let mult_factor = sport_id===106 ? 3 : 1
         teams_for_insert = teams.map(team => {
             let offseason_adjustment = 0
             if(team.team_id in adjust_objects_by_sport[sport_id]){
-                offseason_adjustment = adjust_objects_by_sport[sport_id][team.team_id] * standard_dev * mult_factor
+                offseason_adjustment = adjust_objects_by_sport[sport_id][team.team_id] * standard_dev
             }
             let new_elo = (average_elo_by_conference[team.conference] + 2 * team.elo)/3 + offseason_adjustment
             return {team_id: team.team_id, elo: new_elo, year: sport_new_years[sport_id]}
         })
     }
     
-    await knex('analysis.current_elo')
-        .insert(teams_for_insert)
+    await updateElos(teams_for_insert, sport_id)
     
     let historical_teams = teams_for_insert.map(team => {
         return {...team, day_count: day_count}
     })
     console.log(`Sport_id: ${sport_id}, teams inserted: ${teams_for_insert.length}, average: ${average_elo}, standard dev: ${standard_dev}`)
+}
+
+const updateElos = async (teams_for_insert, sport_id) => {
+    let current_elos =      
+        await knex('analysis.current_elo')
+            .leftOuterJoin('sports.team_info', 'sports.team_info.team_id', 'analysis.current_elo.team_id')
+            .where('sport_id',sport_id)
+            .where('year', sport_new_years[sport_id])
+            .select('*')
+
+    if(current_elos.length>0){
+        await asyncForEach(teams_for_insert, async (team) => {
+            await knex('analysis.current_elo')
+                .where('team_id', team.team_id)
+                .andWhere('year', team.year)
+                .update('elo', team.elo)
+        })
+    }else{
+        await knex('analysis.current_elo')
+            .insert(teams_for_insert)
+    }
+
 }
 
 const sport_new_years = {
@@ -657,17 +677,21 @@ const copy_epl_elo = async () => {
 
 }
 
-const adjustElosAfterSeason = async () => {
-    await adjustPastElosBySportEOS(101)
+const adjustElosAfterSeason = async (exitProcess, sports='baseball') => {
     await adjustPastElosBySportEOS(102)
-    await adjustPastElosBySportEOS(103)
-    await adjustPastElosBySportEOS(104)
-    await adjustPastElosBySportEOS(105)
-    await adjustPastElosBySportEOS(106)
-    await copy_epl_elo()
-    process.exit()
+    if(sports === 'all'){
+        await updatePastElos(knex)
+        await adjustPastElosBySportEOS(101)
+        await adjustPastElosBySportEOS(103)
+        await adjustPastElosBySportEOS(104)
+        await adjustPastElosBySportEOS(105)
+        await adjustPastElosBySportEOS(106)
+        await copy_epl_elo()
+    }
+    if(exitProcess)
+        process.exit()
 }
 
-adjustElosAfterSeason()
+module.exports = {adjustElosAfterSeason}
 
 //copy_epl_elo()

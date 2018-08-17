@@ -8,6 +8,9 @@ const scriptSimulate = require('./Analysis/simulation')
 const scriptAll = require('./createSports/createAllSports')
 const scriptPoints = require('./updateFantasyPointsOnly')
 const asyncForEach = require('./asyncForEach')
+const scriptAfterSeasonElos = require('./Analysis/adjustElosAfterSeason')
+const updateElos = require('./Analysis/updateElo')
+const updateEplElos = require('./Analysis/updateEloEPL')
 
 const runUpdate = async () => {
   await asyncForEach(process.argv, async (val,i) => {
@@ -67,6 +70,17 @@ const runUpdate = async () => {
     case 'points': {
       await scriptPoints.updatePoints(exitProcessInd)
       break
+    }
+
+    //'all': to set all elos after Season
+    case 'afterSeasonElos': {
+      await scriptAfterSeasonElos.adjustElosAfterSeason(exitProcessInd, arr[1])
+    }
+
+    //currently set to update epl, and regular. 
+    case 'elo': {
+      await updateEplElos.updateEplElo()
+      await updateElos.updateElos(exitProcessInd)
     }
     default:
     {
