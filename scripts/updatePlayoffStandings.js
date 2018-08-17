@@ -28,7 +28,7 @@ async function createStandingsPO (exitProcess, all=false) {
     
   //let data = MLB_standPO.concat(NBA_standPO).concat(NHL_standPO).concat(NFL_standPO)//.concat(CBB_standPO).concat(CFB_standPO)//.concat(EPL_standPO)
   let result = await db_helpers.updatePlayoffStandings(knex, data)
-  console.log('Number of Standings Updated: ' + result)
+  console.log('Number of Playoff Standings Updated: ' + result)
   if(exitProcess)
     process.exit()
 }

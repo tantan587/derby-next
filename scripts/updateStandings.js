@@ -31,9 +31,8 @@ async function updateStandings(exitProcess, all=false)
 
   let result =  await db_helpers.updateStandings(knex, data)
   console.log('Number of Standings Updated: ' + result)
-  await fantasyHelpers.updateTeamPoints()
-  await fantasyHelpers.updateLeaguePoints()
-  console.log('im done')
+  // await fantasyHelpers.updateTeamPoints()
+  // await fantasyHelpers.updateLeaguePoints()
   if(exitProcess)
     process.exit()
 
