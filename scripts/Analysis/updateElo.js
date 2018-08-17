@@ -4,12 +4,13 @@ const getDayCount = require('./dayCount.js')
 const rpiUpdate = require('./cbbRPItracker')
 
 
-const updateOneElo = (knex, team_id, team_elo) =>
+const updateOneElo = (knex, team_id, team_elo, year) =>
 {
     return knex
         .withSchema('analysis')
         .table('current_elo')
         .where('team_id', team_id)    
+        .andWhere('year', year)
         .update('elo',team_elo)
         .then(() => {
             var today = new Date()
@@ -26,7 +27,8 @@ const getTodaysGames = (knex) =>
     const today = new Date()
     let dayCount = getDayCount(today)
     return knex('sports.schedule')
-        .where('sports.schedule.day_count', dayCount)
+        .where('sports.schedule.day_count', dayCount-1)
+        .whereIn('status', ['Final', 'F/OT', 'F/SO'])
         .innerJoin('analysis.current_elo as a', function(){
             this.on('sports.schedule.home_team_id', '=','a.team_id').andOn('sports.schedule.year', '=', 'a.year')})
         .leftJoin('analysis.current_elo as b', function(){
@@ -34,7 +36,6 @@ const getTodaysGames = (knex) =>
         //.innerJoin('analysis.elo', 'sports.schedule.away_team_id', 'analysis.elo.team_id')
         .select('sports.schedule.*', 'a.elo as home_team_elo','b.elo as away_team_elo')
         .then(game => {
-            console.log(game)
             return game})
     }
 
@@ -61,12 +62,11 @@ async function calculate_new_elos()
             let elo_adjust = leagues[game.sport_id].elo_adjust //needs to be adjusted for playoffs, with different elo-adjust. 
             let home_win_chance = 1/(Math.pow(10,(-1*elo_difference/400))+1)
             let margin_adjust = leagues[game.sport_id].MOVmod(margin, elo_difference)
-            console.log(margin_adjust)
             let home_new_elo = Number(game.home_team_elo) + elo_adjust*(home_win_value-home_win_chance)*margin_adjust
             let away_new_elo = Number(game.away_team_elo) + elo_adjust*(home_win_chance-home_win_value)*margin_adjust //Same thing as awayVal-awayWin: math follows: 1-winVal - (1-winChance) = 1 - winVal - 1 + winChance = winChance-winVal
             //updateElos(knex, game.home_team_id, home_new_elo)
             //updateElos(knex, game.away_team_id, away_new_elo)
-            new_elos.push({team_id: game.home_team_id, elo: home_new_elo},{team_id: game.away_team_id, elo: away_new_elo})
+            new_elos.push({team_id: game.home_team_id, elo: home_new_elo, year: game.year},{team_id: game.away_team_id, elo: away_new_elo, year: game.year})
             //for college basketball rpi
             game.sport_id === '106' ? (
                 any_cbb = true,
@@ -88,14 +88,15 @@ async function calculate_new_elos()
     .catch(function(err){console.log('mistake')})
 }
 
-async function updateElos()
+async function updateElos(exitProcess)
 {
     let elo_adjusted = await calculate_new_elos()
     for(team in elo_adjusted){
-        let prom = await updateOneElo(knex, elo_adjusted[team]['team_id'], elo_adjusted[team]['elo'])
+        let prom = await updateOneElo(knex, elo_adjusted[team]['team_id'], elo_adjusted[team]['elo'], elo_adjusted[team]['year'])
     }
-    process.exit()
+    if(exitProcess)
+        process.exit()
 }
 
-updateElos()
+module.exports = {updateElos}
 

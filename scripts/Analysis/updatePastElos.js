@@ -39,8 +39,7 @@ const updatePastElos = async (knex) => {
     //below won't work, since it is just for one game, i don't think...
     //any_cbb ? rpiUpdate.cbbUpdateAllRpi(home_wins, away_wins, neutral_wins, home_losses, away_losses, neutral_losses) : 0
     await deleteAndUpdateElos(knex, team_object, day_count)
-    console.log('done!')
-    process.exit()
+    console.log('updated Past Elos')
 
 }
 //should I add in code to deal with ties in hockey?
@@ -124,5 +123,4 @@ const deleteAndUpdateElos = async (knex, team_list, today) => {
     await knex('analysis.historical_elo').insert(insert_for_historical)
 }
 
-
-updatePastElos(knex)
+module.exports = updatePastElos

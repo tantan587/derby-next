@@ -9,6 +9,7 @@ const db_helpers = require('../helpers.js').data
 const points = require('./getPointsStructure.js') //this pulls all the differnet point strtuctures
 const randomSchedules = require('./randomSchedules.js')
 const math = require('mathjs')
+const updateGameProjections = require('./updateGameProjections')
 
 //this is the overall simulate function - runs for each sport
 //eventually needs to add in how it detects if in the middle of a season
@@ -53,11 +54,12 @@ async function simulate(exitProcess, simulations = 10)
   await Promise.all([
     db_helpers.insertIntoTable(knex,'analysis', 'record_projections', projections),
     db_helpers.insertIntoTable(knex, 'fantasy', 'projections', fantasy_projections),
-    db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', game_projections.slice(0,10000)),
-    db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', game_projections.slice(10000,20000)),
-    db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', game_projections.slice(20000, 30000)),
-    db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', game_projections.slice(30000, 40000)),
-    db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', game_projections.slice(40000))
+    updateGameProjections(knex, game_projections)
+    // db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', game_projections.slice(0,10000)),
+    // db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', game_projections.slice(10000,20000)),
+    // db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', game_projections.slice(20000, 30000)),
+    // db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', game_projections.slice(30000, 40000)),
+    // db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', game_projections.slice(40000))
   ])
   console.log('done')
   if(exitProcess)

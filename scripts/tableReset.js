@@ -1,6 +1,5 @@
 const knex = require('../server/db/connection')
 
-//this is not working yet
 
 const resetTables = async (exitProcess) => {
   return Promise.all([

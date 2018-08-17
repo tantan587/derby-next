@@ -186,12 +186,27 @@ const fantasyProjections = (all_teams, day, points, sport_structures, year_seaso
                     //normalize size of leagues for rankings
                     let size = 12 //should this maybe be set to a different size league to be normalized?
                     let roster_size_for_ranking = sport === ('106'||'105') ? size*3 : sport === '107' ? size : size*2
-                    let drafted_teams = points_array.slice(0, roster_size_for_ranking)
+                    let drafted_teams
+                    if(sport === '106'){
+                        let filtered_teams = sport_teams.filter(team => {
+                            return Number(team.conference)<10608
+                        })
+                        let alt_points_array = filtered_teams.map(team => {
+                            return team.fantasy_points_projected[structure.sport_structure_id]
+                        })
+                        alt_points_array.sort(function(a,b){return b-a})
+                        drafted_teams = alt_points_array.slice(0, roster_size_for_ranking)
+                    }else{
+                        drafted_teams = points_array.slice(0, roster_size_for_ranking)
+                    }
                     let average = math.mean(drafted_teams)
                     let standard_dev = math.std(drafted_teams)
-                    let last_drafted = points_array[roster_size_for_ranking]
+                    let last_drafted = drafted_teams[roster_size_for_ranking-1]
+                    
+                    
                     console.log(`Sport: ${sport}, Year: ${year}, last_drafted: ${last_drafted}, average: ${average}, standard_dev: ${standard_dev}`)
                     //let non_zero_sport_teams = sport_teams.filter(team => {return team.fantasy_points_projected[structure.sport_structure_id]>0})
+                    
                     sport_teams.forEach(team => {
                         team.calculateAboveValuesForRanking(last_drafted, average, structure.sport_structure_id)
                         team.alternateCalculateAboveValues(last_drafted, average, structure.sport_structure_id, standard_dev)
