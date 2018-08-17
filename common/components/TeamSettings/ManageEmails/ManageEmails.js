@@ -70,6 +70,8 @@ class ManageEmails extends Component {
             />
           </Grid>
         </Grid>
+        <br/>
+        <br/>
       </div>
     )
   }

@@ -109,8 +109,8 @@ class MainLeagueTeams extends React.Component {
             {label: 'Conference', key: 'conference'},
             {label: 'Owner Name', key: 'owner_name'},
             {label: 'Record', key: 'record', sortId:'percentage'},
-            {label: 'Derby Points (Projected)', key: 'pointsAndProj', sortId:'points'},
-            //{label: 'Projected ', key: 'projPoints'},
+            {label: 'Derby Points', key: 'points'},
+            {label: 'Proj. Points ', key: 'projPoints'},
             {label: 'Rank', key: 'rank'},
             // {label: 'Points', key: 'points'}
           ]}/>

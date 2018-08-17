@@ -6,7 +6,7 @@ import TableSortLabel from '@material-ui/core/TableSortLabel'
 import Tooltip from '@material-ui/core/Tooltip'
 import { withStyles } from '@material-ui/core/styles'
 
-const styles = theme => ({
+const styles = () => ({
   header:{
     backgroundColor:'#48311A',
     color:'white',

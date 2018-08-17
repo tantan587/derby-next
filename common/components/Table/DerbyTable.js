@@ -43,11 +43,11 @@ class DerbyTable extends React.Component {
     let localRows = orderBy === '' ? rows : rows.sort((a, b) =>
       (order === 'desc')
         ? isNaN(b[orderBy])
-          ? (b[orderBy].toLowerCase() < a[orderBy].toLowerCase() ? -1 : 1)
-          : (b[orderBy] < a[orderBy] ? -1 : 1)
+          ? (b[orderBy].toLowerCase() > a[orderBy].toLowerCase() ? -1 : b[orderBy].toLowerCase() < a[orderBy].toLowerCase() ? 1 : 0)
+          : (b[orderBy] > a[orderBy] ? -1 : b[orderBy] < a[orderBy] ? 1 : 0)
         : isNaN(b[orderBy])
-          ? (a[orderBy].toLowerCase() < b[orderBy].toLowerCase() ? -1 : 1)
-          : (a[orderBy] < b[orderBy] ? -1 : 1))
+          ? (b[orderBy].toLowerCase() > a[orderBy].toLowerCase() ? 1 : b[orderBy].toLowerCase() < a[orderBy].toLowerCase() ? -1 : 0)
+          : (b[orderBy] > a[orderBy] ? 1 : b[orderBy] < a[orderBy] ? -1 : 0))
 
     localRows = localRows ? localRows : []
 

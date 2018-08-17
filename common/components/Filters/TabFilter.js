@@ -5,6 +5,8 @@ import Button from '@material-ui/core/Button'
 import { Scrollbars } from 'react-custom-scrollbars'
 import SportIconText from '../Icons/SportIconText'
 import SportText from '../Icons/SportText'
+import ContainerDimensions from 'react-container-dimensions'
+
 
 const styles = () => ({
   button : {
@@ -55,22 +57,33 @@ class TabFilter extends React.Component {
           <Scrollbars autoHide style={{ width: '100%'}}>
             <div style={{display:'flex', justifyContent:'center', alignItems:'flex-end',height:height }}>
               {tabs.map((x,i) => {
+                
                 let style = i === index ? {backgroundColor:tabStyles.selectedBackgroundColor,
                   color:tabStyles.selectedColor} : {color:tabStyles.color}
 
+                
                 let display = x
+                let textInd = false
 
                 if (displayType ==='sportsIcon')
                   display = <SportIconText color={style.color} sportId={x}/> 
-
                 else if (displayType ==='sportsName')
                   display = <SportText color={style.color} sportId={x} fontSize={tabStyles.fontSize}/>
+                else
+                  textInd = true
 
                 return <Button key={i}
                   className={classes.button}
-                  style={{...style,fontSize:tabStyles.fontSize, minWidth:80 }}
+                  style={{...style,fontSize:tabStyles.fontSize, minWidth:100 }}
                   onClick={this.handleTabClick(i)}>
-                  {display}
+
+                  <ContainerDimensions>
+                    { ({width}) => 
+                    {console.log(i, width)
+                      if (textInd)
+                        return <div style={{fontSize: width < 90 && x.length > 20 ? 9 : 12}}>{x}</div> 
+                      return display}}
+                  </ContainerDimensions>
                 </Button>
               })}
             </div>

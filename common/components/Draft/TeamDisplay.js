@@ -60,7 +60,7 @@ class TeamDisplay extends React.Component {
       teamsToShow = teamsToShow.map(x => {
         return activeLeague.teams[x.team_id] ? {...x, 
           projectedPoints:activeLeague.teams[x.team_id].proj_points,
-          lastYearPoints:activeLeague.teams[x.team_id].lastYearPoints, 
+          lastYearPoints:activeLeague.teams[x.team_id].lastYearPoints || 0 , 
           ranking:activeLeague.teams[x.team_id].ranking } : x
       })
 

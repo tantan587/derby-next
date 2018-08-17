@@ -88,7 +88,7 @@ class MainLeagueHome extends React.Component {
           <Grid container className={classes.cards}>
             <Card
               title="Upcoming Games"
-              Button={() => <StyledButton text="View Complete Schedules" link='/mainleagueschedule' />}
+              Button={() => <StyledButton text="View Complete Schedules" link='/mainleaguescoreboard' />}
             >
               <Upcoming
                 upcomingGames={activeLeague.ownerGames}

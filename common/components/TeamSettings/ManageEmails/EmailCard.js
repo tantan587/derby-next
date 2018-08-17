@@ -4,7 +4,7 @@ import Switch from '@material-ui/core/Switch'
 
 const styles = theme => ({
   root: {
-    height: 350,
+    height: 450,
     width: '90%',
     [theme.breakpoints.down('sm')]: {
       marginTop: 20,
