@@ -684,5 +684,6 @@ module.exports = {
   formatAMPM,
   formatGameDate,
   GetDraftOrder,
-  GetSportSeasonsByLeague
+  GetSportSeasonsByLeague, 
+  handleReduxResponse
 }
