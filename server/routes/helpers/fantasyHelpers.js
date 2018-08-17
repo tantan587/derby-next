@@ -487,22 +487,22 @@ const updateLeagueProjectedPoints = async (league_id) => {
   let rosters = await knex('fantasy.rosters')
     .leftJoin('fantasy.leagues', 'fantasy.rosters.league_id', 'fantasy.leagues.league_id')
     .leftJoin('fantasy.projections', function(){
-      this.on('fantasy.projections.team_id','=','fantasy.rosters.team_id').andOn('fantasy.leagues.scoring_type_id', '=', 'fantasy.projections.scoring_type_id')
+      this.on('fantasy.projections.team_id','=','fantasy.rosters.team_id').andOn('fantasy.leagues.sport_structure_id', '=', 'fantasy.projections.sport_structure_id')
     })
     .select('*')
-  
+
   let m = math.max(rosters.map(team=>team.day_count))
 
   let new_rosters = league_id ? 
     rosters.filter(team => {return (team.day_count === m && team.league_id === league_id)}) :
-    rosters.filter(team => team.day_count === m) 
+    rosters.filter(team => {return team.day_count === m}) 
 
   let byOwner = {}
   new_rosters.forEach(roster => {
     if(!(roster.owner_id in byOwner)){
-      byOwner[roster.owner_id] = {projected_points:0, league_id:roster.league_id, owner_id:roster.owner_id}
+      byOwner[roster.owner_id] = {total_projected_points:0, league_id:roster.league_id, owner_id:roster.owner_id}
     }
-    byOwner[roster.owner_id].projected_points += Number.parseFloat(roster.points)
+    byOwner[roster.owner_id].total_projected_points += Number.parseFloat(roster.points)
   })
 
   let byLeague = {}
@@ -513,18 +513,18 @@ const updateLeagueProjectedPoints = async (league_id) => {
     }
     byLeague[owner.league_id].push(owner)
   })
+
   let addingRank = Object.values(byLeague).map(league => {
     league.sort(function(a,b) {return b.projected_points - a.projected_points})
-    return league.map( (owner, i) => {owner.rank = i+1; return owner})
+    return league.map( (owner, i) => {owner.projected_rank = i+1; return owner})
   })
 
     
   let fantasyPoints = [].concat.apply([], addingRank)
-  console.log(fantasyPoints)
-  process.exit()
+
   return updatePointsTable(fantasyPoints, true)
     .then(result => {
-      console.log('Number of Fantasy Owner Points Updated: ' + result)
+      console.log('Number of Fantasy Owner Projected Points Updated: ' + result)
       return 0
     })
 
@@ -580,7 +580,7 @@ const updateLeaguePoints = (league_id) =>
         let fantasyPoints = [].concat.apply([], addingRank)
         return updatePointsTable(fantasyPoints)
           .then(result => {
-            console.log('Number of Fantasy Points Updated: ' + result)
+            console.log('Number of Fantasy Owner Points Updated: ' + result)
             return 0
           })
       }

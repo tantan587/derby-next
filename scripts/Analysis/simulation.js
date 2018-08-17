@@ -10,6 +10,8 @@ const points = require('./getPointsStructure.js') //this pulls all the differnet
 const randomSchedules = require('./randomSchedules.js')
 const math = require('mathjs')
 const updateGameProjections = require('./updateGameProjections')
+const fantasyHelpers = require('../../server/routes/helpers/fantasyHelpers')
+
 
 //this is the overall simulate function - runs for each sport
 //eventually needs to add in how it detects if in the middle of a season
@@ -61,6 +63,7 @@ async function simulate(exitProcess, simulations = 10000)
     // db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', game_projections.slice(30000, 40000)),
     // db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', game_projections.slice(40000))
   ])
+  await fantasyHelpers.updateLeagueProjectedPoints()
   console.log('done')
   if(exitProcess)
     process.exit()
