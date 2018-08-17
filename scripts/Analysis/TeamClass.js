@@ -64,8 +64,12 @@ class Team {
         this.fantasy_points_projected = {}
         this.points_above_last_drafted = {}
         this.points_above_average = {}
+        this.stdev_points_above_last_drafted = {}
+        this.stdev_points_above_average = {}
         this.rank_above_last = {}
         this.rank_above_average = {}
+        this.stdev_rank_above_last = {}
+        this.stdev_rank_above_average = {}
         this.overall_ranking = {}
         this.playoff_status = playoff_status
     }
@@ -218,12 +222,10 @@ class Team {
     calculateFantasyPoints(sport_points, sport_structure_id){
             let bonus_win = 0
             if(this.sport_id === ('103'||'104')){
-                let milestone_parameter = this.sport_id === '103' ? this.wins : this.wins+this.ties/2
+                let milestone_parameter = this.sport_id === '103' ? this.wins : this.wins*2+this.ties
                 let milestone_points = sport_points.regular_season.milestone_points
                 //maybe this should not be so rigid - if you are close to points, projects you getting some of bonus. Fade out as season goes along
-                bonus_win = milestone_parameter < sport_points.regular_season.milestones[0] ? 0 :
-                milestone_parameter < sport_points.regular_season.milestones[1] ? milestone_points :
-                milestone_parameter < sport_points.regular_season.milestones[2] ? milestone_points*2 : milestone_points*3
+                bonus_win = milestone_parameter > sport_points.regular_season.milestone ? milestone_points : 0
               }else{
                 bonus_win = 0
               }
@@ -244,6 +246,11 @@ class Team {
     calculateAboveValuesForRanking(last_drafted, average, sport_structure_id){
         this.points_above_average[sport_structure_id] = this.fantasy_points_projected[sport_structure_id]-average
         this.points_above_last_drafted[sport_structure_id] = this.fantasy_points_projected[sport_structure_id]-last_drafted
+    }
+
+    alternateCalculateAboveValues(last_drafted, average, sport_structure_id, standard_deviation){
+        this.stdev_points_above_average[sport_structure_id] = (this.fantasy_points_projected[sport_structure_id]-average)/standard_deviation
+        this.stdev_points_above_last_drafted[sport_structure_id] = (this.fantasy_points_projected[sport_structure_id]-last_drafted)/standard_deviation
     }
    
 }
