@@ -23,7 +23,7 @@ async function simulate(exitProcess, simulations = 10)
   //let all_points = await points.getPointsStructure(knex)
   var today = new Date()
   //this is the calculation of day count normally:
-  let day_count = getDayCount(today)
+  let day_count = getDayCount(today) +1 //note that this is changed
   //this is the first day of the season of 2017
   //day_count = 1469
   /* this to be added back in later
@@ -60,7 +60,8 @@ async function simulate(exitProcess, simulations = 10)
     db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', game_projections.slice(40000))
   ])
   console.log('done')
-  process.exit()
+  if(exitProcess)
+    process.exit()
 
 }
 

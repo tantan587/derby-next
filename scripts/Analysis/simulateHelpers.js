@@ -184,44 +184,113 @@ const fantasyProjections = (all_teams, day, points, sport_structures, year_seaso
 
                     points_array.sort(function(a,b){return b-a})
                     //normalize size of leagues for rankings
-                    let size = 12
+                    let size = 12 //should this maybe be set to a different size league to be normalized?
                     let roster_size_for_ranking = sport === ('106'||'105') ? size*3 : sport === '107' ? size : size*2
                     let drafted_teams = points_array.slice(0, roster_size_for_ranking)
                     let average = math.mean(drafted_teams)
                     let standard_dev = math.std(drafted_teams)
                     let last_drafted = points_array[roster_size_for_ranking]
- 
+                    console.log(`Sport: ${sport}, Year: ${year}, last_drafted: ${last_drafted}, average: ${average}, standard_dev: ${standard_dev}`)
+                    //let non_zero_sport_teams = sport_teams.filter(team => {return team.fantasy_points_projected[structure.sport_structure_id]>0})
                     sport_teams.forEach(team => {
                         team.calculateAboveValuesForRanking(last_drafted, average, structure.sport_structure_id)
+                        team.alternateCalculateAboveValues(last_drafted, average, structure.sport_structure_id, standard_dev)
                     })
                     array_of_all_teams.push(...sport_teams)
                 }
             })
         })
-        array_of_all_teams.sort(function(a,b){return b.points_above_last_drafted[structure.sport_structure_id]-a.points_above_last_drafted[structure.sport_structure_id]})
-        rank = 0
-        array_of_all_teams.forEach(team => {
-            team.rank_above_last[structure.sport_structure_id] = rank
-            rank++
-        })
-        array_of_all_teams.sort(function(a,b){return b.points_above_average[structure.sport_structure_id]-a.points_above_average[structure.sport_structure_id]})
-        rank = 0
-        array_of_all_teams.forEach(team => {
-            team.rank_above_average[structure.sport_structure_id] = rank
-            rank++
-        })
-        array_of_all_teams.sort(function(a,b){return a.rank_above_last[structure.sport_structure_id]+a.rank_above_average[structure.sport_structure_id]-b.rank_above_last[structure.sport_structure_id]-b.rank_above_average[structure.sport_structure_id]})
-        rank = 1
-        array_of_all_teams.forEach(team => {
-            team.overall_ranking[structure.sport_structure_id] = rank
-            let f_points = math.round(team.fantasy_points_projected[structure.sport_structure_id], 2)
-            data_for_insert.push({
-                team_id: team.team_id, scoring_type_id: structure.scoring_type_id, points: f_points, day_count: day, ranking: rank, sport_structure_id: structure.sport_structure_id
-            })
-            rank++
-        })
+
+        //can only use one of the following three methods to create ranking. Believe final one is the best.
+
+        // //value above method
+         //pureValueRankMethod(array_of_all_teams, structure, data_for_insert, day)
+
+        // //standard deviation method
+        //standardDeviationRankMethod(array_of_all_teams, structure, data_for_insert, day)
+
+        //combination method
+        combinationMethodRank(array_of_all_teams, structure, data_for_insert, day)
+
     })
     return data_for_insert
 }
+
+
+
+const pureValueRankMethod = (array_of_all_teams, structure, data_for_insert, day) => {
+    findPointsAbove(array_of_all_teams, structure)
+    array_of_all_teams.sort(function (a, b) { return a.rank_above_last[structure.sport_structure_id] + a.rank_above_average[structure.sport_structure_id] - b.rank_above_last[structure.sport_structure_id] - b.rank_above_average[structure.sport_structure_id] })
+    rankTeams(array_of_all_teams, structure, data_for_insert, day)
+}
+
+const findPointsAbove = (array_of_all_teams, structure) => {
+    array_of_all_teams.sort(function (a, b) { return b.points_above_last_drafted[structure.sport_structure_id] - a.points_above_last_drafted[structure.sport_structure_id] })
+    let rank = 0
+    array_of_all_teams.forEach(team => {
+        team.rank_above_last[structure.sport_structure_id] = rank
+        rank++
+    })
+    array_of_all_teams.sort(function (a, b) { return b.points_above_average[structure.sport_structure_id] - a.points_above_average[structure.sport_structure_id] })
+    rank = 0
+    array_of_all_teams.forEach(team => {
+        team.rank_above_average[structure.sport_structure_id] = rank
+        rank++
+    })
+}
+
+const standardDeviationRankMethod = (array_of_all_teams, structure, data_for_insert, day) => {
+    findStandardDevPointsAbove(array_of_all_teams, structure)
+    array_of_all_teams.sort(function (a, b) { return a.stdev_rank_above_last[structure.sport_structure_id] + a.stdev_rank_above_average[structure.sport_structure_id] - b.stdev_rank_above_last[structure.sport_structure_id] - b.stdev_rank_above_average[structure.sport_structure_id] })
+    rankTeams(array_of_all_teams, structure, data_for_insert, day)
+}
+const findStandardDevPointsAbove = (array_of_all_teams, structure) => {
+    array_of_all_teams.sort(function (a, b) { return b.stdev_points_above_last_drafted[structure.sport_structure_id] - a.stdev_points_above_last_drafted[structure.sport_structure_id] })
+    let rank = 0
+    array_of_all_teams.forEach(team => {
+        team.stdev_rank_above_last[structure.sport_structure_id] = rank
+        rank++
+    })
+    array_of_all_teams.sort(function (a, b) { return b.stdev_points_above_average[structure.sport_structure_id] - a.stdev_points_above_average[structure.sport_structure_id] })
+    rank = 0
+    array_of_all_teams.forEach(team => {
+        team.stdev_rank_above_average[structure.sport_structure_id] = rank
+        rank++
+    })
+}
+
+const combinationMethodRank = (array_of_all_teams, structure, data_for_insert, day) => {
+    findStandardDevPointsAbove(array_of_all_teams, structure)
+    findPointsAbove(array_of_all_teams, structure)
+    array_of_all_teams.sort(function (a, b) { 
+        let m = a.stdev_rank_above_last[structure.sport_structure_id] + a.stdev_rank_above_average[structure.sport_structure_id] + 
+            a.rank_above_last[structure.sport_structure_id] + a.rank_above_average[structure.sport_structure_id] - 
+            b.stdev_rank_above_last[structure.sport_structure_id] - b.stdev_rank_above_average[structure.sport_structure_id] -
+            b.rank_above_last[structure.sport_structure_id] - b.rank_above_average[structure.sport_structure_id]
+        if(m !== 0){
+            return m
+        }else{
+            return b.fantasy_points_projected[structure.sport_structure_id]-a.fantasy_points_projected[structure.sport_structure_id]
+        }  
+            // a.stdev_rank_above_last[structure.sport_structure_id] + a.stdev_rank_above_average[structure.sport_structure_id] + 
+            // a.rank_above_last[structure.sport_structure_id] + a.rank_above_average[structure.sport_structure_id] - 
+            // b.stdev_rank_above_last[structure.sport_structure_id] - b.stdev_rank_above_average[structure.sport_structure_id] -
+            // b.rank_above_last[structure.sport_structure_id] - b.rank_above_average[structure.sport_structure_id]
+    })
+    rankTeams(array_of_all_teams, structure, data_for_insert, day)
+}
+
+const rankTeams = (array_of_all_teams, structure, data_for_insert, day) => {
+    let rank = 1
+    array_of_all_teams.forEach(team => {
+        team.overall_ranking[structure.sport_structure_id] = rank
+        let f_points = math.round(team.fantasy_points_projected[structure.sport_structure_id], 2)
+        data_for_insert.push({
+            team_id: team.team_id, scoring_type_id: structure.scoring_type_id, points: f_points, day_count: day, ranking: rank, sport_structure_id: structure.sport_structure_id
+        })
+        rank++
+    })
+}
+
 
 module.exports = {Series, moreWins, simulateGame, updateProjections, simulateNHLGame, createImpactArray, fantasyProjections, simulateBowlGame, simulateEPLGame, individualSportTeamsWithYear}
