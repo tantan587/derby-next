@@ -1,7 +1,8 @@
 export const organizeData = (data) => {
   const { oneTeam, game, teams } = data
 
-  const areWeHome = teams[game.home_team_id].team_name === oneTeam.team_name
+  const areWeHome = teams[game.home_team_id] ? teams[game.home_team_id].team_name === oneTeam.team_name 
+    : teams[game.away_team_id].team_name !== oneTeam.team_name
 
   const awayTeamName = teams[game.away_team_id] ? teams[game.away_team_id].team_name : 'UNKNOWN'
   const awayTeamScore = game.away_team_score

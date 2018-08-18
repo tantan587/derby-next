@@ -128,9 +128,11 @@ class CommishTool extends React.Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-
-    this.setState({draftDate:nextProps.activeLeague.draftInfo.start_time})
+  static getDerivedStateFromProps(nextProps, prevState){
+    if(nextProps.activeLeague && nextProps.activeLeague.draftInfo.start_time!==prevState.draftDate){
+      return { draftDate:nextProps.activeLeague.draftInfo.start_time}
+    }
+    else return null
   }
 
   keypress(e) {

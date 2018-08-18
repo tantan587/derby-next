@@ -11,7 +11,7 @@ class LogoutButton extends React.Component {
       <Link href="/logout">
         <Button style={{float:'right', color: color, backgroundColor:backgroundColor}}>
           <div>
-            logout
+            log out
           </div>
           <PermIdentity />
         </Button>

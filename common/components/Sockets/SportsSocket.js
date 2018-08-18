@@ -23,8 +23,15 @@ class SportsSocket extends React.Component {
   componentDidUpdate(prevProps,prevState){
 
     if (prevState.sportSeasons.length != prevState.sportSeasons.length ||
-    prevState.sportSeasons.some((x,i)=> x !== this.state.sportSeasons[i]))
+    prevState.sportSeasons.some((x,i)=> x !== this.state.sportSeasons[i]) ||
+    !prevProps.activeLeague ||
+    !this.props.activeLeague ||
+    prevProps.activeLeague.league_id != this.props.activeLeague.league_id )
+    {
       this.socket.emit('allTeamData', this.props.sportSeasons)
+      this.socket.emit('allGameData')
+    }
+      
   }
 
   // connect to WS server and listen event

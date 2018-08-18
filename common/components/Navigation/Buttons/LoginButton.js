@@ -18,7 +18,7 @@ class LoginButton extends React.Component {
         style={{float:'right', color: color, backgroundColor:backgroundColor}}
         onClick={() => {this.pressedLogin()}}>         
         <div>
-          Login
+          Log in
         </div>
         <PermIdentity />
       </Button>

@@ -47,8 +47,35 @@ class ScoreboardPage extends React.Component {
       dayCount: GetDayCountStr(new Date()),
       date: new Date(),
       startTime: 1,
-      sportId:null
+      sportId:null,
+      mySchedule:[]
     }
+  }
+
+  componentDidUpdate(prevProps, prevState){
+
+    console.log('heelo')
+    const {dayCount} = this.state
+    if(dayCount != prevState.dayCount || 
+      prevProps.updateTime != this.props.updateTime)
+    {
+      let mySchedule = []
+      if(this.props.liveGames[dayCount])
+      {
+        mySchedule = this.sortGames(Object.values(this.props.liveGames[dayCount]))
+      }
+      else if (this.props.schedule.length > 0){
+        mySchedule = this.sortGames(this.props.schedule)
+      }
+      this.setState({mySchedule})
+    }
+  }
+
+  componentDidMount()
+  {
+    const {dayCount} = this.state
+    let mySchedule = this.sortGames(Object.values(this.props.liveGames[dayCount]))
+    this.setState({mySchedule})
   }
   
   onUpdateDate = (date) =>
@@ -74,22 +101,13 @@ class ScoreboardPage extends React.Component {
   render() {
     //const { classes, liveGames} = this.props
 
-    const {contentFilter, liveGames, schedule} = this.props
-    const {dayCount, date} = this.state
+    const {contentFilter} = this.props
+    const {mySchedule, date} = this.state
     const page='scoreboard'
 
-    let data = []
-    if(liveGames[dayCount])
-    {
-      data = this.sortGames(Object.values(liveGames[dayCount]))
-    }
-    else if (schedule.length > 0){
-      data = this.sortGames(schedule)
-    }
-
-    let filteredScoreData = data
+    let filteredScoreData = mySchedule
     R.values(contentFilter[page]).forEach(filter => {
-      filteredScoreData = Filterer(data, filter)
+      filteredScoreData = Filterer(mySchedule, filter)
     })
     const sports = R.values(sportLeagues).sort((x,y) => x.order > y.order).map(x => x.sport_id)
     sports.unshift('All')
@@ -117,6 +135,6 @@ class ScoreboardPage extends React.Component {
 
 export default R.compose(
   withStyles(styles),
-  connect(R.pick(['contentFilter', 'teams', 'liveGames', 'activeLeague', 'schedule'])
+  connect(R.pick(['contentFilter', 'teams', 'liveGames', 'activeLeague', 'schedule', 'updateTime'])
     , {openDialog: handleOpenDialog,onDateChange:clickedDateChange })
 )(ScoreboardPage)
