@@ -129,7 +129,7 @@ class SignupForm extends React.Component {
           gutterBottom
           align="center"
         >
-          Signup
+          Sign up
         </Typography>
         {FIELDS.map(this.renderField)}
         <Button
@@ -140,7 +140,7 @@ class SignupForm extends React.Component {
         />
         <Link href="/login">
           <Button>
-            ALREADY HAVE AN ACCOUNT? LOGIN.
+            ALREADY HAVE AN ACCOUNT? LOG IN.
           </Button>
         </Link>
       </Grid>

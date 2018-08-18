@@ -31,8 +31,11 @@ const runUpdate = async () => {
       // await asyncForEach([101,102,103,104,105,106,107], async (sport_id) => {
       //   await script5.updateBoxScoreJSON(false, ['previous', sport_id])
       // })
+      console.log('hello0')
       await scriptPoints.updatePoints()
+      console.log('hello1')
       await scriptAfterSeasonElos.adjustElosAfterSeason(false,'all')
+      console.log('hello2')
       await scriptSimulate.simulate(exitProcessInd, 10) //setting this for ten on reset to make sure it doesn't take as long - aferwards should run simulate
       break
     }
@@ -86,12 +89,14 @@ const runUpdate = async () => {
     //'all': to set all elos after Season
     case 'afterSeasonElos': {
       await scriptAfterSeasonElos.adjustElosAfterSeason(exitProcessInd, arr[1])
+      break
     }
 
     //currently set to update epl, and regular. 
     case 'elo': {
       await updateEplElos.updateEplElo()
       await updateElos.updateElos(exitProcessInd)
+      break
     }
     default:
     {

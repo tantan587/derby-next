@@ -1,7 +1,7 @@
 const knex = require('../../server/db/connection')
 const createSport = require('./create_sport_helpers')
-const update2017NflPlayoffs = require('./2017NflPlayoffs')
-const add_logos = require('./extra_logos')
+const nflPlayoffs2017 = require('./data/nflPlayoffs2017')
+const logos = require('./data/extra_logos')
 const initialElos = require('./initialElos')
 
 const createSports = async (exitProcess) => {
@@ -12,8 +12,8 @@ const createSports = async (exitProcess) => {
   await createSport.createSoccerLeague(knex, '107', 'EPL', 'Soccerv3StatsClient', 'getSeasonTeamsPromise', 64, 37)
   await createSport.createCollegeSport(knex, '105', 'CFB', 'CFBv3ScoresClient', 'getTeamsPromise')
   await createSport.createCollegeSport(knex, '106', 'CBB', 'CBBv3StatsClient', 'getTeamsPromise')
-  await update2017NflPlayoffs()
-  await add_logos(knex)
+  await nflPlayoffs2017.updateNFL()
+  await logos.addLogos(knex)
   await initialElos.create_initial_elos(knex)
   if(exitProcess)
   {

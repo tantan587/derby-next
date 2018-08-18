@@ -124,7 +124,7 @@ class LoginForm extends Component {
           <Grid  item xs={12} style={{textAlign:'center'}}>
             <Link href="/signup">
               <Button className={classes.actions.button}>
-                DON'T HAVE AN ACCOUNT? SIGNUP.
+                DON'T HAVE AN ACCOUNT? SIGN UP.
               </Button>
             </Link>
           </Grid>

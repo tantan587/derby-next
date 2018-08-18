@@ -23,18 +23,6 @@ async function createSchedule(exitProcess, reset='false')
 {
   let data = await create_data(reset)
 
-  
-
-  // let cbbData = await getSchedInfo(knex, 'CBB', 'CBBv3ScoresClient', 'getSchedulesPromise','2018')
-  // let mlbData = await getSchedInfo(knex, 'MLB', 'MLBv3StatsClient', 'getSchedulesPromise', '2018')
-  // let nbaData = await getSchedInfo(knex, 'NBA', 'NBAv3ScoresClient', 'getSchedulesPromise','2018')
-  // let nhlData = await getSchedInfo(knex, 'NHL', 'NHLv3ScoresClient', 'getSchedulesPromise','2018')
-  // let nflData = await getSchedInfo(knex, 'NFL', 'NFLv3ScoresClient', 'getScoresBySeasonPromise','2017')
-  // let cfbData = await getSchedInfo(knex, 'CFB', 'CFBv3ScoresClient', 'getSchedulesPromise','2017')
-  // let eplData = await getSchedInfo(knex, 'EPL', 'Soccerv3ScoresClient', 'getSchedulePromise', '144')
-  
-  
-  //let data = (nbaData).concat(cbbData).concat(cfbData).concat(mlbData).concat(nflData).concat(eplData).concat(nhlData)
   db_helpers.updateSchedule(knex, data)
     .then(result => {
       console.log('Number of Schedules Updated: ' + result)
@@ -55,8 +43,6 @@ const getSchedInfo = async (knex, sportName, api, promiseToGet, year, sport_seas
 
   return schedInfo
 }
-
-
 
 module.exports = {
   createSchedule

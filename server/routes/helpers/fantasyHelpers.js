@@ -1,5 +1,6 @@
 const knex = require('../../db/connection')
 const C = require('../../../common/constants')
+const math = require('mathjs')
 
 
 function handleReduxResponse(res, code, action){
@@ -481,7 +482,6 @@ const updateTeamPoints = async () =>
 }
 
 const updateLeagueProjectedPoints = async (league_id) => {
-  const math = require('mathjs')
 
   //this needs to be fixed so it works, but this should be on fantasy.sport_structure_id
   let rosters = await knex('fantasy.rosters')
@@ -492,7 +492,7 @@ const updateLeagueProjectedPoints = async (league_id) => {
     .select('*')
 
   let m = math.max(rosters.map(team=>team.day_count))
-
+ 
   let new_rosters = league_id ? 
     rosters.filter(team => {return (team.day_count === m && team.league_id === league_id)}) :
     rosters.filter(team => {return team.day_count === m}) 
@@ -500,10 +500,13 @@ const updateLeagueProjectedPoints = async (league_id) => {
   let byOwner = {}
   new_rosters.forEach(roster => {
     if(!(roster.owner_id in byOwner)){
-      byOwner[roster.owner_id] = {total_projected_points:0, league_id:roster.league_id, owner_id:roster.owner_id}
+      byOwner[roster.owner_id] = {total_projected_points:0, league_id:roster.league_id, owner_id:roster.owner_id, pointArr : []}
     }
     byOwner[roster.owner_id].total_projected_points += Number.parseFloat(roster.points)
+    byOwner[roster.owner_id].pointArr.push(roster.points)
   })
+
+  console.log(byOwner['998b6423-6658-435c-911a-124b02e4555e'])
 
   let byLeague = {}
   Object.values(byOwner).map(owner => {

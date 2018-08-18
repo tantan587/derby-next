@@ -53,7 +53,7 @@ const getSchedInfo = async (knex, sportName, api, promiseToGet, year, sport_seas
     const idSpelling = sportName === 'EPL' ? 'Id' : 'ID'
     let schedInfo = []
     if(cleanSched.length>0){
-        schedInfo = db_helpers.createScheduleForInsert(cleanSched, sport_id, idSpelling, teamIdMap, fantasyHelpers, myNull, sport_json, sport_season_id)
+      schedInfo = db_helpers.createScheduleForInsert(cleanSched, sport_id, idSpelling, teamIdMap, fantasyHelpers, myNull, sport_json, sport_season_id)
     }
 
 
@@ -106,15 +106,15 @@ const getSchedInfo = async (knex, sportName, api, promiseToGet, year, sport_seas
     //         byes.push(team)
     //       }
     //     })
-        // asyncForEach(playoff_team_ids, (team) => {
-        //   if(!(non_byes.includes(team.team_id))){
-        //     await knex('sports.playoff_standings')
-        //       .where('team_id', team.team_id)
-        //       .andWhere('sport_season_id', sport_season_id)
+    // asyncForEach(playoff_team_ids, (team) => {
+    //   if(!(non_byes.includes(team.team_id))){
+    //     await knex('sports.playoff_standings')
+    //       .where('team_id', team.team_id)
+    //       .andWhere('sport_season_id', sport_season_id)
 
-        //   }
+    //   }
 
-        // })
+    // })
       
 
     
