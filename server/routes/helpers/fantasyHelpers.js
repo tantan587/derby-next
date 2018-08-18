@@ -379,23 +379,25 @@ const getPointsStructure = async () => {
 
 //below function is the same thing that is in helpers.
 //Was unsure if could pull in the same structure
-const activeSeasons = async () => {
+const activeSeasons = async (all = false) => {
   let today = new Date()
-
+  let end_date = all ? '1/1/2000' : today
   let seasons = 
     await knex
       .withSchema('sports')
       .table('sport_season')
       .where('start_pull_date', '<', today)
-      .andWhere('end_pull_date', '>', today)
+      .andWhere('end_pull_date', '>', end_date)
       .select('*')
   
   return seasons
 }
+
+
 //this should be updated to do all the different team points structures
 //similar to the way i did that before with the update fantasy projected points
 //need to set up this table somewhere...
-const updateTeamPoints = async () =>
+const updateTeamPoints = async (all) =>
 {
   // let standings_for_update =
   //   await knex
@@ -412,7 +414,8 @@ const updateTeamPoints = async () =>
       .select('*')
   
   //this is the active seaons - so that we can filter out the not active seasons, and only pull data for the active ones
-  let seasons = await activeSeasons()
+  let seasons = await activeSeasons(all)
+
   //we only want to pull standing data for active seasons. 
   //this means need to update the standings and playoff standings to have the sports season ids in there for both
 
@@ -505,8 +508,6 @@ const updateLeagueProjectedPoints = async (league_id) => {
     byOwner[roster.owner_id].total_projected_points += Number.parseFloat(roster.points)
     byOwner[roster.owner_id].pointArr.push(roster.points)
   })
-
-  console.log(byOwner['998b6423-6658-435c-911a-124b02e4555e'])
 
   let byLeague = {}
   Object.values(byOwner).map(owner => {
@@ -675,6 +676,50 @@ const formatGameDateShort = (date) => {
   return `${month}/${day}/${year-2000}`
 }
 
+const DeleteLeague = async (exitProcess, leagueName) => {
+
+
+  const str = `select c.room_id, b.owner_id, a.league_id 
+   from fantasy.leagues a, fantasy.owners b, draft.settings c 
+   where league_name = '` + leagueName +`' 
+   and a.league_id = b.league_id and a.league_id = c.league_id`
+
+
+  let result = await knex.raw(str)
+
+  if (result.rows.length === 0)
+  {
+    console.log('Can\'t find this league to Delete')
+  }
+  else{
+    
+    let league_id = result.rows[0].league_id
+    let room_id = result.rows[0].room_id
+    let owners = result.rows.map(x => x.owner_id)
+
+    await knex('fantasy.leagues').where('league_id', league_id).del()
+    console.log('Deleted from fantasy.leagues')
+    await knex('fantasy.sports').where('league_id', league_id).del()
+    console.log('Deleted from fantasy.sports')
+    await knex('fantasy.rosters').where('league_id', league_id).del()
+    console.log('Deleted from fantasy.rosters')
+    await knex('fantasy.owners').where('league_id', league_id).del()
+    console.log('Deleted from fantasy.owners')
+    await knex('fantasy.conferences').where('league_id', league_id).del()
+    console.log('Deleted from fantasy.conferences')
+    await knex('draft.settings').where('league_id', league_id).del()
+    console.log('Deleted from draft.settings')
+    await knex('draft.results').where('room_id', room_id).del()
+    console.log('Deleted from draft.results')
+    await knex('fantasy.points').whereIn('owner_id', owners).del()
+    console.log('Deleted from fantasy.points')
+    
+  }
+  if(exitProcess)
+  {
+    process.exit()
+  }
+}
 
 module.exports = {
   getLeague,
@@ -683,10 +728,12 @@ module.exports = {
   updateLeaguePoints,
   updateLeagueProjectedPoints,
   updateFantasy,
+  activeSeasons,
   getDayCountStr,
   formatAMPM,
   formatGameDate,
   GetDraftOrder,
   GetSportSeasonsByLeague, 
-  handleReduxResponse
+  handleReduxResponse,
+  DeleteLeague
 }

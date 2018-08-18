@@ -79,7 +79,7 @@ class TabFilter extends React.Component {
 
                   <ContainerDimensions>
                     { ({width}) => 
-                    {console.log(i, width)
+                    {
                       if (textInd)
                         return <div style={{fontSize: width < 90 && x.length > 20 ? 9 : 12}}>{x}</div> 
                       return display}}

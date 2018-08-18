@@ -1,13 +1,13 @@
 const db_helpers = require('./helpers').data
-const fantasyHelpers = require('../server/routes/helpers/fantasyHelpers')
 const knex = require('../server/db/connection')
 const sport_keys = require('./sportKeys')
 const asyncForEach = require('./asyncForEach')
+const fantasyHelpers = require('../server/routes/helpers/fantasyHelpers')
 //const getDayCount = require('./Analysis/dayCount.js')
 
 const filtered_fantasy_standings_data = async (all) => {
   let data = []
-  let season_calls = await db_helpers.getSeasonCall(knex, all)
+  let season_calls = await fantasyHelpers.activeSeasons(all)
   let regular_season_calls = season_calls.filter(season => season.season_type === 1)
   await asyncForEach(regular_season_calls, async (season) => {
     let sport_id = season.sport_id
@@ -16,7 +16,8 @@ const filtered_fantasy_standings_data = async (all) => {
       data.push(...await getCFBstandings(knex, sport.sport_name, sport.api, sport.standingsPromiseToGet, season.api_pull_parameter, season.year, season.sport_season_id))
     }
     else{
-      data.push(...await standingsBySport(knex, sport.sport_name, sport.api, sport.standingsPromiseToGet, season.api_pull_parameter, season.year, season.sport_season_id))
+      data.push(...await standingsBySport(knex, sport.sport_name, sport.api, sport.standingsPromiseToGet, 
+        season.api_pull_parameter, season.year, season.sport_season_id))
     }
   })
 

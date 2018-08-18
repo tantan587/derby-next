@@ -2,8 +2,6 @@ var methods = {}
 //const rp = require('request-promise')
 const fdClientModule = require('fantasydata-node-client')
 
-
-
 methods.insertIntoTable = async function(knex, schema, table, data) {
   return knex
     .withSchema(schema)
@@ -121,20 +119,6 @@ methods.getFdata = async (knex, sportName,api, promiseToGet, parameters=false, s
     return FantasyDataClient[api][promiseToGet](parameters, second_parameter)
   }
   
-}
-
-methods.getSeasonCall = async (knex, all_games=false) => {
-  let today = new Date()
-  let end_date = all_games ? '1/1/2000' : today
-  let seasons = 
-    await knex
-      .withSchema('sports')
-      .table('sport_season')
-      .where('start_pull_date', '<', today)
-      .andWhere('end_pull_date', '>', end_date)
-      .select('*')
-  
-  return seasons
 }
 
 methods.createStandingsData = async (knex, sportName, api, promiseToGet, year) =>{

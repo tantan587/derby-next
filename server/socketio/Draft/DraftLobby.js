@@ -18,9 +18,13 @@ class DraftLobby {
     console.log(roomIds)
     roomIds.forEach( roomId =>
     {
-      this.draftRooms[roomId] = {}
-      this.draftRooms[roomId].Emitter = new DraftEmitter(this.draftNSP,roomId)
+      this.addToDraftRoom(roomId)
     })
+  }
+
+  addToDraftRoom(roomId) {
+    this.draftRooms[roomId] = {}
+    this.draftRooms[roomId].Emitter = new DraftEmitter(this.draftNSP,roomId)
   }
 
   async Activate() {
@@ -30,13 +34,19 @@ class DraftLobby {
     { 
       this.DraftListener(socket)
     })
-  }
+  }  
 
   async CheckForActiveDraft() {
     const roomIds = await socketIoHelpers.GetActiveDrafts()
     roomIds.forEach(async roomId => {
+      if(!this.draftRooms[roomId])
+      {
+        console.log('added ' + roomId)
+        this.addToDraftRoom(roomId)
+      }
       if(this.draftRooms[roomId] && !this.draftRooms[roomId].Manager)
       {
+
         this.draftRooms[roomId].Manager = new DraftManager(roomId, this.draftRooms[roomId].Emitter)
         await this.draftRooms[roomId].Manager.Create()
         // eslint-disable-next-line no-console

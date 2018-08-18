@@ -11,6 +11,7 @@ const asyncForEach = require('./asyncForEach')
 const scriptAfterSeasonElos = require('./Analysis/adjustElosAfterSeason')
 const updateElos = require('./Analysis/updateElo')
 const updateEplElos = require('./Analysis/updateEloEPL')
+const fantasyHelpers = require('../server/routes/helpers/fantasyHelpers')
 
 const runUpdate = async () => {
   await asyncForEach(process.argv, async (val,i) => {
@@ -31,11 +32,8 @@ const runUpdate = async () => {
       // await asyncForEach([101,102,103,104,105,106,107], async (sport_id) => {
       //   await script5.updateBoxScoreJSON(false, ['previous', sport_id])
       // })
-      console.log('hello0')
-      await scriptPoints.updatePoints()
-      console.log('hello1')
+      await scriptPoints.updatePoints(false, true)
       await scriptAfterSeasonElos.adjustElosAfterSeason(false,'all')
-      console.log('hello2')
       await scriptSimulate.simulate(exitProcessInd, 10) //setting this for ten on reset to make sure it doesn't take as long - aferwards should run simulate
       break
     }
@@ -51,31 +49,31 @@ const runUpdate = async () => {
       break
     }
 
-    case '1': //playoff schedule
+    case 'playoff_schedule': //playoff schedule
     {
       await script1.createSchedule(exitProcessInd)
       break
     }
-    case '2': //regular schedule
+    case 'schedule': //regular schedule
     {
       await script2.createSchedule(exitProcessInd)
       break
     }
-    case '3':
+    case 'playoff_standings':
     {
       await script3.createStandingsPO(exitProcessInd)
       break
     }
-    case '4':
+    case 'standings':
     {
-      await script4.updateStandings(exitProcessInd)
+      await script4.updateStandings(true, true)
       break
     }
     //'active':
     //'near':
     //'previous',102 
     //'specific',1634
-    case '5':
+    case 'deep':
     {
       await script5.updateBoxScoreJSON(exitProcessInd, arr[1])
       break
@@ -96,6 +94,11 @@ const runUpdate = async () => {
     case 'elo': {
       await updateEplElos.updateEplElo()
       await updateElos.updateElos(exitProcessInd)
+      break
+    }
+
+    case 'deleteLeague': {
+      await fantasyHelpers.DeleteLeague(exitProcessInd, arr[1])
       break
     }
     default:
