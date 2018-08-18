@@ -69,9 +69,11 @@ class MainLeagueTeams extends React.Component {
     R.values(contentFilter[page]).forEach(filter => {
       filteredMyTeams = Filterer(filteredMyTeams, filter, {ownerName})
       if(filter.type === 'tab'){
-        confs = [...new Set(filteredMyTeams.map(x => x.conference))].sort((a,b) => { return a > b})
+        confs = [...new Set(filteredMyTeams.map(x => x.conference))].sort()
       }
     })
+
+    confs.unshift('All')
     const filters = [{
       type:'tab',
       displayType:'sportsName',

@@ -76,6 +76,7 @@ class TeamDisplay extends React.Component {
           confs.sort()
         }
       })
+      confs.unshift('All')
     
       if (teamsToShow && !allowDraft)
       {
