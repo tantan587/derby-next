@@ -96,12 +96,15 @@ const enterDraftToDb = (allTeams,league_id, res) =>
     {
       return knex.withSchema('fantasy').table('rosters').insert(dataToInput)
         .then(() => {
-          if(res)
-            return fantasyHelpers.updateFantasy(league_id, res)
-          else
-          {
-            return fantasyHelpers.updateLeaguePoints(league_id)
-          }
+          return fantasyHelpers.updateLeaguePoints(league_id)
+            .then(()=>{
+              return fantasyHelpers.updateLeagueProjectedPoints(league_id)
+              .then(()=>{
+                if(res){
+                  fantasyHelpers.handleReduxResponse(res, 200, {type: C.SAVED_DRAFT})
+                }
+              })
+            })
         })
     })
 }

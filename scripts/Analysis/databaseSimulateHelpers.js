@@ -34,7 +34,7 @@ const pullPastGames = (knex, day) =>
 {
     return knex('sports.schedule')
         .where('sports.schedule.day_count', "<", day) //need to test if want to go past today, or e this day count
-        .where('season_type',1) 
+        //.where('season_type',1) 
         .select('*')
         .then(game => {
             //console.log(game)
@@ -95,7 +95,12 @@ const getTeamInfo = (knex) =>
         .leftOuterJoin('sports.playoff_standings', function(){
             this.on('sports.playoff_standings.year','=', 'sports.standings.year').andOn('sports.playoff_standings.team_id','=', 'sports.standings.team_id')
         })
-        .innerJoin('analysis.current_elo','analysis.current_elo.team_id', 'sports.team_info.team_id')
+        //am going to try subbing in new season elo for all sports since simulating for upcoming year
+        .innerJoin('analysis.current_elo', function(){
+            this.on('analysis.current_elo.team_id', '=','sports.team_info.team_id').andOn('analysis.current_elo.year','=', 'sports.standings.year')
+        })
+        //below should be norm, not above - only temporary
+        //.innerJoin('analysis.current_elo','analysis.current_elo.team_id', 'sports.team_info.team_id')
         .select('*')
         .then(teams => {
             return teams})
@@ -163,7 +168,7 @@ const createPastGamesArrayWithScores = async (knex, all_teams, day) => {
     return pullPastGames(knex, day)
     .then(games => {
         games.forEach(game => {
-            all_games[game.sport_id].push(new Game(game.global_game_id, all_teams[game.sport_id][game.home_team_id], all_teams[game.sport_id][game.away_team_id], game.sport_id, game.home_team_score, game.away_team_score))
+            all_games[game.sport_id].push(new Game(game.global_game_id, all_teams[game.sport_id][game.year][game.home_team_id], all_teams[game.sport_id][game.year][game.away_team_id], game.sport_id, game.sport_season_id, game.year, game.home_team_score, game.away_team_score))
         })
     return all_games
     })}

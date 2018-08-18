@@ -9,10 +9,13 @@ const db_helpers = require('../helpers.js').data
 const points = require('./getPointsStructure.js') //this pulls all the differnet point strtuctures
 const randomSchedules = require('./randomSchedules.js')
 const math = require('mathjs')
+const updateGameProjections = require('./updateGameProjections')
+const fantasyHelpers = require('../../server/routes/helpers/fantasyHelpers')
+
 
 //this is the overall simulate function - runs for each sport
 //eventually needs to add in how it detects if in the middle of a season
-async function simulate(exitProcess, simulations = 10)
+async function simulate(exitProcess, simulations = 10000)
 {
   console.log('Simulation with ' + simulations + ' simulations')
   const sport_structures = await dbSimulateHelpers.getSportStructures(knex)
@@ -23,7 +26,7 @@ async function simulate(exitProcess, simulations = 10)
   //let all_points = await points.getPointsStructure(knex)
   var today = new Date()
   //this is the calculation of day count normally:
-  let day_count = getDayCount(today)
+  let day_count = getDayCount(today) +1 //note that this is changed
   //this is the first day of the season of 2017
   //day_count = 1469
   /* this to be added back in later
@@ -53,14 +56,17 @@ async function simulate(exitProcess, simulations = 10)
   await Promise.all([
     db_helpers.insertIntoTable(knex,'analysis', 'record_projections', projections),
     db_helpers.insertIntoTable(knex, 'fantasy', 'projections', fantasy_projections),
-    db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', game_projections.slice(0,10000)),
-    db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', game_projections.slice(10000,20000)),
-    db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', game_projections.slice(20000, 30000)),
-    db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', game_projections.slice(30000, 40000)),
-    db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', game_projections.slice(40000))
+    updateGameProjections(knex, game_projections)
+    // db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', game_projections.slice(0,10000)),
+    // db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', game_projections.slice(10000,20000)),
+    // db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', game_projections.slice(20000, 30000)),
+    // db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', game_projections.slice(30000, 40000)),
+    // db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', game_projections.slice(40000))
   ])
+  await fantasyHelpers.updateLeagueProjectedPoints()
   console.log('done')
-  process.exit()
+  if(exitProcess)
+    process.exit()
 
 }
 
@@ -70,7 +76,7 @@ const simulateProfessionalLeague = (all_games_list, teams, sport_id, points, sim
   let game_projections = []
   let all_seasons_sport_teams = []
   years.forEach(year => { 
-    let sport_teams = individualSportTeamsWithYear(teams, sport_id, year)
+    let sport_teams = simulateHelpers.individualSportTeamsWithYear(teams, sport_id, year)
     if(seasonsFinished[sport_id][year]){
       sport_teams.forEach(team =>
       {
@@ -132,7 +138,7 @@ const simulateCFB = (all_games_list, teams, points, simulations = 10) => {
   let game_projections = []
   let all_seasons_cfb_teams = []
   years.forEach(year => { 
-    let cfb_teams = individualSportTeamsWithYear(teams, '105', year)
+    let cfb_teams = simulateHelpers.individualSportTeamsWithYear(teams, '105', year)
     if(seasonsFinished[105][year]){
       cfb_teams.forEach(team =>{
         team.reset()
@@ -214,7 +220,7 @@ const simulateCBB = (all_games_list, teams, points, simulations = 10) => {
   let game_projections = []
   let all_seasons_cbb_teams = []
   years.forEach(year => {
-    let cbb_teams = individualSportTeamsWithYear(teams, '106', year)
+    let cbb_teams = simulateHelpers.individualSportTeamsWithYear(teams, '106', year)
     if(seasonsFinished[106][year]){
       cbb_teams.forEach(team => {
         team.reset()
@@ -316,7 +322,7 @@ const simulateEPL = (all_games_list, teams, points, simulations = 10) => {
   let game_projections = []
   let all_seasons_epl_teams = []
   years.forEach(year => { 
-    const epl_teams = individualSportTeamsWithYear(teams, '107', year)
+    const epl_teams = simulateHelpers.individualSportTeamsWithYear(teams, '107', year)
     if(seasonsFinished[107][year]){
       epl_teams.forEach(team =>{
         team.reset()
@@ -357,10 +363,7 @@ const simulateEPL = (all_games_list, teams, points, simulations = 10) => {
   return [all_seasons_epl_teams, game_projections]
 
 }
-const individualSportTeamsWithYear = (all_teams, sport_id, year) => {
-  let sport_teams = Object.keys(all_teams[sport_id][year]).map(team => {return all_teams[sport_id][year][team]})
-  return sport_teams
-}
+
 
 //variable that stores conferences for each sport. CBB is missing 10617, which is independents.
 const league_conference = {

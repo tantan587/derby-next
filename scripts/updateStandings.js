@@ -5,9 +5,9 @@ const sport_keys = require('./sportKeys')
 const asyncForEach = require('./asyncForEach')
 //const getDayCount = require('./Analysis/dayCount.js')
 
-const filtered_fantasy_standings_data = async () => {
+const filtered_fantasy_standings_data = async (all) => {
   let data = []
-  let season_calls = await db_helpers.getSeasonCall(knex)
+  let season_calls = await db_helpers.getSeasonCall(knex, all)
   let regular_season_calls = season_calls.filter(season => season.season_type === 1)
   await asyncForEach(regular_season_calls, async (season) => {
     let sport_id = season.sport_id
@@ -25,15 +25,14 @@ const filtered_fantasy_standings_data = async () => {
 //note: college basketball has an extra, old functino below: waiting to be sure we don't need this again
 
 //for CFB - this function also updates the post season standings.
-async function updateStandings(exitProcess)
+async function updateStandings(exitProcess, all=false)
 {
-  let data = await filtered_fantasy_standings_data()
+  let data = await filtered_fantasy_standings_data(all)
 
   let result =  await db_helpers.updateStandings(knex, data)
   console.log('Number of Standings Updated: ' + result)
-  await fantasyHelpers.updateTeamPoints()
-  await fantasyHelpers.updateLeaguePoints()
-  console.log('im done')
+  // await fantasyHelpers.updateTeamPoints()
+  // await fantasyHelpers.updateLeaguePoints()
   if(exitProcess)
     process.exit()
 

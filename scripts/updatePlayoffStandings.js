@@ -5,9 +5,9 @@ const knex = require('../server/db/connection')
 const sport_keys = require('./sportKeys')
 const asyncForEach = require('./asyncForEach')
 
-const create_active_playoff_standings_data = async () => {
+const create_active_playoff_standings_data = async (all) => {
   let data = []
-  let season_calls = await db_helpers.getSeasonCall(knex)
+  let season_calls = await db_helpers.getSeasonCall(knex, all)
   let post_season_calls = season_calls.filter(season => [101, 102, 103, 104].includes(season.sport_id)&& season.season_type === 3)
   await asyncForEach(post_season_calls, async (season) => {
     let sport_id = season.sport_id
@@ -17,9 +17,9 @@ const create_active_playoff_standings_data = async () => {
   
   return data
 }
-async function createStandingsPO (exitProcess) {
+async function createStandingsPO (exitProcess, all=false) {
 
-  let data = await create_active_playoff_standings_data()
+  let data = await create_active_playoff_standings_data(all)
   // let MLB_standPO = await getStandingsInfo(knex, 'MLB','MLBv3ScoresClient','getStandingsPromise', '2017POST')
   // let NBA_standPO = await getStandingsInfo(knex, 'NBA','NBAv3ScoresClient','getStandingsPromise', '2018POST')
   // let NHL_standPO = await getStandingsInfo(knex, 'NHL','NHLv3ScoresClient','getStandingsPromise', '2018POST')
@@ -28,7 +28,7 @@ async function createStandingsPO (exitProcess) {
     
   //let data = MLB_standPO.concat(NBA_standPO).concat(NHL_standPO).concat(NFL_standPO)//.concat(CBB_standPO).concat(CFB_standPO)//.concat(EPL_standPO)
   let result = await db_helpers.updatePlayoffStandings(knex, data)
-  console.log('Number of Standings Updated: ' + result)
+  console.log('Number of Playoff Standings Updated: ' + result)
   if(exitProcess)
     process.exit()
 }
