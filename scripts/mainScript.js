@@ -33,9 +33,11 @@ const runUpdate = async () => {
       //   await script5.updateBoxScoreJSON(false, ['previous', sport_id])
       // })
       await scriptPoints.updatePoints(false, true)
-      await scriptAfterSeasonElos.adjustElosAfterSeason(false,'all')
+      
+      await scriptAfterSeasonElos.adjustElosAfterSeason(exitProcessInd,'all')
       //removing this for now because of the doubling up of simulation. 
-      //await scriptSimulate.simulate(exitProcessInd, 10) //setting this for ten on reset to make sure it doesn't take as long - aferwards should run simulate
+      
+      //await remove exitProcess above scriptSimulate.simulate(exitProcessInd, 10) //setting this for ten on reset to make sure it doesn't take as long - aferwards should run simulate
       break
     }
     case 'allSports': 
@@ -67,7 +69,7 @@ const runUpdate = async () => {
     }
     case 'standings':
     {
-      await script4.updateStandings(true, true)
+      await script4.updateStandings(exitProcessInd)
       break
     }
     //'active':

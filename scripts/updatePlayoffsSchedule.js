@@ -9,7 +9,7 @@ const asyncForEach = require('./asyncForEach')
 
 const create_data = async (all) => {
   let data = []
-  let season_calls = await db_helpers.getSeasonCall(knex, all)
+  let season_calls = await fantasyHelpers.activeSeasons(all)
   let post_season_calls = season_calls.filter(season => season.season_type === 3)
   await asyncForEach(post_season_calls, async (season) => {
     let sport_id = season.sport_id

@@ -9,7 +9,7 @@ const sport_JSON_functions = require('./scheduleJsons')
 
 const create_data = async (all) => {
   let data = []
-  let season_calls = await db_helpers.getSeasonCall(knex, all)
+  let season_calls = await fantasyHelpers.activeSeasons(all)
   let regular_season_calls = season_calls.filter(season => season.season_type === 1)
   await asyncForEach(regular_season_calls, async (season) => {
     let sport_id = season.sport_id

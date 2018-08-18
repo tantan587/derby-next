@@ -4,10 +4,11 @@ const db_helpers = require('./helpers').data
 const knex = require('../server/db/connection')
 const sport_keys = require('./sportKeys')
 const asyncForEach = require('./asyncForEach')
+const fantasyHelpers = require('../server/routes/helpers/fantasyHelpers')
 
 const create_active_playoff_standings_data = async (all) => {
   let data = []
-  let season_calls = await db_helpers.getSeasonCall(knex, all)
+  let season_calls = await fantasyHelpers.activeSeasons(all)
   let post_season_calls = season_calls.filter(season => [101, 102, 103, 104].includes(season.sport_id)&& season.season_type === 3)
   await asyncForEach(post_season_calls, async (season) => {
     let sport_id = season.sport_id
