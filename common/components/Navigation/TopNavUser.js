@@ -92,7 +92,7 @@ class TopNavUser extends React.Component {
               {this.setHoverToButton('league', 1, user.loggedIn)}  
               {this.setHoverToButton('default', 2, user.loggedIn, '/participate', 'Create/Join League')}
               {this.setHoverToButton('default', 3, user.loggedIn, '/rules', 'Rules')}
-              {this.setHoverToButton('default', 4, user.loggedIn, '', 'FAQ')}
+              {this.setHoverToButton('default', 4, user.loggedIn, '/faq', 'FAQ')}
               {this.setHoverToButton('default', 5, user.loggedIn, '/scoreboard', 'Scoreboard')}
               <div style={{float:'right'}}>
                 {user.loggedIn ?
