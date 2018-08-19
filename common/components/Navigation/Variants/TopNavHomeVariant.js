@@ -152,7 +152,7 @@ const TopNavHomeVariant = ({
         )}
       </Collapse>}
 
-      {(user.loggedIn === false) && <LinkHelper 
+      {(!user || !user.loggedIn) && <LinkHelper 
         href="/login"
         children="Log In"
         classes={{
@@ -164,7 +164,7 @@ const TopNavHomeVariant = ({
         onClick={hideMobileNav}
       />}
 
-      {(user.loggedIn === false) && <LinkHelper 
+      {(!user || !user.loggedIn) && <LinkHelper 
         href="/signup"
         children="Sign Up"
         classes={{

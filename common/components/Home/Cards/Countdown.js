@@ -22,13 +22,14 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     marginTop: 16,
-    paddingBottom: 16,
+    //paddingBottom: 0,
     borderBottom: '1px solid #848484'
   },
   stack: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
+    justifyContent:'flex-start',
     width: 'calc(100% / 3)'
   },
   time: {
@@ -37,10 +38,10 @@ const styles = {
     textTransform: 'uppercase',
     color: '#848484',
     textAlign:'center',
-    marginLeft:20
+    //marginLeft:20
   },
   clock: {
-    marginTop: 20,
+    marginTop: 10,
     fontFamily: 'digital-7',
     fontSize: 65,
     color: '#E9AA45'

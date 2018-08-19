@@ -3,6 +3,8 @@ const script2 = require('../scripts/updateSchedule')
 const script3 = require('../scripts/updatePlayoffStandings')
 const script4 = require('../scripts/updateStandings')
 const script5 = require('../scripts/updateDayOfSchedule')
+const scriptPoints = require('./updateFantasyPointsOnly')
+
 
 
 const everyMinute = async () => {
@@ -11,6 +13,7 @@ const everyMinute = async () => {
   await script3.createStandingsPO()
   await script4.updateStandings()
   await script5.updateBoxScoreJSON(false, 'near')
+  await scriptPoints.updatePoints()
 }
 
 setInterval(async () => await everyMinute(), 60000)

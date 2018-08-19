@@ -24,7 +24,6 @@ class StandingsRace extends React.Component {
   render() {
     const  { owners, seasons, classes } = this.props
 
-    
     let sd = new Date(Object.values(seasons).map(x => x.start).sort()[0])
     let season_start = new Date(sd.getFullYear(), sd.getMonth(), 1)
     let ed = new Date(Object.values(seasons).map(x => x.end).sort()[Object.keys(seasons).length - 1])

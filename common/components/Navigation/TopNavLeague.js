@@ -99,7 +99,7 @@ class TopNavLeague extends React.Component {
               {this.setHoverToButton('default', 5, '/mainleagueteams', 'Teams')}
               {this.setHoverToButton('league', 6)}
               <div style={{float:'right'}}>
-                {this.setHoverToButton('default', 7, '/logout', 'Logout')
+                {this.setHoverToButton('default', 7, '/logout', 'Log out')
                 }
               </div>
             </div>

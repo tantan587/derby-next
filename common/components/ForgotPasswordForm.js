@@ -1,6 +1,4 @@
 const R = require('ramda')
-import React, {Component} from 'react'
-import Link from 'next/link'
 import { connect } from 'react-redux'
 import {withRouter} from 'next/router'
 import autobind from 'react-autobind'

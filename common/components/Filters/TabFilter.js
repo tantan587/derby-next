@@ -55,7 +55,7 @@ class TabFilter extends React.Component {
           className={classes.appBar}
           style={{backgroundColor:tabStyles.backgroundColor, marginLeft:'2%', height:height, minHeight:height }} >
           <Scrollbars autoHide style={{ width: '100%'}}>
-            <div style={{display:'flex', justifyContent:'center', alignItems:'flex-end',height:height }}>
+            <div style={{display:'flex', justifyContent:'space-between', alignItems:'flex-end',height:height }}>
               {tabs.map((x,i) => {
                 
                 let style = i === index ? {backgroundColor:tabStyles.selectedBackgroundColor,
@@ -81,7 +81,7 @@ class TabFilter extends React.Component {
                     { ({width}) => 
                     {
                       if (textInd)
-                        return <div style={{fontSize: width < 90 && x.length > 20 ? 9 : 12}}>{x}</div> 
+                        return <div style={{fontSize: width < 90 && x.length > 16 ? 9 : 12}}>{x}</div> 
                       return display}}
                   </ContainerDimensions>
                 </Button>

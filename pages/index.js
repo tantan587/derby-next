@@ -155,19 +155,22 @@ class Index extends React.Component {
               buttonText='Create An Account'
               marginRight={20}
               marginLeft={20}
+              link='/signup'
             />
             <TitleCopyButton 
               title='Find Your Unicorn'
               copy='Real teams are your horses in this race! Draft teams across multiple sports to create your own unique roster. Set the pace by showing off your strategy skills at both selecting the best odds-on favorites and finding dark horses while your friends get stuck in the mud with also-rans.'
-              buttonText='More'
+              buttonText='Live Scores'
               marginRight={20}
               marginLeft={20}
+              link='/scoreboard'
             />
             <TitleCopyButton 
               title=' Breeze Past the Field '
               copy='From post to pole, saddle up and earn points as you watch your teams win. No roster setting or daily waiver scouring. No worrying about injuries or bad weather. And all the games count – even the playoffs. After a full cycle of seasons, whoever has the most points wins the race.'
               buttonText='View Rules'
               marginLeft={20}
+              link='/rules'
             />
             <br/>
             <br/>

@@ -13,6 +13,7 @@ const styles = {
   }
 }
 
+
 const DialogHead = ({ currTeam, oneTeam, classes }) =>
 {
   if (!oneTeam)
@@ -22,7 +23,7 @@ const DialogHead = ({ currTeam, oneTeam, classes }) =>
   return (
     <div style={{ display: 'flex', width: 575, margin: '35px 10px 35px 35px', justifyContent: 'space-around' }}>
       <img
-        style={{ height: 100, width: 100 }}
+        style={{maxWidth:100, maxHeight:100}}
         src={currTeam.logo_url || 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Chicago_Cubs_logo.svg/99px-Chicago_Cubs_logo.svg.png'}
       />
       <div>
@@ -48,13 +49,13 @@ const DialogHead = ({ currTeam, oneTeam, classes }) =>
           </div>
           <div>
             <div className={classes.value}>
-              {oneTeam.points || 'XXX'} <span className={classes.key}>Current Points</span>
+              {oneTeam.points || oneTeam.points === 0 ? oneTeam.points : 'XXX'} <span className={classes.key}>Current Points</span>
             </div>
             <div className={classes.value}>
-              {Math.round(oneTeam.proj_points,0) || 'XXX'} <span className={classes.key}>Projected Points</span>
+              {Math.round(oneTeam.proj_points,0) || Math.round(oneTeam.proj_points,0) === 0 ? Math.round(oneTeam.proj_points,0) : 'XXX'} <span className={classes.key}>Projected Points</span>
             </div>
             <div className={classes.value}>
-              {oneTeam.ranking || 'XXX'} <span className={classes.key}>Overall Ranking</span>
+              {oneTeam.ranking || oneTeam.ranking === 0 ? oneTeam.ranking : 'XXX'} <span className={classes.key}>Overall Ranking</span>
             </div>
           </div>
         </div>
