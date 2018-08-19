@@ -22,8 +22,16 @@ const styles = {
 
 class StandingsRace extends React.Component {
   render() {
-    const  { owners, dates, classes } = this.props
-    const { season_start, season_end, current_time } = dates
+    const  { owners, seasons, classes } = this.props
+
+    
+    let sd = new Date(Object.values(seasons).map(x => x.start).sort()[0])
+    let season_start = new Date(sd.getFullYear(), sd.getMonth(), 1)
+    let ed = new Date(Object.values(seasons).map(x => x.end).sort()[Object.keys(seasons).length - 1])
+    
+    //need to adjust this if it doesnt end on Exactly at the end of a month
+    let season_end =ed//= new Date(ed.getFullYear(), ed.getMonth(), 30)
+    let current_time = new Date()
 
     const fullDifference = season_end - season_start
     const currentDifference = (current_time - season_start) / fullDifference
@@ -59,7 +67,7 @@ class StandingsRace extends React.Component {
           </div>
           <FinishLine height={owners.length} />
         </div>
-        <MonthIndicator />
+        <MonthIndicator start={season_start}  end={season_end}/>
         <div style={{ display: 'flex', height: 20 }}>
           <div style={{
             backgroundColor: '#392007',
@@ -82,6 +90,7 @@ class StandingsRace extends React.Component {
           start={season_start}
           end={season_end}
           fullDifference={fullDifference}
+          seasons={seasons}
         />
       </div>
     )

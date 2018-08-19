@@ -1,9 +1,18 @@
-// 15 blocks
-// blank | sep | blank | nov | blank | jan 18 | blank | mar | blank | may | blank | jul | blank | sep | blank
+
+// const  monthDiff = (d1, d2) => {
+//   var months
+//   months = (d2.getFullYear() - d1.getFullYear()) * 12
+//   months -= d1.getMonth() + 1
+//   months += d2.getMonth()
+//   return months <= 0 ? 0 : months
+// }
+
 
 const MonthIndicator = () => {
-  const monthsToRender = [null, 'sep', null, 'nov', null, 'jan \'18', null, 'mar', null, 'may', null, 'jul', null, 'sep', null]
+  //this needs to be automated 
+  const monthsToRender = [null, 'sep', null, 'nov', null, 'jan \'19', null, 'mar', null, 'may', null, 'jul', null, 'sep', null]
   const NUM_MONTHS = monthsToRender.length
+
 
   return (
     <div style={{

@@ -41,7 +41,7 @@ const TopNavLeagueVariant = ({
   const LEAGUE_LINKS = [
     {
       text:'League Home',
-      link:'/mainleague',
+      link:'/mainleaguehome',
     }, {
       text:'Draft Room',
       link:'/livedraft',

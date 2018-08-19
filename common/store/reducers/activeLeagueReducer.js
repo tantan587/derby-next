@@ -24,6 +24,7 @@ export default (state = {}, action={ type: null }) => {
       ownerGames:action.ownerGames,
       rules:action.rules,
       imTheCommish:action.imTheCommish,
+      seasons:action.seasons,
       error : {}
     }
 

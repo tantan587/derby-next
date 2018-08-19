@@ -110,11 +110,18 @@ const getLeague = async (league_id, user_id, res, type) => {
       if(x.season_type ===1)
       {
         seasons[x.sport_id].start = x.start_season_date
+        if(x.sport_id===107)
+        {
+          seasons[x.sport_id].end = x.end_season_date
+        }
       }
       else(x.season_type ===3)
       {
         seasons[x.sport_id].playoffs = x.start_season_date
-        seasons[x.sport_id].end = x.end_season_date
+        if(x.sport_id!==107)
+        {
+          seasons[x.sport_id].end = x.end_season_date
+        }
       }
     })
 
