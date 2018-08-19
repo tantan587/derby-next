@@ -1,8 +1,8 @@
-const script1 = require('./updatePlayoffsSchedule')
-const script2 = require('./updateSchedule')
-const script3 = require('./updatePlayoffStandings')
-const script4 = require('./updateStandings')
-const script5 = require('./updateDayOfSchedule')
+const script1 = require('../scripts/updatePlayoffsSchedule')
+const script2 = require('../scripts/updateSchedule')
+const script3 = require('../scripts/updatePlayoffStandings')
+const script4 = require('../scripts/updateStandings')
+const script5 = require('../scripts/updateDayOfSchedule')
 
 
 const everyMinute = async () => {
@@ -13,6 +13,6 @@ const everyMinute = async () => {
   await script5.updateBoxScoreJSON(true, 'near')
 }
 
-setInterval(() => everyMinute(), 60000)
+setInterval(async () => await everyMinute(), 10000)
 
 
