@@ -47,7 +47,7 @@ const TopNavLeagueVariant = ({
       link:'/livedraft',
     }, {
       text:'League Settings',
-      link:'/mainleagues',
+      link:'/mainleagueteamsettings',
     }
   ]
   if(activeLeague.imTheCommish)
