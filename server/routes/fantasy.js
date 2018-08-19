@@ -90,7 +90,8 @@ const createLeague = async (req) => {
             user_id: req.user.user_id,
             owner_id: owner_id,
             owner_name:  req.body.leagueInfo.name + '-owner-1',
-            commissioner: true
+            commissioner: true,
+            avatar: {'primary':'White','secondary':'Black','pattern':'TriangularPanel2'}
           })
           .then(() => {
             return knex.withSchema('fantasy').table('points')
@@ -155,7 +156,8 @@ const joinLeague = async (req) => {
         user_id: req.user.user_id,
         owner_id: owner_id,
         owner_name:  req.body.league_name + '-owner-' + (total_enrolled+1),
-        commissioner: false
+        commissioner: false,
+        avatar: {'primary':'White','secondary':'Black','pattern':'TriangularPanel2'}
       })
       .then(() => {
         return knex.withSchema('fantasy').table('points')
