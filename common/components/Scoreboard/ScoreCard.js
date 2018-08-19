@@ -36,7 +36,7 @@ const styles = (theme) => (console.log(theme), {
   bb: {
     borderBottom: '1px solid #777'
   },
-  Header: {marginBottom: 30, borderBottom: `1px solid ${theme.palette.grey.A200}`, padding: '10px 10px 10px 10px'},
+  Header: {marginBottom: 30, borderBottom: `1px solid ${theme.palette.grey.A200}`, padding: '10px 10px 10px 10px', height:50},
   Row: {marginBottom: 30, padding: '0 10px'},
   R: {},
   RValues: {justifyContent: 'center'}
