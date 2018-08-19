@@ -34,10 +34,9 @@ const runUpdate = async () => {
       // })
       await scriptPoints.updatePoints(false, true)
       
-      await scriptAfterSeasonElos.adjustElosAfterSeason(exitProcessInd,'all')
-      //removing this for now because of the doubling up of simulation. 
-      
-      //await remove exitProcess above scriptSimulate.simulate(exitProcessInd, 10) //setting this for ten on reset to make sure it doesn't take as long - aferwards should run simulate
+      await scriptAfterSeasonElos.adjustElosAfterSeason(false,'all')
+      //this is used to build projections for first time - needs to be set to true once
+      await scriptSimulate.simulate(exitProcessInd, 10, true)
       break
     }
     case 'allSports': 

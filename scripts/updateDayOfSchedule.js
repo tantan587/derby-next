@@ -1,7 +1,4 @@
 
-//this is currently deprecated and not used - in case we decide to change way we update day of schedule, here it is started. 
-//unneeded with fantasy data change
-
 const db_helpers = require('./helpers').data
 const knex = require('../server/db/connection')
 const getDayCount = require('./Analysis/dayCount.js')
