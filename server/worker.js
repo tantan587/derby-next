@@ -6,13 +6,14 @@ const script5 = require('../scripts/updateDayOfSchedule')
 
 
 const everyMinute = async () => {
-  await script1.createSchedule(false)
-  await script2.createSchedule(false)
-  await script3.createStandingsPO(false)
-  await script4.updateStandings(false)
-  await script5.updateBoxScoreJSON(true, 'near')
+  await script1.createSchedule()
+  await script2.createSchedule()
+  await script3.createStandingsPO()
+  await script4.updateStandings()
+  await script5.updateBoxScoreJSON(false, 'near')
 }
 
-setInterval(async () => await everyMinute(), 10000)
+setInterval(async () => await everyMinute(), 60000)
+
 
 

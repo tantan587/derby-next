@@ -58,9 +58,10 @@ export const GetCountdownTimeObj = (num) =>
   return obj
 }
 
-export const GetDayCount = (year, month, day) => {
+export const GetDayCount = (month, day, year) => {
 
-  const date = new Date(year + ' ' + month + ' ' + day + ' ' + '00:00:00 GMT-04:00')
+  let date = new Date(Date.UTC(year,parseInt(month)-1,day,4,0,0))
+
   // The number of milliseconds in one day
   var ONE_DAY = 1000 * 60 * 60 * 24
 

@@ -54,10 +54,9 @@ class ScoreboardPage extends React.Component {
 
   componentDidUpdate(prevProps, prevState){
 
-    console.log('heelo')
     const {dayCount} = this.state
-    if(dayCount != prevState.dayCount || 
-      prevProps.updateTime != this.props.updateTime)
+    if(dayCount && (dayCount != prevState.dayCount || 
+      prevProps.updateTime.games !== this.props.updateTime.games))
     {
       let mySchedule = []
       if(this.props.liveGames[dayCount])
@@ -74,7 +73,9 @@ class ScoreboardPage extends React.Component {
   componentDidMount()
   {
     const {dayCount} = this.state
-    let mySchedule = this.sortGames(Object.values(this.props.liveGames[dayCount]))
+    let mySchedule = []
+    if(this.props.liveGames[dayCount])
+      mySchedule = this.sortGames(Object.values(this.props.liveGames[dayCount]))
     this.setState({mySchedule})
   }
   

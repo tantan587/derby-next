@@ -57,12 +57,14 @@ methods.createScheduleForInsert = function(cleanSched, sport_id, idSpelling, tea
         console.log(game.AwayTeam)
       }
     } */
+
+    
     let date_time = game.DateTime ? game.DateTime : game.Day
     let status = sport_id !== '102' ? game.Status :
       game.IsOver ? game.IsOvertime ? 'F/OT' : 'Final' : game.IsInProgress ? 'InProgress' : game.Canceled ? 'Canceled' : 'Scheduled'
     let home_score = sport_id === '103' ? game.HomeTeamRuns : sport_id === '102' ? game.HomeScore : game.HomeTeamScore
     let away_score = sport_id === '103' ? game.AwayTeamRuns : sport_id === '102' ? game.AwayScore : game.AwayTeamScore
-    return {
+    let rtnGame =  {
       global_game_id: game['GlobalGame' + idSpelling],
       home_team_id: teamIdMap[game['GlobalHomeTeam' + idSpelling]],
       away_team_id: teamIdMap[game['GlobalAwayTeam' + idSpelling]],
@@ -85,13 +87,16 @@ methods.createScheduleForInsert = function(cleanSched, sport_id, idSpelling, tea
           sport_id === ('105' || '106') ? game.TimeRemainingMinutes !== null ? game.Period : myNull :
             sport_id === '107' ? game.Clock === null ? myNull : game.Clock < 45 ? 1 : 2 :
               game.Quarter === null || status[0] === 'F' ? myNull : game.Quarter,
-      updated_time: sport_id === '103' ? game.Status === 'InProcess' ? game.InningHalf + game.Inning + '-' + game.Outs + ':' + game.Balls + ':' + game.Strikes : game.Status :
+      updated_time: sport_id === '103' ? game.Status === 'InProgress' ? game.InningHalf + game.Inning + '-' + game.Outs + ':' + game.Balls + ':' + game.Strikes : game.Status :
         sport_id === '102' ? game.LastUpdated ? game.LastUpdated : myNull :
           game.Updated ? game.Updated : myNull,
       season_type: game.SeasonType, year: game.Season, 
       game_extra: JSON.stringify(json_function(game)), 
       sport_season_id: sport_season_id
     }
+
+    return rtnGame
+    
   })
 
 }
@@ -204,7 +209,6 @@ methods.updateSchedule = (knex, newResults) =>
       let gameErrors = []
       newResults.forEach(x =>
       {
-
         if(x.away_team_id==null || x.home_team_id ==null){
           gameErrors.push([x.global_game_id, x.date_time])
         }else{
