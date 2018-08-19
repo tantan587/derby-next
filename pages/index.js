@@ -59,7 +59,24 @@ const styles = (theme) =>  ({
     display: 'flex',
     justifyContent: 'center',
     margin: '40px 15% 40px',
-    textAlign: 'center'},
+    textAlign: 'center',
+    [theme.breakpoints.down('sm')]: {
+      '& > :nth-child(-n+2)': {
+        display: 'none'
+      },
+      '& > :nth-child(3)': {
+        marginRight: '0px !important'
+      }
+    },
+  },
+  greenCopy: {
+    color:'#229246', width:'60%',marginLeft:'20%', marginBottom: 40, lineHeight:1.6, textAlign:'center',
+    [theme.breakpoints.down('sm')]: {
+      width:'80%',
+      marginLeft:'10%',
+      marginBottom: 0
+    }
+  },
   section4: {
     textAlign: 'center',
     paddingTop: 50,
@@ -82,15 +99,15 @@ class Index extends React.Component {
   toggleResetEmail = () =>
   {
     this.setState({toggleResetEmail:true})
-    
+
   }
-  
+
 
   render() {
     const {classes, user} = this.props
     const howToPlay = [
       {name:'1) Create Your Free Account', src:'/static/icons/HowToPlayIcons/CreateAccount.svg', link:'/signup'}, //create account
-      {name:'2) Join a League of Friends', src:'/static/icons/HowToPlayIcons/DraftTeam.svg', link:'/participate'}, //particpate form remove protection 
+      {name:'2) Join a League of Friends', src:'/static/icons/HowToPlayIcons/DraftTeam.svg', link:'/participate'}, //particpate form remove protection
       {name:'3) Draft your Teams', src:'/static/icons/HowToPlayIcons/FormLeague.svg', link:'/signup'}, //page of images
       {name:'4) Watch and Win the Race', src:'/static/icons/HowToPlayIcons/WatchWin.svg', link:'/signup'} //page of images
     ]
@@ -100,7 +117,7 @@ class Index extends React.Component {
         <TopNavHome/>
         <SportsSocket>
           <div id="page-wrap" className={classes.section1} style={{display:'flex', flexDirection:'column', alignItems:'center'}}>
-            <Typography 
+            <Typography
               variant="display3" style={{color:'white'}}>
               <div style={{ fontFamily:'museo-slab-bold', marginBottom:20}}>
               A New Way to Play Fantasy Sports
@@ -110,16 +127,16 @@ class Index extends React.Component {
               </div>
             </Typography>
             <Typography variant='headline'style={{color:'white',width:'60%', lineHeight:1.6,  marginBottom:20}}>
-            Pick your teams in this race and ride them to victory! 
+            Pick your teams in this race and ride them to victory!
             In Derby Fantasy Wins League, compete with your friends
              by drafting teams across multiple sports.
-              Earn points when your teams win throughout their entire seasons. 
+              Earn points when your teams win throughout their entire seasons.
               The more games your teams win, the more points you earn.
             </Typography>
 
             {
               <div style={{display:'flex', alignItems:'flex-end', justifyContent:'center', flexWrap:'wrap'}}>
-                {R.values(sportLeagues).sort((a,b) => a.order > b.order).map((x,i) => { 
+                {R.values(sportLeagues).sort((a,b) => a.order > b.order).map((x,i) => {
                   return <SportIconText key={i} sportId={x.sport_id} />
                 })
                 }
@@ -128,10 +145,10 @@ class Index extends React.Component {
             <br/>
             <br/>
             {
-              !user.loggedIn ? 
+              !user.loggedIn ?
                 <Link href="/signup">
                   <Button style={{color:'white', backgroundColor:'#ebab38',height:50, width:125}}>
-                  
+
                     <div>
                       sign up
                     </div>
@@ -139,7 +156,7 @@ class Index extends React.Component {
                 </Link>
                 : null
             }
-            
+
             <br/>
             <br/>
             <br/>
@@ -149,21 +166,21 @@ class Index extends React.Component {
           <div className={classes.section2}>
             <HomeTitle title='Why Enter the Derby' color='white'/>
             <br/>
-            <TitleCopyButton 
+            <TitleCopyButton
               title='Play Like You Watch'
               copy='Play fantasy sports the same way you watch live sports: by rooting for teams to win games and grabbing bragging rights along the way. Stay on track with our live scoreboard and fantasy scoring updates. With Derby, you will always have a favorite team to root for. And, yes, it’s free.'
               buttonText='Create An Account'
               marginRight={20}
               marginLeft={20}
             />
-            <TitleCopyButton 
+            <TitleCopyButton
               title='Find Your Unicorn'
               copy='Real teams are your horses in this race! Draft teams across multiple sports to create your own unique roster. Set the pace by showing off your strategy skills at both selecting the best odds-on favorites and finding dark horses while your friends get stuck in the mud with also-rans.'
               buttonText='More'
               marginRight={20}
               marginLeft={20}
             />
-            <TitleCopyButton 
+            <TitleCopyButton
               title=' Breeze Past the Field '
               copy='From post to pole, saddle up and earn points as you watch your teams win. No roster setting or daily waiver scouring. No worrying about injuries or bad weather. And all the games count – even the playoffs. After a full cycle of seasons, whoever has the most points wins the race.'
               buttonText='View Rules'
@@ -174,22 +191,22 @@ class Index extends React.Component {
             <br/>
           </div>
           <div className={classes.section3}>
-            <div style={{ marginRight: -35 }}>
+            <div style={{ marginRight: -35, order: 1 }}>
               <img src={'/static/icons/Pennant_Icon.svg'} style={{height:100, width:'auto'}} onClick={() => this.firstClick()}/>
             </div>
-            <div style={{ marginRight: 40 }}>
+            <div style={{ marginRight: -35, order: 3 }}>
+              <img src={'/static/icons/Foam_Finger_Icon.svg'} style={{height:100, width:'auto'}} onClick={() => this.toggleResetEmail()} />
+            </div>
+            <div style={{ marginRight: 40, order: 2 }}>
               <HomeTitle title='Root For Teams' color='#229246'/>
               <Typography variant='headline'style={{color:'#229246', lineHeight:1.6,  fontFamily:'museo-slab-bold'}}>
               Root for teams, not just players. Win when your teams do!
               </Typography>
             </div>
-            <div>
-              <img src={'/static/icons/Foam_Finger_Icon.svg'} style={{height:100, width:'auto'}} onClick={() => this.toggleResetEmail()} />
-            </div>
           </div>
-          <Typography variant='headline'style={{color:'#229246', width:'60%',marginLeft:'20%', marginBottom: 40,lineHeight:1.6, textAlign:'center'}}>
-          There’s nothing like being part of a team. How about being a part of 15 of them? In Derby Fantasy Wins League, 
-          you will build a bond with two NFL, two NBA, two MLB, two NHL, one EPL, three NCAA Football, 
+          <Typography variant='headline' className={classes.greenCopy}>
+          There’s nothing like being part of a team. How about being a part of 15 of them? In Derby Fantasy Wins League,
+          you will build a bond with two NFL, two NBA, two MLB, two NHL, one EPL, three NCAA Football,
           and three NCAA Men’s Basketball soccer teams. When they win, you do!
           </Typography>
           <br/>
@@ -211,7 +228,7 @@ class Index extends React.Component {
             <HomeTitle title='How To Play' color='#229246'/>
             <br/>
             {
-              howToPlay.map((x,i) => { 
+              howToPlay.map((x,i) => {
                 return <HowToPlayIconText key={i} name={x.name} link={x.link} src={x.src}/>})
             }
             <br/>
@@ -225,7 +242,7 @@ class Index extends React.Component {
           {/* <img src={'/static/icons/racehorse_plain.svg'} alt="none" height={300} width={300}/> */}
         </SportsSocket>
       </div>
-      
+
     )
   }
 }

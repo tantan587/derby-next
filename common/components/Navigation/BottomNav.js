@@ -7,27 +7,51 @@ import Typography from '@material-ui/core/Typography'
 import Link from 'next/link'
 import HomeLogoIcon from '../Icons/HomeLogoIcon'
 
-const styles = () => ({
+const styles = theme => ({
   root: {
-    flexGrow: 1,
     backgroundColor:'#48311A',
-    textAlign: 'center',
-    minHeight:325
+    display: 'flex',
+    justifyContent: 'space-between',
+    [theme.breakpoints.down('sm')]: {
+      padding: '12px 0px 20px 0px',
+      justifyContent: 'space-around',
+      '& > :first-child': {
+        display: 'none'
+      }
+    },
+    [theme.breakpoints.down('xs')]: {
+      flexDirection: 'column'
+    }
+  },
+  right: {
+    [theme.breakpoints.down('xl')]: { marginRight: 50 },
+    [theme.breakpoints.down('lg')]: { marginRight: 30 },
+    [theme.breakpoints.down('md')]: { marginRight: 20 },
+    [theme.breakpoints.down('sm')]: { marginRight: 20 },
+    [theme.breakpoints.down('xs')]: { marginRight: 0 },
+  },
+  links: {
+    display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
+    [theme.breakpoints.down('sm')]: {
+      // flexDirection: 'row',
+    }
   },
   flex: {
     flex: 1,
   },
 })
 class BottomNav extends React.Component {
-  
- 
+
+
 
   render() {
     const {classes, user} = this.props
     console.log(user.loggedIn)
     const items = user.loggedIn ? [
       {text:'Home', link:'/'},
-      {text:'Rules', link:''},
+      {text:'Rules', link:'/rules'},
+      {text:'Privacy Policy', link:'/privacy'},
+      {text:'Terms of Use', link:'/legal'},
       {text:'FAQ', link:''},
       {text:'Privacy Policy', link:''},
       {text:'Logout', link:'/logout'},] :
@@ -40,43 +64,47 @@ class BottomNav extends React.Component {
 
     return (
       <div className={classes.root}>
-        <div style={{display:'inline-block',float:'left'}}>
+        <div style={{}}>
           <div style={{height:325, width:325}}>
             <LogoIcon color='#594632' viewbox='15 0 62 62'/>
           </div>
         </div>
-        <div style={{display:'inline-block',float:'left', marginLeft:50, marginTop:40}}>
-          {items.map((item, i) => { 
+        <div className={classes.links}>
+          {items.map((item, i) => {
             return <div key={i}>
               <Link  href={item.link ? item.link : 'nolink'}>
                 <Button  style={{fontSize:16, color:'white', width:170}}>
-                  {item.text}            
-                </Button>               
+                  {item.text}
+                </Button>
               </Link>
-              <br/>
             </div>
-            
+
           })
           }
         </div>
-        <div style={{float:'right', marginRight:50, marginTop:20}}>
+        <div
+          className={classes.right}
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            minHeight: 325
+          }}
+        >
           <a href='/' target="_blank">
             <HomeLogoIcon color={'white'} height={75} width={225} />
           </a>
-          <br/>
-          <br/>
-          <div style={{marginLeft:0, display: 'inline-block'}}>
+          <div style={{}}>
             <img src='/static/icons/Footer/social_media_icon_facebook.svg' width='50' height='auto'/>
           </div>
-          <div style={{marginLeft:20, display: 'inline-block'}}>
+          <div style={{}}>
             <img src='/static/icons/Footer/social_media_icon_twitter.svg' width='50' height='auto'/>
           </div>
-          <br/>
-          <br/>
           <a href="http://fantasydata.com/" target="_blank">
             <img src="https://fantasydata.com/images/badges/fantasydata-light-wide.png" alt="Powered by FantasyData.com"/>
           </a>
-          <div style={{marginTop:20}}>
+          <div style={{}}>
             <Typography variant="caption" style={{color:'white', textAlign:'center'}} >
             All Rights Reserved. © 2018, Derby FWL, LLC
             </Typography>
