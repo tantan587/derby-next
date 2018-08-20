@@ -49,7 +49,10 @@ class TeamDisplay extends React.Component {
     {
       allTeams.map(teamId => {
         if (draft.draftedTeams.includes(teamId))
-          teamsToShow.push({...teams[teamId],disableQueue:true, draftOverride:{text:'Drafted', icon:'Taken'}, queueOverride:{text:'Not eligible', icon:'N/A'}, eligible:false, checkbox:'Drafted' })
+        {
+          let oneTeam = {...teams[teamId],disableQueue:true, disableDraft:true, draftOverride:{text:'Drafted', icon:'Taken'}, queueOverride:{text:'Not eligible', icon:'N/A'}, eligible:false, checkbox:'Drafted' }
+          teamsToShow.push(oneTeam)
+        }
         else if(!draft.eligibleTeams.includes(teamId))
           teamsToShow.push({...teams[teamId],disableQueue:true, queueOverride:{text:'Not eligible', icon:'N/A'}, eligible:false, checkbox:'Available' })
         else if(queue.indexOf(teamId) === -1)
@@ -97,6 +100,7 @@ class TeamDisplay extends React.Component {
       values:['All'].concat(R.map(x => x.sport_id, this.props.activeLeague.rules)),
       column:'sport_id',
       defaultTab:0,
+      filtersToNotRemove:[3],
       tabStyles:{backgroundColor:'#e3dac9',
         color:'#48311A',
         selectedBackgroundColor:'white', 

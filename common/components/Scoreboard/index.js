@@ -33,7 +33,7 @@ const getDateRangeForWeek = (date) => {
   let prev = new Date(date.getTime())
   prev.setDate(date.getDate() + offset.start)
   let next = new Date(date.getTime())
-  next.setDate(date.getDate() + offset.end)
+  next.setDate(date.getDate() + offset.end -1 )
   return `${formatDate(prev)} - ${formatDate(next)}`
 }
 

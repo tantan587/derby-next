@@ -40,9 +40,9 @@ class TabFilter extends React.Component {
   }
 
   filterRows = (index) => {
-    const { column, tabs, clickedUpdateFilter,removeFiltersBelow, filterId} = this.props
+    const { column, tabs, clickedUpdateFilter,removeFiltersBelow, filterId, filtersToNotRemove} = this.props
     clickedUpdateFilter({key:column, value:tabs[index], type:'tab'}, filterId)
-    removeFiltersBelow(filterId)
+    removeFiltersBelow(filterId, filtersToNotRemove)
   }
 
   render() {

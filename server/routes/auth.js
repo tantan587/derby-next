@@ -16,9 +16,9 @@ const signupTemplates = require('../email-templates/signup')
 //https://github.com/zeit/next.js/issues/153
 
 router.post('/signup', authHelpers.loginRedirect, (req, res)  => {
-  return authHelpers.createUser(req, res)
+  return authHelpers.createUser(req)
     .then((response) => {
-      if (response) {
+      if (!response.error) {
         const newUser = response[0]
         return authHelpers
           .sendEmail(newUser, signupTemplates)
@@ -30,7 +30,7 @@ router.post('/signup', authHelpers.loginRedirect, (req, res)  => {
             username : newUser.username
           }))
       } else {
-        return handleReduxResponse(res, 400, {type: C.SIGNUP_FAIL})
+        return handleReduxResponse(res, 400, {type: C.SIGNUP_FAIL, error:response.error})
       }
     })
 })

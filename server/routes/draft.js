@@ -58,7 +58,7 @@ const handleResponse = (res, code, statusMsg) => {
 
 const assembleDraft = (owners, results, my_owner_id, rules, teamMap) =>{
   let mode = 'pre'
-  let pick = 0
+  let allPicks = []
   let ownersMap = {}
   let draftedTeams = []
   let queue = []
@@ -76,7 +76,7 @@ const assembleDraft = (owners, results, my_owner_id, rules, teamMap) =>{
     }
     case 'PICK':
     {
-      pick = element.action.pick
+      allPicks.push(element.action.pick)
       ownersMap[element.initiator].push(element.action)
       const index = availableTeams.indexOf(element.action.teamId)
       availableTeams.splice(index, 1)
@@ -118,7 +118,7 @@ const assembleDraft = (owners, results, my_owner_id, rules, teamMap) =>{
   return {
     type:C.ENTERED_DRAFT,
     mode,
-    pick,
+    pick:allPicks.length === 0 ? 0 : (Math.max(...allPicks)+1),
     availableTeams,
     draftedTeams,
     allTeams,

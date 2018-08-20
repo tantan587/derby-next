@@ -1,4 +1,4 @@
-const R = require('ramda')
+//const R = require('ramda')
 var bcrypt = require('bcrypt-nodejs')
 const mailer = require('mailgun-js')
 const knex = require('../../db/connection')
@@ -6,14 +6,14 @@ const ErrorText = require('../../../common/models/ErrorText')
 const C = require('../../../common/constants')
 const v4 = require('uuid/v4')
 const generatePassword = require('password-generator')
-const signupTemplates = require('../../email-templates/signup')
+//const signupTemplates = require('../../email-templates/signup')
 const dev = process.env.NODE_ENV !== 'production'
 
 function comparePass(userPassword, databasePassword) {
   return bcrypt.compareSync(userPassword, databasePassword)
 }
 
-function createUser(req, res) {
+function createUser(req) {
   return handleErrors(req)
     .then(() => {
       const salt = bcrypt.genSaltSync()
@@ -33,7 +33,7 @@ function createUser(req, res) {
         .returning('*')
     })
     .catch((err) => {
-      res.status(400).json(err)
+      return err
     })
 }
 
@@ -64,14 +64,13 @@ function loginRedirect(req, res, next) {
 }
 
 function validateEmail(email) {
-  var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   return re.test(email)
 }
 
 function handleErrors(req) {
   return new Promise((resolve, reject) => {
-    let foundError = false;
-    let errorText = new ErrorText();
+    let errorText = new ErrorText()
     if (req.body.username.length < 6) {
       errorText.addError('signup_username','Username must be longer than six characters')
     }
@@ -81,21 +80,24 @@ function handleErrors(req) {
     if (validateEmail(req.body.email)=== false) {
       errorText.addError('signup_email','Not proper email format')
     }
-     if (errorText.foundError()) {
+    if (errorText.foundError()) {
       reject({
         type: C.SIGNUP_FAIL,
         error: errorText
-      });
+      })
     }
-     else {
-      var str = "select (select count(*) from users.users where username = '" + req.body.username + "') username, " +
-      "(select count(*) from users.users where email = '" + req.body.email +"') email"
+    else {
+      var str = `select (select count(*) 
+      from users.users where username = '` + req.body.username + `') 
+      username, ` +
+      `(select count(*) from
+       users.users where email = '` + req.body.email +'\') email'
       knex.raw(str)
-      .then(result =>
+        .then(result =>
         {
           if (result.rows.length !== 1)
           {
-            throw err
+            throw 'Found More than one row. ' + req.body.username + ','+req.body.email
           }
           if (result.rows[0].username == 1) 
           {
@@ -108,7 +110,7 @@ function handleErrors(req) {
           if (errorText.foundError()) {
             reject({
               type: C.SIGNUP_FAIL,
-              error: errorText});
+              error: errorText})
           }
           else
           {
@@ -189,38 +191,10 @@ const updatePassword = (req) => {
   })
 }
 
-const sendSignupEmail = (user) => {
-  const HOST = dev ? 'http://localhost:3000' : 'http://www.derby-fwl.com'
-  const LINK = `${HOST}/email-verification?i=${user.user_id}&c=${user.verification_code}`
-
-  return knex('users.email_auth')
-    .select('*')
-    .where('application', (dev ? 'forgotpassword-dev' : 'forgotpassword'))
-    .first()
-    .then(({api_key: apiKey, domain, email}) => {
-      const mailGun = mailer({apiKey, domain})
-      const mgConfig = {
-        from: email,
-        to: user.email,
-        subject: '[Derby] Verify Email',
-        html: `
-          <h1>Welcome to Derby, ${user.first_name}!</h1>
-          <p>Here's your verification code: <b>${user.verification_code}</b></p>
-          <br />
-          <p>
-            Or you can also click here: <br />
-            <a href="${LINK}">${LINK}</a>
-          </p>
-        `
-      }
-      return mailGun.messages().send(mgConfig)
-    })
-}
-
 const sendEmail = (user, {subject, body, inline} = {}) => {
   return knex('users.email_auth')
     .select('*')
-    .where('application', (dev ? 'forgotpassword-dev' : 'forgotpassword'))
+    .where('application', 'forgotpassword')//(dev ? 'forgotpassword-dev' : 'forgotpassword'))
     .first()
     .then(({api_key: apiKey, domain, email}) => {
       const mailGun = mailer({apiKey, domain})
@@ -234,54 +208,6 @@ const sendEmail = (user, {subject, body, inline} = {}) => {
       return mailGun.messages().send(mgConfig)
     })
 }
-
-const sendForgotPasswordEmail = (user, res) =>
-{
-  return knex.withSchema('users').table('email_auth').where('application', 'forgotpassword')
-    .then(result => 
-    {
-      const mailgun = mailer({apiKey: result[0].api_key, domain: result[0].domain})
-      const style = 'background-color:rgb(255, 255, 255); color:rgb(34, 34, 34); font-family:arial,sans-serif; font-size:12.8px'
-      console.log(user.email)
-      const data = {
-        from: result[0].email,
-        to: user.email,
-        subject: 'Reset Password',
-        html: `<html>
-        <head>
-          <title></title>
-        </head>
-        <body><span style={`+style+'}>Dear '+ user.first_name +`,</span><br />
-          <br />
-          <span style={`+style+'}>You have requested to reset your Derby password and your temporary password is: <strong>'+user.password+`</strong></span><br />
-          <br />
-          <span style={`+style+`}>To change your password, please follow these steps:</span>
-          <ol>
-            <li><span style={`+style+`}>Go to this <a href="http://www.derby-fwl.com/createpassword">link</a></span></li>
-            <li><span style={`+style+`}>Enter your username.</span></li>
-            <li><span style={`+style+`}>Enter your temporary password. Hint: Copy and paste the password in order to enter it.</span></li>
-            <li><span style={`+style+`}>Create your new password.&nbsp;</span></li>
-            <li><span style={`+style+`}>Hit the SUBMIT&nbsp;button.&nbsp;</span></li>
-          </ol>
-          <span style={`+style+`}>Enjoy The Derby!</span><br />
-          &nbsp;
-          <div>&nbsp;</div>
-          
-          <div>&nbsp;</div>
-        </body>
-      </html>`
-      
-      }
-      //https://www.aceware.com/htmlemail.html
-      
-      mailgun.messages().send(data, function (error, body) {
-        console.log(body)
-        handleReduxResponse(res, 200, {
-          type: C.FORGOT_PASSWORD_SUCCESS})
-      })
-    })
-}
-  
 
 function handleReduxResponse(res, code, action)
 {
@@ -297,7 +223,5 @@ module.exports = {
   getUserLeagues,
   updatePassword,
   createNewPassword,
-  sendSignupEmail,
-  sendForgotPasswordEmail,
   sendEmail,
 }

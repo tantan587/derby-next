@@ -21,13 +21,16 @@ class FilterCreator extends React.Component {
     this.props.handleUpdateFilter(this.state.page, filterId, filter)
   }
 
-  removeFiltersBelow = (filterId) => {
+  removeFiltersBelow = (filterId, filtersToNotRemove) => {
     const {filters} = this.props
     const {values} = this.state
     for(let i = filterId +1; i < filters.length; i++)
     {
-      delete values[i]
-      this.props.handleRemoveFilter(this.state.page, i)
+      if(!filtersToNotRemove || !filtersToNotRemove.includes(i))
+      {
+        delete values[i]
+        this.props.handleRemoveFilter(this.state.page, i)
+      }
     }
     this.setState({values})
   }
@@ -46,6 +49,7 @@ class FilterCreator extends React.Component {
           filters.map((filter,i) => {
             if (filter.type === 'checkbox')
             {
+              console.log(filter)
               let value = values[i] || filter.values.map(x => {return {val:true, label:x}})
               return <CheckboxFilter
                 clickedUpdateFilter={this.clickedUpdateFilter}
@@ -60,6 +64,7 @@ class FilterCreator extends React.Component {
                 filterId={i}
                 removeFiltersBelow={this.removeFiltersBelow}
                 clickedUpdateFilter={this.clickedUpdateFilter}
+                filtersToNotRemove={filter.filtersToNotRemove}
                 key={i} 
                 displayType={filter.displayType}
                 tabs={filter.values} 

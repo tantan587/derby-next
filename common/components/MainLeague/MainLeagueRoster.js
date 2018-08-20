@@ -35,9 +35,22 @@ class MainLeagueRoster extends React.Component {
       let owner = null 
       if (activeLeague.teams[team.team_id])
         owner = activeLeague.owners.filter(owner => owner.owner_id === activeLeague.teams[team.team_id].owner_id)[0]
-
+      let points = 0
+      let projPoints = 0
+      let rank = 999
+      
+      if (activeLeague.teams[team.team_id])
+      {
+        owner = activeLeague.owners.find(owner => owner.owner_id === activeLeague.teams[team.team_id].owner_id)
+        points = activeLeague.teams[team.team_id].points
+        projPoints = activeLeague.teams[team.team_id].proj_points
+        rank = activeLeague.teams[team.team_id].ranking
+      }
       return {
         ...team,
+        points,
+        projPoints,
+        rank,
         record:team.wins + '-' + team.losses + '-' + team.ties,
         percentage: (team.wins + team.ties + team.losses) === 0 ? 0.0.toFixed(3) : ((team.wins + 1/2*team.ties) / (team.wins + team.ties + team.losses)).toFixed(3),
         owner_name: owner ? owner.owner_name : 'N/A',
@@ -73,11 +86,12 @@ class MainLeagueRoster extends React.Component {
           myHeaders = {[
             {label: 'Logo', key: 'logo_url', sortId:'team_name', imageInd:true},
             {label: 'Team Name', key: 'team_name'},
-            {label: 'Sport League', key: 'sport_id', imageInd:true},
+            {label: 'Sport', key: 'sport_id', imageInd:true},
             {label: 'Conference', key: 'conference'},
             {label: 'Record', key: 'record', sortId:'percentage'},
-            {label: 'Percentage', key: 'percentage'},
-            // {label: 'Points', key: 'points'}
+            {label: 'Derby Points', key: 'points'},
+            {label: 'Proj. Points ', key: 'projPoints'},
+            {label: 'Rank', key: 'rank'},
           ]}/>
       </div>
     )
