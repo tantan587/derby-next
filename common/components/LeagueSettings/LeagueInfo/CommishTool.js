@@ -68,7 +68,7 @@ class CommishTool extends React.Component {
 
         },
       fireRedirect:false,
-      owners:this.props.activeLeague.owners.sort((a,b) => a.draft_position > b.draft_position)
+      owners:this.props.activeLeague.owners.sort((a,b) => {return a.draft_position > b.draft_position})
     }
   }
 
