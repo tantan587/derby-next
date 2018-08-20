@@ -65,7 +65,6 @@ class CommishTool extends React.Component {
           draftType: 'Online - Snake Format',
           pickTime: props.activeLeague.draftInfo.seconds_pick,
           draftDate: props.activeLeague.draftInfo.start_time,
-
         },
       fireRedirect:false,
       owners:this.props.activeLeague.owners.sort((a,b) => {

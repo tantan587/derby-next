@@ -123,7 +123,10 @@ function handleErrors(req) {
 
 const getUserLeagues = (user, cb) =>{
   
-  return  knex.withSchema('fantasy').table('leagues').where('user_id',user.user_id).innerJoin('owners', 'leagues.league_id', 'owners.league_id')
+  return  knex.withSchema('fantasy').table('leagues').where({
+    user_id: user.user_id,
+    status: 'confirmed',
+  }).innerJoin('owners', 'leagues.league_id', 'owners.league_id')
     .then(result =>
     {
       let leagues = []

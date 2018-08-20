@@ -6,6 +6,7 @@ exports.up = function(knex, Promise) {
       'pending',
       'confirmed',
       'rejected',
+      'inactive',
     ]).defaultTo('not_invited')
   }).then(() => {
     return knex('fantasy.owners')

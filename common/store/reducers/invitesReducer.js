@@ -7,12 +7,12 @@ const dataReducer = (state=initialState.data, action) => {
   const indexById = R.indexBy(R.prop(INDEX_KEY))
   switch(action.type) {
     case C.GET_INVITES_SUCCESS:
-      return R.merge(state, indexById(action.payload))
+      return R.merge({}, indexById(action.payload))
     case C.CREATE_INVITE_SUCCESS:
     case C.SEND_INVITE_SUCCESS:
       return R.merge(state, indexById([action.payload]))
     case C.DELETE_INVITE_SUCCESS:
-      return R.dissoc(action.payload)
+      return R.merge(state, indexById([action.payload]))
   }
 }
 
