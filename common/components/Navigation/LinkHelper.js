@@ -42,7 +42,7 @@ const LinkHelper = ({
           style={{marginLeft:-30, marginBottom:10}}
           primary={<div className={classes.text}>{children}</div>}
         />
-      </Link>  
+      </Link>
     )}
     {endAdornment}
   </ListItem>

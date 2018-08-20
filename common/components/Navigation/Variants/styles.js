@@ -27,7 +27,7 @@ const styles = (theme) => ({
   },
   text : {
     fontSize:16,
-    color:'#392007'
+    color:'white'
   },
   activeText : {
     color:'#EBAB38'
