@@ -115,7 +115,7 @@ const styles = theme => ({
 })
 
 const InfoTool = ({ style }) =>
-  <Tooltip id="tooltip-top" title="This gives you information" placement="top">
+  <Tooltip id="tooltip-top" title="Currently, only snake draft is available" placement="top">
     <div className={style}>i</div>
   </Tooltip>
 
