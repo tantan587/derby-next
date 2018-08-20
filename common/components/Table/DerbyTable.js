@@ -41,7 +41,7 @@ class DerbyTable extends React.Component {
     const {order, orderBy, orderByDisplay, rowsPerPage, page} = this.state
 
     let localRows = orderBy === '' ? rows : rows.sort((a, b) =>
-      (order === 'desc')
+      (order !== 'desc')
         ? isNaN(b[orderBy])
           ? (b[orderBy].toLowerCase() > a[orderBy].toLowerCase() ? -1 : b[orderBy].toLowerCase() < a[orderBy].toLowerCase() ? 1 : 0)
           : (b[orderBy] > a[orderBy] ? -1 : b[orderBy] < a[orderBy] ? 1 : 0)
