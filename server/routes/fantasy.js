@@ -321,9 +321,11 @@ const handleJoinErrorsAndGetInfo= async (req) => {
     knex.raw(str)
       .then(result =>
       {
+        // Looking for users that are not confirmed yet that have been invited in the league, 
+        // if there is a user, and username and password is right, resolve with is_invited to true
         knex('fantasy.owners')
         .select('*')
-        .where('status', '!=', 'confirmed')
+        .whereNot('status', 'confirmed')
         .andWhere({
           league_id: league_info.league_id,
           user_id: req.user.user_id,
@@ -344,6 +346,7 @@ const handleJoinErrorsAndGetInfo= async (req) => {
           }
           else if (result.rows[0].leagueexists === '1' && result.rows[0].joined === '1') 
           {
+            console.log('owner is here', owner, league_info, req.user)
             if (owner) {
               return resolve({...league_info, is_invited: true})
             }

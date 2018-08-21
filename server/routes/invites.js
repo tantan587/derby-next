@@ -71,7 +71,10 @@ router.post('/invites/:invite_id/send', (req, res) => {
   .andWhere({owner_id: invite_id})
   .returning('*')
   .then(([owner]) => {
-    if (owner) return getInviteJSON(owner).then(res.json.bind(res))
+    if (owner) return userHelpers
+      .sendInvite(owner.user_id, owner.league_id)
+      .then(() => getInviteJSON(owner))
+      .then(res.json.bind(res))
     else return res.sendStatus(400)
   })
 })

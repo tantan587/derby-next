@@ -42,16 +42,34 @@ const styles = {
 }
 
 class JoinLeagueForm extends React.Component {
-  state={
-    league_name:'',
-    league_password:'',
-    fireRedirect: false
+  constructor(props) {
+    super(props)
+    this.state = {
+      league_name:'',
+      league_password:'',
+      fireRedirect: false,
+      prefilled: false,
+    }
+  }
+
+  componentDidMount() {
+    if (this.props.router.query.code) {
+      const prefill = JSON.parse(atob(this.props.router.query.code))
+      if (this.props.user.id !== prefill.user_id) {
+        alert('This invite is not for you')
+        this.props.router.push('/')
+      }
+      if (prefill.league_name && prefill.league_password)
+        this.setState({
+          league_name: prefill.league_name,
+          league_password: prefill.league_password,
+          prefilled: true,
+        })
+    }
   }
 
   componentWillUnmount() {
-
     this.props.onUpdateError(C.PAGES.JOIN_LEAGUE, '')
-
   }
 
   componentWillReceiveProps(nextProps) {
@@ -86,7 +104,6 @@ class JoinLeagueForm extends React.Component {
   }
 
   render() {
-
     const { classes, user } = this.props
     const errorText = user.error[C.PAGES.JOIN_LEAGUE]
 
@@ -103,12 +120,15 @@ class JoinLeagueForm extends React.Component {
             label="League name"
             value={this.state.league_name}
             onChange = {this.handleChange('league_name')}
+            disabled={this.state.prefilled}
           />
           <DerbyTextField
             style={{width:300}}
             label="Password"
             value={this.state.league_password}
-            onChange = {this.handleChange('league_password')}/>
+            onChange = {this.handleChange('league_password')}
+            disabled={this.state.prefilled}
+            />
           <Typography variant='subheading' style={{color:'red', marginTop:20}}>
             {errorText}
           </Typography>

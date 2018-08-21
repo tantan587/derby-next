@@ -212,6 +212,71 @@ const sendEmail = (user, {subject, body, inline} = {}) => {
     })
 }
 
+const sendGeneric = (context, {frm, to, subject, body, inline}) => {
+  return knex('users.email_auth')
+    .select('*')
+    .where('application', (dev ? 'forgotpassword-dev' : 'forgotpassword'))
+    .first()
+    .then(({api_key: apiKey, domain, email}) => {
+      const mailGun = mailer({apiKey, domain})
+      const mgConfig = {
+        from: email,
+        to: to(context),
+        subject: subject(context),
+        html: body(context),
+        inline: inline,
+      }
+      return mailGun.messages().send(mgConfig)
+    })
+}
+
+const sendForgotPasswordEmail = (user, res) =>
+{
+  return knex.withSchema('users').table('email_auth').where('application', 'forgotpassword')
+    .then(result => 
+    {
+      const mailgun = mailer({apiKey: result[0].api_key, domain: result[0].domain})
+      const style = 'background-color:rgb(255, 255, 255); color:rgb(34, 34, 34); font-family:arial,sans-serif; font-size:12.8px'
+      console.log(user.email)
+      const data = {
+        from: result[0].email,
+        to: user.email,
+        subject: 'Reset Password',
+        html: `<html>
+        <head>
+          <title></title>
+        </head>
+        <body><span style={`+style+'}>Dear '+ user.first_name +`,</span><br />
+          <br />
+          <span style={`+style+'}>You have requested to reset your Derby password and your temporary password is: <strong>'+user.password+`</strong></span><br />
+          <br />
+          <span style={`+style+`}>To change your password, please follow these steps:</span>
+          <ol>
+            <li><span style={`+style+`}>Go to this <a href="http://www.derby-fwl.com/createpassword">link</a></span></li>
+            <li><span style={`+style+`}>Enter your username.</span></li>
+            <li><span style={`+style+`}>Enter your temporary password. Hint: Copy and paste the password in order to enter it.</span></li>
+            <li><span style={`+style+`}>Create your new password.&nbsp;</span></li>
+            <li><span style={`+style+`}>Hit the SUBMIT&nbsp;button.&nbsp;</span></li>
+          </ol>
+          <span style={`+style+`}>Enjoy The Derby!</span><br />
+          &nbsp;
+          <div>&nbsp;</div>
+          
+          <div>&nbsp;</div>
+        </body>
+      </html>`
+      
+      }
+      //https://www.aceware.com/htmlemail.html
+      
+      mailgun.messages().send(data, function (error, body) {
+        console.log(body)
+        handleReduxResponse(res, 200, {
+          type: C.FORGOT_PASSWORD_SUCCESS})
+      })
+    })
+}
+  
 function handleReduxResponse(res, code, action)
 {
   res.status(code).json(action)
@@ -227,4 +292,5 @@ module.exports = {
   updatePassword,
   createNewPassword,
   sendEmail,
+  sendGeneric,
 }
