@@ -1,5 +1,6 @@
 const knex = require('../../db/connection')
 const fantasyHelpers = require('./fantasyHelpers')
+const C = require('../../../common/constants')
 
 const GetDraftRules = async (roomId) => {
 
@@ -99,11 +100,11 @@ const enterDraftToDb = (allTeams,league_id, res) =>
           return fantasyHelpers.updateLeaguePoints(league_id)
             .then(()=>{
               return fantasyHelpers.updateLeagueProjectedPoints(league_id)
-              .then(()=>{
-                if(res){
-                  fantasyHelpers.handleReduxResponse(res, 200, {type: C.SAVED_DRAFT})
-                }
-              })
+                .then(()=>{
+                  if(res){
+                    fantasyHelpers.handleReduxResponse(res, 200, {type: C.SAVED_DRAFT})
+                  }
+                })
             })
         })
     })
