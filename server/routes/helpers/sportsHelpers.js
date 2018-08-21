@@ -297,7 +297,11 @@ const GetOneTeamSchedule  = async(team_id, res) =>{
     from sports.schedule a
     where (a.home_team_id = `+ team_id + ' or a.away_team_id = ' + team_id + ' ) order by day_count'
 
+  const str2 = `select logo_url from sports.team_info
+  where team_id = ` + team_id
+
   let schedule = await knex.raw(str)
+  const logo =  await knex.raw(str2)
 
   schedule = schedule.rows
   let oneTeam = {}
@@ -350,6 +354,7 @@ const GetOneTeamSchedule  = async(team_id, res) =>{
       }
     }
   })
+  oneTeam.logo_url = logo.rows[0].logo_url
   oneTeam.team_id = team_id
   oneTeam.nextFive = nextFive
   oneTeam.lastFive = lastFive

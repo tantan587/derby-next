@@ -23,6 +23,9 @@ import { connect } from 'react-redux'
 import Divider from '@material-ui/core/Divider'
 import Chat from './Chat'
 import Router from 'next/router'
+import C from '../../constants'
+import {clickedLeague} from '../../actions/fantasy-actions'
+
 
 const styles = theme => ({
   container: {
@@ -161,6 +164,10 @@ class DraftContainer extends React.Component {
 
   handleModeChange = (mode) => {
     this.props.onSetDraftMode(mode)
+    if (mode === C.DRAFT_STATE.POST)
+    {
+      this.props.finishedDraft(this.props.activeLeague.league_id,  this.props.user.id) 
+    }
   }
 
   handleDraftTick = (data) => {
@@ -466,5 +473,9 @@ export default connect(
       onRecieveMessage(message) {
         dispatch(
           handleRecieveMessage(message))
+      },
+      finishedDraft(league_id, user_id) {
+        dispatch(
+          clickedLeague(league_id, user_id))
       },
     }))(withStyles(styles)(DraftContainer))

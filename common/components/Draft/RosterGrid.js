@@ -65,15 +65,18 @@ class RosterGrid extends React.Component {
           key = team.sport_id + '-'+ nonStrictLeagueCount[team.sport_id]
           nonStrictLeagueCount[team.sport_id]++
         }
-        row[key] = team.logo_url
+        row[key] = {}
+        row[key].url = team.logo_url
+        row[key].team_id = team.team_id
       })
 
       rows.push(row)
       Object.keys(nonStrictLeagueCount).map(x => {nonStrictLeagueCount[x] = 1})
     })
+    console.log(1, rows)
     return (
       <div style={{height:730, minHeight:730, maxHeight:730}}>
-        <TeamsDialog />
+        <TeamsDialog/>
         <DerbyTableContainer
           passUpFilterInfo={this.passUpFilterInfo}
           usePagination={false}

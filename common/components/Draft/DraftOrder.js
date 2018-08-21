@@ -50,31 +50,7 @@ const styles = theme => ({
 })
 
 class DraftOrder extends React.Component {
-  // constructor(props) {
-  //   super(props)
-  //   this.state = {
-  //     top: 0 
-  //   }}
 
-  // handleUpdate =  (values)  => {
-  //   const { top } = values
-  //   this.setState({ top })
-  // }
-
-  // renderView =  ({ style, ...props }) => {
-  //   const { top } = this.state
-  //   const viewStyle = {
-  //     padding: 15,
-  //     backgroundColor: `rgb(${Math.round(255 - (top * 255))}, ${Math.round(top * 255)}, ${Math.round(255)})`,
-  //     color: `rgb(${Math.round(255 - (top * 255))}, ${Math.round(255 - (top * 255))}, ${Math.round(255 - (top * 255))})`
-  //   }
-  //   return (
-  //     <div
-  //       className="box"
-  //       style={{ ...style, ...viewStyle }}
-  //       {...props}/>
-  //   )
-  // }
   render() {
     const { classes, owners,myOwnerName, draftOrder, currPick, mode } = this.props
 

@@ -91,7 +91,6 @@ class TeamsDialog extends Component {
           <div style={{ height: '30%' }}>
             <DialogHead
               oneTeam={oneTeam}
-              currTeam={teamsDialog.currTeam}
             />
           </div>
           <div style={{ height: '60%' }}>

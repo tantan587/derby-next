@@ -68,8 +68,18 @@ class DerbyBody extends React.Component {
                 :  <img
                   className={classes.teamName} 
                   onClick={() => {
-                    handleOpenDialog(n)
-                    clickedOneTeam(n.team_id)}} src={n[header.id]} 
+                    if (n.team_id)
+                    {
+                      handleOpenDialog(n)
+                      clickedOneTeam(n.team_id)
+                    }
+                    else
+                    {
+                      handleOpenDialog(n)
+                      clickedOneTeam(n[header.id].team_id)
+                    }
+                  }
+                  } src={n[header.id].url || n[header.id]} 
                   preserveAspectRatio='true'  style={{maxWidth:'40px', maxHeight:'40px'}}/>
               : header.button
                 ? <Tooltip title={header.button.labelOverride && n[header.button.labelOverride] && 

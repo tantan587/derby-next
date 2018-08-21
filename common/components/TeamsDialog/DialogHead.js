@@ -14,7 +14,7 @@ const styles = {
 }
 
 
-const DialogHead = ({ currTeam, oneTeam, classes }) =>
+const DialogHead = ({ oneTeam, classes }) =>
 {
   if (!oneTeam)
   {
@@ -24,7 +24,7 @@ const DialogHead = ({ currTeam, oneTeam, classes }) =>
     <div style={{ display: 'flex', width: 575, margin: '35px 10px 35px 35px', justifyContent: 'space-around' }}>
       <img
         style={{maxWidth:100, maxHeight:100}}
-        src={currTeam.logo_url || 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Chicago_Cubs_logo.svg/99px-Chicago_Cubs_logo.svg.png'}
+        src={oneTeam.logo_url || 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Chicago_Cubs_logo.svg/99px-Chicago_Cubs_logo.svg.png'}
       />
       <div>
         <div style={{
