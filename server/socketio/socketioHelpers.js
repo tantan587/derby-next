@@ -78,12 +78,6 @@ const GetDraftInfo = async (room_id) =>{
   }
 }
 
-const GetDraftPosition = async (roomId) => {
-  return await knex.withSchema('draft').table('settings')
-    .where('room_id', roomId)
-    .returning('draft_position')
-}
-
 const GetDraftResults = async (roomId) =>{
   return await knex.withSchema('draft').table('results')
     .where('room_id', roomId)
@@ -108,7 +102,6 @@ const CheckDraftBeforeInsertingPick = (roomId, pick) =>
   return knex.raw(str)
     .then((result) => {
       //if the length is zero or the pick we are about to insert is 1 above what is there
-      console.log(pick, result.rows, result.rows[0].pick == (pick-1))
       return result.rows.length === 0 || result.rows[0].pick == (pick-1)
     })
 }
@@ -152,6 +145,5 @@ module.exports = {
   InsertDraftAction,
   RestartDraft,
   CheckDraftBeforeInsertingPick,
-  GetDraftResults,
-  GetDraftPosition
+  GetDraftResults
 }

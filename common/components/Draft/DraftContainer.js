@@ -22,6 +22,7 @@ import {clickedEnterDraft,
 import { connect } from 'react-redux'
 import Divider from '@material-ui/core/Divider'
 import Chat from './Chat'
+import Router from 'next/router'
 
 const styles = theme => ({
   container: {
@@ -54,6 +55,7 @@ class DraftContainer extends React.Component {
       snackbarMessage:'',
       myDraftPosition:-1,
       ownerMap:{},
+      sawPickError:false,
       sockets:['whoshere', 'people','message','start','reset',
         'startTick','draftTick', 'draftTeam', 'modechange', 'queueResp'],
       functions : [this.handleWhosHere, this.handlePeople,this.handleMessage,
@@ -161,8 +163,22 @@ class DraftContainer extends React.Component {
     this.props.onSetDraftMode(mode)
   }
 
-  handleDraftTick = (counter) => {
-    this.setState({countdownTime: counter})
+  handleDraftTick = (data) => {
+
+    let sawPickError = false
+    if (this.props.draft.pick !== data.pick)
+    {
+      if(this.state.sawPickError)
+      {
+        Router.push('/livedraft')
+      }
+      else
+      {
+        sawPickError = true
+      }
+    }
+    this.setState({countdownTime: data.counter, sawPickError})
+    
       
   }
 

@@ -34,8 +34,8 @@ class DraftEmitter {
     this.draftEmitters.START_TICK.Emit()
   }
 
-  EmitDraftTick(counter) {
-    this.draftEmitters.DRAFT_TICK.Emit(counter)
+  EmitDraftTick(counter, pick) {
+    this.draftEmitters.DRAFT_TICK.Emit({counter, pick})
   }
 
   EmitWhosHere() {

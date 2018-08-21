@@ -13,7 +13,7 @@ const Emitters = (io,roomId) =>
       {draftStartTime:'string'}),
     START : new Emitter(io, roomId,'start'),
     START_TICK : new Emitter(io, roomId,'startTick'),
-    DRAFT_TICK : new Emitter(io, roomId,'draftTick', 'number'),
+    DRAFT_TICK : new Emitter(io, roomId,'draftTick', {counter:'number',pick:'number'}),
     WHOS_HERE : new Emitter(io, roomId,'whoshere'),
     MODE_CHANGE : new Emitter(io, roomId,'modechange', 'string'),
     QUEUE_SUCCESS : new Emitter(io, roomId,'queueResp', 

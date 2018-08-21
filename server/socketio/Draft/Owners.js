@@ -93,8 +93,11 @@ function Owners() {
 
   this.Left = (socketId) =>
   {
-    owners[socketOwnerMap[socketId]].Left()
-    delete socketOwnerMap[socketId]
+    if(owners[socketOwnerMap[socketId]])
+    {
+      owners[socketOwnerMap[socketId]].Left()
+      delete socketOwnerMap[socketId]
+    }
 
   }
 

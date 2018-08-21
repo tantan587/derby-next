@@ -33,7 +33,7 @@ function DraftManager(roomId, draftEmitter) {
 
   this.Start = async () =>
   {
-    that.pick = 1000
+    that.pick = 0
     console.log(roomId, 'is online')
     draftEmitter.EmitWhosHere()
     await waitToStartDraft()
@@ -72,6 +72,7 @@ function DraftManager(roomId, draftEmitter) {
     that.owners.ResetEligible()
     let date = new Date(new Date().getTime() + that.time)
     draftEmitter.EmitReset(date.toJSON())
+    draftState = 'pre'
     await waitToStartDraft()
   }
 
@@ -132,29 +133,33 @@ function DraftManager(roomId, draftEmitter) {
     timeIn()
   }
 
+  const onStartDraft = async () => {
+    await this.Create()
+    let draftResults = await socketIoHelpers.GetDraftResults(roomId)
+    that.pick = that.owners.GetCurrPickAndUpdateDraftOnStart(draftResults)
+    draftEmitter.EmitDraftLive()
+    waitToAutoDraft(timeToDraft)
+
+  }
+
   const waitToStartDraft = async () => {
     draftIsUp = true
     let counter = 0
-    let draftResults = await socketIoHelpers.GetDraftResults(roomId)
-    that.pick = that.owners.GetCurrPickAndUpdateDraftOnStart(draftResults)
-    let resp = await socketIoHelpers.GetDraftPosition(roomId)
-    that.draftPosition = resp[0].draft_position
+    
     clearTimers()
 
     if (draftState === C.DRAFT_STATE.LIVE)
     {
-      draftEmitter.EmitDraftLive()
-      waitToAutoDraft(timeToDraft)
+      await onStartDraft()
     }
     else 
     {
-      that.timer = setInterval(() => {
+      that.timer = setInterval(async () => {
         if(that.time < counter){
           clearInterval(that.timer)
           draftState = C.DRAFT_STATE.LIVE
-          draftEmitter.EmitDraftLive()
           socketIoHelpers.InsertDraftState(roomId, draftState)
-          waitToAutoDraft(timeToDraft)
+          await onStartDraft()
           return
         }
         counter += 1000
@@ -172,7 +177,7 @@ function DraftManager(roomId, draftEmitter) {
     else{
       that.counter = timeOnClock
       clearTimers()
-      draftEmitter.EmitDraftTick(that.counter)
+      draftEmitter.EmitDraftTick(that.counter, that.pick)
       that.timer = setInterval(async () => {
         if(that.counter === 0){
           clearInterval(that.timer)
@@ -185,7 +190,7 @@ function DraftManager(roomId, draftEmitter) {
           return
         }
         that.counter -= 1
-        draftEmitter.EmitDraftTick(that.counter)        
+        draftEmitter.EmitDraftTick(that.counter, that.pick)        
       }, 1000)
     }
   }
@@ -230,7 +235,6 @@ function DraftManager(roomId, draftEmitter) {
 
   const canOwnerDraftTeam = async (ownerId, pick) => 
   {
-    console.log(ownerId, pick)
     let pickIsntInDb = await socketIoHelpers.CheckDraftBeforeInsertingPick(roomId, pick)
     if(pickIsntInDb === false)
     {
