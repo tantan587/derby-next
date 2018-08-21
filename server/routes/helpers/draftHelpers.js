@@ -117,4 +117,77 @@ const filterByArr = (arrToBeFiltered, filterByArr) =>
   })
 }
 
-module.exports = { GetDraftRules, GetTeamMap, FilterDraftPick, enterDraftToDb}
+const AssembleDraft =  (owners, results, my_owner_id, rules, teamMap) =>{
+  let mode = 'pre'
+  let allPicks = []
+  let ownersMap = {}
+  let draftedTeams = []
+  let queue = []
+  let messages = []
+  owners.map(x => ownersMap[x.owner_id] = [])
+  let allTeams = Object.keys(teamMap).filter(x => x > 99999)
+  let availableTeams = [].concat(allTeams)
+  let eligibleTeams = [].concat(allTeams)
+  results.forEach(element => {
+    switch (element.action_type){
+    case 'STATE':
+    {
+      mode = element.action.mode ? element.action.mode : mode
+      break
+    }
+    case 'PICK':
+    {
+      allPicks.push(element.action.pick)
+      ownersMap[element.initiator].push(element.action)
+      const index = availableTeams.indexOf(element.action.teamId)
+      availableTeams.splice(index, 1)
+      draftedTeams.push(element.action.teamId)
+      break
+    }
+    case 'QUEUE':
+    {
+      if (my_owner_id === element.initiator)
+        queue = element.action.queue ? element.action.queue : queue
+      break
+    }
+    case 'MESSAGE':
+    {
+      let message =element.action
+      message.ownerId = element.initiator
+      messages.push(message)
+      break
+    }
+    }
+  })
+
+  queue = queue.filter(team => {
+    return !draftedTeams.includes(team)
+  })
+  
+  ownersMap[my_owner_id].forEach(x => {
+    let resp = FilterDraftPick(x.teamId, teamMap, rules, eligibleTeams, queue)
+    eligibleTeams = resp.eligibleTeams
+    queue = resp.queue
+  })
+
+  draftedTeams.forEach(x => {
+    const index1 = eligibleTeams.indexOf(x)
+    if(index1 > -1)
+      eligibleTeams.splice(index1, 1)
+  })
+
+  return {
+    type:C.ENTERED_DRAFT,
+    mode,
+    pick:allPicks.length === 0 ? 0 : (Math.max(...allPicks)+1),
+    availableTeams,
+    draftedTeams,
+    allTeams,
+    owners:ownersMap,
+    queue,
+    rules,
+    messages,
+    eligibleTeams}
+}
+
+module.exports = { GetDraftRules, GetTeamMap, FilterDraftPick, enterDraftToDb, AssembleDraft}

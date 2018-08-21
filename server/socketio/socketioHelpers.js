@@ -70,11 +70,24 @@ const GetDraftInfo = async (room_id) =>{
     ...settings.rows[0],
     leagueId:simpleSettings.rows[0].league_id,
     seconds_pick:simpleSettings.rows[0].seconds_pick,
+    draftState:simpleSettings.rows[0].state,
     allTeamsByRank:teamsByRank.rows.map(x =>x.team_id),
     owners:rtnOwners,
     queueByOwner:queueByOwner,
     totalPicks:parseInt(numberOfPicks.rows[0].sum) * rtnOwners.length
   }
+}
+
+const GetDraftPosition = async (roomId) => {
+  return await knex.withSchema('draft').table('settings')
+    .where('room_id', roomId)
+    .returning('draft_position')
+}
+
+const GetDraftResults = async (roomId) =>{
+  return await knex.withSchema('draft').table('results')
+    .where('room_id', roomId)
+    .orderBy('server_ts')
 }
 
 const InsertDraftState = (roomId, state) =>
@@ -91,10 +104,12 @@ const CheckDraftBeforeInsertingPick = (roomId, pick) =>
 {
   let str = `select action ->> 'pick' as pick, server_ts 
    from draft.results where room_id = '`+ roomId + `' 
-   and action_type  = 'PICK' order by 2 desc limit 1;`
+   and action_type  = 'PICK' order by server_ts desc limit 1;`
   return knex.raw(str)
     .then((result) => {
-      return result.rows.length === 0 || result.rows[0].pick !== pick
+      //if the length is zero or the pick we are about to insert is 1 above what is there
+      console.log(pick, result.rows, result.rows[0].pick == (pick-1))
+      return result.rows.length === 0 || result.rows[0].pick == (pick-1)
     })
 }
 
@@ -136,5 +151,7 @@ module.exports = {
   InsertDraftState,
   InsertDraftAction,
   RestartDraft,
-  CheckDraftBeforeInsertingPick
+  CheckDraftBeforeInsertingPick,
+  GetDraftResults,
+  GetDraftPosition
 }

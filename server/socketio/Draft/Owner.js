@@ -44,7 +44,7 @@ function Owner(ownerId, draftRules, allTeamsByRank, teamMap) {
   }
   this.RemoveTeam = (teamId) =>
   {
-    console.log('q:', queue.length, 'e:',  eligibleTeams.length, eligibleTeams[0], this.ownerId)
+    //console.log('q:', queue.length, 'e:',  eligibleTeams.length, eligibleTeams[0], this.ownerId)
     const index =queue.indexOf(teamId)
     if(index > -1)
     {

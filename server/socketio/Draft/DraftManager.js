@@ -24,19 +24,19 @@ function DraftManager(roomId, draftEmitter) {
     that.leagueId = resp.league_id
     that.owners = new Owners()
     await that.owners.CreateOwners(resp.owners, resp.queueByOwner, roomId, resp.allTeamsByRank)
-    that.counter = 0
+    that.counter = timeToDraft
   }
 
   this.DraftIsUp = () => {
     return draftIsUp
   }
 
-  this.Start = () =>
+  this.Start = async () =>
   {
     that.pick = 1000
     console.log(roomId, 'is online')
     draftEmitter.EmitWhosHere()
-    waitToStartDraft()
+    await waitToStartDraft()
   }
 
   this.OwnerJoined = (socketId, ownerId) =>
@@ -72,7 +72,7 @@ function DraftManager(roomId, draftEmitter) {
     that.owners.ResetEligible()
     let date = new Date(new Date().getTime() + that.time)
     draftEmitter.EmitReset(date.toJSON())
-    waitToStartDraft()
+    await waitToStartDraft()
   }
 
   this.SetTimeToDraft = async (inpTimeToDraft) =>
@@ -86,7 +86,6 @@ function DraftManager(roomId, draftEmitter) {
     let resp = that.owners.TryDraft(ownerId,data.teamId, that.pick)
     if (resp) 
       draftTeam(ownerId, data.teamId, resp, data.clientTs)
-
   }
   
   this.TryUpdateQueue = (data) => {
@@ -133,24 +132,36 @@ function DraftManager(roomId, draftEmitter) {
     timeIn()
   }
 
-  const waitToStartDraft = () => {
-    console.log(1,roomId)
+  const waitToStartDraft = async () => {
     draftIsUp = true
     let counter = 0
+    let draftResults = await socketIoHelpers.GetDraftResults(roomId)
+    that.pick = that.owners.GetCurrPickAndUpdateDraftOnStart(draftResults)
+    let resp = await socketIoHelpers.GetDraftPosition(roomId)
+    that.draftPosition = resp[0].draft_position
     clearTimers()
-    that.timer = setInterval(() => {
-      if(that.time < counter){
-        clearInterval(that.timer)
-        draftState = C.DRAFT_STATE.LIVE
-        draftEmitter.EmitDraftLive()
-        socketIoHelpers.InsertDraftState(roomId, draftState)
-        waitToAutoDraft(timeToDraft)
-        return
-      }
-      counter += 1000
 
-      draftEmitter.EmitStartTick()
-    }, 1000)
+    if (draftState === C.DRAFT_STATE.LIVE)
+    {
+      draftEmitter.EmitDraftLive()
+      waitToAutoDraft(timeToDraft)
+    }
+    else 
+    {
+      that.timer = setInterval(() => {
+        if(that.time < counter){
+          clearInterval(that.timer)
+          draftState = C.DRAFT_STATE.LIVE
+          draftEmitter.EmitDraftLive()
+          socketIoHelpers.InsertDraftState(roomId, draftState)
+          waitToAutoDraft(timeToDraft)
+          return
+        }
+        counter += 1000
+
+        draftEmitter.EmitStartTick()
+      }, 1000)
+    }
   }
 
   const waitToAutoDraft = (timeOnClock) => {
@@ -162,8 +173,7 @@ function DraftManager(roomId, draftEmitter) {
       that.counter = timeOnClock
       clearTimers()
       draftEmitter.EmitDraftTick(that.counter)
-    
-      that.timer = setInterval(() => {
+      that.timer = setInterval(async () => {
         if(that.counter === 0){
           clearInterval(that.timer)
           const ownerId = getCurrentOwnerId()
@@ -171,7 +181,7 @@ function DraftManager(roomId, draftEmitter) {
           //comes back with information to ppick for the team
           let draftResult = that.owners.TryDraft(ownerId,teamId, that.pick)
 
-          draftTeam(ownerId,teamId, draftResult)
+          await draftTeam(ownerId,teamId, draftResult)
           return
         }
         that.counter -= 1
@@ -181,9 +191,9 @@ function DraftManager(roomId, draftEmitter) {
   }
 
   //the team id needs to be verified before this function is hit.
-  const draftTeam = (ownerId, teamId, draftResult, clientTs = undefined) =>{
+  const draftTeam = async (ownerId, teamId, draftResult, clientTs = undefined) =>{
     
-    if(canOwnerDraftTeam(ownerId, that.pick))
+    if(await canOwnerDraftTeam(ownerId, that.pick))
     {
       const localPick = getThenIncrementPick() 
 
@@ -214,19 +224,22 @@ function DraftManager(roomId, draftEmitter) {
   }
 
   const getCurrentOwnerId = () => {
+
     return that.draftPosition[that.draftOrder[that.pick].ownerIndex]
   }
 
-  const canOwnerDraftTeam = (ownerId, pick) => 
+  const canOwnerDraftTeam = async (ownerId, pick) => 
   {
     console.log(ownerId, pick)
-    if(!socketIoHelpers.CheckDraftBeforeInsertingPick(roomId, pick))
+    let pickIsntInDb = await socketIoHelpers.CheckDraftBeforeInsertingPick(roomId, pick)
+    if(pickIsntInDb === false)
     {
+      console.log('cant draft already in db')
       return false
     }
-    console.log(that.draftPosition)
     if (ownerId !== that.draftPosition[that.draftOrder.find(x => x.pick === pick).ownerIndex])
     {
+      console.log('cant draft, not your turn')
       return false
     }
     return true

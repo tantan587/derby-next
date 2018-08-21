@@ -49,8 +49,7 @@ class DraftLobby {
 
         this.draftRooms[roomId].Manager = new DraftManager(roomId, this.draftRooms[roomId].Emitter)
         await this.draftRooms[roomId].Manager.Create()
-        // eslint-disable-next-line no-console
-        this.draftRooms[roomId].Manager.Start()
+        await this.draftRooms[roomId].Manager.Start()
       }
     })}
 

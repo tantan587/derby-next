@@ -18,6 +18,24 @@ function Owners() {
       owners[x].SetQueue(queueByOwner[x]))
   }
 
+  this.GetCurrPickAndUpdateDraftOnStart = results =>
+  {
+    let pick = -1
+    results.forEach(element => {
+      
+      if(element.action_type == 'PICK')
+      {
+        pick = element.action.pick
+        let ownerId = element.initiator
+        let draftData = this.TryDraft(ownerId, element.action.teamId,element.action.pick)
+        this.DraftTeam(ownerId, draftData)
+        this.RemoveTeam(element.action.teamId)
+      }
+    })
+    return pick + 1
+    
+  }
+
   this.GetOwnerIdFromSocketId = (socketId) => {
     return socketOwnerMap[socketId]
   }
