@@ -1,6 +1,7 @@
 import TopNavUser from './Navigation/TopNavUser'
 import SportsSocket from './Sockets/SportsSocket'
 import MobileNav from './Navigation/MobileNav'
+import BottomNav from './Navigation/BottomNav'
 
 const layoutStyle = {
   padding: 0,
@@ -14,6 +15,7 @@ const LayoutUser = (props) => (
         <TopNavUser />
         {props.children}
       </div>
+      <BottomNav/>
     </SportsSocket>
   </div>
 )

@@ -52,8 +52,7 @@ class BottomNav extends React.Component {
       {text:'Rules', link:'/rules'},
       {text:'Privacy Policy', link:'/privacy'},
       {text:'Terms of Use', link:'/legal'},
-      {text:'FAQ', link:''},
-      {text:'Privacy Policy', link:''},
+      {text:'FAQ', link:'/faq'},
       {text:'Logout', link:'/logout'},] :
       [ {text:'Home', link:'/'},
         {text:'Login', link:'/login'},
@@ -89,7 +88,7 @@ class BottomNav extends React.Component {
             flexDirection: 'column',
             justifyContent: 'space-between',
             alignItems: 'center',
-            minHeight: 325
+            minHeight: 350
           }}
         >
           <a href='/' target="_blank">
@@ -108,9 +107,10 @@ class BottomNav extends React.Component {
             <Typography variant="caption" style={{color:'white', textAlign:'center'}} >
             All Rights Reserved. © 2018, Derby FWL, LLC
             </Typography>
-            <Typography variant="caption" style={{color:'white', textAlign:'center', fontSize:8, width:250}} >
+            <Typography variant="caption" style={{color:'white', textAlign:'center', fontSize:8, width:300}} >
               DERBY FANTASY WINS LEAGUE and the unicorn trophy logo are trademarks of Derby FWL, LLC. All other trademarks shown on this site are the property of their respective owners. Derby Fantasy Wins League is not sponsored by, endorsed by or affiliated with any of the leagues or teams displayed herein.
             </Typography>
+            <br/>
           </div>
         </div>
       </div>
