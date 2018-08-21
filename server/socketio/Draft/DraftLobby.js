@@ -155,7 +155,7 @@ class DraftLobby {
     socket.in(roomId).on('draft', (data) => {
       if(draftIsGood())
       {
-        this.draftRooms[roomId].Manager.DraftedTeam(socket.id,data)
+        this.draftRooms[roomId].Manager.DraftedTeamFromClient(socket.id,data)
       } 
     })
 

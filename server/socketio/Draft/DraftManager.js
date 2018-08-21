@@ -80,11 +80,13 @@ function DraftManager(roomId, draftEmitter) {
     timeToDraft = inpTimeToDraft
   }
 
-  this.DraftedTeam = (socketId, data) => { 
-    const ownerId = that.owners.GetOwnerIdFromSocketId(socketId)
+  this.DraftedTeamFromClient = (socketId, data) => { 
+    const ownerId = that.owners.GetOwnerIdFromSocketId(socketId) 
+
     let resp = that.owners.TryDraft(ownerId,data.teamId, that.pick)
     if (resp) 
       draftTeam(ownerId, data.teamId, resp, data.clientTs)
+
   }
   
   this.TryUpdateQueue = (data) => {
@@ -147,8 +149,6 @@ function DraftManager(roomId, draftEmitter) {
       }
       counter += 1000
 
-      //console.log('counting in start draft', that.time, counter)
-
       draftEmitter.EmitStartTick()
     }, 1000)
   }
@@ -168,15 +168,14 @@ function DraftManager(roomId, draftEmitter) {
           clearInterval(that.timer)
           const ownerId = getCurrentOwnerId()
           const teamId = getAutoDraftTeam(ownerId)
+          //comes back with information to ppick for the team
           let draftResult = that.owners.TryDraft(ownerId,teamId, that.pick)
 
           draftTeam(ownerId,teamId, draftResult)
           return
         }
         that.counter -= 1
-        draftEmitter.EmitDraftTick(that.counter)
-        console.log('counting in autodraft')
-        
+        draftEmitter.EmitDraftTick(that.counter)        
       }, 1000)
     }
   }
@@ -184,19 +183,25 @@ function DraftManager(roomId, draftEmitter) {
   //the team id needs to be verified before this function is hit.
   const draftTeam = (ownerId, teamId, draftResult, clientTs = undefined) =>{
     
-    that.owners.RemoveTeam(teamId)
-    const localPick = getThenIncrementPick()
+    if(canOwnerDraftTeam(ownerId, that.pick))
+    {
+      const localPick = getThenIncrementPick() 
 
-    console.log(localPick, teamId, ownerId)
+      socketIoHelpers.InsertDraftAction(
+        roomId, ownerId, 'PICK', {pick:localPick, teamId:teamId},clientTs)
 
-    socketIoHelpers.InsertDraftAction(
-      roomId, ownerId, 'PICK', {pick:localPick, teamId:teamId},clientTs)
-    socketIoHelpers.InsertDraftAction(
-      roomId, ownerId, 'QUEUE', {queue:draftResult.queue})
+      that.owners.DraftTeam(ownerId, draftResult)
+      that.owners.RemoveTeam(teamId)
 
-    draftEmitter.EmitDraftTeam(teamId,ownerId,draftResult.queue,draftResult.eligibleTeams)
+      console.log(localPick, teamId, ownerId)
 
-    waitToAutoDraft(timeToDraft)
+      socketIoHelpers.InsertDraftAction(
+        roomId, ownerId, 'QUEUE', {queue:draftResult.queue})
+
+      draftEmitter.EmitDraftTeam(teamId,ownerId,draftResult.queue,draftResult.eligibleTeams)
+
+      waitToAutoDraft(timeToDraft)
+    }
   }
 
   const getThenIncrementPick = ()  => {
@@ -210,6 +215,21 @@ function DraftManager(roomId, draftEmitter) {
 
   const getCurrentOwnerId = () => {
     return that.draftPosition[that.draftOrder[that.pick].ownerIndex]
+  }
+
+  const canOwnerDraftTeam = (ownerId, pick) => 
+  {
+    console.log(ownerId, pick)
+    if(!socketIoHelpers.CheckDraftBeforeInsertingPick(roomId, pick))
+    {
+      return false
+    }
+    console.log(that.draftPosition)
+    if (ownerId !== that.draftPosition[that.draftOrder.find(x => x.pick === pick).ownerIndex])
+    {
+      return false
+    }
+    return true
   }
 
   const clearTimers = () => {

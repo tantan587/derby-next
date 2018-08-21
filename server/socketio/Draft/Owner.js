@@ -57,13 +57,17 @@ function Owner(ownerId, draftRules, allTeamsByRank, teamMap) {
     }    
   }
 
+  this.DraftTeam = (draftData) => {
+    teams.push(draftData.pickInfo)
+    eligibleTeams = draftData.eligibleTeams
+    queue = draftData.queue
+  }
+
   this.TryDraft = (teamId,pick) =>{
     let resp = draftHelpers.FilterDraftPick(teamId, teamMap, theDraftRules, eligibleTeams, queue)
     if(resp)
     {
-      teams.push({team_id:teamId, overall_pick:pick+1})
-      eligibleTeams = resp.eligibleTeams
-      queue = resp.queue
+      resp.pickInfo = {team_id:teamId, overall_pick:pick+1}
     }
     return resp
   }

@@ -45,6 +45,11 @@ function Owners() {
     return owners[ownerId].TryDraft(teamId,pick)
   }
 
+  this.DraftTeam = (ownerId, draftData) =>
+  {
+    return owners[ownerId].DraftTeam(draftData)
+  }
+
   this.RemoveTeam = (teamId) =>
   {
     Object.values(owners).map(x => x.RemoveTeam(teamId))

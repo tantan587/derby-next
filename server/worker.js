@@ -17,6 +17,3 @@ const everyMinute = async () => {
 }
 
 setInterval(async () => await everyMinute(), 60000)
-
-
-

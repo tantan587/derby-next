@@ -87,6 +87,17 @@ const InsertDraftState = (roomId, state) =>
     })
 }
 
+const CheckDraftBeforeInsertingPick = (roomId, pick) =>
+{
+  let str = `select action ->> 'pick' as pick, server_ts 
+   from draft.results where room_id = '`+ roomId + `' 
+   and action_type  = 'PICK' order by 2 desc limit 1;`
+  return knex.raw(str)
+    .then((result) => {
+      return result.rows.length === 0 || result.rows[0].pick !== pick
+    })
+}
+
 const InsertDraftAction = (roomId, initiator, actionType, action, client_ts ='' ) =>
 {
   return knex.withSchema('draft').table('results')
@@ -125,4 +136,5 @@ module.exports = {
   InsertDraftState,
   InsertDraftAction,
   RestartDraft,
+  CheckDraftBeforeInsertingPick
 }
