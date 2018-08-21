@@ -33,7 +33,7 @@ function DraftManager(roomId, draftEmitter) {
 
   this.Start = () =>
   {
-    that.pick = 0
+    that.pick = 1000
     console.log(roomId, 'is online')
     draftEmitter.EmitWhosHere()
     waitToStartDraft()

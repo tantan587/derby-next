@@ -3,7 +3,7 @@ const script2 = require('../scripts/updateSchedule')
 const script3 = require('../scripts/updatePlayoffStandings')
 const script4 = require('../scripts/updateStandings')
 const script5 = require('../scripts/updateDayOfSchedule')
-const scriptPoints = require('./updateFantasyPointsOnly')
+const scriptPoints = require('./scripts/updateFantasyPointsOnly')
 
 
 
