@@ -1,3 +1,4 @@
+
 const knex = require('../../db/connection')
 const C = require('../../../common/constants')
 const math = require('mathjs')
@@ -58,6 +59,7 @@ const getLeague = async (league_id, user_id, res, type) => {
   ) bbb
   ON aaa.team_id = bbb.team_id`
 
+
   const leagueInfo = await knex.raw(leagueInfoStr)
   const ownerInfo = await knex.raw(ownerInfoStr)
   const teamInfo = await knex.raw(teamInfoStr)
@@ -80,7 +82,7 @@ const getLeague = async (league_id, user_id, res, type) => {
     var imTheCommish = false
     var owners = []
     var teams = {}
-
+    var request_user_info = {}
     ownerInfo.rows.forEach((owner) => {
       if(owner.user_id === user_id)
       {
@@ -168,13 +170,20 @@ const getLeague = async (league_id, user_id, res, type) => {
       teams,
       ownerGames,
       rules,
-      seasonIds,
+      seasonIds
     })
   }
   else
   {
     return handleReduxResponse(res,400, {})
   }
+}
+
+const timeZoneList = {
+  04: 'EST',
+  05: 'CST',
+  06: 'MST',
+  07: 'PST'
 }
 
 const getSportLeagues = (league_id) =>{
@@ -526,7 +535,7 @@ const updateLeagueProjectedPoints = async (league_id) => {
   })
 
   let addingRank = Object.values(byLeague).map(league => {
-    league.sort(function(a,b) {return b.projected_points - a.projected_points})
+    league.sort(function(a,b) {return b.total_projected_points - a.total_projected_points})
     return league.map( (owner, i) => {owner.projected_rank = i+1; return owner})
   })
 
@@ -632,6 +641,7 @@ const getStandingDataPlayoffAndRegular = async (seasons_for_pull, sport_structur
   return teamMap
 }
 
+//this should be deprecated if draftHelpers works
 const updateFantasy = (league_id, res) =>
 {
   updateLeaguePoints(league_id)
@@ -742,5 +752,6 @@ module.exports = {
   GetDraftOrder,
   GetSportSeasonsByLeague, 
   handleReduxResponse,
-  DeleteLeague
+  DeleteLeague, 
+  timeZoneList
 }
