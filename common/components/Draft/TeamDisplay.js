@@ -112,7 +112,7 @@ class TeamDisplay extends React.Component {
     },
     {type:'checkbox',
       column:'checkbox',
-      values:['Drafted', 'Available']
+      values:['Drafted', 'Ineligible']
     }
     ]
 
