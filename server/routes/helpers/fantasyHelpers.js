@@ -18,7 +18,7 @@ const getLeague = async (league_id, user_id, res, type) => {
   fantasy.owners a, users.users b, fantasy.points c
   where a.user_id = b.user_id and a.owner_id = c.owner_id and a.league_id = '` + league_id + '\''
 
-  var seasonsStr = `select b.* from (select value::text::int as sport_season_id, league_bundle_id from fantasy.league_bundle, json_array_elements(current_sport_seasons)) a, 
+  var seasonsStr = `select b.*, d.scoring_type_id from (select value::text::int as sport_season_id, league_bundle_id from fantasy.league_bundle, json_array_elements(current_sport_seasons)) a, 
   sports.sport_season b, fantasy.leagues c, fantasy.sports_structure d, fantasy.sports e
   where a.sport_season_id = b.sport_season_id
   and c.sport_structure_id = d.sport_structure_id
@@ -108,6 +108,8 @@ const getLeague = async (league_id, user_id, res, type) => {
       if(!seasons[x.sport_id])
       {
         seasons[x.sport_id] = {}
+        seasons[x.sport_id].scoring_type_id = x.scoring_type_id
+
       }
       if(x.season_type ===1)
       {
@@ -172,6 +174,14 @@ const getLeague = async (league_id, user_id, res, type) => {
   }
 }
 
+const getUserInfo = async (user_id) => {
+  let user = 
+    await knex('user.user')
+      .where('user_id', user_id)
+      .select('*')
+  
+  return user[0]
+}
 const timeZoneList = {
   04: 'EST',
   05: 'CST',
@@ -746,5 +756,6 @@ module.exports = {
   GetSportSeasonsByLeague, 
   handleReduxResponse,
   DeleteLeague, 
-  timeZoneList
+  timeZoneList,
+  getUserInfo
 }

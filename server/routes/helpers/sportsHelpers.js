@@ -300,6 +300,17 @@ const GetOneTeamSchedule  = async(team_id, res) =>{
   let schedule = await knex.raw(str)
 
   schedule = schedule.rows
+
+  let scoring = 
+    await knex('fantasy.scoring')
+      .where('sport_id', schedule[0].sport_id)
+
+  let points_by_scoring_type = {}
+  scoring.forEach(scoring => {
+    points_by_scoring_type[scoring.scoring_type_id] = {...scoring}
+  })
+  
+
   let oneTeam = {}
   const currDayCount =  fantasyHelpers.getDayCountStr((new Date()).toJSON())
   let lastFive = []
@@ -353,6 +364,7 @@ const GetOneTeamSchedule  = async(team_id, res) =>{
   oneTeam.team_id = team_id
   oneTeam.nextFive = nextFive
   oneTeam.lastFive = lastFive
+  oneTeam.scoring = points_by_scoring_type
 
   return handleReduxResponse(res,200, { type : C.GET_ONE_TEAM, oneTeam : oneTeam })
 
