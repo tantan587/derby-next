@@ -1,6 +1,6 @@
 const R = require('ramda')
-import React, {Component} from 'react'
-import Link from 'next/link'
+import  {Component} from 'react'
+//import Link from 'next/link'
 import { connect } from 'react-redux'
 import {withRouter} from 'next/router'
 import autobind from 'react-autobind'
@@ -60,13 +60,13 @@ class ForgotUsernameForm extends Component {
 
   handleSubmit(e) {
     e.preventDefault()
-    const {onForgotUsername, router} = this.props
+    const {onForgotUsername} = this.props
     this.setState({loading: true}, () => {
       onForgotUsername(...R.props(['email'], this.state))
         .then((res) => {
-            const {user: {error: {success, form}}, router} = this.props
-            success && router.push('/login?SB=EHBS')
-            form && this.setState({loading: false, error: form, dirty: false})
+          const {user: {error: {success, form}}, router} = this.props
+          success && router.push('/login?SB=EHBS')
+          form && this.setState({loading: false, error: form, dirty: false})
         })
     })
   }
@@ -119,6 +119,7 @@ class ForgotUsernameForm extends Component {
           disabled={this.state.loading}
         />
         {!!this.state.error.length && !this.state.dirty && <Typography align="center" color="error" children={this.state.error} paragraph/>}
+        <div style={{height:700}}/>
       </Grid>
     )
   }

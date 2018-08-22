@@ -1,5 +1,5 @@
 const R = require('ramda') 
-import React, {Component} from 'react'
+import  {Component} from 'react'
 import autobind from 'react-autobind'
 import LayoutUser from '../common/components/LayoutUser'
 import LoginForm from '../common/components/LoginForm'

@@ -67,6 +67,7 @@ class Logout extends React.Component {
           <Button style={{marginLeft:'20px', color:'#FFFFFF', backgroundColor:'#EBAB38', height:50, width:125}} onClick={(event) => this.submitNo(event)}>
             No
           </Button>
+          <div style={{height:700}}/>
         </form>
       )
     }

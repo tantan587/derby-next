@@ -120,6 +120,7 @@ class JoinLeagueForm extends React.Component {
             styles={{ marginTop: errorText ? 16 : 40, fontSize: 15, fontWeight: 500 }}
           />
         </form>
+        <div style={{height:700}}/>
       </div>
     )
   }

@@ -151,6 +151,7 @@ class LoginForm extends Component {
             dangerouslySetInnerHTML={{__html: this.state.error}}
           />
         )}
+        <div style={{height:400}}/>
       </Grid>
     )
   }
