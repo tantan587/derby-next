@@ -1,3 +1,4 @@
+
 const knex = require('../../db/connection')
 const C = require('../../../common/constants')
 const math = require('mathjs')
@@ -17,7 +18,7 @@ const getLeague = async (league_id, user_id, res, type) => {
   fantasy.owners a, users.users b, fantasy.points c
   where a.user_id = b.user_id and a.owner_id = c.owner_id and a.league_id = '` + league_id + '\''
 
-  var seasonsStr = `select b.* from (select value::text::int as sport_season_id, league_bundle_id from fantasy.league_bundle, json_array_elements(current_sport_seasons)) a, 
+  var seasonsStr = `select b.*, d.scoring_type_id from (select value::text::int as sport_season_id, league_bundle_id from fantasy.league_bundle, json_array_elements(current_sport_seasons)) a, 
   sports.sport_season b, fantasy.leagues c, fantasy.sports_structure d, fantasy.sports e
   where a.sport_season_id = b.sport_season_id
   and c.sport_structure_id = d.sport_structure_id
@@ -58,6 +59,7 @@ const getLeague = async (league_id, user_id, res, type) => {
   ) bbb
   ON aaa.team_id = bbb.team_id`
 
+
   const leagueInfo = await knex.raw(leagueInfoStr)
   const ownerInfo = await knex.raw(ownerInfoStr)
   const teamInfo = await knex.raw(teamInfoStr)
@@ -80,7 +82,7 @@ const getLeague = async (league_id, user_id, res, type) => {
     var imTheCommish = false
     var owners = []
     var teams = {}
-
+    var request_user_info = {}
     ownerInfo.rows.forEach((owner) => {
       if(owner.user_id === user_id)
       {
@@ -106,6 +108,8 @@ const getLeague = async (league_id, user_id, res, type) => {
       if(!seasons[x.sport_id])
       {
         seasons[x.sport_id] = {}
+        seasons[x.sport_id].scoring_type_id = x.scoring_type_id
+
       }
       if(x.season_type ===1)
       {
@@ -168,13 +172,28 @@ const getLeague = async (league_id, user_id, res, type) => {
       teams,
       ownerGames,
       rules,
-      seasonIds,
+      seasonIds
     })
   }
   else
   {
     return handleReduxResponse(res,400, {})
   }
+}
+
+const getUserInfo = async (user_id) => {
+  let user = 
+    await knex('user.user')
+      .where('user_id', user_id)
+      .select('*')
+  
+  return user[0]
+}
+const timeZoneList = {
+  04: 'EST',
+  05: 'CST',
+  06: 'MST',
+  07: 'PST'
 }
 
 const getSportLeagues = (league_id) =>{
@@ -526,7 +545,7 @@ const updateLeagueProjectedPoints = async (league_id) => {
   })
 
   let addingRank = Object.values(byLeague).map(league => {
-    league.sort(function(a,b) {return b.projected_points - a.projected_points})
+    league.sort(function(a,b) {return b.total_projected_points - a.total_projected_points})
     return league.map( (owner, i) => {owner.projected_rank = i+1; return owner})
   })
 
@@ -632,6 +651,7 @@ const getStandingDataPlayoffAndRegular = async (seasons_for_pull, sport_structur
   return teamMap
 }
 
+//this should be deprecated if draftHelpers works
 const updateFantasy = (league_id, res) =>
 {
   updateLeaguePoints(league_id)
@@ -742,5 +762,7 @@ module.exports = {
   GetDraftOrder,
   GetSportSeasonsByLeague, 
   handleReduxResponse,
-  DeleteLeague
+  DeleteLeague, 
+  timeZoneList,
+  getUserInfo
 }
