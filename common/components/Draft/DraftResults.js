@@ -46,7 +46,7 @@ class DraftResults extends React.Component {
       }
       return rtnObj
     })
-    draftResults.sort(function(a,b){return b.overallPick - a.overallPick})
+    // draftResults.sort(function(a,b){return b.overallPick - a.overallPick})
 
     let extraTableRow = {}
     extraTableRow.freq = activeLeague.owners.length
