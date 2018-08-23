@@ -22,7 +22,7 @@ const DialogNextFive = ({ tableData, nextFive, }) =>
             <TableCell>{game.date_time|| '4/322/18'}</TableCell>
             <TableCell>{tableData[idx].opponent || 'Rockies'}</TableCell>
             <TableCell>{tableData && tableData[idx].location || 'Boston Celtics Stadium'}</TableCell>
-            <TableCell>{tableData && tableData.derby_points || '0'}</TableCell>
+            <TableCell>{tableData && tableData[idx].derby_points || '0'}</TableCell>
           </TableRow>
         }
         )

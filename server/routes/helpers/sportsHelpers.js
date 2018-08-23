@@ -309,9 +309,11 @@ const GetOneTeamSchedule  = async(team_id, res) =>{
   scoring.forEach(scoring => {
     points_by_scoring_type[scoring.scoring_type_id] = {...scoring}
   })
+
   
 
   let oneTeam = {}
+  oneTeam.sport_id = schedule[0].sport_id
   const currDayCount =  fantasyHelpers.getDayCountStr((new Date()).toJSON())
   let lastFive = []
   let nextFive = []

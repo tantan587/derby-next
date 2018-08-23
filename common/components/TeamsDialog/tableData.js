@@ -12,6 +12,7 @@ export const organizeData = (data) => {
 
   const derbyPointsObject = oneTeam.scoring[oneTeam.scoring_type_id]
 
+  console.log('points:', derbyPointsObject.regular_season.win)
 
   // console.log('away is', teams[game.away_team_id].team_name)
   // console.log('home is', teams[game.home_team_id].team_name)
