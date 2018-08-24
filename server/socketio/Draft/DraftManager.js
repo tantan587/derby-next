@@ -11,7 +11,7 @@ function DraftManager(roomId, draftEmitter) {
   var draftIsUp = false
   let draftState = 'pre'
  
-  this.Create = async () =>
+  this.Create = async (socketMap = {}) =>
   {
     const resp = await socketIoHelpers.GetDraftInfo(roomId)
     timeToDraft = resp.seconds_pick
@@ -22,7 +22,7 @@ function DraftManager(roomId, draftEmitter) {
     that.time = new Date(resp.start_time)- new Date()
     that.totalPicks = resp.totalPicks
     that.leagueId = resp.league_id
-    that.owners = new Owners()
+    that.owners = new Owners(socketMap)
     await that.owners.CreateOwners(resp.owners, resp.queueByOwner, roomId, resp.allTeamsByRank)
     that.counter = timeToDraft
     console.log('done with building', that.draftPosition)
@@ -135,7 +135,8 @@ function DraftManager(roomId, draftEmitter) {
   }
 
   const onStartDraft = async () => {
-    await this.Create()
+    let socketMap = this.owners.SocketMap
+    await this.Create(socketMap)
     socketIoHelpers.GetDraftResults(roomId)
       .then((results) => {
         that.pick = that.owners.GetCurrPickAndUpdateDraftOnStart(results)

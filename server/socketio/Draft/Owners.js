@@ -1,10 +1,10 @@
 const Owner = require('./Owner')
 const draftHelpers = require('../../routes/helpers/draftHelpers')
 
-function Owners() {
+function Owners(socketMap) {
   
   var owners = {}
-  var socketOwnerMap = {}
+  var socketOwnerMap = socketMap
   var draftRules
   var teamMap
   
@@ -16,6 +16,10 @@ function Owners() {
       new Owner(x, JSON.parse(JSON.stringify(draftRules)), [].concat(allTeamsByRank), teamMap))
     Object.keys(queueByOwner).map(x => 
       owners[x].SetQueue(queueByOwner[x]))
+  }
+
+  this.SocketMap = () => {
+    return socketOwnerMap
   }
 
   this.GetCurrPickAndUpdateDraftOnStart = results =>
