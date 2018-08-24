@@ -1,6 +1,7 @@
 import TopNavLeague from './Navigation/TopNavLeague'
 import SportsSocket from './Sockets/SportsSocket'
 import MobileNav from './Navigation/MobileNav'
+import BottomNav from './Navigation/BottomNav'
 
 const layoutStyle = {
   // margin: -5,
@@ -16,6 +17,7 @@ const LayoutLeague = (props) => (
         <TopNavLeague />
         {props.children}
       </div>
+      <BottomNav/>
     </SportsSocket>
   </div>
 )

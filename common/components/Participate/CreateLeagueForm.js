@@ -128,6 +128,7 @@ class CreateLeagueForm extends React.Component {
             <LeagueInfo leagueInfo={leagueInfo} errorText={user.error[C.PAGES.CREATE_LEAGUE]} onSubmit={this.onSubmit} handleChange={this.handleChange}/>
           </div>
         </div>
+        <div style={{height:700}}/>
       </div>
     )
   }

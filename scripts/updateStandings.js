@@ -126,6 +126,11 @@ const getCFBstandings = async (knex, sportName, api, promiseToGet, pull_paramete
           standings_by_team_id[results[1]].losses--
           bowl_wins.push({team_id: results[0], bowl_wins: 1})
           bowl_wins.push({team_id: results[1], bowl_wins: 0})
+          let split = game.Day.split('T')[0].split('-')
+          if(game.StadiumID===163 && split[2]<20 && split[1] == 12){
+            standings_by_team_id[results[0]].wins ++
+            standings_by_team_id[results[1]].losses ++
+          }
         }
       }
       //first - check to see if games was played in a playoff stadium

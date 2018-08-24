@@ -9,13 +9,13 @@ const db_helpers = require('../helpers.js').data
 const points = require('./getPointsStructure.js') //this pulls all the differnet point strtuctures
 const randomSchedules = require('./randomSchedules.js')
 const math = require('mathjs')
-const updateGameProjections = require('./updateGameProjections')
+const updateProjections = require('./updateProjections')
 const fantasyHelpers = require('../../server/routes/helpers/fantasyHelpers')
 
 
 //this is the overall simulate function - runs for each sport
 //eventually needs to add in how it detects if in the middle of a season
-async function simulate(exitProcess, simulations = 10000)
+async function simulate(exitProcess, simulations = 10000, all=false)
 {
   console.log('Simulation with ' + simulations + ' simulations')
   const sport_structures = await dbSimulateHelpers.getSportStructures(knex)
@@ -26,7 +26,7 @@ async function simulate(exitProcess, simulations = 10000)
   //let all_points = await points.getPointsStructure(knex)
   var today = new Date()
   //this is the calculation of day count normally:
-  let day_count = getDayCount(today) +1 //note that this is changed
+  let day_count = getDayCount(today) //note that this is changed
   //this is the first day of the season of 2017
   //day_count = 1469
   /* this to be added back in later
@@ -53,16 +53,15 @@ async function simulate(exitProcess, simulations = 10000)
   console.log('before inserting data')
 
   //insert record, game, and fantasy projections into table
-  await Promise.all([
-    db_helpers.insertIntoTable(knex,'analysis', 'record_projections', projections),
-    db_helpers.insertIntoTable(knex, 'fantasy', 'projections', fantasy_projections),
-    updateGameProjections(knex, game_projections)
-    // db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', game_projections.slice(0,10000)),
-    // db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', game_projections.slice(10000,20000)),
-    // db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', game_projections.slice(20000, 30000)),
-    // db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', game_projections.slice(30000, 40000)),
-    // db_helpers.insertIntoTable(knex, 'analysis', 'game_projections', game_projections.slice(40000))
-  ])
+  // await Promise.all([
+  //   updateProjections.updateRecordProjections(knex, projections, all),
+  //   //db_helpers.insertIntoTable(knex, 'fantasy', 'projections', fantasy_projections),
+  //   updateProjections.updateGameProjections(knex, game_projections),
+  //   updateProjections.updateFantasyProjections(knex, fantasy_projections)
+  // ])
+  await updateProjections.updateRecordProjections(knex, projections, all)
+  await updateProjections.updateGameProjections(knex, game_projections)
+  await updateProjections.updateFantasyProjections(knex, fantasy_projections)
   await fantasyHelpers.updateLeagueProjectedPoints()
   console.log('done')
   if(exitProcess)

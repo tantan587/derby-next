@@ -27,10 +27,11 @@ class DraftResults extends React.Component {
   render() {
     const {draft, teams, activeLeague, contentFilter } = this.props
     const page= 'draft-results'
-    const owners = activeLeague.owners
-    const ownerDraftOrder = []
-    owners.map(x => ownerDraftOrder[x.draft_position]  = x)
+    const owners = activeLeague.owners //grabs owners for current league
+    const ownerDraftOrder = [] 
+    owners.map(x => ownerDraftOrder[x.draft_position]  = x) //puts each team at spot in array of draft position
 
+    //grabs drafted teams, maps them into an array
     const pickToTeamInfo = draft.draftedTeams.map(teamId => teams[teamId])
 
 
@@ -45,6 +46,7 @@ class DraftResults extends React.Component {
       }
       return rtnObj
     })
+    // draftResults.sort(function(a,b){return b.overallPick - a.overallPick})
 
     let extraTableRow = {}
     extraTableRow.freq = activeLeague.owners.length

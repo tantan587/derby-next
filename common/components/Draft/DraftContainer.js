@@ -2,7 +2,6 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import io from 'socket.io-client'
-import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
@@ -311,7 +310,7 @@ class DraftContainer extends React.Component {
         <Title backgroundColor='#EBAB38' color='white' title={'Live Draft - ' + activeLeague.league_name }/>
         <Grid container spacing={24} >
           <Grid item xs={12}>
-            <Paper className={classes.paper}>
+            <div className={classes.paper}>
               <Grid container alignItems={'stretch'} direction='row' style={{height:'100%'}}>
                 <Grid item xs={12} sm={2} 
                   style={{backgroundColor:'black'}}>
@@ -423,14 +422,18 @@ class DraftContainer extends React.Component {
                         <Chat onMessageSubmit={this.onMessageSubmit}/>
                       </div>
                     </Grid>
-                    <Divider style={{backgroundColor:'white'}}/>
+                    
                   </Grid>
                 </Grid>
               </Grid>
-            </Paper>
+            </div>
           </Grid>
         </Grid>
-        <SimpleSnackbar open={snackbarOpen} message={snackbarMessage} handleClose={this.onSnackbarClose}/>    
+        <SimpleSnackbar open={snackbarOpen} message={snackbarMessage} handleClose={this.onSnackbarClose}/>  
+        <br/>
+        <br/>  
+        <br/>
+        <br/>  
       </div>
     )
   }

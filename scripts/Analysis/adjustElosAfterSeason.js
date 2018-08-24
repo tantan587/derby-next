@@ -45,6 +45,10 @@ const adjustPastElosBySportEOS = async (sport_id) => {
         Object.keys(elos_by_conference).forEach(conference => {
             average_elo_by_conference[conference] = math.mean(elos_by_conference[conference])
         })
+        if(sport_id === 106){
+            let d1Teams = teams.filter(team => team.conference_id != 999).map(team => {return Number(team.elo)})
+            standard_dev = math.std(d1Teams)
+        }
         teams_for_insert = teams.map(team => {
             let offseason_adjustment = 0
             if(team.team_id in adjust_objects_by_sport[sport_id]){
@@ -54,13 +58,13 @@ const adjustPastElosBySportEOS = async (sport_id) => {
             return {team_id: team.team_id, elo: new_elo, year: sport_new_years[sport_id]}
         })
     }
-    
     await updateElos(teams_for_insert, sport_id)
     
     let historical_teams = teams_for_insert.map(team => {
         return {...team, day_count: day_count}
     })
     console.log(`Sport_id: ${sport_id}, teams inserted: ${teams_for_insert.length}, average: ${average_elo}, standard dev: ${standard_dev}`)
+
 }
 
 const updateElos = async (teams_for_insert, sport_id) => {
@@ -170,356 +174,356 @@ const mlb_adjust = {
 }
 //cbb is multiplied by a factor of 3
 const cbb_adjust = {
-    106183: 0.633, //American University
-    106401: 0.604, //Saint Louis
-    106259: 0.409, //George Mason
-    106421: 0.425, //Connecticut
-    106450: 0.295, //Yale
-    106267: 0.311, //Holy Cross
-    106372: 0.538, //South Alabama
-    106253: 0.409, //Gardner-Webb
-    106336: 0.265, //North Florida
-    106340: 0.358, //Northern Illinois
-    106433: 0.651, //Valparaiso
-    106275: 0.517, //Illinois State
-    106215: 0.28, //Cleveland State
-    106186: 0.371, //Little Rock
-    106403: 0.386, //Saint Peter's
-    106419: 0.382, //UCF
-    106348: 0.221, //Norfolk State
-    106223: 0.309, //Cal State Bakersfield
-    106187: 0.374, //Army
-    106447: 0.33, //Wofford
-    106434: 0.368, //VMI
-    106264: 0.377, //Harvard
-    106374: 0.216, //Santa Clara
-    106317: 0.212, //Memphis
-    106418: 0.382, //UC Davis
-    106399: 0.197, //St. Francis (PA)
-    106393: 0.439, //Southern Miss
-    106301: 0.301, //Loyola Marymount
-    106278: 0.344, //Iona
-    106270: 0.422, //Howard
-    106190: 0.276, //Ball State
-    106361: 0.341, //Princeton
-    106236: 0.05, //East Carolina
-    106123: 0.483, //Iowa State
-    106176: 0.249, //Abilene Christian
-    106284: 0.397, //James Madison
-    106199: 0.556, //Bryant
-    106310: 0.259, //Morehead State
-    106220: 0.347, //Colorado State
-    106420: 0.401, //UC Irvine
-    106432: 0.368, //UTSA
-    106146: 0.447, //Oregon
-    106214: 0.387, //The Citadel
-    106422: 0.309, //UC Riverside
-    106304: 0.316, //Marist
-    106209: 0.385, //Charlotte
-    106149: 0.187, //Pittsburgh
-    106178: 0.124, //Akron
-    106293: 0.402, //Liberty
-    106387: 0.115, //South Florida
-    106180: 0.374, //Alabama State
-    106320: 0.553, //Mississippi Valley State
-    106350: 0.377, //Northwestern State
-    106122: 0.61, //Iowa
+    106183: 0.733, //American University
+    106401: 0.745, //Saint Louis
+    106259: 0.504, //George Mason
+    106421: 0.521, //Connecticut
+    106450: 0.412, //Yale
+    106267: 0.447, //Holy Cross
+    106372: 0.666, //South Alabama
+    106253: 0.541, //Gardner-Webb
+    106336: 0.433, //North Florida
+    106340: 0.491, //Northern Illinois
+    106433: 0.697, //Valparaiso
+    106275: 0.599, //Illinois State
+    106215: 0.39, //Cleveland State
+    106186: 0.459, //Little Rock
+    106403: 0.404, //Saint Peter's
+    106419: 0.459, //UCF
+    106348: 0.381, //Norfolk State
+    106223: 0.39, //Cal State Bakersfield
+    106187: 0.453, //Army
+    106447: 0.467, //Wofford
+    106434: 0.471, //VMI
+    106264: 0.455, //Harvard
+    106374: 0.233, //Santa Clara
+    106317: 0.319, //Memphis
+    106418: 0.532, //UC Davis
+    106399: 0.373, //St. Francis (PA)
+    106393: 0.555, //Southern Miss
+    106301: 0.34, //Loyola Marymount
+    106278: 0.429, //Iona
+    106270: 0.504, //Howard
+    106190: 0.375, //Ball State
+    106361: 0.297, //Princeton
+    106236: 0.087, //East Carolina
+    106123: 0.46, //Iowa State
+    106176: 0.38, //Abilene Christian
+    106284: 0.439, //James Madison
+    106199: 0.512, //Bryant
+    106310: 0.326, //Morehead State
+    106220: 0.33, //Colorado State
+    106420: 0.486, //UC Irvine
+    106432: 0.494, //UTSA
+    106146: 0.368, //Oregon
+    106214: 0.464, //The Citadel
+    106422: 0.394, //UC Riverside
+    106304: 0.372, //Marist
+    106209: 0.369, //Charlotte
+    106149: 0.147, //Pittsburgh
+    106178: 0.158, //Akron
+    106293: 0.505, //Liberty
+    106387: 0.195, //South Florida
+    106180: 0.46, //Alabama State
+    106320: 0.569, //Mississippi Valley State
+    106350: 0.359, //Northwestern State
+    106122: 0.548, //Iowa
     106230: 0.528, //Delaware State
-    106286: 0.092, //Kent State
-    106369: 0.176, //Robert Morris
-    106228: 0.227, //Dayton
-    106276: 0.394, //Incarnate Word
-    106416: 0.22, //Texas State
-    106282: 0.009, //Jacksonville
-    106195: 0.001, //Boston University
-    106295: 0.034, //LIU Brooklyn
-    106423: 0.265, //UMass
-    106120: 0.611, //Illinois
-    106357: 0.401, //Pepperdine
+    106286: 0.176, //Kent State
+    106369: 0.309, //Robert Morris
+    106228: 0.21, //Dayton
+    106276: 0.347, //Incarnate Word
+    106416: 0.221, //Texas State
+    106282: 0.131, //Jacksonville
+    106195: 0.09, //Boston University
+    106295: 0.172, //LIU Brooklyn
+    106423: 0.267, //UMass
+    106120: 0.517, //Illinois
+    106357: 0.346, //Pepperdine
     106312: 0, //UMKC
-    106385: 0.116, //San Francisco
-    106196: 0.095, //Bowling Green
-    106323: 0.383, //Northern Arizona
-    106363: 0.198, //Quinnipiac
-    106217: 0.288, //Coastal Carolina
-    106334: 0.122, //Omaha
-    106134: 0.549, //Minnesota
-    106364: 0.136, //Radford
-    106198: 0.225, //Brown
-    106352: 0.218, //Ohio
-    106226: 0.155, //Dartmouth
-    106308: 0.354, //Maryland Eastern Shore
-    106261: -0.063, //Grambling State
-    106345: 0.38, //New Mexico
-    106238: 0.138, //Eastern Kentucky
-    106442: -0.02, //Western Illinois
-    106174: 0.534, //Wisconsin
-    106121: 0.465, //Indiana
-    106367: 0.161, //Richmond
-    106292: -0.056, //Lehigh
-    106254: 0.17, //Georgia Southern
-    106250: -0.029, //Fordham
-    106289: 0.008, //Louisiana-Monroe
-    106222: -0.024, //Cornell
-    106300: 0.074, //Loyola Maryland
-    106256: 0.133, //Green Bay
-    106349: 0.722, //North Texas
-    106296: 0.26, //Longwood
-    106141: 0.525, //Northwestern
-    106330: -0.016, //UNCW
-    106281: 0.182, //Jackson State
-    106263: -0.001, //Hartford
-    106224: 0.064, //Cal State Fullerton
-    106245: -0.03, //Fairleigh Dickinson
-    106439: -0.072, //Western Carolina
-    106177: 0.136, //Air Force
-    106294: -0.01, //Lipscomb
-    106257: 0.359, //Grand Canyon
-    106371: 0.253, //Sacramento State
-    106239: 0.052, //Elon
-    106333: 0.122, //Northeastern
-    106171: 0.359, //Washington
-    106291: 0.155, //Long Beach State
-    106203: 0.055, //Cal Poly
-    106193: 0.071, //Binghamton
-    106388: 0.155, //Siena
-    106415: -0.031, //Texas Southern
-    106331: 0.186, //North Dakota
-    106111: 0.208, //Colorado
-    106184: 0.115, //Appalachian State
-    106211: 0.261, //Chicago St.
-    106368: 0.112, //Rider
-    106136: 0.41, //Mississippi State
-    106342: 0.058, //NJIT
-    106358: 0.198, //Portland
-    106280: -0.051, //IUPUI
-    106269: 0.238, //Houston Baptist
-    106221: 0.27, //Coppin State
-    106306: 0.049, //UMass Lowell
-    106234: 0.047, //Drexel
-    106101: 0.184, //Alabama
-    106152: 0.312, //Rutgers
-    106335: 0.132, //Nevada
-    106274: 0.192, //UIC
-    106360: 0.171, //Presbyterian
-    106287: -0.04, //Lafayette
-    106131: 0.237, //Miami (FL)
-    106219: 0.068, //Columbia
-    106147: 0.278, //Oregon State
-    106452: 0.368, //SMU
-    106408: 0.118, //UT Martin
-    106197: 0.268, //Bradley
-    106390: 0.053, //SIUE
-    106103: 0.424, //Arizona State
-    106157: 0.171, //Syracuse
-    106150: 0.143, //Providence
-    106138: 0.12, //Nebraska
-    106188: -0.014, //UAPB
-    106435: 0.125, //VCU
-    106398: -0.066, //St. Francis Brooklyn
-    106377: 0.169, //USC Upstate
-    106405: -0.121, //Texas A&M-Corpus Christi
-    106376: 0.035, //South Carolina State
-    106135: 0.334, //Ole Miss
-    106314: 0.099, //Montana State
-    106169: 0.189, //Virginia Tech
-    106125: 0.092, //Kansas State
-    106154: 0.22, //South Carolina
-    106105: 0.228, //Auburn
-    106431: -0.035, //Texas-Rio Grande Valley
-    106246: 0.051, //Florida A&M
-    106126: 0.016, //Kentucky
-    106332: 0.057, //North Dakota State
-    106313: 0.045, //Monmouth
-    106260: -0.071, //Gonzaga
-    106124: -0.096, //Kansas
-    106302: 0.264, //Maine
-    106327: -0.049, //North Carolina Central
-    106129: 0.196, //Marquette
-    106378: 0.15, //San Diego
-    106341: 0.238, //Northern Iowa
-    106117: 0.34, //Georgetown
-    106413: -0.013, //Tulsa
-    106370: -0.056, //Sacred Heart
-    106185: -0.023, //Arkansas State
-    106231: -0.192, //Denver
-    106235: 0.058, //Duquesne
-    106109: 0.078, //California
-    106207: -0.046, //Central Connecticut State
-    106389: 0.1, //Southern Illinois
-    106139: -0.068, //North Carolina
-    106453: 0.139, //Temple
-    106116: 0.01, //Florida State
-    106208: -0.103, //Charleston
-    106311: -0.107, //Miami (OH)
-    106229: -0.134, //Delaware
-    106315: 0.205, //Montana
-    106262: -0.262, //Hampton
-    106212: -0.027, //Charleston Southern
-    106392: -0.1, //Sam Houston State
-    106290: 0.116, //La Salle
-    106347: -0.18, //New Orleans
-    106225: 0.049, //Cal State Northridge
-    106307: -0.104, //McNeese State
-    106115: 0.057, //Florida
-    106137: 0.213, //Missouri
-    106381: 0.081, //San Diego State
-    106182: -0.025, //Alcorn State
-    106383: -0.344, //Southeastern Louisiana
-    106144: 0.171, //Oklahoma
-    106168: -0.388, //Virginia
-    106402: 0.065, //Saint Mary's
-    106161: 0.088, //Texas
-    106244: -0.219, //Fairfield
-    106189: -0.107, //Austin Peay
-    106130: 0.259, //Maryland
-    106119: 0.059, //Georgia Tech
-    106428: 0.152, //Utah State
-    106430: -0.073, //UTEP
-    106118: 0.127, //Georgia
-    106391: 0.056, //San Jose State
-    106397: -0.041, //Stetson
-    106142: 0.018, //Notre Dame
-    106440: 0.116, //Weber State
-    106316: -0.089, //Morgan State
-    106173: -0.06, //West Virginia
-    106159: -0.003, //Tennessee
-    106451: -0.116, //Youngstown State
-    106255: 0.066, //Georgia State
-    106446: -0.157, //Western Michigan
-    106127: 0, //Louisville
-    106133: -0.151, //Michigan State
-    106247: 0.049, //Florida Atlantic
-    106191: -0.357, //Bethune-Cookman
-    106158: 0.009, //TCU
-    106396: -0.129, //Stony Brook
-    106218: -0.253, //Colgate
-    106153: 0.027, //Seton Hall
-    106114: -0.218, //Duke
-    106271: -0.065, //High Point
-    106140: 0.019, //North Carolina State
-    106298: 0.145, //Louisiana Tech
-    106113: 0.236, //DePaul
-    106288: -0.191, //Lamar
-    106366: -0.03, //Rice
-    106249: 0.006, //FIU
-    106251: 0.116, //Fresno State
-    106283: -0.055, //Jacksonville State
-    106166: 0.209, //Vanderbilt
-    106407: -0.213, //Tennessee Tech
-    106155: 0.189, //St. John's
-    106277: 0.158, //Indiana State
-    106356: -0.257, //Penn
-    106164: -0.071, //USC
-    106448: -0.12, //Wright State
-    106328: -0.074, //UNCG
-    106265: -0.168, //Hawaii
-    106444: 0.199, //Western Kentucky
-    106252: 0.075, //Furman
-    106232: -0.187, //Detroit
-    106362: -0.241, //Prairie View A&M
-    106248: -0.08, //FGCU
-    106437: -0.318, //Wagner
-    106324: -0.446, //Navy
-    106406: -0.244, //Tennessee State
-    106156: -0.077, //Stanford
-    106107: -0.029, //Boston College
-    106386: -0.051, //Stephen F. Austin
-    106355: -0.198, //Pacific
-    106163: -0.038, //UCLA
-    106354: -0.288, //Oral Roberts
-    106110: -0.252, //Clemson
-    106404: -0.157, //Southern Utah
-    106132: -0.407, //Michigan
-    106167: -0.665, //Villanova
-    106373: -0.217, //Samford
-    106412: -0.241, //Tulane
-    106162: -0.188, //Texas Tech
-    106201: -0.27, //Buffalo
-    106112: -0.009, //Creighton
-    106172: -0.047, //Washington State
-    106258: -0.341, //George Washington
-    106338: -0.319, //Niagara
-    106210: -0.252, //Chattanooga
-    106409: -0.251, //Toledo
-    106102: -0.184, //Arizona
-    106143: -0.127, //Ohio State
-    106128: -0.028, //LSU
-    106299: -0.224, //Loyola Chicago
-    106445: -0.352, //William & Mary
-    106411: -0.137, //Troy
-    106108: -0.122, //Butler
-    106268: -0.247, //Houston
-    106394: -0.368, //Southern University
-    106175: -0.379, //Xavier
-    106202: -0.107, //BYU
-    106400: -0.239, //Saint Joseph's
-    106145: -0.158, //Oklahoma State
-    106204: -0.144, //Campbell
-    106285: -0.322, //Kennesaw State
-    106266: -0.256, //Hofstra
-    106192: -0.078, //Belmont
-    106279: -0.282, //Fort Wayne
-    106243: -0.15, //Eastern Washington
-    106343: -0.143, //Northern Kentucky
-    106106: -0.128, //Baylor
-    106240: -0.344, //Eastern Michigan
-    106273: -0.164, //Idaho State
-    106384: -0.396, //Southeast Missouri State
-    106148: -0.021, //Penn State
-    106151: -0.34, //Purdue
-    106375: -0.553, //Savannah State
-    106337: -0.3, //New Hampshire
-    106443: -0.291, //Winthrop
-    106165: -0.057, //Utah
-    106436: -0.462, //Vermont
-    106233: -0.263, //Drake
-    106380: -0.32, //South Dakota State
-    106326: -0.56, //North Carolina A&T
-    106346: -0.136, //New Mexico State
-    106170: -0.028, //Wake Forest
-    106365: -0.343, //Rhode Island
-    106237: -0.408, //Eastern Illinois
-    106305: -0.303, //Marshall
-    106303: -0.506, //Manhattan
-    106426: -0.1, //UNLV
-    106429: -0.077, //Utah Valley
-    106104: -0.214, //Arkansas
-    106206: -0.641, //Central Arkansas
-    106382: -0.441, //Seattle
-    106205: -0.483, //Canisius
-    106424: -0.668, //UMBC
-    106213: -0.543, //Cincinnati
-    106242: -0.363, //Evansville
-    106441: -0.524, //Wichita State
-    106395: -0.484, //St. Bonaventure
-    106160: -0.391, //Texas A&M
-    106319: -0.752, //Mount St. Mary's
-    106297: -0.393, //Louisiana-Lafayette
-    106194: -0.306, //Boise State
-    106427: -0.444, //UC Santa Barbara
-    106438: -0.46, //Milwaukee
-    106351: -0.628, //Oakland
-    106216: -0.509, //Central Michigan
-    106329: -0.132, //Northern Colorado
-    106318: -0.297, //Missouri State
-    106410: -0.552, //Towson
-    106325: -0.644, //UNC Asheville
-    106379: -0.466, //South Dakota
-    106339: -0.654, //Nicholls State
-    106272: -0.649, //Idaho
-    106200: -0.67, //Bucknell
-    106449: -0.58, //Wyoming
-    106353: -0.409, //Old Dominion
-    106417: -0.573, //UAB
-    106227: -0.622, //Davidson
-    106359: -0.716, //Portland State
-    106414: -0.73, //UT Arlington
-    106241: -0.895, //East Tennessee State
-    106309: -0.812, //Mercer
-    106181: -1.041, //Albany
-    106321: -0.866, //Middle Tennessee
-    106322: -1.13, //Murray State
+    106385: 0.204, //San Francisco
+    106196: 0.188, //Bowling Green
+    106323: 0.409, //Northern Arizona
+    106363: 0.272, //Quinnipiac
+    106217: 0.306, //Coastal Carolina
+    106334: 0.125, //Omaha
+    106134: 0.443, //Minnesota
+    106364: 0.33, //Radford
+    106198: 0.232, //Brown
+    106352: 0.246, //Ohio
+    106226: 0.163, //Dartmouth
+    106308: 0.349, //Maryland Eastern Shore
+    106261: 0.16, //Grambling State
+    106345: 0.387, //New Mexico
+    106238: 0.214, //Eastern Kentucky
+    106442: 0.069, //Western Illinois
+    106174: 0.412, //Wisconsin
+    106121: 0.399, //Indiana
+    106367: 0.14, //Richmond
+    106292: -0.006, //Lehigh
+    106254: 0.247, //Georgia Southern
+    106250: -0.008, //Fordham
+    106289: 0.1, //Louisiana-Monroe
+    106222: 0.055, //Cornell
+    106300: 0.083, //Loyola Maryland
+    106256: 0.118, //Green Bay
+    106349: 0.757, //North Texas
+    106296: 0.332, //Longwood
+    106141: 0.422, //Northwestern
+    106330: -0.011, //UNCW
+    106281: 0.214, //Jackson State
+    106263: 0.17, //Hartford
+    106224: 0.18, //Cal State Fullerton
+    106245: 0.091, //Fairleigh Dickinson
+    106439: 0.046, //Western Carolina
+    106177: 0.16, //Air Force
+    106294: 0.122, //Lipscomb
+    106257: 0.393, //Grand Canyon
+    106371: 0.285, //Sacramento State
+    106239: 0.07, //Elon
+    106333: 0.23, //Northeastern
+    106171: 0.35, //Washington
+    106291: 0.205, //Long Beach State
+    106203: 0.078, //Cal Poly
+    106193: 0.155, //Binghamton
+    106388: 0.102, //Siena
+    106415: 0.058, //Texas Southern
+    106331: 0.215, //North Dakota
+    106111: 0.19, //Colorado
+    106184: 0.183, //Appalachian State
+    106211: 0.274, //Chicago St.
+    106368: 0.185, //Rider
+    106136: 0.424, //Mississippi State
+    106342: 0.142, //NJIT
+    106358: 0.178, //Portland
+    106280: -0.035, //IUPUI
+    106269: 0.157, //Houston Baptist
+    106221: 0.266, //Coppin State
+    106306: 0.132, //UMass Lowell
+    106234: 0.098, //Drexel
+    106101: 0.222, //Alabama
+    106152: 0.267, //Rutgers
+    106335: 0.196, //Nevada
+    106274: 0.222, //UIC
+    106360: 0.269, //Presbyterian
+    106287: 0.031, //Lafayette
+    106131: 0.185, //Miami (FL)
+    106219: 0.052, //Columbia
+    106147: 0.287, //Oregon State
+    106452: 0.232, //SMU
+    106408: 0.06, //UT Martin
+    106197: 0.294, //Bradley
+    106390: 0.115, //SIUE
+    106103: 0.389, //Arizona State
+    106157: 0.167, //Syracuse
+    106150: 0.136, //Providence
+    106138: 0.165, //Nebraska
+    106188: 0.092, //UAPB
+    106435: 0.023, //VCU
+    106398: 0.078, //St. Francis Brooklyn
+    106377: 0.114, //USC Upstate
+    106405: -0.142, //Texas A&M-Corpus Christi
+    106376: 0.07, //South Carolina State
+    106135: 0.276, //Ole Miss
+    106314: 0.128, //Montana State
+    106169: 0.159, //Virginia Tech
+    106125: 0.081, //Kansas State
+    106154: 0.157, //South Carolina
+    106105: 0.241, //Auburn
+    106431: 0.087, //Texas-Rio Grande Valley
+    106246: 0.127, //Florida A&M
+    106126: -0.003, //Kentucky
+    106332: 0.039, //North Dakota State
+    106313: -0.016, //Monmouth
+    106260: -0.037, //Gonzaga
+    106124: -0.105, //Kansas
+    106302: 0.211, //Maine
+    106327: -0.053, //North Carolina Central
+    106129: 0.153, //Marquette
+    106378: 0.188, //San Diego
+    106341: 0.232, //Northern Iowa
+    106117: 0.229, //Georgetown
+    106413: 0.022, //Tulsa
+    106370: 0.006, //Sacred Heart
+    106185: -0.075, //Arkansas State
+    106231: -0.141, //Denver
+    106235: 0.021, //Duquesne
+    106109: -0.084, //California
+    106207: 0.056, //Central Connecticut State
+    106389: 0.106, //Southern Illinois
+    106139: -0.086, //North Carolina
+    106453: 0.131, //Temple
+    106116: -0.003, //Florida State
+    106208: -0.064, //Charleston
+    106311: -0.033, //Miami (OH)
+    106229: -0.1, //Delaware
+    106315: 0.278, //Montana
+    106262: -0.144, //Hampton
+    106212: 0.051, //Charleston Southern
+    106392: -0.036, //Sam Houston State
+    106290: 0.073, //La Salle
+    106347: -0.161, //New Orleans
+    106225: -0.02, //Cal State Northridge
+    106307: -0.054, //McNeese State
+    106115: 0.003, //Florida
+    106137: 0.239, //Missouri
+    106381: 0.088, //San Diego State
+    106182: -0.031, //Alcorn State
+    106383: -0.201, //Southeastern Louisiana
+    106144: 0.101, //Oklahoma
+    106168: -0.288, //Virginia
+    106402: 0.006, //Saint Mary's
+    106161: 0.071, //Texas
+    106244: -0.182, //Fairfield
+    106189: -0.022, //Austin Peay
+    106130: 0.162, //Maryland
+    106119: -0.04, //Georgia Tech
+    106428: 0.091, //Utah State
+    106430: -0.1, //UTEP
+    106118: 0.087, //Georgia
+    106391: -0.071, //San Jose State
+    106397: -0.06, //Stetson
+    106142: -0.034, //Notre Dame
+    106440: 0.111, //Weber State
+    106316: -0.087, //Morgan State
+    106173: -0.11, //West Virginia
+    106159: 0.018, //Tennessee
+    106451: -0.138, //Youngstown State
+    106255: 0.04, //Georgia State
+    106446: -0.168, //Western Michigan
+    106127: -0.106, //Louisville
+    106133: -0.134, //Michigan State
+    106247: 0.03, //Florida Atlantic
+    106191: -0.239, //Bethune-Cookman
+    106158: -0.055, //TCU
+    106396: -0.155, //Stony Brook
+    106218: -0.201, //Colgate
+    106153: -0.034, //Seton Hall
+    106114: -0.24, //Duke
+    106271: -0.052, //High Point
+    106140: 0.012, //North Carolina State
+    106298: 0.07, //Louisiana Tech
+    106113: 0.174, //DePaul
+    106288: -0.163, //Lamar
+    106366: -0.146, //Rice
+    106249: -0.016, //FIU
+    106251: 0.052, //Fresno State
+    106283: -0.039, //Jacksonville State
+    106166: 0.092, //Vanderbilt
+    106407: -0.169, //Tennessee Tech
+    106155: 0.115, //St. John's
+    106277: 0.11, //Indiana State
+    106356: -0.215, //Penn
+    106164: -0.163, //USC
+    106448: -0.127, //Wright State
+    106328: -0.038, //UNCG
+    106265: -0.182, //Hawaii
+    106444: 0.214, //Western Kentucky
+    106252: 0.046, //Furman
+    106232: -0.243, //Detroit
+    106362: -0.192, //Prairie View A&M
+    106248: -0.113, //FGCU
+    106437: -0.238, //Wagner
+    106324: -0.409, //Navy
+    106406: -0.214, //Tennessee State
+    106156: -0.145, //Stanford
+    106107: -0.034, //Boston College
+    106386: -0.023, //Stephen F. Austin
+    106355: -0.183, //Pacific
+    106163: -0.185, //UCLA
+    106354: -0.305, //Oral Roberts
+    106110: -0.228, //Clemson
+    106404: -0.074, //Southern Utah
+    106132: -0.392, //Michigan
+    106167: -0.614, //Villanova
+    106373: -0.277, //Samford
+    106412: -0.225, //Tulane
+    106162: -0.223, //Texas Tech
+    106201: -0.231, //Buffalo
+    106112: -0.12, //Creighton
+    106172: -0.147, //Washington State
+    106258: -0.419, //George Washington
+    106338: -0.316, //Niagara
+    106210: -0.345, //Chattanooga
+    106409: -0.255, //Toledo
+    106102: -0.318, //Arizona
+    106143: -0.144, //Ohio State
+    106128: -0.05, //LSU
+    106299: -0.192, //Loyola Chicago
+    106445: -0.37, //William & Mary
+    106411: -0.209, //Troy
+    106108: -0.215, //Butler
+    106268: -0.248, //Houston
+    106394: -0.358, //Southern University
+    106175: -0.395, //Xavier
+    106202: -0.184, //BYU
+    106400: -0.275, //Saint Joseph's
+    106145: -0.281, //Oklahoma State
+    106204: -0.174, //Campbell
+    106285: -0.374, //Kennesaw State
+    106266: -0.324, //Hofstra
+    106192: -0.125, //Belmont
+    106279: -0.339, //Fort Wayne
+    106243: -0.162, //Eastern Washington
+    106343: -0.174, //Northern Kentucky
+    106106: -0.271, //Baylor
+    106240: -0.372, //Eastern Michigan
+    106273: -0.163, //Idaho State
+    106384: -0.408, //Southeast Missouri State
+    106148: -0.124, //Penn State
+    106151: -0.413, //Purdue
+    106375: -0.516, //Savannah State
+    106337: -0.435, //New Hampshire
+    106443: -0.338, //Winthrop
+    106165: -0.239, //Utah
+    106436: -0.429, //Vermont
+    106233: -0.281, //Drake
+    106380: -0.337, //South Dakota State
+    106326: -0.451, //North Carolina A&T
+    106346: -0.163, //New Mexico State
+    106170: -0.244, //Wake Forest
+    106365: -0.435, //Rhode Island
+    106237: -0.457, //Eastern Illinois
+    106305: -0.346, //Marshall
+    106303: -0.529, //Manhattan
+    106426: -0.17, //UNLV
+    106429: -0.146, //Utah Valley
+    106104: -0.334, //Arkansas
+    106206: -0.594, //Central Arkansas
+    106382: -0.44, //Seattle
+    106205: -0.552, //Canisius
+    106424: -0.632, //UMBC
+    106213: -0.587, //Cincinnati
+    106242: -0.445, //Evansville
+    106441: -0.627, //Wichita State
+    106395: -0.559, //St. Bonaventure
+    106160: -0.469, //Texas A&M
+    106319: -0.773, //Mount St. Mary's
+    106297: -0.441, //Louisiana-Lafayette
+    106194: -0.42, //Boise State
+    106427: -0.452, //UC Santa Barbara
+    106438: -0.555, //Milwaukee
+    106351: -0.743, //Oakland
+    106216: -0.58, //Central Michigan
+    106329: -0.193, //Northern Colorado
+    106318: -0.414, //Missouri State
+    106410: -0.685, //Towson
+    106325: -0.712, //UNC Asheville
+    106379: -0.566, //South Dakota
+    106339: -0.681, //Nicholls State
+    106272: -0.729, //Idaho
+    106200: -0.787, //Bucknell
+    106449: -0.724, //Wyoming
+    106353: -0.564, //Old Dominion
+    106417: -0.691, //UAB
+    106227: -0.826, //Davidson
+    106359: -0.828, //Portland State
+    106414: -0.952, //UT Arlington
+    106241: -1.023, //East Tennessee State
+    106309: -0.975, //Mercer
+    106181: -1.215, //Albany
+    106321: -1.069, //Middle Tennessee
+    106322: -1.273, //Murray State
 }
 
 const cfb_adjust = {

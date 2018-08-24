@@ -1,4 +1,5 @@
 const R = require('ramda')
+import {Component} from 'react'
 import { connect } from 'react-redux'
 import {withRouter} from 'next/router'
 import autobind from 'react-autobind'
@@ -58,7 +59,7 @@ class ForgotPasswordForm extends Component {
 
   handleSubmit(e) {
     e.preventDefault()
-    const {onForgotPassword, router} = this.props
+    const {onForgotPassword} = this.props
     this.setState({loading: true}, () => {
       onForgotPassword(...R.props(['email'], this.state))
         .then(() => {
@@ -116,6 +117,7 @@ class ForgotPasswordForm extends Component {
           disabled={this.state.loading}
         />
         {!!this.state.error.length && !this.state.dirty && <Typography align="center" color="error" children={this.state.error} paragraph/>}
+        <div style={{height:700}}/>
       </Grid>
     )
   }

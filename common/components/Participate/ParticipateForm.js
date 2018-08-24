@@ -82,6 +82,7 @@ class ParticipateForm extends React.Component {
               height={36}
               styles={{ fontSize: 13, fontWeight: 500, margin: '36px 22px 0px 22px' }}
             />
+            <div style={{height:700}}/>
           </div>
         </form>
       )
