@@ -54,8 +54,17 @@ class RosterGrid extends React.Component {
       }
     })
 
+    let owner_draft_picks = {}
+    Object.keys(draft.owners).forEach(ownerId =>{
+      owner_draft_picks[ownerId] = activeLeague.owners.filter(owner => owner.owner_id === ownerId)[0].draft_position
+    })
+
+     
+    
     const rows = []
-    Object.keys(draft.owners).map(ownerId => {
+    Object.keys(draft.owners).sort(function(a,b){
+      return owner_draft_picks[a] - owner_draft_picks[b]}).map(ownerId => {
+      
       let row = {}
       row.owner_name = activeLeague.owners.filter(owner => owner.owner_id === ownerId)[0].owner_name
       draft.owners[ownerId].map(pick => {
