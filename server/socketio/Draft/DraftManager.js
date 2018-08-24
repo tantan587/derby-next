@@ -135,7 +135,7 @@ function DraftManager(roomId, draftEmitter) {
   }
 
   const onStartDraft = async () => {
-    let socketMap = this.owners.SocketMap
+    let socketMap = this.owners.SocketMap()
     await this.Create(socketMap)
     socketIoHelpers.GetDraftResults(roomId)
       .then((results) => {
