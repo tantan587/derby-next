@@ -39,8 +39,9 @@ class RosterGrid extends React.Component {
       //we need to display it by conference
       if(sport.conf_strict && sport.num === sport.conferences.length)
       {
+        let first_label = ['101', '104', '107'].includes(sport.sport_id) ? '' : sport.sport + '-'
         sport.conferences.forEach(conf => headers.push( 
-          {label: sport.sport + '-' + conf.conference, key: conf.conference_id, imageInd:true, disableSort:true}))
+          {label: first_label + conf.conference, key: conf.conference_id, imageInd:true, disableSort:true}))
       }
       else{
         let arr = Array.apply(null, {length: sport.num}).map(Number.call, Number)
