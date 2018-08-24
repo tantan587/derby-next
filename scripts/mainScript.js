@@ -34,7 +34,7 @@ const runUpdate = async () => {
       // })
       await scriptPoints.updatePoints(false, true)
       
-      await scriptAfterSeasonElos.adjustElosAfterSeason(false,'all')
+      await scriptAfterSeasonElos.adjustElosAfterSeason(false,'allP')
       //this is used to build projections for first time - needs to be set to true once
       await scriptSimulate.simulate(exitProcessInd, 10, true)
       break
