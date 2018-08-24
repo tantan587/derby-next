@@ -682,7 +682,7 @@ const copy_epl_elo = async () => {
 }
 
 const adjustElosAfterSeason = async (exitProcess, sports='baseball') => {
-    if(sports === 'all'){
+    if(sports === 'allP'){ //this is only to be used on reset
         await updatePastElos(knex)
         await adjustPastElosBySportEOS(101)
         await adjustPastElosBySportEOS(102)
@@ -691,8 +691,16 @@ const adjustElosAfterSeason = async (exitProcess, sports='baseball') => {
         await adjustPastElosBySportEOS(105)
         await adjustPastElosBySportEOS(106)
         await copy_epl_elo()
-    }else{
+    }else if(sports === 'all'){ //used if updated adjust Elos
+        await adjustPastElosBySportEOS(101)
         await adjustPastElosBySportEOS(102)
+        await adjustPastElosBySportEOS(103)
+        await adjustPastElosBySportEOS(104)
+        await adjustPastElosBySportEOS(105)
+        await adjustPastElosBySportEOS(106)
+        await copy_epl_elo()
+    }else {
+        await adjustPastElosBySportEOS(103)
     }
     if(exitProcess)
         process.exit()
