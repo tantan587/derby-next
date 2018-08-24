@@ -113,7 +113,7 @@ const nba_adjust = {
     101115: 0.3, //Grizzlies
     101114: 0.5, //Lakers
     101110: .25, //Warriors
-    101128: -.25 //Jazz
+    101129: -.25 //Jazz
     
 
 }
