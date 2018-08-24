@@ -117,7 +117,7 @@ const styles = theme => ({
 })
 
 const InfoTool = ({ style }) =>
-  <Tooltip id="tooltip-top" title="This gives you information" placement="top">
+  <Tooltip id="tooltip-top" title="Using the Premier League is optional in Derby" placement="top">
     <div className={style}>i</div>
   </Tooltip>
 
@@ -147,7 +147,6 @@ const BasicInformation = withStyles(styles)(class extends Component {
         <div className={classes.field}>
           <div className={classes.label}>
             <div>League Password:</div>
-            <InfoTool style={classes.infoTool} />
           </div>
           <FormControl className={classes.textField}>
             <Input placeholder="Minimum of 8 characters" onChange={handleChange('password')}/>
