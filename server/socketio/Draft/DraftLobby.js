@@ -69,6 +69,7 @@ class DraftLobby {
       socket.join(roomId)
       if(draftIsGood())
       {
+        console.log('I joined!')
         this.draftRooms[roomId].Manager.OwnerJoined(socket.id, roomInfo.owner_id)
       }
     })

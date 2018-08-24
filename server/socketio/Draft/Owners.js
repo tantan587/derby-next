@@ -92,6 +92,7 @@ function Owners() {
 
   this.Joined = (socketId,ownerId) =>
   {
+    console.log(socketId, ownerId)
     socketOwnerMap[socketId] = ownerId
     owners[ownerId].Joined()
   }

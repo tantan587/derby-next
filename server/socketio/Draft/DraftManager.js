@@ -25,6 +25,7 @@ function DraftManager(roomId, draftEmitter) {
     that.owners = new Owners()
     await that.owners.CreateOwners(resp.owners, resp.queueByOwner, roomId, resp.allTeamsByRank)
     that.counter = timeToDraft
+    console.log('done with building', that.draftPosition)
   }
 
   this.DraftIsUp = () => {
@@ -134,13 +135,9 @@ function DraftManager(roomId, draftEmitter) {
   }
 
   const onStartDraft = async () => {
-    console.log('137')
     await this.Create()
-    console.log('139')
     socketIoHelpers.GetDraftResults(roomId)
       .then((results) => {
-        console.log('142', results)
-
         that.pick = that.owners.GetCurrPickAndUpdateDraftOnStart(results)
         draftEmitter.EmitDraftLive()
         waitToAutoDraft(timeToDraft)
@@ -237,7 +234,7 @@ function DraftManager(roomId, draftEmitter) {
   }
 
   const getCurrentOwnerId = () => {
-
+    console.log(that.draftPosition, that.draftOrder)
     return that.draftPosition[that.draftOrder[that.pick].ownerIndex]
   }
 
