@@ -134,11 +134,16 @@ function DraftManager(roomId, draftEmitter) {
   }
 
   const onStartDraft = async () => {
+    console.log('137')
     await this.Create()
-    let draftResults = await socketIoHelpers.GetDraftResults(roomId)
-    that.pick = that.owners.GetCurrPickAndUpdateDraftOnStart(draftResults)
-    draftEmitter.EmitDraftLive()
-    waitToAutoDraft(timeToDraft)
+    console.log('139')
+    socketIoHelpers.GetDraftResults(roomId)
+      .then((results) => {
+        console.log('142')
+        that.pick = that.owners.GetCurrPickAndUpdateDraftOnStart(results)
+        draftEmitter.EmitDraftLive()
+        waitToAutoDraft(timeToDraft)
+      })
 
   }
 

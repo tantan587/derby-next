@@ -79,9 +79,12 @@ const GetDraftInfo = async (room_id) =>{
 }
 
 const GetDraftResults = async (roomId) =>{
-  return await knex.withSchema('draft').table('results')
+  return knex.withSchema('draft').table('results')
     .where('room_id', roomId)
     .orderBy('server_ts')
+    .then(results => {
+      return results
+    })
 }
 
 const InsertDraftState = (roomId, state) =>
