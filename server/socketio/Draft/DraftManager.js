@@ -186,6 +186,7 @@ function DraftManager(roomId, draftEmitter) {
       that.timer = setInterval(async () => {
         if(that.counter === 0){
           clearInterval(that.timer)
+          console.log(189, that.pick, that.draftPosition)
           const ownerId = getCurrentOwnerId()
           const teamId = getAutoDraftTeam(ownerId)
           //comes back with information to ppick for the team
@@ -234,7 +235,9 @@ function DraftManager(roomId, draftEmitter) {
   }
 
   const getCurrentOwnerId = () => {
-    console.log(that.draftPosition, that.draftOrder)
+    console.log(238, that.draftOrder)
+    console.log(239, that.pick)
+    console.log(240, that.draftPosition)
     return that.draftPosition[that.draftOrder[that.pick].ownerIndex]
   }
 

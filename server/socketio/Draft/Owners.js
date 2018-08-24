@@ -45,11 +45,12 @@ function Owners() {
   }
 
   this.SetQueue = (socketId, newQueue) =>{
+    console.log(52, owners.map(x=>x.owner_id), socketOwnerMap)
     if(owners[socketOwnerMap[socketId]])
       owners[socketOwnerMap[socketId]].SetQueue(newQueue)
     else
     {
-      console.log(52, owners, socketOwnerMap)
+      console.log('nope')
     }
   }
 
