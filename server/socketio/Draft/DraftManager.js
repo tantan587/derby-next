@@ -139,7 +139,8 @@ function DraftManager(roomId, draftEmitter) {
     console.log('139')
     socketIoHelpers.GetDraftResults(roomId)
       .then((results) => {
-        console.log('142')
+        console.log('142', results)
+
         that.pick = that.owners.GetCurrPickAndUpdateDraftOnStart(results)
         draftEmitter.EmitDraftLive()
         waitToAutoDraft(timeToDraft)
@@ -164,7 +165,9 @@ function DraftManager(roomId, draftEmitter) {
           clearInterval(that.timer)
           draftState = C.DRAFT_STATE.LIVE
           socketIoHelpers.InsertDraftState(roomId, draftState)
+          console.log('168')
           await onStartDraft()
+          console.log('170')
           return
         }
         counter += 1000
