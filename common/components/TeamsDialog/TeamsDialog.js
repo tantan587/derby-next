@@ -66,7 +66,7 @@ class TeamsDialog extends Component {
     {
       let team = teams[teamId]
       oneTeam.record = team.wins + '-' + team.losses + (team.ties > 0 ? '-' + team.ties : '')
-      oneTeam.projected = Math.round(team.projected.wins) + '-' + Math.round(team.projected.losses) + (team.projected.ties > 0 ? '-' + team.projected.ties : '')
+      oneTeam.projected = Math.round(team.projected.wins) + '-' + Math.round(team.projected.losses) + (team.projected.ties > 0 ? '-' + Math.round(team.projected.ties) : '')
     }
 
     return (open && lastFive && nextFive ?
