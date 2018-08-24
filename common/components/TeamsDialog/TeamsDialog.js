@@ -61,7 +61,7 @@ class TeamsDialog extends Component {
       oneTeam.points = team.points
       oneTeam.proj_points = team.proj_points
       oneTeam.ranking = team.ranking  + '/' + Object.keys(activeLeague.teams).length
-      oneTeam.scoring_type_id = activeLeague.seasons[oneTeam.sport_id].scoring_type_id
+      oneTeam.scoring_type_id = 1//= activeLeague.seasons[oneTeam.sport_id].scoring_type_id
     }
     if(teams[teamId])
     {

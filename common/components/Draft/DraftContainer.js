@@ -350,7 +350,7 @@ class DraftContainer extends React.Component {
                         allowDraft={allowDraft}/>
                     </Grid>
                     {
-                      !user.admin ?
+                      user.admin ?
                         <div>
                           <Button onClick={draft.mode === 'timeout' ? 
                             this.onTimeIn : 
