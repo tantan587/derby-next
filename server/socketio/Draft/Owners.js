@@ -66,6 +66,7 @@ function Owners() {
 
   this.TryDraft = (ownerId, teamId, pick) =>
   {
+    console.log(69, ownerId, Object.keys(owners), teamId, pick)
     return owners[ownerId].TryDraft(teamId,pick)
   }
 
