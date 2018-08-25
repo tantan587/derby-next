@@ -62,27 +62,29 @@ class DraftResults extends React.Component {
     R.values(contentFilter[page]).forEach(filter => {
       draftResults = Filterer(draftResults, filter)
     })
-    
+
     return (
-      <div style={{height:730, minHeight:730, maxHeight:730}}>
+      <div style={{ height: 730, minHeight: 730, maxHeight: 730 }}>
         <TeamsDialog />
-        <FilterCreator page={page} filters={filters}/>
+        <FilterCreator page={page} filters={filters} />
         <DerbyTableContainer
           usePagination={true}
           myRows={draftResults}
           extraTableRow={extraTableRow}
           styleProps={styleProps}
-          myHeaders = {[
-            {label: 'Pick', key: 'overallPick'},
-            {label: 'Owner Name', key: 'owner_name'},
-            {key: 'logo_url', sortId:'team_name', imageInd:true},
-            {label: 'Team Name', key: 'team_name'},
-            {label: 'Conference', key: 'conference'},
-            {label: 'Sport League', key: 'sport'},
-            {label: 'Record', key: 'record', sortId:'percentage'},
-            {label: 'Percentage', key: 'percentage'},
-            {label: 'Points', key: 'points'}
-          ]}/>
+          // disableSort={true}
+
+          myHeaders={[
+            { label: 'Pick', key: 'overallPick', disableSort: true },
+            { label: 'Owner Name', key: 'owner_name', disableSort: true },
+            { key: 'logo_url', sortId: 'team_name', imageInd: true, disableSort: true },
+            { label: 'Team Name', key: 'team_name', disableSort: true },
+            { label: 'Conference', key: 'conference', disableSort: true },
+            { label: 'Sport League', key: 'sport', disableSort: true },
+            { label: 'Record', key: 'record', sortId: 'percentage', disableSort: true },
+            { label: 'Percentage', key: 'percentage', disableSort: true },
+            { label: 'Points', key: 'points', disableSort: true }
+          ]} />
       </div>
     )
   }
