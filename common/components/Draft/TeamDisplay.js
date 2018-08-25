@@ -34,9 +34,9 @@ class TeamDisplay extends React.Component {
     this.props.onDraftButton(team)
   }
 
-  componentWillMount() {
-    this.props.onFilterTab({})
-  }
+  // componentWillMount() {
+  //   this.props.onFilterTab()
+  // }
   render() {
     const page = 'draft-teams'
     const {  draft, teams,activeLeague, allowDraft, contentFilter} = this.props
@@ -44,7 +44,7 @@ class TeamDisplay extends React.Component {
     const queue = draft.queue
     let confs = []
     let teamsToShow = []
-
+    let valuesForCheckbox = [{label:'Drafted', val:true}, {label:'Ineligible', val:true}]
     if (allTeams)
     {
       allTeams.map(teamId => {
@@ -54,7 +54,7 @@ class TeamDisplay extends React.Component {
           teamsToShow.push(oneTeam)
         }
         else if(!draft.eligibleTeams.includes(teamId))
-          teamsToShow.push({...teams[teamId],disableQueue:true, queueOverride:{text:'Not eligible', icon:'N/A'}, eligible:false, checkbox:'Available' })
+          teamsToShow.push({...teams[teamId],disableQueue:true, queueOverride:{text:'Not eligible', icon:'N/A'}, eligible:false, checkbox:'Ineligible' })
         else if(queue.indexOf(teamId) === -1)
           teamsToShow.push({...teams[teamId], eligible:true, checkbox:true})
         else
@@ -71,12 +71,15 @@ class TeamDisplay extends React.Component {
       teamsToShow.forEach((x,i) => {
         x.ranking = i+1
       })
-
+      
       R.values(contentFilter[page]).forEach(filter => {
         teamsToShow = Filterer(teamsToShow, filter)
         if(filter.type === 'tab'){
           confs = [...new Set(teamsToShow.map(x => x.conference))]
           confs.sort()
+        }
+        if(filter.type === 'checkbox'){
+          valuesForCheckbox = filter.value
         }
       })
       confs.unshift('All')
@@ -116,7 +119,7 @@ class TeamDisplay extends React.Component {
     },
     {type:'checkbox',
       column:'checkbox',
-      values:['Drafted', 'Ineligible']
+      values:valuesForCheckbox
     }
     ]
 

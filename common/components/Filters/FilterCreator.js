@@ -35,9 +35,9 @@ class FilterCreator extends React.Component {
     this.setState({values})
   }
 
-  componentWillUnmount() {
-    this.props.handleClearFilters(this.state.page)
-  }
+  // componentWillUnmount() {
+  //   this.props.handleClearFilters(this.state.page)
+  // }
   
   
   render() {
@@ -49,8 +49,7 @@ class FilterCreator extends React.Component {
           filters.map((filter,i) => {
             if (filter.type === 'checkbox')
             {
-              console.log(filter)
-              let value = values[i] || filter.values.map(x => {return {val:true, label:x}})
+              let value = values[i] || filter.values.map(x => {return {val:x.val, label:x.label}})
               return <CheckboxFilter
                 clickedUpdateFilter={this.clickedUpdateFilter}
                 filterId={i}

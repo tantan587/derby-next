@@ -45,8 +45,6 @@ class TeamsDialog extends Component {
     const { teamsDialog, handleCloseDialog, oneTeam, activeLeague, classes, teams } = this.props
     const { open } = teamsDialog
     const { lastFive, nextFive } = oneTeam
-    console.log(1, oneTeam)
-
     if (!oneTeam.team_id)
     {
       return <div/>

@@ -32,7 +32,7 @@ class RouteProtector extends React.Component {
   
     if(!status.loaded)
     {
-      return(<CircularProgress className={classes.progress} size={50} />)
+      return(<div style={{height:1000}}><CircularProgress className={classes.progress} size={50} /></div>)
     }
     else{
       if(Object.keys(user).length === 0 || user.loggedIn === false || (checkCommish && !this.props.activeLeague.imTheCommish)) {
@@ -40,7 +40,7 @@ class RouteProtector extends React.Component {
           this.props.updateForceLogin(this.props.previousPage)
           Router.push('/redirectlogin')
         }
-        return(<div></div>)
+        return(null)
       }
       // Pass the received 'props' and created functions to the ProtectedRoute component
       return (

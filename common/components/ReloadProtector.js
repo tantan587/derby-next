@@ -30,7 +30,7 @@ class ReloadProtector extends React.Component {
 
     if(!status.loaded)
     {
-      return(<CircularProgress className={classes.progress} size={50} />)
+      return(<div style={{height:1000}}><CircularProgress className={classes.progress} size={50} /></div>)
     }
     else{
       return (
