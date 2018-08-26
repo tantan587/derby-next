@@ -164,57 +164,62 @@ const createLeague = async (req) => {
 
 const joinLeague = async (req) => {
 
-  let {league_id, total_enrolled} = await handleJoinErrorsAndGetInfo(req)
+  let {league_id, total_enrolled, is_invited} = await handleJoinErrorsAndGetInfo(req)
 
   return knex.transaction((trx) => {
     let owner_id = v4()
-    return knex.withSchema('fantasy').table('owners')
-      .transacting(trx)
-      .insert({
-        league_id: league_id,
-        user_id: req.user.user_id,
-        owner_id: owner_id,
-        owner_name:  req.body.league_name + '-owner-' + (total_enrolled+1),
-        commissioner: false,
-        avatar: {'primary':'White','secondary':'Black','pattern':'TriangularPanel2'}
-      })
-      .then(() => {
-        return knex.withSchema('fantasy').table('points')
-          .transacting(trx)
-          .insert({
-            owner_id: owner_id,
-            total_points: 0,
-            rank: 1
-          })
-          .then(() => {
-            return knex.withSchema('fantasy').table('leagues')
-              .transacting(trx)
-              .where({
-                'league_id': league_id
-              })
-              .update({
-                total_enrolled:total_enrolled+1
-              })
-              .then(() => {
-                return knex.withSchema('draft').table('settings')
-                  .transacting(trx)
-                  .where('league_id', league_id)
-                  .then((resp) => {
-                    const draft_position = resp[0].draft_position
-                    draft_position.push(owner_id)
-                    return knex
-                      .withSchema('draft')
-                      .table('settings')
-                      .transacting(trx)
-                      .where('league_id',league_id)
-                      .update('draft_position', JSON.stringify(draft_position))
-                      .then(()=> {return})
-                  })//draft settings
-              }) //fantasy leagues
-          })//fantasy points  
-      })//fantasy owners
-      .then(trx.commit)
-      .catch(trx.rollback)
+    let transact = knex('fantasy.owners').transacting(trx)
+
+    const params = {
+      league_id: league_id,
+      user_id: req.user.user_id,
+      owner_id: owner_id,
+      owner_name:  req.body.league_name + '-owner-' + (total_enrolled+1),
+      commissioner: false,
+      status: 'confirmed',
+      avatar: {'primary':'White','secondary':'Black','pattern':'TriangularPanel2'},
+    }
+    // If invited, update else insert
+    return (is_invited
+    ? transact.update(params).where({league_id: league_id, user_id: req.user.user_id})
+    : transact.insert(params)
+    ).then(() => {
+      return knex.withSchema('fantasy').table('points')
+        .transacting(trx)
+        .insert({
+          owner_id: owner_id,
+          total_points: 0,
+          rank: 1
+        })
+        .then(() => {
+          return knex.withSchema('fantasy').table('leagues')
+            .transacting(trx)
+            .where({
+              'league_id': league_id
+            })
+            .update({
+              total_enrolled:total_enrolled+1
+            })
+            .then(() => {
+              return knex.withSchema('draft').table('settings')
+                .transacting(trx)
+                .where('league_id', league_id)
+                .then((resp) => {
+                  const draft_position = resp[0].draft_position
+                  draft_position.push(owner_id)
+                  return knex
+                    .withSchema('draft')
+                    .table('settings')
+                    .transacting(trx)
+                    .where('league_id',league_id)
+                    .update('draft_position', JSON.stringify(draft_position))
+                    .then(()=> {return})
+                })//draft settings
+            }) //fantasy leagues
+        })//fantasy points  
+    })//fantasy owners
+    .then(trx.commit)
+    .catch(trx.rollback)
   })
     .then(() => {
       return league_id
@@ -324,10 +329,9 @@ const getLeagueInfoForJoin = async (league_name) => {
 const handleJoinErrorsAndGetInfo= async (req) => {
   let league_info = await getLeagueInfoForJoin(req.body.league_name)
   return new Promise(async (resolve, reject) => {
-
     let errorText = new ErrorText()
     var str = 'select (select count(*) leagueexists from fantasy.leagues where league_name = \'' + req.body.league_name +
-      '\'), (select count(*) passconfirm from fantasy.leagues where league_password = \'' + req.body.league_password +
+      '\'), (select count(*) passconfirm from fantasy.leagues where league_name = \'' + req.body.league_name + '\' and league_password = \'' + req.body.league_password +
       '\'), (select count(*) joined from fantasy.leagues a, fantasy.owners b where a.league_id = b.league_id and a.league_name = \'' + req.body.league_name +
       '\' and b.user_id = \'' + req.user.user_id +
       '\'), (select count(*) nametaken from fantasy.leagues a, fantasy.owners b where a.league_id = b.league_id and a.league_name = \'' + req.body.league_name +
@@ -336,31 +340,47 @@ const handleJoinErrorsAndGetInfo= async (req) => {
     knex.raw(str)
       .then(result =>
       {
-        if (result.rows[0].leagueexists === '0') 
-        {
-          errorText.addError(C.PAGES.JOIN_LEAGUE,'Can not find this league')
-        }
-        else if (result.rows[0].leagueexists === '1' && result.rows[0].passconfirm === '0') 
-        {
-          errorText.addError(C.PAGES.JOIN_LEAGUE,'password does not match')
-        }
-        else if (league_info.total_enrolled === league_info.max_owners) 
-        {
-          errorText.addError(C.PAGES.JOIN_LEAGUE,'This league is already full')
-        }
-        else if (result.rows[0].leagueexists === '1' && result.rows[0].joined === '1') 
-        {
-          errorText.addError(C.PAGES.JOIN_LEAGUE,'You\'ve already joined this league')
-        }
-        if (errorText.foundError()) {
-          reject({
-            type: C.JOIN_LEAGUE_FAIL,
-            error: errorText})
-        }
-        else
-        {
-          resolve(league_info)
-        }
+        // Looking for users that are not confirmed yet that have been invited in the league, 
+        // if there is a user, and username and password is right, resolve with is_invited to true
+        knex('fantasy.owners')
+        .select('*')
+        .whereNot('status', 'confirmed')
+        .andWhere({
+          league_id: league_info.league_id,
+          user_id: req.user.user_id,
+        })
+        .returning('*')
+        .then(([owner]) => {
+          if (result.rows[0].leagueexists === '0') 
+          {
+            errorText.addError(C.PAGES.JOIN_LEAGUE,'Can not find this league')
+          }
+          else if (result.rows[0].leagueexists === '1' && result.rows[0].passconfirm === '0') 
+          {
+            errorText.addError(C.PAGES.JOIN_LEAGUE,'password does not match')
+          }
+          else if (league_info.total_enrolled === league_info.max_owners) 
+          {
+            errorText.addError(C.PAGES.JOIN_LEAGUE,'This league is already full')
+          }
+          else if (result.rows[0].leagueexists === '1' && result.rows[0].joined === '1') 
+          {
+            console.log('owner is here', owner, league_info, req.user)
+            if (owner) {
+              return resolve({...league_info, is_invited: true})
+            }
+            errorText.addError(C.PAGES.JOIN_LEAGUE,'You\'ve already joined this league')
+          }
+          if (errorText.foundError()) {
+            reject({
+              type: C.JOIN_LEAGUE_FAIL,
+              error: errorText})
+          }
+          else
+          {
+            resolve(league_info)
+          }  
+        })
       })
   })
 }

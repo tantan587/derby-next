@@ -54,15 +54,14 @@ const statusColors = {
   'Not Invited Yet': '#FA3035'
 }
 
-const ManageTable = withStyles(styles)(({ classes, members }) =>
+const ManageTable = withStyles(styles)(({ classes, selectedInvites, members, onCheckboxChange, onEmailInviteClick, onRemoveOwnerClick }) =>
   <div>
-    { console.log('hello', members) }
     <div className={classes.title}>Member List</div>
     <div style={{ overflowX: 'scroll' }}>
       <div className={classes.tableSize}>
         <div className={classes.header}>
-          <div style={{ flex: 5, marginLeft: 12, position: 'relative', left: 20 }}>Name</div>
-          <div style={{ flex: 5 }}>Email</div>
+          <div style={{ flex: 5, marginLeft: 12, position: 'relative', left: 20 }}>Email</div>
+          <div style={{ flex: 5 }}>Username</div>
           <div style={{ flex: 3 }}>Status</div>
           <div style={{ flex: 1 }}>Select</div>
         </div>
@@ -71,25 +70,31 @@ const ManageTable = withStyles(styles)(({ classes, members }) =>
             members.map((member, idx) => <div key={idx} className={classes.tableRow}>
               <div style={{ display: 'flex', flex: 5, marginLeft: 12 }}>
                 <div style={{ fontWeight: 600, width: 20 }}>{`${idx + 1}.`}</div>
-                <div>{R.has('name')(member) && member.name}</div>
+                <div>{ R.has('email')(member) && member.email }</div>
               </div>
               <div style={{ flex: 5 }}>
-                { R.has('email')(member) && member.email }
+                {R.has('name')(member) && member.name}
               </div>
               <div style={{ flex: 3, color: statusColors[member.status] }}>
                 { R.has('status')(member) && member.status }
               </div>
               <div style={{ flex: 1 }}>
-                {R.has('select')(member)  && <DerbyCheckbox />}
+                <DerbyCheckbox
+                  onClick={onCheckboxChange}
+                  state={member}
+                  checked={!!selectedInvites[member.invite_id]}
+                />
               </div>
             </div>)
           }
           <div className={classes.buttons}>
             <StyledButton
               text="Email Invite"
+              onClick={onEmailInviteClick}
             />
             <StyledButton
               text="Remove Owner"
+              onClick={onRemoveOwnerClick}
             />
           </div>
         </div>
