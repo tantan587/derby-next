@@ -70,6 +70,7 @@ class DraftContainer extends React.Component {
   componentWillMount() {
     this.props.onEnterDraft(
       this.props.activeLeague.room_id, this.props.activeLeague.my_owner_id)
+    this.props.onClickedLeague(this.props.activeLeague.league_id, this.props.user.id)
   }
   // connect to WS server and listen event
   componentDidMount() {
@@ -165,7 +166,7 @@ class DraftContainer extends React.Component {
     this.props.onSetDraftMode(mode)
     if (mode === C.DRAFT_STATE.POST)
     {
-      this.props.finishedDraft(this.props.activeLeague.league_id,  this.props.user.id) 
+      this.props.onClickedLeague(this.props.activeLeague.league_id,  this.props.user.id) 
     }
   }
 
@@ -477,7 +478,7 @@ export default connect(
         dispatch(
           handleRecieveMessage(message))
       },
-      finishedDraft(league_id, user_id) {
+      onClickedLeague(league_id, user_id) {
         dispatch(
           clickedLeague(league_id, user_id))
       },
