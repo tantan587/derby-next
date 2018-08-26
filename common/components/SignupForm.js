@@ -16,7 +16,6 @@ import MenuItem from '@material-ui/core/MenuItem'
 import FormControl from '@material-ui/core/FormControl'
 import InputLabel from '@material-ui/core/InputLabel'
 import Checkbox from '@material-ui/core/Checkbox'
-import DerbyCheckbox from './UI/DerbyCheckbox'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import FormLabel from '@material-ui/core/FormLabel'
 import FormHelperText from '@material-ui/core/FormHelperText'
@@ -42,19 +41,6 @@ const styles = (theme) => ({
   },
   field: {
     marginBottom: '0.5em',
-  },
-  checkboxRoot: {
-    color: theme.palette.grey['800']
-  },
-  linkRoot: {
-    '& a': {
-      color: "red" 
-    }
-  },
-  linkRootChecked: {
-    '& a': {
-      color: "blue"
-    }
   },
   textField: {
     marginBottom: '0.5em',
@@ -114,6 +100,7 @@ class SignupForm extends React.Component {
     }else{
       this.setState({[name]: event.target.value, dirty: true})
     }
+ 
   }
 
 
@@ -176,6 +163,8 @@ class SignupForm extends React.Component {
   render() {
     const { classes } = this.props
     const error = this.state.terms === false
+    const birthday_error = R.path(['errors', 'birthday'], this.state.birthday)
+
     return (
       <Grid 
         className={classes.container}
@@ -218,7 +207,7 @@ class SignupForm extends React.Component {
             id="date"
             label="Birthday"
             type="date"
-            error={this.state.birthday.errors}
+            error={birthday_error}
             onChange={this.handleChange('birthday')}
             defaultValue="1990-05-13"
             className={classes.textField}
@@ -227,21 +216,19 @@ class SignupForm extends React.Component {
               shrink: true,
             }}
       />
+      <FormGroup>
         <FormControl
-          required error = {error} component = "fieldset" className = {classes.formControl}>
-          <FormLabel component="legend" className={classes.checkboxRoot}>By clicking this box, you indicate that you have read, that you understand and that you accept our  
-          <Link component='a' href='/legal'> Terms and Conditions</Link> and <Link component='a' href='/privacy' className={classes.checkboxRoot}>Privacy Policy</Link></FormLabel>
-          <FormGroup>
-            <FormControlLabel control={
+          required error = {error} component = "fieldset" className = {classes.formControl}
+          >
             <Checkbox
               checked={this.state.terms}
               onChange={this.handleChange('terms')}
               value = "terms"
             />
-          }/>
-          </FormGroup>
-          <FormHelperText>You must agree to terms</FormHelperText>
+          <FormHelperText>By clicking this box, you indicate that you have read, that you understand and that you accept our  
+          <Link component='a' href='/legal'> Terms and Conditions</Link> and <Link component='a' href='/privacy' >Privacy Policy</Link></FormHelperText>
         </FormControl>
+        </FormGroup>
 
         <Button
           className={classes.submit}
