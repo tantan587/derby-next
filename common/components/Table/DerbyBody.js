@@ -133,7 +133,7 @@ class DerbyBody extends React.Component {
         {rows.map((n,i) => {
           return (
             [
-              extraTableRow && n['pick'] % extraTableRow.freq === 1 && i !==0 ?
+              extraTableRow && n['pick'] % extraTableRow.freq === 0 && i !==0 ?
                 this.extraRowRender(extraTableRow,i,n) : null,
               <TableRow
                 hover

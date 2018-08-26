@@ -46,7 +46,14 @@ class DraftResults extends React.Component {
       }
       return rtnObj
     })
-    // draftResults.sort(function(a,b){return b.overallPick - a.overallPick})
+
+    draftResults = draftResults.map(x => {
+      return activeLeague.teams[x.team_id] ? {...x, 
+        projectedPoints:activeLeague.teams[x.team_id].proj_points,
+        lastYearPoints:activeLeague.teams[x.team_id].lastYearPoints || 0 , 
+        ranking:activeLeague.teams[x.team_id].ranking } : x
+    })
+    draftResults.sort(function(a,b){return b.overallPick - a.overallPick})
 
     let extraTableRow = {}
     extraTableRow.freq = activeLeague.owners.length
@@ -54,11 +61,12 @@ class DraftResults extends React.Component {
     extraTableRow.key = 'round'
 
     let rounds = [...new Set(draftResults.map(x => x.round))]
+    rounds.unshift('All')
     let filters = [{type:'dropdown',
       values:rounds,
       column:'round',
       name:'Round',
-      displayFunction:(x) => 'Round ' + x
+      displayFunction:(x) => x === 'All' ? 'All Rounds' : 'Round ' + x
     }]
 
     R.values(contentFilter[page]).forEach(filter => {
@@ -75,15 +83,14 @@ class DraftResults extends React.Component {
           extraTableRow={extraTableRow}
           styleProps={styleProps}
           myHeaders = {[
-            {label: 'Pick', key: 'overallPick'},
-            {label: 'Owner Name', key: 'owner_name'},
-            {key: 'logo_url', sortId:'team_name', imageInd:true},
-            {label: 'Team Name', key: 'team_name'},
-            {label: 'Conference', key: 'conference'},
-            {label: 'Sport League', key: 'sport'},
-            {label: 'Record', key: 'record', sortId:'percentage'},
-            {label: 'Percentage', key: 'percentage'},
-            {label: 'Points', key: 'points'}
+            {label: 'Pick', key: 'overallPick', disableSort:true},
+            {label: 'Owner Name', key: 'owner_name', disableSort:true},
+            {key: 'logo_url', sortId:'team_name', imageInd:true, disableSort:true},
+            {label: 'Team Name', key: 'team_name', disableSort:true},
+            {label: 'Conference', key: 'conference', disableSort:true},
+            {label: 'Sport League', key: 'sport', disableSort:true},
+            {label: 'Proj. Rank', key: 'ranking', disableSort:true},
+            {label: 'Proj. Points', key: 'projectedPoints', disableSort:true},
           ]}/>
       </div>
     )
