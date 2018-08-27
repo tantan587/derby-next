@@ -19,7 +19,8 @@ const NBA_json_box_score = (game) => {
     away_quarter_ot_3: quarters_played>6 ? game.Quarters[6].AwayScore : -1,
     channel: game.Game.Channel,
     spread: game.Game.PointSpread,
-    over_under: game.Game.OverUnder
+    over_under: game.Game.OverUnder,
+    periods_played: quarters_played
   }
 }
 
@@ -33,12 +34,12 @@ const NFL_json = (game) => {
     home_quarter_2: game.HomeScoreQuarter2,
     home_quarter_3: game.HomeScoreQuarter3,
     home_quarter_4: game.HomeScoreQuarter4,
-    home_overtime: game.HomeScoreOvertime,
+    home_overtime_1: game.HomeScoreOvertime,
     away_quarter_1: game.AwayScoreQuarter1,
     away_quarter_2: game.AwayScoreQuarter2,
     away_quarter_3: game.AwayScoreQuarter3,
     away_quarter_4: game.AwayScoreQuarter4,
-    away_overtime: game.AwayScoreOvertime,
+    away_overtime_1: game.AwayScoreOvertime,
     down: game.Down,
     distance: game.Distance,
     possession: game.Possession, 
@@ -163,18 +164,19 @@ const CBB_json_box_score = (raw_game) => {
   let game = raw_game.Game
   let periods_played = game.Periods.length
   return {
-    home_first_half: periods_played>0 ? game.Periods[0].HomeScore : -1,
-    home_second_half: periods_played>1 ? game.Periods[1].HomeScore : -1,
+    home_half_1: periods_played>0 ? game.Periods[0].HomeScore : -1,
+    home_half_2: periods_played>1 ? game.Periods[1].HomeScore : -1,
     home_period_ot_1: periods_played>3 ? game.Periods[2].HomeScore : -1,
     home_period_ot_2: periods_played>4 ? game.Periods[3].HomeScore : -1,
     home_period_ot_3: periods_played>5 ? game.Periods[4].HomeScore : -1,
     home_period_ot_4: periods_played>6 ? game.Periods[5].HomeScore : -1,
-    away_first_half: periods_played>0 ? game.Periods[0].AwayScore : -1,
-    away_second_half: periods_played>1 ? game.Periods[1].AwayScore : -1,
+    away_half_1: periods_played>0 ? game.Periods[0].AwayScore : -1,
+    away_half_2: periods_played>1 ? game.Periods[1].AwayScore : -1,
     away_period_ot_1: periods_played>3 ? game.Periods[2].AwayScore : -1,
     away_period_ot_2: periods_played>4 ? game.Periods[3].AwayScore : -1,
     away_period_ot_3: periods_played>5 ? game.Periods[4].AwayScore : -1,
     away_period_ot_4: periods_played>6 ? game.Periods[5].AwayScore : -1,
+    periods_played: periods_played
   }
 }
 
@@ -209,12 +211,12 @@ const CFB_json_box_score = (game) => {
 const EPL_json = (game) => {
   return {
     last_play: game.LastPlay,
-    home_first_half: game.HomeTeamScorePeriod1,
-    home_second_half: game.HomeTeamScorePeriod2,
-    home_extra_time: game.HomeTeamScoreExtraTime,
-    away_first_half: game.AwayTeamScorePeriod1,
-    away_second_half: game.AwayTeamScorePeriod2,
-    away_extra_time: game.AwayTeamScoreExtraTime
+    home_half_1: game.HomeTeamScorePeriod1,
+    home_half_2: game.HomeTeamScorePeriod2,
+    home_period_ot_1: game.HomeTeamScoreExtraTime,
+    away_half_1: game.AwayTeamScorePeriod1,
+    away_half_2: game.AwayTeamScorePeriod2,
+    away_period_ot_1: game.AwayTeamScoreExtraTime
   }
 }
 

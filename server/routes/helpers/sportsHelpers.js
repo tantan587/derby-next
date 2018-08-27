@@ -146,7 +146,7 @@ const createGame = row => {
       team_name:row.sport_id !== '107' ? row.h_city + ' ' + row.h_name : row.h_name,
       url:row.h_url,
       team_id:row.home_team_id,
-      lost:row.winner === 'T',
+      lost:row.winner === 'A',
       record:(row.h_wins + '-' + row.h_losses) + (row.h_ites > 0 ? '-' + row.h_ties : '')
     },
     away : {
@@ -167,21 +167,28 @@ const createGame = row => {
 
   switch (row.sport_id)
   {
-  case '101': case '102':
+  case '101':
   {
-    baseGame.header = ['1','2','3','4','T']
-    baseGame.home.score = [
-      gameExtra.home_quarter_1 || 0,
-      gameExtra.home_quarter_2 || 0,
-      gameExtra.home_quarter_3 || 0,
-      gameExtra.home_quarter_4 || 0,
-      row.home_team_score]
-    baseGame.away.score = [
-      gameExtra.away_quarter_1 || 0,
-      gameExtra.away_quarter_2 || 0,
-      gameExtra.away_quarter_3 || 0,
-      gameExtra.away_quarter_4 || 0,
-      row.away_team_score]
+    baseGameSportFunction(gameExtra, baseGame, row, 4, 'quarter', 'quarter')
+
+    // baseGame.header = ['1','2','3','4','T']
+    // baseGame.home.score = [
+    //   gameExtra.home_quarter_1 || 0,
+    //   gameExtra.home_quarter_2 || 0,
+    //   gameExtra.home_quarter_3 || 0,
+    //   gameExtra.home_quarter_4 || 0,
+    //   row.home_team_score]
+    // baseGame.away.score = [
+    //   gameExtra.away_quarter_1 || 0,
+    //   gameExtra.away_quarter_2 || 0,
+    //   gameExtra.away_quarter_3 || 0,
+    //   gameExtra.away_quarter_4 || 0,
+    //   row.away_team_score]
+    return baseGame
+  }
+  case '102':
+  {
+    baseGameSportFunction(gameExtra, baseGame, row, 4, 'quarter', 'overtime')
     return baseGame
   }
   case '103':
@@ -205,47 +212,49 @@ const createGame = row => {
   }
   case '104':
   {
-    baseGame.header = ['1','2','3','T']
-    baseGame.home.score = [
-      gameExtra.home_period_1 || 0,
-      gameExtra.home_period_2 || 0,
-      gameExtra.home_period_3 || 0,
-      row.home_team_score]
-    baseGame.away.score = [
-      gameExtra.away_period_1 || 0,
-      gameExtra.away_period_2 || 0,
-      gameExtra.away_period_3 || 0,
-      row.away_team_score]
+    baseGameSportFunction(gameExtra,baseGame,row,3,"period", "period")
+    // baseGame.header = ['1','2','3','T']
+    // baseGame.home.score = [
+    //   gameExtra.home_period_1 || 0,
+    //   gameExtra.home_period_2 || 0,
+    //   gameExtra.home_period_3 || 0,
+    //   row.home_team_score]
+    // baseGame.away.score = [
+    //   gameExtra.away_period_1 || 0,
+    //   gameExtra.away_period_2 || 0,
+    //   gameExtra.away_period_3 || 0,
+    //   row.away_team_score]
     return baseGame
   }
   case '105':
   {
-    baseGame.header = ['1','2','3','4','T']
-    baseGame.home.score = [
-      gameExtra.home_period_1 || 0,
-      gameExtra.home_period_2 || 0,
-      gameExtra.home_period_3 || 0,
-      gameExtra.home_period_4 || 0,
-      row.home_team_score]
-    baseGame.away.score = [
-      gameExtra.away_period_1 || 0,
-      gameExtra.away_period_2 || 0,
-      gameExtra.away_period_3 || 0,
-      gameExtra.home_period_4 || 0,
-      row.away_team_score]
+    baseGameSportFunction(gameExtra, baseGame, row, 4, 'period', 'period')
+    // baseGame.home.score = [
+    //   gameExtra.home_period_1 || 0,
+    //   gameExtra.home_period_2 || 0,
+    //   gameExtra.home_period_3 || 0,
+    //   gameExtra.home_period_4 || 0,
+    //   row.home_team_score]
+    // baseGame.away.score = [
+    //   gameExtra.away_period_1 || 0,
+    //   gameExtra.away_period_2 || 0,
+    //   gameExtra.away_period_3 || 0,
+    //   gameExtra.home_period_4 || 0,
+    //   row.away_team_score]
     return baseGame
   }
   case '106': case'107':
   {
-    baseGame.header = ['1','2','T']
-    baseGame.home.score = [
-      gameExtra.home_first_half || 0,
-      gameExtra.home_second_half || 0,
-      row.home_team_score]
-    baseGame.away.score = [
-      gameExtra.away_first_half || 0,
-      gameExtra.away_second_half || 0,
-      row.away_team_score]
+    baseGameSportFunction(gameExtra, baseGame, row, 2, 'half', 'period')
+    // baseGame.header = ['1','2','T']
+    // baseGame.home.score = [
+    //   gameExtra.home_first_half || 0,
+    //   gameExtra.home_second_half || 0,
+    //   row.home_team_score]
+    // baseGame.away.score = [
+    //   gameExtra.away_first_half || 0,
+    //   gameExtra.away_second_half || 0,
+    //   row.away_team_score]
     return baseGame
   }
   
@@ -377,6 +386,43 @@ const GetOneTeamSchedule  = async(team_id, res) =>{
 
 }
 
+const baseGameSportFunction = (gameExtra, baseGame, row, regulation_length, sportTerm, overtime_term) => {
+  let periods = gameExtra.periods_played;
+  baseGame.home.score = []
+  baseGame.away.score = []
+  baseGame.header = []
+  for (let i = 1; i <= regulation_length; i++) {
+    if (i <= periods) {
+      baseGame.home.score.push(gameExtra['home_' + sportTerm + '_' + i]);
+      baseGame.away.score.push(gameExtra['away_' + sportTerm + '_' + i]);
+    }
+    else {
+      baseGame.home.score.push(0);
+      baseGame.away.score.push(0);
+    }
+    baseGame.header.push(String(i))
+  }
+  if (periods > regulation_length) {
+    let home_ot_total = 0;
+    let away_ot_total = 0;
+    let ot_periods = periods - regulation_length
+    for (let j = 1; j <= ot_periods; j++) {
+      home_ot_total += gameExtra['home_' + overtime_term + '_ot_' + j]
+      away_ot_total += gameExtra['away_' + overtime_term + '_ot_' + j]
+      // baseGame.home.score.push(gameExtra['home_' + sportTerm + '_ot_' + j])
+      // baseGame.away.score.push(gameExtra['away_' + sportTerm + '_ot_' + j])
+      // baseGame.header.push(String('OT'+j))
+    }
+    baseGame.home.score.push(home_ot_total)
+    baseGame.away.score.push(away_ot_total)
+    baseGame.header.push('OT')
+  }
+  baseGame.away.score.push(row.away_team_score)
+  baseGame.home.score.push(row.home_team_score)
+  baseGame.header.push('T')
+}
+
+
 module.exports = {
   GetOneTeamSchedule,
   GetSportSeasonsAndRespond,
@@ -385,4 +431,5 @@ module.exports = {
   getOneDaySchedule,
   getSportLeagues,
 }
+
 
