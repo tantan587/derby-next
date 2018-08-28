@@ -28,13 +28,13 @@ export const clickedLogout = () => dispatch =>
     JSON.stringify({})
   )
 
-export const clickedSignup = (username,first_name,last_name,email,password) => dispatch =>
+export const clickedSignup = (username,first_name,last_name,email,password,gender,birthday,terms) => dispatch =>
 { username = username.trim()  
   return FetchThenDispatch(
     dispatch,
     '/api/signup',
     'POST',
-    JSON.stringify({username,first_name,last_name,email,password})
+    JSON.stringify({username,first_name,last_name,email,password,gender,birthday,terms})
   )}
 
 export const clickedForgotPassword = (email) => dispatch =>
