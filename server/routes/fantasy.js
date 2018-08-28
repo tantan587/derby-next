@@ -9,29 +9,18 @@ const fantasyHelpers = require('./helpers/fantasyHelpers')
 const createLeagueTemplate = require('../email-templates/createleague')
 
 
-router.post('/createleague', authHelpers.loginRequired, (req, res)  => {
+router.post('/createleague', authHelpers.loginRequired, async (req, res)  => {
   return createLeague(req)
-    .then((league_id) => { 
-      // return fantasyHelpers.getUserInfo(req.user.user_id)
-      // .then((user) => {
-      //   let time = req.body.leagueInfo.draftDate.split(' ')[1]
-      //   let hour = time.split(':')[0] > 12 ? [time.split(':')[0]-12,"PM"] : [time.split(':')[0], "AM"]
-      //   let minute = time.split(':')[1]
-      //   let time_zone = fantasyHelpers.timeZoneList[time.split(':')[2].split('-')[1]]
-      //   let draft_time = `${hour[0]}:${minute} ${hour[1]} ${time_zone}`
-      //   return authHelpers.sendEmail({
-      //     email: user.email,
-      //     first_name: user.first_name,
-      //     league_name: req.body.leagueInfo.name,
-      //     league_password: req.body.leagueInfo.password,
-      //     draft_day: req.body.leagueInfo.draftDate.split(' ')[0],
-      //     draft_time: draft_time
-      //     }, createLeagueTemplates)
-      //       .then(()=>{
+    .then(async (league_id) => { 
+      console.log('league created')
+      let user_info = await fantasyHelpers.buildLeagueSignUpEmail(req.user.user_id, req.body.leagueInfo)
+      console.log(user_info)
+      return authHelpers.sendEmail(user_info, createLeagueTemplate)
+      .then(()=>{
+        console.log('email sent')
             return fantasyHelpers.getLeague(league_id, req.user.user_id, res, C.CREATE_LEAGUE_SUCCESS)
             }) //getLeague
-        //   }) //getUser
-        // }) //createLeague
+         }) //createLeague
     .catch((action) => {  
       handleReduxResponse(res, 400, action)})
 })

@@ -189,6 +189,21 @@ const getUserInfo = async (user_id) => {
   
   return user[0]
 }
+
+const buildLeagueSignUpEmail = async (user_id, league_info) => {
+  let user = await getUserInfo (user_id)
+  let draftDate = league_info.draftDate
+  let draftTime = formatAMPM(draftDate)
+  let draftDay = formatGameDate(draftDate)
+  return {
+    email: user.email,
+    first_name: user.first_name,
+    league_name: leagueInfo.name,
+    league_password: leagueInfo.password,
+    draft_day: draftDay,
+    draft_time: draftTime
+  }
+}
 const timeZoneList = {
   04: 'EST',
   05: 'CST',
@@ -763,6 +778,7 @@ module.exports = {
   GetSportSeasonsByLeague, 
   handleReduxResponse,
   DeleteLeague, 
-  timeZoneList,
-  getUserInfo
+  buildLeagueSignUpEmail
+  // timeZoneList,
+  // getUserInfo
 }
