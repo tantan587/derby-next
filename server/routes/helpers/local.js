@@ -11,9 +11,12 @@ init()
 
 passport.use(new LocalStrategy(options, (username, password, done) => {
   // check to see if the username exists
+  console.log('13', username, password)
   return knex.withSchema('users').table('users').where({ username }).first()
     .then((user) => {
-      if (!user) return done(null, false)
+      if (!user) 
+      {return done(null, false)
+      }
       if (!authHelpers.comparePass(password, user.password)) {
         return done(null, false)
       } else {
