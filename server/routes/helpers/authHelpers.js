@@ -10,8 +10,6 @@ const generatePassword = require('password-generator')
 //const dev = process.env.NODE_ENV !== 'production'
 
 function comparePass(userPassword, databasePassword) {
-  const hash = bcrypt.hashSync(userPassword, databasePassword.substr(0, databasePassword.length-31))
-  console.log('14', userPassword, hash, databasePassword)
   return bcrypt.compareSync(userPassword, databasePassword)
 }
 

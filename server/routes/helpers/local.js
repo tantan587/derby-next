@@ -11,7 +11,6 @@ init()
 
 passport.use(new LocalStrategy(options, (username, password, done) => {
   // check to see if the username exists
-  console.log('13', username, password)
   return knex.withSchema('users').table('users').where({ username }).first()
     .then((user) => {
       if (!user) 

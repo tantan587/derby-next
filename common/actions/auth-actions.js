@@ -12,12 +12,13 @@ export const handledPressedLogin = () =>
 
 
 export const clickedLogin = (username, password) => dispatch =>
-  FetchThenDispatch(
+{ username = username.trim()
+  return FetchThenDispatch(
     dispatch,
     '/api/login',
     'POST',
     JSON.stringify({username, password})
-  ) 
+  )} 
 
 export const clickedLogout = () => dispatch =>
   FetchThenDispatch(
@@ -28,12 +29,13 @@ export const clickedLogout = () => dispatch =>
   )
 
 export const clickedSignup = (username,first_name,last_name,email,password) => dispatch =>
-  FetchThenDispatch(
+{ username = username.trim()  
+  return FetchThenDispatch(
     dispatch,
     '/api/signup',
     'POST',
     JSON.stringify({username,first_name,last_name,email,password})
-  )
+  )}
 
 export const clickedForgotPassword = (email) => dispatch =>
   FetchThenDispatch(
