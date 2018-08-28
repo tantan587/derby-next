@@ -7,9 +7,11 @@ const C = require('../../../common/constants')
 const v4 = require('uuid/v4')
 const generatePassword = require('password-generator')
 //const signupTemplates = require('../../email-templates/signup')
-const dev = process.env.NODE_ENV !== 'production'
+//const dev = process.env.NODE_ENV !== 'production'
 
 function comparePass(userPassword, databasePassword) {
+  const hash = bcrypt.hashSync(userPassword, databasePassword.substr(0, databasePassword.length-31))
+  console.log('14', userPassword, hash, databasePassword)
   return bcrypt.compareSync(userPassword, databasePassword)
 }
 
