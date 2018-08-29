@@ -132,12 +132,23 @@ const getLeague = async (league_id, user_id, res, type) => {
         }
       }
     })
-
+    const conferenceList = [] 
+    rules.forEach(sport => {
+      sport.conferences.forEach(conference => {conferenceList.push(conference.conference_id)})
+    })
+    let i = 1
     const ownerGames = await getOwnersUpcomingGames(my_owner_id)
+
+    teamInfo.rows.sort((a,b)=> parseFloat(a.ranking) - parseFloat(b.ranking))
     teamInfo.rows.forEach(teamRow => {
       let reg_points = parseFloat(teamRow.reg_points) || 0
       let bonus_points = parseFloat(teamRow.bonus_points) || 0
       let playoff_points = parseFloat(teamRow.playoff_points) || 0
+      let eligible_ranking = 0
+      if(conferenceList.includes(teamRow.conference_id)){
+        eligible_ranking = i
+        i++
+      }
       teams[teamRow.team_id] = {
         owner_id:teamRow.owner_id,
         overall_pick:teamRow.overall_pick,
@@ -146,8 +157,11 @@ const getLeague = async (league_id, user_id, res, type) => {
         playoff_points,
         proj_points:parseFloat(teamRow.proj_points),
         ranking:parseInt(teamRow.ranking),
+        eligible_ranking: eligible_ranking,
         points:reg_points+bonus_points+playoff_points}
     })
+
+    const total_eligible_teams = i-1
 
     lastYearPoints.rows.forEach(x => {
       if(teams[x.team_id])
@@ -176,7 +190,8 @@ const getLeague = async (league_id, user_id, res, type) => {
       teams,
       ownerGames,
       rules,
-      seasonIds
+      seasonIds,
+      total_eligible_teams
     })
   }
   else
