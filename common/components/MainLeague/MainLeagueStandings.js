@@ -87,7 +87,8 @@ class MainLeagueStandings extends React.Component {
             {label: 'Rank', key: 'rank'},
             {label: 'Owner', key: 'owner_name'},
             {label: 'User', key: 'username'},
-            {label: 'Points', key: 'total_points'}
+            {label: 'Points', key: 'total_points'},
+            {label: 'Projected Points', key: 'total_projected_points'}
           ]}/>
       </div>
     )

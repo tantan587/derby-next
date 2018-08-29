@@ -34,7 +34,7 @@ const getLeague = async (league_id, user_id, res, type) => {
   and b.league_id = '` +  league_id + '\''
   
   var teamInfoStr = `
-  SELECT aaa.*, bbb.owner_id, bbb.overall_pick 
+  SELECT aaa.*, bbb.owner_id, bbb.overall_pick, sports.team_info.conference_id 
   FROM (
     SELECT aa.reg_points, aa.bonus_points, aa.playoff_points, bb.* 
     FROM (
@@ -57,7 +57,10 @@ const getLeague = async (league_id, user_id, res, type) => {
     WHERE d.owner_id = e.owner_id 
    AND e.league_id = '` + league_id + `'
   ) bbb
-  ON aaa.team_id = bbb.team_id`
+  ON aaa.team_id = bbb.team_id
+  LEFT OUTER JOIN sports.team_info ON sports.team_info.team_id=aaa.team_id`
+
+
 
 
   const leagueInfo = await knex.raw(leagueInfoStr)
@@ -96,6 +99,7 @@ const getLeague = async (league_id, user_id, res, type) => {
           total_points:parseFloat(owner.total_points),
           rank:owner.rank,
           username:owner.username,
+          total_projected_points: parseFloat(owner.total_projected_points),
           user_id: owner.user_id,
           draft_position: draft_position.indexOf(owner.owner_id),
           avatar:owner.avatar,
