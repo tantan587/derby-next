@@ -20,7 +20,9 @@ class Roster extends React.Component {
   render() {
     const page = 'draft-roster'
     const {  draft,teams, activeLeague, contentFilter } = this.props
-    let ownerId 
+    let ownerId
+    let default_tab = activeLeague.owners.find(x => {return x.owner_id === activeLeague.my_owner_id}).draft_position
+    console.log(default_tab)
     let draftedTeams = []
 
     if (contentFilter[page] )
@@ -39,9 +41,9 @@ class Roster extends React.Component {
 
     const filters = [{
       type:'tab',
-      values :this.props.activeLeague.owners.map(x => x.owner_name).sort((a,b) => a > b),
+      values : this.props.activeLeague.owners.sort((a,b)=> {return a.draft_position - b.draft_position}).map(x =>  x.owner_name),
       column:'owner_name',
-      defaultTab:0,
+      defaultTab: default_tab,
       tabStyles:{backgroundColor:'#e3dac9',
         color:'#48311A',
         selectedBackgroundColor:'white', 
