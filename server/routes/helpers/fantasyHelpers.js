@@ -14,7 +14,7 @@ const getLeague = async (league_id, user_id, res, type) => {
     select league_id, sum(number_teams) as total_teams from fantasy.sports where league_id = '` + league_id + `' group by league_id) c
   where a.league_id = b.league_id and a.league_id = c.league_id`
 
-  var ownerInfoStr = `select a.*, b.username, c.total_points, c.rank from
+  var ownerInfoStr = `select a.*, b.username, c.total_points, c.rank, c.total_projected_points, c.projected_rank from
   fantasy.owners a, users.users b, fantasy.points c
   where a.user_id = b.user_id and a.owner_id = c.owner_id and a.league_id = '` + league_id + '\''
 
