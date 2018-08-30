@@ -12,6 +12,12 @@ import {connect} from 'react-redux'
 import {clickedSaveSilks} from '../../../actions/fantasy-actions'
 import Typography from '@material-ui/core/Typography/Typography'
 import C from '../../../constants'
+import Snackbar from '@material-ui/core/Snackbar'
+import IconButton from '@material-ui/core/IconButton'
+import CloseIcon from '@material-ui/icons/Close'
+
+
+
 
 
 const styles = theme => ({
@@ -66,6 +72,10 @@ const styles = theme => ({
     fontFamily: 'HorsebackSlab',
     fontSize: 15,
     color: '#299149'
+  }, 
+  snack: {
+    backgroundColor: '#299149',
+    color:'#e3dac9',
   }
 })
 
@@ -75,7 +85,8 @@ class CustomizeTeam extends Component {
     pattern: 'Star',
     primary: 'Gray',
     secondary: 'White',
-    fireRedirect:false
+    fireRedirect:false,
+    snackbar: false
   }
 
   componentDidMount() {
@@ -90,6 +101,7 @@ class CustomizeTeam extends Component {
     {
       this.setState({ownerName:myOwner.owner_name})
     }
+
   }
 
   componentWillReceiveProps(nextProps) {
@@ -107,7 +119,7 @@ class CustomizeTeam extends Component {
 
   onSave = () =>
   {
-    this.setState({fireRedirect:true})
+    this.setState({fireRedirect:true, snackbar: true})
     this.props.onSaveSilks(...R.props(['ownerName','pattern', 'primary', 'secondary'], this.state),
       this.props.activeLeague.league_id, this.props.activeLeague.my_owner_id)
   }
@@ -135,8 +147,13 @@ class CustomizeTeam extends Component {
     console.log(pattern)
     this.setState({ pattern })}
 
+
+  handleClose = (event, reason) => {
+    this.setState({snackbar: false})
+  }
+
   render() {
-    const { ownerName, pattern, primary, secondary } = this.state
+    const { ownerName, pattern, primary, secondary} = this.state
     const { classes, user } = this.props
 
     const errorText= user.error[C.PAGES.CUSTOMIZE_TEAMS]
@@ -202,7 +219,29 @@ class CustomizeTeam extends Component {
             text="Save Settings"
             onClick={this.onSave}
           />
-          
+          <Snackbar
+            anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
+            open={this.state.snackbar}
+            autoHideDuration={5000}
+            message="Team Settings Saved"
+            onClose={this.handleClose}
+            ContentProps={{
+              'aria-describedby': 'message-id',
+              classes: {
+                root: classes.snack
+              }
+            }}
+            action={(
+              <IconButton
+                key="close"
+                aria-label="Close"
+                color="inherit"
+                onClick={this.handleClose}
+              >
+                <CloseIcon />
+              </IconButton>
+            )}
+          />
         </Grid>
         <br/>
         <br/>`
