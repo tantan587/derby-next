@@ -160,7 +160,7 @@ const FAQPage = withStyles(theme => ({
       <Top />
       <Indent><H3>One-Time Bonus Points
         <UL>Playoff Qualification: 20 points</UL>
-        <UL>Championship Round Appearance:20 points</UL>
+        <UL>Championship Round Appearance: 20 points</UL>
         <UL>Title Win: 20 points</UL>
       </H3></Indent>
       <Top />
