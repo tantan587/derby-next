@@ -66,10 +66,14 @@ class BottomNav extends React.Component {
           <br />
           <br />
           <div style={{ marginLeft: 0, display: 'inline-block' }}>
-            <img src='/static/icons/Footer/social_media_icon_facebook.svg' width='50' height='auto' />
+            <a href='https://www.facebook.com/DerbyFantasy/'>
+              <img src='/static/icons/Footer/social_media_icon_facebook.svg' width='50' height='auto' />
+            </a>
           </div>
           <div style={{ marginLeft: 20, display: 'inline-block' }}>
-            <img src='/static/icons/Footer/social_media_icon_twitter.svg' width='50' height='auto' />
+            <a href="https://twitter.com/DerbyFantasy">
+              <img src='/static/icons/Footer/social_media_icon_twitter.svg' width='50' height='auto' />
+            </a>
           </div>
           <br />
           <br />
