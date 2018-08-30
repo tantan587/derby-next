@@ -29,7 +29,7 @@ export const clickedLogout = () => dispatch =>
   )
 
 export const clickedSignup = (username,first_name,last_name,email,password,gender,birthday,terms) => dispatch =>
-{ username = username.trim()  
+{ username = username.trim()
   return FetchThenDispatch(
     dispatch,
     '/api/signup',

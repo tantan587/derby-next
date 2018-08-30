@@ -5,24 +5,13 @@ import autobind from 'react-autobind'
 import {connect} from 'react-redux'
 import Link from 'next/link'
 import {withRouter} from 'next/router'
-
 import {withStyles} from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
 import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
-import Select from '@material-ui/core/Select'
 import MenuItem from '@material-ui/core/MenuItem'
-import FormControl from '@material-ui/core/FormControl'
-import InputLabel from '@material-ui/core/InputLabel'
 import Checkbox from '@material-ui/core/Checkbox'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
-import FormLabel from '@material-ui/core/FormLabel'
-import FormHelperText from '@material-ui/core/FormHelperText'
-import FormGroup from '@material-ui/core/FormGroup'
-
-
-
 import {clickedSignup} from '../actions/auth-actions'
 
 const styles = (theme) => ({
@@ -84,14 +73,27 @@ const genders = [
     value: 'Other',
     label: 'Other',
   },
-];
+]
 
 
 class SignupForm extends React.Component {
   constructor(props) {
     super(props)
     autobind(this)
-    this.state = {username:'', password:'', confirm_password: '', first_name:'', last_name:'', email:'', gender:'', birthday: '', terms: false, dirty: false, loading: false}
+    this.state = {
+      username:'', 
+      password:'', 
+      confirm_password: '', 
+      confirm_email: '', 
+      first_name:'', 
+      last_name:'', 
+      email:'', 
+      gender:'NA', 
+      birthday: '1980-01-01', 
+      terms: false, 
+      dirty: false, 
+      loading: false,
+      triedOnce: false}
   }
 
   handleChange = name => event => {
@@ -107,7 +109,10 @@ class SignupForm extends React.Component {
   handleValidate() {
     if (this.state.email !== this.state.confirm_email) return this.setState({errors: {confirm_email: 'Email does not match!'}, dirty: false})
     if (this.state.password !== this.state.confirm_password) return this.setState({errors: {confirm_password: 'Passwords does not match!'}, dirty: false})
-    if (this.state.birthday - new Date() < 220752000000) return this.setState({errors: {birthday: 'You must be over 18 years old to play'}, dirty: false})
+    if ((new Date()).getTime() - (new Date(this.state.birthday).getTime()) < 568036800000) return this.setState({errors: {birthday: 'You must be over 18 years old to play'}, dirty: false})
+    
+    this.setState({errors:{}})
+    if (!this.state.terms) return this.setState({dirty: false})
     return true
   }
 
@@ -131,6 +136,9 @@ class SignupForm extends React.Component {
           }) 
       })
     }
+    else{
+      this.setState({triedOnce:true})
+    }
   }
 
 
@@ -138,11 +146,7 @@ class SignupForm extends React.Component {
     const { classes } = this.props
     const errorMessage = R.path(['errors', name], this.state)
     const error = !this.state.dirty && errorMessage
-    // if(this.name === gender){
-    //   return(
-        
-    //   )
-    // }
+
     return (
       <TextField
         key={name}
@@ -161,9 +165,11 @@ class SignupForm extends React.Component {
   }
 
   render() {
+
     const { classes } = this.props
-    const error = this.state.terms === false
-    const birthday_error = R.path(['errors', 'birthday'], this.state.birthday)
+    const termError = !this.state.terms && this.state.triedOnce && !this.state.dirty
+    const birthdayErrorText = !this.state.dirty &&  R.path(['errors', 'birthday'], this.state)
+
 
     return (
       <Grid 
@@ -202,34 +208,36 @@ class SignupForm extends React.Component {
               {option.label}
             </MenuItem>
           ))}
-          </TextField>
-          <TextField
-            id="date"
-            label="Birthday"
-            type="date"
-            error={birthday_error}
-            onChange={this.handleChange('birthday')}
-            defaultValue="1990-05-13"
-            className={classes.textField}
-            helperText="You must be over 18 to play"
-            InputLabelProps={{
-              shrink: true,
-            }}
-      />
-      <FormGroup>
-        <FormControl
-          required error = {error} component = "fieldset" className = {classes.formControl}
-          >
-            <Checkbox
-              checked={this.state.terms}
-              onChange={this.handleChange('terms')}
-              value = "terms"
-            />
-          <FormHelperText>By clicking this box, you indicate that you have read, that you understand and that you accept our  
-          <Link component='a' href='/legal'> Terms and Conditions</Link> and <Link component='a' href='/privacy' >Privacy Policy</Link></FormHelperText>
-        </FormControl>
-        </FormGroup>
+        </TextField>
+        <TextField
+          id="date"
+          label="Birthday"
+          type="date"
+          error={birthdayErrorText ? true : false}
+          onChange={this.handleChange('birthday')}
+          defaultValue="1980-01-01"
+          className={classes.textField}
+          helperText={birthdayErrorText}
+          InputLabelProps={{
+            shrink: true,
+          }}
+        />
 
+        <br/>
+        <div style={{display:'flex'}}>
+          <Checkbox
+            checked={this.state.terms}
+            onChange={this.handleChange('terms')}
+            value ={this.state.terms}
+          />
+          <Typography style ={{color: termError ? 'red':'grey'}}>
+               Click here to indicate that you have read, understand and accept our
+            <Link component='a' href='/legal' > 
+              {' Terms and Conditions'}
+            </Link> and 
+            <Link component='a' href='/privacy' >{' Privacy Policy'}</Link>
+          </Typography>
+        </div>
         <Button
           className={classes.submit}
           type="submit"
