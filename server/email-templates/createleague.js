@@ -23,8 +23,7 @@ const createLeagueBody = (user) => {
               League Name: <b>${user.league_name}</b><br />
               Password: <br>${user.league_password}</b>
             </p>
-            <p style="text-align: left;">You can also change your league settings, draft time, and invite managers on Derby FWL here:
-            <b><a href="https://www.derby-fwl.com/">League Settings</a></b>
+            <p style="text-align: left;">You can also change your league settings, draft time, and invite managers on Derby Fantasy Wins League from our home page.</p>
             <p style="text-align: left;">As a reminder, your league is currently set to draft on ${user.draft_day} at ${user.draft_time}.</p>
           </div>
           <p>
