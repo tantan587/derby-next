@@ -12,10 +12,10 @@ import {connect} from 'react-redux'
 import {clickedSaveSilks} from '../../../actions/fantasy-actions'
 import Typography from '@material-ui/core/Typography/Typography'
 import C from '../../../constants'
-import Snackbar from '@material-ui/core/Snackbar'
-import IconButton from '@material-ui/core/IconButton'
-import CloseIcon from '@material-ui/icons/Close'
-
+// import Snackbar from '@material-ui/core/Snackbar'
+// import IconButton from '@material-ui/core/IconButton'
+// import CloseIcon from '@material-ui/icons/Close'
+import SuccessSnackbar from '../../UI/SuccessSnackbar'
 
 
 
@@ -219,7 +219,8 @@ class CustomizeTeam extends Component {
             text="Save Settings"
             onClick={this.onSave}
           />
-          <Snackbar
+          <SuccessSnackbar onClose={this.handleClose} stateKey={this.state.snackbar} message='Team Settings Saved' />
+          {/* <Snackbar
             anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
             open={this.state.snackbar}
             autoHideDuration={5000}
@@ -239,7 +240,7 @@ class CustomizeTeam extends Component {
                 onClick={this.handleClose}
               >
                 <CloseIcon />
-              </IconButton>
+              </IconButton> */}
             )}
           />
         </Grid>

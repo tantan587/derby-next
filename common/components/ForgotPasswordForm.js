@@ -9,6 +9,7 @@ import Button from '@material-ui/core/Button'
 import Typography from '@material-ui/core/Typography'
 import TextField from '@material-ui/core/TextField'
 import {clickedForgotPassword} from '../actions/auth-actions'
+import SuccessSnackbar from './UI/SuccessSnackbar'
 
 const styles = (theme) => ({
   container: {
@@ -50,7 +51,7 @@ class ForgotPasswordForm extends Component {
   constructor(props) {
     super(props)
     autobind(this)
-    this.state = {email: '', loading: false, error: ''}
+    this.state = {email: '', loading: false, error: '', snackbar: false}
   }
 
   handleChange(e) {
@@ -64,10 +65,14 @@ class ForgotPasswordForm extends Component {
       onForgotPassword(...R.props(['email'], this.state))
         .then(() => {
           const {user: {error: {success, forgot_password_email}}, router} = this.props
-          success && router.push('/createpassword')
+          success && router.push('/createpassword') && this.setState({snackbar: true})
           forgot_password_email && this.setState({error: forgot_password_email, loading: false, dirty: false})
         })
     })
+  }
+  
+  handleClose = (event, reason) => {
+    this.setState({snackbar: false})
   }
 
   renderField({name, label, type, ...rest}) {
@@ -118,6 +123,7 @@ class ForgotPasswordForm extends Component {
         />
         {!!this.state.error.length && !this.state.dirty && <Typography align="center" color="error" children={this.state.error} paragraph/>}
         <div style={{height:700}}/>
+        <SuccessSnackbar onClose={this.handleClose} stateKey={this.state.snackbar} message='Email sent' />
       </Grid>
     )
   }
