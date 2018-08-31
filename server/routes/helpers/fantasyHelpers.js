@@ -108,7 +108,9 @@ const getLeague = async (league_id, user_id, res, type) => {
     })
 
     const seasons = {}
+    let sport_seasons = []
     seasonsInfo.rows.forEach(x => {
+      sport_seasons.push(x.sport_season_id)
       if(!seasons[x.sport_id])
       {
         seasons[x.sport_id] = {}
@@ -132,12 +134,16 @@ const getLeague = async (league_id, user_id, res, type) => {
         }
       }
     })
+
+
+    const ownerGames = await getOwnersUpcomingGames(my_owner_id, sport_seasons)
+
+
     const conferenceList = [] 
     rules.forEach(sport => {
       sport.conferences.forEach(conference => {conferenceList.push(conference.conference_id)})
     })
     let i = 1
-    const ownerGames = await getOwnersUpcomingGames(my_owner_id)
 
     teamInfo.rows.sort((a,b)=> parseFloat(a.ranking) - parseFloat(b.ranking))
     teamInfo.rows.forEach(teamRow => {
@@ -259,22 +265,36 @@ const GetSportSeasonsByLeague = async (league_id) => {
   return sport_seasons.rows[0].current_sport_seasons
 }
 
-const getOwnersUpcomingGames = async (ownerId) =>
+const getOwnersUpcomingGames = async (ownerId, sport_seasons) =>
 {
   var d = new Date()
   //-60 for eastern time zone. 
   var nd = new Date(d.getTime() - ((d.getTimezoneOffset()-60) * 60000))
   const dayCount = getDayCountStr(nd.toJSON())
 
-  const str = `select a.team_id as my_team_id, b.*
-  from fantasy.rosters a, sports.schedule b
-   where (a.team_id = b.home_team_id or a.team_id = b.away_team_id) 
-   and b.status = 'Scheduled'
-   and day_count >= ` + dayCount + ' and owner_id = \'' + ownerId + '\'  order by day_count limit 7'
+  let games = 
+    await knex('sports.schedule')
+      .leftOuterJoin('fantasy.rosters', function(){
+        this.on('fantasy.rosters.team_id', '=', 'sports.schedule.home_team_id').orOn('fantasy.rosters.team_id', '=', 'sports.schedule.away_team_id')
+      })
+      .where('sports.schedule.status', 'Scheduled')
+      .where('sports.schedule.day_count', '>=', dayCount)
+      .where('fantasy.rosters.owner_id', ownerId)
+      .whereIn('sports.schedule.sport_season_id', sport_seasons)
+      .orderBy('sports.schedule.day_count')
+      .limit(7)
+      .select('fantasy.rosters.team_id as my_team_id', 'sports.schedule.*')
 
-  let resp = await knex.raw(str)
+  // const str = `select a.team_id as my_team_id, b.*
+  // from fantasy.rosters a, sports.schedule b
+  //  where (a.team_id = b.home_team_id or a.team_id = b.away_team_id) 
+  //  and b.status = 'Scheduled'
+  //  and day_count >= ` + dayCount + ' and owner_id = \'' + ownerId + '\'  order by day_count limit 7'
 
-  return resp.rows.map(x => {
+  // let resp = await knex.raw(str)
+console.log(games[0])
+  // return resp.rows.map(x => {
+    return games.map(x => {
     let date = new Date(x.date_time)
     return {
       date:formatGameDateShort(date),
