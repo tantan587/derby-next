@@ -72,11 +72,11 @@ class DraftResults extends React.Component {
     R.values(contentFilter[page]).forEach(filter => {
       draftResults = Filterer(draftResults, filter)
     })
-    
+
     return (
-      <div style={{height:730, minHeight:730, maxHeight:730}}>
+      <div style={{ height: 730, minHeight: 730, maxHeight: 730 }}>
         <TeamsDialog />
-        <FilterCreator page={page} filters={filters}/>
+        <FilterCreator page={page} filters={filters} />
         <DerbyTableContainer
           usePagination={true}
           myRows={draftResults}

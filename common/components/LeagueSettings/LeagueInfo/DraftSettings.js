@@ -135,13 +135,13 @@ const DraftSettings = withStyles(styles)(
     const secondsArray = new Array(3).fill(0).map((arr, i) => i * 30 + 60)
 
     return (
-      <Card className={classes.container}>
-        <div className={classes.field}>
-          <div className={classes.label}>
-            <div>Set Draft Time (EST):</div>
-          </div>
-          <div className={classes.formRoot} style={{ display: 'flex' }}>
-           
+        <Card className={classes.container}>
+          <div className={classes.field}>
+            <div className={classes.label}>
+              <div>Set Draft Time (in your local timezone):</div>
+            </div>
+            <div className={classes.formRoot} style={{ display: 'flex' }}>
+
             <DateTimePicker
               keyboard
               className={classes.textField}
