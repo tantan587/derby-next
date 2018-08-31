@@ -60,6 +60,13 @@ class MainLeagueStandings extends React.Component {
     let owners = []
     if (activeLeague.owners)
       owners = this.props.activeLeague.owners
+      let owners_race = owners.sort((a,b) => {
+        let nameA = a.owner_name.toLowerCase()
+        let nameB = b.owner_name.toLowerCase()
+        if(nameA > nameB){return 1}
+        if(nameB > nameA){return -1}
+        }).map(x => x)
+      let owners_table = owners.sort((a,b) => {return a.rank - b.rank})
 
     return(
       <div>
@@ -73,7 +80,7 @@ class MainLeagueStandings extends React.Component {
           
           <StandingsSeasons />
           <StandingsRace
-            owners={owners}
+            owners={owners_race}
             seasons={this.props.activeLeague.seasons}
           />
         </div>
@@ -81,13 +88,14 @@ class MainLeagueStandings extends React.Component {
           noBreak
           usePagination={false}
           styleProps={styleProps}
-          myRows={owners}
+          myRows={owners_table}
           myHeaders = {[
             {label: '', key: 'color'},
             {label: 'Rank', key: 'rank'},
             {label: 'Owner', key: 'owner_name'},
             {label: 'User', key: 'username'},
-            {label: 'Points', key: 'total_points'}
+            {label: 'Points', key: 'total_points'},
+            {label: 'Projected Points', key: 'total_projected_points'}
           ]}/>
       </div>
     )

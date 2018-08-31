@@ -1,5 +1,7 @@
-import styles, { Indent, UL, SubUL, H2, H3, B, I, Top } from './style'
+import styles, { Indent, UL, SubUL, H1, H2, H3, B, I, Top } from './style'
 import { withStyles } from '@material-ui/core/styles'
+import Link from 'next/link'
+
 
 const LegalPage = withStyles(theme => ({
   container: {
@@ -11,8 +13,10 @@ const LegalPage = withStyles(theme => ({
   <div style={styles.layout}>
     <div className={classes.container}>
       <H3>
+      <div style={{...styles.H1, ...{ textAlign: 'center', textDecoration: 'underline' } }}>TERMS OF USE</div>
+
         <Top />
-      Thank you for visiting Derby Fantasy Wins League (“Derby Fantasy”), hosted Derby FWL, LLC (“Derby FWL”, “we”, “us” or “our”). We offer the Derby Fantasy service and may offer additional Derby Fantasy premium services (each, a “Premium Service”; collectively Derby Fantasy and any other Premium Services shall be the “Services”) to you, subject to these Derby FWL Terms of Service (“Terms”), the Derby Fantasy official rules (“Rules”), located at [link] and any other rules, policies or guidelines that we may publish or update from time to time (collectively, the “Agreement”).
+      Thank you for visiting Derby Fantasy Wins League (“Derby Fantasy”), hosted Derby FWL, LLC (“Derby FWL”, “we”, “us” or “our”). We offer the Derby Fantasy service and may offer additional Derby Fantasy premium services (each, a “Premium Service”; collectively Derby Fantasy and any other Premium Services shall be the “Services”) to you, subject to these Derby FWL Terms of Service (“Terms”), the Derby Fantasy official rules (“Rules”), located at <Link href='rules'>www.derby-fwl.com/rules</Link> and any other rules, policies or guidelines that we may publish or update from time to time (collectively, the “Agreement”).
         <Top />
 <B>1) Acceptance of Terms</B>
 <Top />
@@ -62,7 +66,7 @@ Premium Services are subject to the following terms:
 <Indent>(ix) You may cancel a Premium Service at any time through your account, though charges already incurred will not be refundable.</Indent>
 <Indent>(x) We may change our fees and billing methods at any time, with or without notice or cause subject to applicable law, though we will strive to provide advance notice whenever possible. You may cancel your access to any affected Premium Services as your sole remedy prior to the change taking place; continued use of the Premium Services after the changes become effective constitutes your acceptance of those changes.</Indent>
 <Indent>(xi) If any charges remain unpaid after 30 days from the date they became due, we may terminate or suspend your account for Premium Services. Should we need to incur attorneys’ fees or collection fees, you will be liable for payment of those fees.</Indent>
-<Indent>(xii) If you believe that there are billing problems or discrepancies with your account, please contact us at [LINK] as soon as possible so that we may resolve them with you. If you do not contact us within 90 days of the date that they post to your billing method’s statement, you waive your right to dispute the discrepancy.</Indent>
+<Indent>(xii) If you believe that there are billing problems or discrepancies with your account, please contact us at <Link href='mailto:derby-fwl@gmail.com'>derby-fwl@gmail.com</Link> as soon as possible so that we may resolve them with you. If you do not contact us within 90 days of the date that they post to your billing method’s statement, you waive your right to dispute the discrepancy.</Indent>
 <Indent>(xiii) All payments shall be made in U.S. dollars.</Indent>
 <Top />
 <B>9) Third Party Conduct.</B>
@@ -124,7 +128,7 @@ We welcome the submission of recommendations, ideas, proposals, suggestions, fee
 <Top />
 <B>17) Privacy and Personal Information</B>
 <Top />
-By signing up for Derby Fantasy, Services and/or the Premium Services, you acknowledge and consent to Derby FWL’s use of your personal information as described in our Privacy Policy, located at [LINK].
+By signing up for Derby Fantasy, Services and/or the Premium Services, you acknowledge and consent to Derby FWL’s use of your personal information as described in our Privacy Policy, located at <Link href='/privacy'>www.derby-fwl.com/privacy</Link>.
 <Top />
 <B>18) Our Compliance with Law</B>
 <Top />
@@ -175,7 +179,7 @@ Notwithstanding the parties’ decision to resolve all disputes through arbitrat
 <Top />
   <Indent><B>(v) Opt Out Right</B></Indent>
 <Top />
-<I>You have the right to opt-out and not be bound by the arbitration and class action waiver provisions set forth above by sending written notice of your decision to opt-out to the following address: [email LINK]. The notice must be sent within 30 days of your first creation of an account for any Derby Fantasy Services; otherwise, you shall be bound to arbitrate disputes in accordance with the terms of those paragraphs. If you opt-out of these arbitration provisions, we also will not be bound by them.</I>
+<I>You have the right to opt-out and not be bound by the arbitration and class action waiver provisions set forth above by sending written notice of your decision to opt-out to the following address: <Link href='mailto:derbyfwl@gmail.com'>derbyfwl@gmail.com</Link>. The notice must be sent within 30 days of your first creation of an account for any Derby Fantasy Services; otherwise, you shall be bound to arbitrate disputes in accordance with the terms of those paragraphs. If you opt-out of these arbitration provisions, we also will not be bound by them.</I>
 <Top />
   <Indent><B>(vi) Jurisdiction and Venue; Governing Law</B></Indent>
 <Top />
@@ -199,7 +203,8 @@ If you witness any user activity on our properties that violates these Terms or 
 <Indent>(vi) Our failure or choice not to exercise or enforce any right or provision of these Terms will not constitute a waiver of such right or provision.</Indent>
 
 <Top />
-Last updated: July 12, 2018
+<I>Last Updated: August 29, 2018</I>
+<Top />
       </H3>
     </div>
   </div>

@@ -12,8 +12,18 @@ export const organizeData = (data) => {
 
   const derbyPointsObject = oneTeam.scoring[oneTeam.scoring_type_id]
 
-  console.log('points:', derbyPointsObject.regular_season.win)
-
+  const result = homeTeamScore > awayTeamScore ? ['W', 'L'] : awayTeamScore > homeTeamScore ? ['L', 'W'] : ['D', 'D']
+  console.log(game.sport_id)
+  console.log(game.status[1])
+  if(game.sport_id == '104' && game.status[1] === '/'){
+    console.log('here!')
+    if(result[0]==='L'){
+      result[0] = 'OTL'
+    } else{
+        result[1] = 'OTL'}
+      }
+  
+    
   // console.log('away is', teams[game.away_team_id].team_name)
   // console.log('home is', teams[game.home_team_id].team_name)
   // console.log('our team is', oneTeam.team_name)
@@ -28,7 +38,7 @@ export const organizeData = (data) => {
     // console.log(`the formatted score looks like ${Math.max(homeTeamScore, awayTeamScore)}-${Math.min(homeTeamScore, awayTeamScore)}`)
     let tableData = {
       opponent: `vs. ${awayTeamName}`,
-      result: homeTeamScore > awayTeamScore ? 'W' : 'L',
+      result: result[0], //homeTeamScore > awayTeamScore ? 'W' : 'L',
       score: `${Math.max(homeTeamScore, awayTeamScore)}-${Math.min(homeTeamScore, awayTeamScore)}`,
       location: 'Home',
       derby_points: derbyPointsObject.regular_season.win
@@ -42,7 +52,7 @@ export const organizeData = (data) => {
     // console.log(`the formatted score looks like ${Math.max(awayTeamScore, homeTeamScore)}-${Math.min(awayTeamScore, homeTeamScore)}`)
     let tableData = {
       opponent: `@ ${homeTeamName}`,
-      result: awayTeamScore > homeTeamScore ? 'W' : 'L',
+      result: result[1], //awayTeamScore > homeTeamScore ? 'W' : awayTeamScore < homeTeamScore ? 'L': 'D',
       score: `${Math.max(awayTeamScore, homeTeamScore)}-${Math.min(awayTeamScore, homeTeamScore)}`,
       location: 'Away',
       derby_points: derbyPointsObject.regular_season.win

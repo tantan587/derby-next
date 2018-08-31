@@ -1,5 +1,7 @@
 import styles, { Indent, UL, SubUL, H1, H2, H3, B, U, I, Top } from './style'
 import { withStyles } from '@material-ui/core/styles'
+import Link from 'next/link'
+
 
 const PrivacyPage = withStyles(theme => ({
   container: {
@@ -17,15 +19,15 @@ const PrivacyPage = withStyles(theme => ({
 <Top />
 <B>We’re people here too. We don’t like it when Big Data takes over our lives and ruins our inboxes. We’re not comfortable when companies do things we didn’t expect or know about with our personal information.</B>
 <Top />
-<B>We’re only interested in collecting and using your information to the extent necessary to provide you the best services possible. So, in this Privacy Policy, we’ll spell out what we will, may, and won’t do with your information. A few things, as listed in this Policy, may be required in order for you to participate in our services. But we want you to know that we aim to be part of the solution of responsible Internet information usage, full stop. In the spirit of collaboration, we ask you to read this Policy and let us know [LINK] if you’ve got any questions or concerns. Legally speaking, the enumerated paragraphs after each section intro like this one control our information collection and usage.</B>
+<B>We’re only interested in collecting and using your information to the extent necessary to provide you the best services possible. So, in this Privacy Policy, we’ll spell out what we will, may, and won’t do with your information. A few things, as listed in this Policy, may be required in order for you to participate in our services. But we want you to know that we aim to be part of the solution of responsible Internet information usage, full stop. In the spirit of collaboration, we ask you to read this Policy and <Link href='mailto:derbyfwl@gmail.com'>let us know</Link> if you’ve got any questions or concerns. Legally speaking, the enumerated paragraphs after each section intro like this one control our information collection and usage.</B>
 <Top />
 <U>1.1</U> Derby FWL, LLC (“Derby FWL”, “we”, “our” or “us”) recognizes that our users value their privacy. We value yours, too. This Privacy Policy details important information regarding the collection, use and disclosure of user information collected on Derby FWL’s fantasy sports website located at www.derby-fwl.com (the “Site”), any related domain, mobile Web site or application, and any other features, tools, materials, or other services (including co-branded or affiliated services) offered from time to time by Derby FWL or its affiliates or partners (the “Services”). Derby FWL provides this Privacy Policy to help you make an informed decision about whether to use or continue using the Services.
 <Top />
-<U>1.2</U> This Privacy Policy should be read in conjunction with our Terms of Service [LINK]. By accessing the Services, you consent to the information collection and use practices described in this Privacy Policy.
+<U>1.2</U> This Privacy Policy should be read in conjunction with our <Link href="/legal">Terms of Service </Link>. By accessing the Services, you consent to the information collection and use practices described in this Privacy Policy.
 <Top />
 <U>1.3</U> Your use of the Services and any information you provide through the Services remains subject to the terms of this Privacy Policy and our Terms of Use, as each may be updated from time to time.
 <Top />
-<U>1.4</U> Any questions, comments or complaints that you might have should be emailed to <I>privacy@derby-fwl.com</I>.
+<U>1.4</U> Any questions, comments or complaints that you might have should be emailed to <I>derbyfwl@gmail.com</I>.
 <Top />
 <B>2. Information We Collect
 <Top />
@@ -67,7 +69,7 @@ This Privacy Policy applies to any personal information you provide to us when y
 <Top />
 Here’s the bottom line. It’s your information. We’re just borrowing it to help you have some fun watching sports with your friends.
 <Top />
-So, below you’ll find a list of things we may do with the info you provide us. Maybe more importantly, here’s a list of what we won’t do: We’ll never sell it to shady outsiders; we’ll never farm it out to others who aren’t helping us provide our services to you; we’ll never sign you up for unrelated spam e-mail lists; we’ll never solicit you for sales of stuff you don’t need that has nothing to do with our services. And if there’s anything you don’t want us to do, just tell us here [LINK].</B>
+So, below you’ll find a list of things we may do with the info you provide us. Maybe more importantly, here’s a list of what we won’t do: We’ll never sell it to shady outsiders; we’ll never farm it out to others who aren’t helping us provide our services to you; we’ll never sign you up for unrelated spam e-mail lists; we’ll never solicit you for sales of stuff you don’t need that has nothing to do with our services. And if there’s anything you don’t want us to do, <Link href='mailto:derbyfwl@gmail.com'>just tell us here.</Link></B>
 <Top />
 <U>3.1</U> We use your personal information to operate, maintain, and provide to you the features and functionality of the Services, including but not limited to the following:
 <Top />
@@ -141,7 +143,8 @@ It’s up to you.</B>
 <Top />
 <U>5.1</U> Derby FWL will process your personal information in accordance with this Privacy Policy, and as part of that Derby FWL provides you with certain choices about how we process your personal information. These choices are set out below.
 <Top />
-<U>5.2</U> You can access and update certain personal information Derby FWL holds about you at any time by logging into your account via the Services. You can update your marketing preferences and whether or not you would like us to send you newsletters in your account. <I>You can also unsubscribe to marketing emails and newsletters by using the ‘unsubscribe’ feature in the communication.</I>
+<U>5.2</U> You can access and update certain personal information Derby FWL holds about you at any time by logging into your account via the Services. You can update your marketing preferences and whether or not you would like us to send you newsletters in your account. 
+{/* <I>You can also unsubscribe to marketing emails and newsletters by using the ‘unsubscribe’ feature in the communication.</I> */}
 <Top />
 <U>5.3</U> We encourage you to review the specific settings and regulations for your hardware and software as they relate to advertising decisions that are not in our control. We are not responsible for the content, settings or availability (“settings”) of any third parties, or for any changes to those settings made by you or any third parties.
 <Top />
@@ -153,15 +156,15 @@ We’re all in business to make money. Advertising and analytics can help us do 
 <Top />
 <U>6.1</U> We reserve the right to publish advertising on our Services at any time. Ads on our Services may be created, published or transmitted by our advertising partners. <I>Our advertising partners may use cookies and other similar technologies, often in conjunction with unique (anonymous) cookie identifiers, to collect data about your activities and interests, including the technologies described above. In this way, the ad companies may compile information about where you, or others who are using your computer or device, saw their advertisements and measure your interaction with each ad. This information allows ad companies to deliver targeted advertisements that may be of increased interest to you, both on our Services and elsewhere online. Just as these technologies may be used to target ads on our Web sites and apps, we, or our advertising partners, may use these same technologies and data points (e.g., mobile identifiers, cookie identifiers, location-based data), through our Services or through other services, to target advertising (for ourselves or other companies) on other sites or mobile apps. Sometimes, these identifiers may be derived from a hashed or encrypted version of personal information such as your email address. We may use this information to measure the performance of our advertising as well, for instance, to evaluate which ads or content our users prefer, or which are most effective. In addition, sometimes we or an advertising partner may tailor advertising to you across different devices.</I>
 <Top />
-<U>6.2</U> To learn more and to opt out of the collection of data on our website by third parties (including those described above) for interest-based advertising purposes, please visit <a href="https://www.aboutads.info/choices">www.aboutads.info/choices</a> or <a href="https://www.youronlinechoices.com">www.youronlinechoices.com</a>. Note that because this opt out method may be cookie-based, you will need to opt out again if you update or change your browser, or delete your cookies. Note that opting out will not affect the quantity of ads you see online but likely will cause the ads to be less relevant to you.
+<U>6.2</U> To learn more and to opt out of the collection of data on our website by third parties (including those described above) for interest-based advertising purposes, please visit <Link href="https://www.aboutads.info/choices">www.aboutads.info/choices</Link> or <Link href="https://www.youronlinechoices.com">www.youronlinechoices.com</Link>. Note that because this opt out method may be cookie-based, you will need to opt out again if you update or change your browser, or delete your cookies. Note that opting out will not affect the quantity of ads you see online but likely will cause the ads to be less relevant to you.
 <Top />
 <U>6.3</U> From time to time, we also may work with third-party analytics companies to collect data on our Services through cookies and other automated means. In some cases, the third parties mentioned in this section may maintain the information they collect in personally identifiable form.
 <Top />
 <U>6.4</U> We may create and publicize social media accounts and social media sharing features. Your interaction with these accounts and features may include the sharing of articles, videos and other content. We may access analyze both the content shared via social media as well as any individual user’s interactions with our social media accounts, which may involve the collection or sharing of your name, username, social media handles or other information you choose to publish in those accounts. You should be cautious with what you publish on social media accounts, as we cannot and do not control the use or collection of information posted to third-party Web sites.
 <Top />
-<U>6.5</U><I>
+<U>6.5</U>
 We may offer access to information, goods and services from partners, vendors and other third parties. Such goods and services may, for example and without limitation, include game tickets, food and beverage orders, apparel purchases, or streaming content subscriptions. To the extent we must collect information on third parties’ behalf, or that you provide your own information to those third parties as requested, that information will be disseminated and used as necessary to complete the transaction(s) contemplated by the offer to which you are responding. Any and all third-party products or services are subject to the privacy policies of each respective third party. We make no representations or warranties about the privacy procedures those parties undertake, nor are we liable for any breaches of duty or violations of law or regulation caused by your interaction with those third parties. They are solely responsible for their use of your information for their own goods and services.
-</I>
+
 <Top />
 <U>6.6</U> Some of your use of your devices to interact with the Services may trigger background applications relating to your privacy, such as location services or computer/smartphone camera settings. While we don’t currently intentionally use or collect any such information, we are not liable for any information that may be transmitted by such background applications.
 <Top />
@@ -181,17 +184,19 @@ We’ll do everything we can to keep your information safe.</B>
 <Top />
 Some special rules apply to California residents.</B>
 <Top />
-<U>8.1</U> If you reside in California, you may request certain general information regarding our disclosure of personal information to third parties for their direct marketing purposes. To make such a request, please write to us with the subject line “California Privacy Rights” at the following email address: <I>privacy@derby-fwl.com</I>.
+<U>8.1</U> If you reside in California, you may request certain general information regarding our disclosure of personal information to third parties for their direct marketing purposes. To make such a request, please write to us with the subject line “California Privacy Rights” at the following email address: <I>derbyfwl@gmail.com</I>.
 <Top />
 <B>9. Changes and updates
 <Top />
 The next time the EU wants to fill your inboxes with privacy policy updates, this is how we’ll do it.</B>
 <Top />
-<U>9.1</U> This Privacy Policy may be revised periodically and this will be reflected by the “Last update posted” date above. Please revisit this page to stay aware of any changes. If a revision to this Privacy Policy, in our sole discretion, is material, we may notify you by contacting you through the email address associated with your account.
+<U>9.1</U> This Privacy Policy may be revised periodically and this will be reflected by the “Last update posted” date below. Please revisit this page to stay aware of any changes. If a revision to this Privacy Policy, in our sole discretion, is material, we may notify you by contacting you through the email address associated with your account.
 <Top />
-<U>9.2</U> Contact Information: Please contact Derby FWL with any questions or comments about this Privacy Policy by emailing <I>privacy@derby-fwl.com</I>.
+<U>9.2</U> Contact Information: Please contact Derby FWL with any questions or comments about this Privacy Policy by emailing <I>derbyfwl@gmail.com</I>.
 <Top />
-<I>Last Updated: July 12, 2018</I>
+
+<I>Last Updated: August 29, 2018</I>
+<Top />
 </H3>
     </div>
   </div>

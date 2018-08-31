@@ -1,4 +1,4 @@
-import styles, { Indent, UL, SubUL, H2, H3, B, Top } from './style'
+import styles, { Indent, UL, SubUL, H2, H3, B, Top, I } from './style'
 import { withStyles } from '@material-ui/core/styles'
 
 const RulesPage = withStyles(theme => ({
@@ -10,7 +10,8 @@ const RulesPage = withStyles(theme => ({
 }))(({ classes }) =>
   <div style={styles.layout}>
     <div className={classes.container}>
-      <div style={styles.H1}>GAME RULES</div>
+      {/* <div style={styles.H1}>GAME RULES</div> */}
+      <div style={{...styles.H1, ...{ textAlign: 'center', textDecoration: 'underline' } }}>GAME RULES</div>
 
       <div style={styles.P}>Derby Fantasy Wins League is a fantasy game in which players draft teams across multiple sports, accruing points as each of their teams wins games and achieves other team-based performance bonuses.</div>
       <div style={styles.H2}>FORMAT AND SCORING RULES</div>
@@ -197,7 +198,7 @@ Playoff Qualification bonus points are awarded at the conclusion of the given sp
         necessary up to three (3) hours prior to the set draft time. 
         Commissioners can undertake these functions by visiting the Commish Tools page.
       </H3>
-      <H2>League Rules</H2>
+      <H2>LEAGUE RULES</H2>
       <H3>
         <Top />
         <B>1. Rosters are Set.</B> Rosters, once drafted, are final. Teams may not be traded, waived or dropped.
@@ -214,6 +215,9 @@ Playoff Qualification bonus points are awarded at the conclusion of the given sp
          have a commissioner who invites new players to the league and administers functions throughout the season.
           Leagues are automatically renewed, though commissioners can choose to alter the number of rosters and the
            members of each league with each new cycle, so long as the overall number of rosters remains between 8 and 15.
+        <Top />
+        <I>Last Updated: August 29, 2018</I>
+        <Top />
       </H3>
     </div>
     <br/>

@@ -25,6 +25,7 @@ export default (state = {}, action={ type: null }) => {
       rules:action.rules,
       imTheCommish:action.imTheCommish,
       seasons:action.seasons,
+      total_eligible_teams:action.total_eligible_teams,
       error : {}
     }
 

@@ -14,7 +14,7 @@ const getLeague = async (league_id, user_id, res, type) => {
     select league_id, sum(number_teams) as total_teams from fantasy.sports where league_id = '` + league_id + `' group by league_id) c
   where a.league_id = b.league_id and a.league_id = c.league_id`
 
-  var ownerInfoStr = `select a.*, b.username, c.total_points, c.rank from
+  var ownerInfoStr = `select a.*, b.username, c.total_points, c.rank, c.total_projected_points, c.projected_rank from
   fantasy.owners a, users.users b, fantasy.points c
   where a.user_id = b.user_id and a.owner_id = c.owner_id and a.league_id = '` + league_id + '\''
 
@@ -34,7 +34,7 @@ const getLeague = async (league_id, user_id, res, type) => {
   and b.league_id = '` +  league_id + '\''
   
   var teamInfoStr = `
-  SELECT aaa.*, bbb.owner_id, bbb.overall_pick 
+  SELECT aaa.*, bbb.owner_id, bbb.overall_pick, sports.team_info.conference_id 
   FROM (
     SELECT aa.reg_points, aa.bonus_points, aa.playoff_points, bb.* 
     FROM (
@@ -57,7 +57,10 @@ const getLeague = async (league_id, user_id, res, type) => {
     WHERE d.owner_id = e.owner_id 
    AND e.league_id = '` + league_id + `'
   ) bbb
-  ON aaa.team_id = bbb.team_id`
+  ON aaa.team_id = bbb.team_id
+  LEFT OUTER JOIN sports.team_info ON sports.team_info.team_id=aaa.team_id`
+
+
 
 
   const leagueInfo = await knex.raw(leagueInfoStr)
@@ -96,6 +99,7 @@ const getLeague = async (league_id, user_id, res, type) => {
           total_points:parseFloat(owner.total_points),
           rank:owner.rank,
           username:owner.username,
+          total_projected_points: parseFloat(owner.total_projected_points),
           user_id: owner.user_id,
           draft_position: draft_position.indexOf(owner.owner_id),
           avatar:owner.avatar,
@@ -104,7 +108,9 @@ const getLeague = async (league_id, user_id, res, type) => {
     })
 
     const seasons = {}
+    let sport_seasons = []
     seasonsInfo.rows.forEach(x => {
+      sport_seasons.push(x.sport_season_id)
       if(!seasons[x.sport_id])
       {
         seasons[x.sport_id] = {}
@@ -129,11 +135,26 @@ const getLeague = async (league_id, user_id, res, type) => {
       }
     })
 
-    const ownerGames = await getOwnersUpcomingGames(my_owner_id)
+
+    const ownerGames = await getOwnersUpcomingGames(my_owner_id, sport_seasons)
+
+
+    const conferenceList = [] 
+    rules.forEach(sport => {
+      sport.conferences.forEach(conference => {conferenceList.push(conference.conference_id)})
+    })
+    let i = 1
+
+    teamInfo.rows.sort((a,b)=> parseFloat(a.ranking) - parseFloat(b.ranking))
     teamInfo.rows.forEach(teamRow => {
       let reg_points = parseFloat(teamRow.reg_points) || 0
       let bonus_points = parseFloat(teamRow.bonus_points) || 0
       let playoff_points = parseFloat(teamRow.playoff_points) || 0
+      let eligible_ranking = 0
+      if(conferenceList.includes(teamRow.conference_id)){
+        eligible_ranking = i
+        i++
+      }
       teams[teamRow.team_id] = {
         owner_id:teamRow.owner_id,
         overall_pick:teamRow.overall_pick,
@@ -142,8 +163,11 @@ const getLeague = async (league_id, user_id, res, type) => {
         playoff_points,
         proj_points:parseFloat(teamRow.proj_points),
         ranking:parseInt(teamRow.ranking),
+        eligible_ranking: eligible_ranking,
         points:reg_points+bonus_points+playoff_points}
     })
+
+    const total_eligible_teams = i-1
 
     lastYearPoints.rows.forEach(x => {
       if(teams[x.team_id])
@@ -172,7 +196,8 @@ const getLeague = async (league_id, user_id, res, type) => {
       teams,
       ownerGames,
       rules,
-      seasonIds
+      seasonIds,
+      total_eligible_teams
     })
   }
   else
@@ -240,22 +265,36 @@ const GetSportSeasonsByLeague = async (league_id) => {
   return sport_seasons.rows[0].current_sport_seasons
 }
 
-const getOwnersUpcomingGames = async (ownerId) =>
+const getOwnersUpcomingGames = async (ownerId, sport_seasons) =>
 {
   var d = new Date()
   //-60 for eastern time zone. 
   var nd = new Date(d.getTime() - ((d.getTimezoneOffset()-60) * 60000))
   const dayCount = getDayCountStr(nd.toJSON())
 
-  const str = `select a.team_id as my_team_id, b.*
-  from fantasy.rosters a, sports.schedule b
-   where (a.team_id = b.home_team_id or a.team_id = b.away_team_id) 
-   and b.status = 'Scheduled'
-   and day_count >= ` + dayCount + ' and owner_id = \'' + ownerId + '\'  order by day_count limit 7'
+  let games = 
+    await knex('sports.schedule')
+      .leftOuterJoin('fantasy.rosters', function(){
+        this.on('fantasy.rosters.team_id', '=', 'sports.schedule.home_team_id').orOn('fantasy.rosters.team_id', '=', 'sports.schedule.away_team_id')
+      })
+      .where('sports.schedule.status', 'Scheduled')
+      .where('sports.schedule.day_count', '>=', dayCount)
+      .where('fantasy.rosters.owner_id', ownerId)
+      .whereIn('sports.schedule.sport_season_id', sport_seasons)
+      .orderBy('sports.schedule.day_count')
+      .limit(7)
+      .select('fantasy.rosters.team_id as my_team_id', 'sports.schedule.*')
 
-  let resp = await knex.raw(str)
+  // const str = `select a.team_id as my_team_id, b.*
+  // from fantasy.rosters a, sports.schedule b
+  //  where (a.team_id = b.home_team_id or a.team_id = b.away_team_id) 
+  //  and b.status = 'Scheduled'
+  //  and day_count >= ` + dayCount + ' and owner_id = \'' + ownerId + '\'  order by day_count limit 7'
 
-  return resp.rows.map(x => {
+  // let resp = await knex.raw(str)
+console.log(games[0])
+  // return resp.rows.map(x => {
+    return games.map(x => {
     let date = new Date(x.date_time)
     return {
       date:formatGameDateShort(date),

@@ -58,7 +58,7 @@ class TeamsDialog extends Component {
       oneTeam.owner = owner ? owner.owner_name : 'Not Owned'
       oneTeam.points = team.points
       oneTeam.proj_points = team.proj_points
-      oneTeam.ranking = team.ranking  + '/' + Object.keys(activeLeague.teams).length
+      oneTeam.ranking = team.eligible_ranking  + '/' + activeLeague.total_eligible_teams //Object.keys(activeLeague.teams).length
       oneTeam.scoring_type_id = 1//= activeLeague.seasons[oneTeam.sport_id].scoring_type_id
     }
     if(teams[teamId])

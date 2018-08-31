@@ -1,5 +1,7 @@
 import styles, { Indent, UL, H3, Top } from './style'
 import { withStyles } from '@material-ui/core/styles'
+import Link from 'next/link'
+
 
 const FAQPage = withStyles(theme => ({
   container: {
@@ -158,13 +160,13 @@ const FAQPage = withStyles(theme => ({
       <Top />
       <Indent><H3>One-Time Bonus Points
         <UL>Playoff Qualification: 20 points</UL>
-        <UL>Championship Round Appearance:20 points</UL>
+        <UL>Championship Round Appearance: 20 points</UL>
         <UL>Title Win: 20 points</UL>
       </H3></Indent>
       <Top />
       <H3>All points are additive and cumulative.</H3> 
       <Top />
-      <div style={styles.P}><span style={{ fontWeight: 600 }}>For the full explanation of game rules and scoring formats, please visit the Official Derby Game Rules</span></div>
+      <div style={styles.P}><span style={{ fontWeight: 600 }}>For the full explanation of game rules and scoring formats, please visit the <Link href='/rules'>Official Derby Game Rules</Link></span></div>
     </div>
     <br/>
     <br/>
