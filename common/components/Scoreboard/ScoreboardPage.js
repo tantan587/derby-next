@@ -102,32 +102,42 @@ class ScoreboardPage extends React.Component {
   render() {
     //const { classes, liveGames} = this.props
 
-    const {contentFilter} = this.props
-    const {mySchedule, date} = this.state
-    const page='scoreboard'
+    const { contentFilter } = this.props
+    const { mySchedule, date } = this.state
+    const page = 'scoreboard'
+
+
 
     let filteredScoreData = mySchedule
     R.values(contentFilter[page]).forEach(filter => {
       filteredScoreData = Filterer(mySchedule, filter)
     })
-    const sports = R.values(sportLeagues).sort((x,y) => x.order > y.order).map(x => x.sport_id)
+
+    let filterTest = contentFilter[page]
+    console.log(filterTest)
+
+    //Array of sorted sportIDs to match columns
+    const sports = R.values(sportLeagues).sort((x, y) => x.order > y.order).map(x => x.sport_id)
     sports.unshift('All')
+    sports.push('My Teams')
 
     const filter = {
-      type:'tab',
-      displayType:'sportsIcon',
-      values:sports,
-      column:'sport_id',
-      defaultTab:0,
-      tabStyles:{backgroundColor:'#392007', color:'white',
-        selectedBackgroundColor:'#392007', 
-        selectedColor:'#EBAB38'}
+      type: 'tab',
+      displayType: 'sportsIcon',
+      values: sports,
+      column: 'sport_id',
+      defaultTab: 0,
+      tabStyles: {
+        backgroundColor: '#392007', color: 'white',
+        selectedBackgroundColor: '#392007',
+        selectedColor: '#EBAB38'
+      }
     }
     return (
       <div>
-        <Title color='white' backgroundColor='#EBAB38' title={'Scoreboard'}/>
-        <FilterCreator filters={[filter]} page={page}/>
-        <ScoreboardBody scoreData={filteredScoreData} date={date} onUpdateDate={this.onUpdateDate}/>
+        <Title color='white' backgroundColor='#EBAB38' title={'Scoreboard'} />
+        <FilterCreator filters={[filter]} page={page} />
+        <ScoreboardBody scoreData={filteredScoreData} date={date} onUpdateDate={this.onUpdateDate} />
       </div>
 
     )
