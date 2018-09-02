@@ -19,7 +19,7 @@ function DraftManager(roomId, draftEmitter) {
     that.draftPosition = resp.draft_position
     that.draftOrder =  fantasyHelpers.GetDraftOrder(resp.total_teams,resp.draft_position.length)
     that.allTeams = Array.from(resp.allTeamsByRank)
-    that.time = new Date(resp.start_time)- new Date()
+    that.start_time = resp.start_time
     that.totalPicks = resp.totalPicks
     that.leagueId = resp.league_id
     that.owners = new Owners(socketMap)
@@ -68,10 +68,9 @@ function DraftManager(roomId, draftEmitter) {
     draftIsUp = false
     await socketIoHelpers.RestartDraft(roomId)
     that.pick = 0
-    that.time = 5000
     that.owners.ResetEligible()
-    let date = new Date(new Date().getTime() + that.time)
-    draftEmitter.EmitReset(date.toJSON())
+    that.start_time = new Date(new Date().getTime() + 5000)
+    draftEmitter.EmitReset(that.start_time.toJSON())
     draftState = 'pre'
     await waitToStartDraft()
   }
@@ -147,7 +146,6 @@ function DraftManager(roomId, draftEmitter) {
 
   const waitToStartDraft = async () => {
     draftIsUp = true
-    let counter = 0
     
     clearTimers()
 
@@ -158,16 +156,15 @@ function DraftManager(roomId, draftEmitter) {
     else 
     {
       that.timer = setInterval(async () => {
-        if(that.time < counter){
+        let now = new Date()
+        if(that.start_time <= now){
           clearInterval(that.timer)
           draftState = C.DRAFT_STATE.LIVE
           socketIoHelpers.InsertDraftState(roomId, draftState)
           await onStartDraft()
           return
         }
-        counter += 1000
-
-        draftEmitter.EmitStartTick()
+        draftEmitter.EmitStartTick(that.start_time-now)
       }, 1000)
     }
   }

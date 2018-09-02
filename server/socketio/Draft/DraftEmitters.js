@@ -12,7 +12,7 @@ const Emitters = (io,roomId) =>
     RESET : new Emitter(io, roomId,'reset', 
       {draftStartTime:'string'}),
     START : new Emitter(io, roomId,'start'),
-    START_TICK : new Emitter(io, roomId,'startTick'),
+    START_TICK : new Emitter(io, roomId,'startTick', {counter:'number'}),
     DRAFT_TICK : new Emitter(io, roomId,'draftTick', {counter:'number',pick:'number'}),
     WHOS_HERE : new Emitter(io, roomId,'whoshere'),
     MODE_CHANGE : new Emitter(io, roomId,'modechange', 'string'),

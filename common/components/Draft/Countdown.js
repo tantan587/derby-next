@@ -75,7 +75,7 @@ class Countdown extends React.Component {
     }
     else if (mode === 'live' || mode==='timeout')
     {
-      title = 'DRAFT CLOCK'
+      title = mode === 'live' ? 'DRAFT CLOCK' : 'IN TIMEOUT'
       let minutes = Math.floor(countdownTime / 60)
       let seconds = countdownTime - minutes * 60
       displayTime = [

@@ -52,7 +52,7 @@ class DraftContainer extends React.Component {
     super(props)
     this.state = {
       countdownTime:0,
-      startTime:Math.round((new Date(this.props.activeLeague.draftInfo.start_time)-new Date())/1000),
+      startTime:0,
       snackbarOpen:false,
       snackbarMessage:'',
       myDraftPosition:-1,
@@ -140,10 +140,10 @@ class DraftContainer extends React.Component {
     this.props.onRecieveMessage(data)
   }
 
-  handleReset = (data) => {
+  handleReset = () => {
     this.props.onSetDraftMode('pre')
     this.setState({ 
-      startTime:Math.round((new Date(data.draftStartTime)-new Date())/1000) })
+      startTime:0})
   }
 
   handleStart =() => {
@@ -151,15 +151,8 @@ class DraftContainer extends React.Component {
     this.props.onStartDraft()
   }
 
-  handleStartTick = () => {
-    // if(this.state.startTime < 5 && this.props.draft.mode ==='pre')
-    // {
-    //   this.props.onSetDraftMode('wait')
-    // }
-    if(this.state.startTime > 0)
-    {
-      this.setState({ startTime: this.state.startTime -1 })
-    }
+  handleStartTick = (newTime) => {
+    this.setState({ startTime: Math.floor(newTime.counter/1000) })
   }
 
   handleModeChange = (mode) => {
@@ -272,6 +265,10 @@ class DraftContainer extends React.Component {
     this.socket.emit('restartDraft')
   }
 
+  onRollbackPreviousPick = () => {
+    this.socket.emit('rollback')
+  }
+
   onTimeout = () => {
     this.socket.emit('timeout')
   }
@@ -338,10 +335,6 @@ class DraftContainer extends React.Component {
                   <Grid container direction={'column'}>
                     <Grid item xs={12}>
                       <Grid item xs={12}>
-                        {/* <DraftHeader 
-                          startTime={startTime} 
-                          mode={draft.mode}
-                          myTurn={myTurn}/> */}
                         <Divider style={{backgroundColor:'white'}}/>
                       </Grid>
                       <CenteredTabs
@@ -351,7 +344,7 @@ class DraftContainer extends React.Component {
                         allowDraft={allowDraft}/>
                     </Grid>
                     {
-                      user.admin ?
+                      user.admin || activeLeague.imTheCommish ?
                         <div>
                           <Button onClick={draft.mode === 'timeout' ? 
                             this.onTimeIn : 
@@ -362,19 +355,24 @@ class DraftContainer extends React.Component {
                           <Button onClick={this.onRestartDraft}>
                             {'Restart Draft'}
                           </Button>
-                          <form  noValidate>
-                            <TextField
-                              id="number"
-                              label="Draft Time (secs)"
-                              onChange={this.onTimeToDraftChange}
-                              type="number"
-                              defaultValue={activeLeague.draftInfo.seconds_pick}
-                              InputLabelProps={{
-                                shrink: true,
-                              }}
-                            />
-                          </form>
-                          
+                          <Button onClick={this.onRollbackPreviousPick}>
+                            {'Roll Back Previous Pick'}
+                          </Button>
+                          {
+                            user.admin ? 
+                              <form  noValidate>
+                                <TextField
+                                  id="number"
+                                  label="Draft Time (secs)"
+                                  onChange={this.onTimeToDraftChange}
+                                  type="number"
+                                  defaultValue={activeLeague.draftInfo.seconds_pick}
+                                  InputLabelProps={{
+                                    shrink: true,
+                                  }}
+                                />
+                              </form> : null
+                          }
                         </div>
                         : null
                     }

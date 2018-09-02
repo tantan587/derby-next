@@ -30,8 +30,8 @@ class DraftEmitter {
     this.draftEmitters.START.Emit()
   }
 
-  EmitStartTick() {
-    this.draftEmitters.START_TICK.Emit()
+  EmitStartTick(counter) {
+    this.draftEmitters.START_TICK.Emit({counter})
   }
 
   EmitDraftTick(counter, pick) {
@@ -74,10 +74,10 @@ class DraftEmitter {
   EmitDraftTeam(teamId, ownerId, queue, eligibleTeams) {
     this.draftEmitters.DRAFT_TEAM.Emit(
       {
-        ownerId:ownerId,
-        teamId:teamId,
-        queue:queue,
-        eligibleTeams:eligibleTeams
+        ownerId,
+        teamId,
+        queue,
+        eligibleTeams,
       })
   }
 }
