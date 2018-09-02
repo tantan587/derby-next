@@ -108,11 +108,13 @@ class ScoreboardPage extends React.Component {
     const page = 'scoreboard'
 
     let filteredScoreData = mySchedule
+
+
     R.values(contentFilter[page]).forEach(filter => {
-      filteredScoreData = Filterer(mySchedule, filter)
+      filteredScoreData = Filterer(mySchedule, filter, { ownerName })
     })
 
-    //Array of every eligible team along with owner name
+    //Array of every eligible team along with owner name in this league
     let myTeams = Object.values(teams).filter(team => sportLeagueIds.includes(team.sport_id) && team.eligible).map(team => {
       let owner = null
       if (activeLeague.teams[team.team_id]) {
@@ -139,6 +141,9 @@ class ScoreboardPage extends React.Component {
     R.values(contentFilter[page]).forEach(filter => {
       filteredMyTeams = Filterer(filteredMyTeams, filter, { ownerName })
     })
+
+    console.log("------")
+    console.log(filteredMyTeams)
 
 
     //Array of sorted sport IDs to match columns
