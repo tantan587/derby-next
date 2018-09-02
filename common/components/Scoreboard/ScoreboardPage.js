@@ -102,7 +102,8 @@ class ScoreboardPage extends React.Component {
   render() {
     //const { classes, liveGames} = this.props
 
-    const { contentFilter } = this.props
+    const { teams, activeLeague, contentFilter } = this.props
+    const sportLeagueIds = R.keys(sportLeagues)
     const { mySchedule, date } = this.state
     const page = 'scoreboard'
 
@@ -110,13 +111,45 @@ class ScoreboardPage extends React.Component {
     R.values(contentFilter[page]).forEach(filter => {
       filteredScoreData = Filterer(mySchedule, filter)
     })
-    const sports = R.values(sportLeagues).sort((x, y) => x.order > y.order).map(x => x.sport_id)
-    sports.unshift('All')
+
+    //Array of every eligible team along with owner name
+    let myTeams = Object.values(teams).filter(team => sportLeagueIds.includes(team.sport_id) && team.eligible).map(team => {
+      let owner = null
+      if (activeLeague.teams[team.team_id]) {
+        owner = activeLeague.owners.find(owner => owner.owner_id === activeLeague.teams[team.team_id].owner_id)
+      }
+      return {
+        ...team,
+        owner_name: owner ? owner.owner_name : 'N/A',
+      }
+    })
+
+    //Creates tab filters specific to this league 
+    const values = R.map(x => x.sport_id, this.props.activeLeague.rules)
+    values.unshift('All')
+    values.push('My Teams')
+
+    //Identifies owner that's logged in
+    let ownerName = activeLeague.owners.find(x => x.owner_id === activeLeague.my_owner_id).owner_name
+
+    //Missing step here
+
+    let filteredMyTeams = myTeams
+
+    R.values(contentFilter[page]).forEach(filter => {
+      filteredMyTeams = Filterer(filteredMyTeams, filter, { ownerName })
+    })
+
+
+    //Array of sorted sport IDs to match columns
+    // const sports = R.values(sportLeagues).sort((x, y) => x.order > y.order).map(x => x.sport_id)
+    // sports.unshift('All')
+    // sports.push('My Teams')
 
     const sportFilter = {
       type: 'tab',
       displayType: 'sportsIcon',
-      values: sports,
+      values: values,
       column: 'sport_id',
       defaultTab: 0,
       tabStyles: {
