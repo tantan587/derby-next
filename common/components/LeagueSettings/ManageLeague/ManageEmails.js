@@ -48,7 +48,7 @@ class ManageEmails extends Component {
     modifiedMembers.fill({}, MemberList.length)
 
     const inviteCopy = 'Invite members to join your league by adding their names to the Member List. Emailing them an invitation will send them a unique link and password along with instructions on how to join your league.'
-    const settingsCopy = 'Your League is set for 10 Members. You can edit the number of league members in the "Basic League Settings" above.'
+    const settingsCopy = 'Your League is set for 10 Members. You can edit the number of league members in "Draft Info" tab above.'
 
     return (
       <div className={classes.root}>

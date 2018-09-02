@@ -159,13 +159,13 @@ const BasicInformation = withStyles(styles)(class extends Component {
             <div>Verify Password:</div>
           </div>
           <FormControl className={classes.textField}>
-            <Input placeholder="Must match Password" onChange={handleChange('matchPassword')}/>
+            <Input placeholder="Must match Password" onChange={handleChange('matchPassword')} />
           </FormControl>
         </div>
 
         <div className={classes.field}>
           <div className={classes.label}>
-            <div>Amount of Members:</div>
+            <div>Number of Members:</div>
           </div>
           <div className={classes.formRoot} style={{ display: 'flex' }}>
             <Select
