@@ -60,13 +60,10 @@ class MainLeagueStandings extends React.Component {
     let owners = []
     if (activeLeague.owners)
       owners = this.props.activeLeague.owners
-      let owners_race = owners.sort((a,b) => {
-        let nameA = a.owner_name.toLowerCase()
-        let nameB = b.owner_name.toLowerCase()
-        if(nameA > nameB){return 1}
-        if(nameB > nameA){return -1}
-        }).map(x => x)
-      let owners_table = owners.sort((a,b) => {return a.rank - b.rank})
+    let owners_race = owners.sort((a,b) => {
+      return a.owner_name.toLowerCase() > b.owner_name.toLowerCase ? 1 : -1 
+    }).map(x => x)
+    let owners_table = owners.sort((a,b) => {return a.rank - b.rank})
 
     return(
       <div>

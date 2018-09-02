@@ -85,7 +85,6 @@ const getLeague = async (league_id, user_id, res, type) => {
     var imTheCommish = false
     var owners = []
     var teams = {}
-    var request_user_info = {}
     ownerInfo.rows.forEach((owner) => {
       if(owner.user_id === user_id)
       {
@@ -215,10 +214,10 @@ const getUserInfo = async (user_id) => {
   return user[0]
 }
 const timeZoneList = {
-  04: 'EST',
-  05: 'CST',
-  06: 'MST',
-  07: 'PST'
+  '04': 'EST',
+  '05': 'CST',
+  '06': 'MST',
+  '07': 'PST'
 }
 
 const getSportLeagues = (league_id) =>{
@@ -292,9 +291,8 @@ const getOwnersUpcomingGames = async (ownerId, sport_seasons) =>
   //  and day_count >= ` + dayCount + ' and owner_id = \'' + ownerId + '\'  order by day_count limit 7'
 
   // let resp = await knex.raw(str)
-console.log(games[0])
   // return resp.rows.map(x => {
-    return games.map(x => {
+  return games.map(x => {
     let date = new Date(x.date_time)
     return {
       date:formatGameDateShort(date),

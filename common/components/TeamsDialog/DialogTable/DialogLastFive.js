@@ -20,7 +20,7 @@ const DialogLastFive = ({ tableData,lastFive }) => {
     <TableBody>
       {
         lastFive.map((game, idx) => {
-          return <TableRow key={game.game_id}>
+          return <TableRow key={idx}>
             <TableCell>{game.date_time|| '4/322/18'}</TableCell>
             <TableCell>
               {/* { console.log('the data for opponent is', tableData[idx].opponent) } */}

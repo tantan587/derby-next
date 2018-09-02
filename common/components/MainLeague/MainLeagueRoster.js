@@ -31,11 +31,8 @@ class MainLeagueRoster extends React.Component {
     const {teams, activeLeague, contentFilter} = this.props
     const sportLeagueIds = R.keys(sportLeagues)
     let default_tab = activeLeague.owners.sort((a,b) => {
-      let nameA = a.owner_name.toLowerCase()
-      let nameB = b.owner_name.toLowerCase()
-      if(nameA > nameB){return 1}
-      if(nameB > nameA){return -1}
-      }).findIndex(owner => owner.owner_id === activeLeague.my_owner_id)
+      return a.owner_name.toLowerCase() > b.owner_name.toLowerCase ? 1 : -1 })
+      .findIndex(owner => owner.owner_id === activeLeague.my_owner_id)
     let myTeams = Object.values(teams).filter(team => sportLeagueIds.includes(team.sport_id)).map(team => 
     {
       let owner = null 
@@ -71,11 +68,8 @@ class MainLeagueRoster extends React.Component {
     const filters = [{
       type:'tab',
       values: this.props.activeLeague.owners.map(x => x.owner_name).sort((a,b) => {
-        let nameA = a.toLowerCase()
-        let nameB = b.toLowerCase()
-        if(nameA > nameB){return 1}
-        if(nameB > nameA){return -1}
-        }),
+        return a.toLowerCase() > b.toLowerCase() ? 1 : -1 
+      }),
       column:'owner_name',
       defaultTab: default_tab, //this.props.activeLeague.owners.sort((a,b) => {return a.owner_name - b.owner_name}).findIndex(owner => owner.owner_id === activeLeague.my_owner_id),
       tabStyles:{backgroundColor:'#e3dac9',

@@ -13,29 +13,17 @@ export const organizeData = (data) => {
   const derbyPointsObject = oneTeam.scoring[oneTeam.scoring_type_id]
 
   const result = homeTeamScore > awayTeamScore ? ['W', 'L'] : awayTeamScore > homeTeamScore ? ['L', 'W'] : ['D', 'D']
-  console.log(game.sport_id)
-  console.log(game.status[1])
+
   if(game.sport_id == '104' && game.status[1] === '/'){
-    console.log('here!')
     if(result[0]==='L'){
       result[0] = 'OTL'
     } else{
-        result[1] = 'OTL'}
-      }
-  
-    
-  // console.log('away is', teams[game.away_team_id].team_name)
-  // console.log('home is', teams[game.home_team_id].team_name)
-  // console.log('our team is', oneTeam.team_name)
-  // console.log('is away our team?', teams[game.away_team_id].team_name === oneTeam.team_name)
-  // console.log('is home our team?', teams[game.home_team_id].team_name === oneTeam.team_name)
+      result[1] = 'OTL'}
+  }
+
 
   if (areWeHome) {
-    // console.log('if home is our team')
-    // console.log(`we are against ${awayTeamName}`)
-    // console.log(`they scored ${awayTeamScore} and we scored ${homeTeamScore}`)
-    // console.log(`it is ${homeTeamScore > awayTeamScore} that we won`)
-    // console.log(`the formatted score looks like ${Math.max(homeTeamScore, awayTeamScore)}-${Math.min(homeTeamScore, awayTeamScore)}`)
+
     let tableData = {
       opponent: `vs. ${awayTeamName}`,
       result: result[0], //homeTeamScore > awayTeamScore ? 'W' : 'L',

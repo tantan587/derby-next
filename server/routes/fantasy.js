@@ -6,7 +6,7 @@ const C = require('../../common/constants')
 const ErrorText = require('../../common/models/ErrorText')
 const v4 = require('uuid/v4')
 const fantasyHelpers = require('./helpers/fantasyHelpers')
-const createLeagueTemplate = require('../email-templates/createleague')
+//const createLeagueTemplate = require('../email-templates/createleague')
 
 
 router.post('/createleague', authHelpers.loginRequired, (req, res)  => {
@@ -28,10 +28,10 @@ router.post('/createleague', authHelpers.loginRequired, (req, res)  => {
       //     draft_time: draft_time
       //     }, createLeagueTemplates)
       //       .then(()=>{
-            return fantasyHelpers.getLeague(league_id, req.user.user_id, res, C.CREATE_LEAGUE_SUCCESS)
-            }) //getLeague
-        //   }) //getUser
-        // }) //createLeague
+      return fantasyHelpers.getLeague(league_id, req.user.user_id, res, C.CREATE_LEAGUE_SUCCESS)
+    }) //getLeague
+  //   }) //getUser
+  // }) //createLeague
     .catch((action) => {  
       handleReduxResponse(res, 400, action)})
 })

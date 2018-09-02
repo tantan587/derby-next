@@ -46,7 +46,6 @@ class BottomNav extends React.Component {
 
   render() {
     const { classes, user } = this.props
-    console.log(user.loggedIn)
     const items = user.loggedIn ? [
       { text: 'Home', link: '/' },
       { text: 'Rules', link: '/rules' },
