@@ -3,17 +3,10 @@ const draftHelpers = require('../../routes/helpers/draftHelpers')
 function Owner(ownerId, draftRules, allTeamsByRank, teamMap) {
   this.ownerId = ownerId
 
-  // const shuffle = (array) => {
-  //   for (let i = array.length - 1; i > 0; i--) {
-  //     let j = Math.floor(Math.random() * (i + 1));
-  //     [array[i], array[j]] = [array[j], array[i]]
-  //   }
-  // }
-
   var queue = []
-  var teams = []
+  var pickToTeamsMap = []
+  var drafted = []
   var here = false
-  //shuffle(allTeamsByRank)
   var eligibleTeams = [].concat(allTeamsByRank)
   var theDraftRules = JSON.parse(JSON.stringify(draftRules))
   
@@ -50,30 +43,68 @@ function Owner(ownerId, draftRules, allTeamsByRank, teamMap) {
     {
       queue.splice(index, 1)
     }
-    const index2 =eligibleTeams.indexOf(teamId)
+    const index2 = eligibleTeams.indexOf(teamId)
     if(index2 > -1)
     {
-      eligibleTeams.splice(index2, 1)
-    }    
+      eligibleTeams.splice(index2,1)
+    }
+    drafted.push(teamId)
   }
 
   this.DraftTeam = (draftData) => {
-    teams.push(draftData.pickInfo)
+    updatePick(draftData)
+    updateEligible(draftData)
+  }
+
+  const updateEligible = (draftData) => {
     eligibleTeams = draftData.eligibleTeams
     queue = draftData.queue
+  }
+
+  const updatePick = (draftData) => {
+    pickToTeamsMap[draftData.pickInfo.overall_pick] = draftData.pickInfo.team_id
   }
 
   this.TryDraft = (teamId,pick) =>{
     let resp = draftHelpers.FilterDraftPick(teamId, teamMap, theDraftRules, eligibleTeams, queue)
     if(resp)
     {
-      resp.pickInfo = {team_id:teamId, overall_pick:pick+1}
+      resp.pickInfo = {team_id:teamId, overall_pick:pick}
     }
     return resp
   }
 
+  this.UndraftTeam = (pick) => {
+    let teamId = pickToTeamsMap[pick]
+    delete pickToTeamsMap[pick]
+    return teamId
+  }
+
+  this.UndoLastPick = () => {
+
+    drafted.splice(-1,1)
+    this.ResetEligible()
+    Object.keys(pickToTeamsMap).forEach(p => {
+      let resp = this.TryDraft(pickToTeamsMap[p],p)
+      updateEligible(resp)
+    })
+
+    drafted.forEach(x => {
+      let index = eligibleTeams.indexOf(x)
+      if(index > -1)
+      {
+        eligibleTeams.splice(index,1)
+      }
+    })
+  }
+
+  this.GetEligible = () => {
+    return eligibleTeams
+  }
+
+
   this.AssembleTeams = () =>{
-    return teams.map(x => {return x})
+    return Object.keys(pickToTeamsMap).map(pick => {return {overall_pick:pick, team_id:pickToTeamsMap[pick]}})
   }
 
   this.Joined = () =>

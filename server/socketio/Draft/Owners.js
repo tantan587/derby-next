@@ -68,13 +68,22 @@ function Owners(socketMap) {
   }
 
   this.TryDraft = (ownerId, teamId, pick) =>
-  {
-    return owners[ownerId].TryDraft(teamId,pick)
+  {//note i am doing pick+1 because the db needs to index at 1 not 0
+    return owners[ownerId].TryDraft(teamId,pick+1)
   }
 
   this.DraftTeam = (ownerId, draftData) =>
   {
     return owners[ownerId].DraftTeam(draftData)
+  }
+
+  this.UndraftTeam = (ownerId, pick) =>
+  {
+    //note i am doing pick+1 because the db needs to index at 1 not 0
+    let teamId = owners[ownerId].UndraftTeam(pick+1)
+    Object.values(owners).forEach(x => x.UndoLastPick())
+    let eligibleTeams = owners[ownerId].GetEligible()
+    return {ownerId, teamId, eligibleTeams}
   }
 
   this.RemoveTeam = (teamId) =>

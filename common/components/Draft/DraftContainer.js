@@ -59,11 +59,11 @@ class DraftContainer extends React.Component {
       ownerMap:{},
       sawPickError:false,
       sockets:['whoshere', 'people','message','start','reset',
-        'startTick','draftTick', 'draftTeam', 'modechange', 'queueResp'],
+        'startTick','draftTick', 'draftTeam', 'modechange', 'queueResp', 'rollback'],
       functions : [this.handleWhosHere, this.handlePeople,this.handleMessage,
         this.handleStart, this.handleReset,
         this.handleStartTick, this.handleDraftTick, this.handleDraftTeam,
-        this.handleModeChange, this.handleQueueResp]
+        this.handleModeChange, this.handleQueueResp, this.handleRollback]
     }
   }
 
@@ -195,7 +195,6 @@ class DraftContainer extends React.Component {
   }
 
   handleDraftTeam = (data) => {
-    console.log(data)
     const myOwnerId = this.props.activeLeague.my_owner_id
     const thisIsMe = myOwnerId === data.ownerId
     if(data)
@@ -219,6 +218,33 @@ class DraftContainer extends React.Component {
     this.setState({snackbarMessage:snackbarMessage, snackbarOpen:true})
     data['thisIsMe'] = thisIsMe
     this.props.onDraftPick(data)      
+  }
+
+  handleRollback = (data) => {
+    console.log(data)
+    // const myOwnerId = this.props.activeLeague.my_owner_id
+    // const thisIsMe = myOwnerId === data.ownerId
+    // if(data)
+    // {
+    //   let queue =  this.props.draft.queue
+    //   const index =queue.indexOf(data.teamId)
+    //   if(index > -1 && !thisIsMe)
+    //   {
+    //     queue.splice(index, 1)
+    //     this.socket.emit('queue',
+    //       {queue:queue, ownerId:myOwnerId})
+    //     this.props.onSetUpdateQueue(queue)
+    //   }
+    // }
+    // const teamName =  this.props.teams[data.teamId].team_name
+    // const sport = this.props.teams[data.teamId].sport
+    // const snackbarMessage = thisIsMe
+    //   ? 'You just drafted the ' + teamName + ' (' + sport+ ')'
+    //   : this.state.ownerMap[data.ownerId].owner_name + ' just drafted the ' + teamName + ' (' + sport+ ')'
+
+    // this.setState({snackbarMessage:snackbarMessage, snackbarOpen:true})
+    // data['thisIsMe'] = thisIsMe
+    // this.props.onDraftPick(data)      
   }
 
   onUpdateQueue = (newQueue) => {
@@ -266,7 +292,7 @@ class DraftContainer extends React.Component {
   }
 
   onRollbackPreviousPick = () => {
-    this.socket.emit('rollback')
+    this.socket.emit('tryRollback')
   }
 
   onTimeout = () => {
@@ -355,7 +381,7 @@ class DraftContainer extends React.Component {
                           <Button onClick={this.onRestartDraft}>
                             {'Restart Draft'}
                           </Button>
-                          <Button onClick={this.onRollbackPreviousPick}>
+                          <Button disabled={draft.mode !== 'timeout' || draft.pick === 0} onClick={this.onRollbackPreviousPick}>
                             {'Roll Back Previous Pick'}
                           </Button>
                           {

@@ -80,6 +80,15 @@ class DraftEmitter {
         eligibleTeams,
       })
   }
+
+  EmitRollback(teamId, ownerId, eligibleTeams) {
+    this.draftEmitters.ROLLBACK.Emit(
+      {
+        ownerId,
+        teamId,
+        eligibleTeams,
+      })
+  }
 }
 
 module.exports = DraftEmitter

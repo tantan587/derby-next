@@ -112,6 +112,13 @@ class DraftLobby {
       }
     })
 
+    socket.in(roomId).on('tryRollback', () => {
+      if(draftIsGood())
+      {
+        this.draftRooms[roomId].Manager.Rollback()
+      }
+    })
+
     socket.in(roomId).on('timein', () => {
       
       if(draftIsGood())

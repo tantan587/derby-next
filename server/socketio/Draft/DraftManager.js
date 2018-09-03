@@ -87,6 +87,18 @@ function DraftManager(roomId, draftEmitter) {
     if (resp) 
       draftTeam(ownerId, data.teamId, resp, data.clientTs)
   }
+
+  this.Rollback = () => {
+  
+    if(that.pick > 0)
+    {
+      that.pick = that.pick -1
+      let previousOwnerId = getOwnerIdByPick(that.pick)
+      let data = that.owners.UndraftTeam(previousOwnerId, that.pick)
+      draftEmitter.EmitRollback(data.teamId, data.ownerId, data.eligibleTeams)
+      that.counter = timeToDraft
+    }
+  }
   
   this.TryUpdateQueue = (data) => {
     if (that.owners.TryUpdateQueue(data))
@@ -181,7 +193,7 @@ function DraftManager(roomId, draftEmitter) {
       that.timer = setInterval(async () => {
         if(that.counter === 0){
           clearInterval(that.timer)
-          const ownerId = getCurrentOwnerId()
+          const ownerId = getOwnerIdByPick(that.pick)
           const teamId = getAutoDraftTeam(ownerId)
           //comes back with information to ppick for the team
           let draftResult = that.owners.TryDraft(ownerId,teamId, that.pick)
@@ -228,8 +240,8 @@ function DraftManager(roomId, draftEmitter) {
     return that.owners.GetNextTeam(ownerId)
   }
 
-  const getCurrentOwnerId = () => {
-    return that.draftPosition[that.draftOrder[that.pick].ownerIndex]
+  const getOwnerIdByPick = (pick) => {
+    return that.draftOrder[pick] ? that.draftPosition[that.draftOrder[pick].ownerIndex] : null
   }
 
   const canOwnerDraftTeam = async (ownerId, pick) => 
