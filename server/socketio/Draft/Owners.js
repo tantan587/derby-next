@@ -25,16 +25,28 @@ function Owners(socketMap) {
   this.GetCurrPickAndUpdateDraftOnStart = results =>
   {
     let pick = -1
+    let resultsToEnter = []
     results.forEach(element => {
       
       if(element.action_type == 'PICK')
       {
-        pick = element.action.pick
-        let ownerId = element.initiator
-        let draftData = this.TryDraft(ownerId, element.action.teamId,element.action.pick)
-        this.DraftTeam(ownerId, draftData)
-        this.RemoveTeam(element.action.teamId)
+        resultsToEnter.push({
+          pick:element.action.pick,
+          ownerId:element.initiator,
+          teamId:element.action.teamId
+        })
       }
+      else if(element.action_type == 'ROLLBACK')
+      {
+        resultsToEnter.splice(-1,1)
+      }
+    })
+
+    resultsToEnter.forEach(x => {
+      pick = x.pick
+      let draftData = this.TryDraft(x.ownerId, x.teamId,x.pick)
+      this.DraftTeam(x.ownerId, draftData)
+      this.RemoveTeam(x.teamId)
     })
     return pick + 1
     
@@ -105,7 +117,6 @@ function Owners(socketMap) {
 
   this.Joined = (socketId,ownerId) =>
   {
-    console.log(socketId, ownerId)
     socketOwnerMap[socketId] = ownerId
     owners[ownerId].Joined()
   }

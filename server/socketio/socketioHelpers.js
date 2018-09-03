@@ -98,14 +98,19 @@ const InsertDraftState = (roomId, state) =>
 }
 
 const CheckDraftBeforeInsertingPick = (roomId, pick) =>
-{
-  let str = `select action ->> 'pick' as pick, server_ts 
+{  
+  let str1 = `select action ->> 'pick' as pick, action_type 
    from draft.results where room_id = '`+ roomId + `' 
-   and action_type  = 'PICK' order by server_ts desc limit 1;`
-  return knex.raw(str)
+   and action_type = 'PICK' or action_type='ROLLBACK' order by server_ts desc limit 1`
+
+  return knex.raw(str1)
     .then((result) => {
-      //if the length is zero or the pick we are about to insert is 1 above what is there
-      return result.rows.length === 0 || result.rows[0].pick == (pick-1)
+      //if the length is zero OR 
+      //the pick we are about to insert is 1 above what is there OR 
+      //the rollback is what pick it is supposed to be
+      return result.rows.length === 0 || 
+      (result.rows[0].action_type === 'PICK' && result.rows[0].pick == (pick-1)) ||
+      (result.rows[0].action_type === 'ROLLBACK' && result.rows[0].pick == pick)
     })
 }
 

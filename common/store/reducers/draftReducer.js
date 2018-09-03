@@ -53,6 +53,30 @@ export default (state = {}, action={ type: null }) => {
       messages:[]
     }
   }
+  case C.DRAFT_PICK_ROLLBACK:
+  {
+    const newAvailable = state.availableTeams
+    const newDrafted = state.draftedTeams
+    let eligibleTeams = state.eligibleTeams
+    if(action.data) 
+    {
+      const index = newDrafted.indexOf(action.data.teamId)
+      newDrafted.splice(index, 1)
+      newAvailable.push(action.data.teamId)
+      if(action.data.thisIsMe)
+      {
+        eligibleTeams = action.data.eligibleTeams
+      }
+    }    
+    return {
+      ...state, 
+      pick : state.pick-1, 
+      owners : owners(state.owners, action, state.pick),
+      availableTeams :newAvailable,
+      draftedTeams : newDrafted,
+      eligibleTeams : eligibleTeams }
+  }
+
   case C.DRAFT_PICK:
   {
     const newAvailable = state.availableTeams
@@ -96,8 +120,15 @@ export const owners = (state = {}, action={ type: null }, pick) => {
     {
       state[action.data.ownerId].push({pick:pick, teamId:action.data.teamId})
     }
-    
-    //action.draftOrder.map(order => owners.push(state.filter(owner => owner.user_id === order.id)[0]))
+    return state
+  }
+  case C.DRAFT_PICK_ROLLBACK:
+  {
+    if(action.data)
+    {
+      state[action.data.ownerId].splice(-1,1)
+    }
+  
     return state
   }
   default:

@@ -51,3 +51,9 @@ export const handleRecieveMessage = (message) =>
     message
   })
 
+export const handleRollback = (data) =>
+  ({
+    type: C.DRAFT_PICK_ROLLBACK,
+    data
+  })
+

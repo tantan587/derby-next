@@ -17,13 +17,16 @@ import {clickedEnterDraft,
   handleSetDraftMode,
   handleDraftPick,
   handleUpdateQueue,
-  handleRecieveMessage} from '../../actions/draft-actions'
+  handleRecieveMessage,
+  handleRollback} from '../../actions/draft-actions'
 import { connect } from 'react-redux'
 import Divider from '@material-ui/core/Divider'
 import Chat from './Chat'
 import Router from 'next/router'
 import C from '../../constants'
 import {clickedLeague} from '../../actions/fantasy-actions'
+const R = require('ramda')
+
 
 
 const styles = theme => ({
@@ -221,30 +224,16 @@ class DraftContainer extends React.Component {
   }
 
   handleRollback = (data) => {
-    console.log(data)
-    // const myOwnerId = this.props.activeLeague.my_owner_id
-    // const thisIsMe = myOwnerId === data.ownerId
-    // if(data)
-    // {
-    //   let queue =  this.props.draft.queue
-    //   const index =queue.indexOf(data.teamId)
-    //   if(index > -1 && !thisIsMe)
-    //   {
-    //     queue.splice(index, 1)
-    //     this.socket.emit('queue',
-    //       {queue:queue, ownerId:myOwnerId})
-    //     this.props.onSetUpdateQueue(queue)
-    //   }
-    // }
-    // const teamName =  this.props.teams[data.teamId].team_name
-    // const sport = this.props.teams[data.teamId].sport
-    // const snackbarMessage = thisIsMe
-    //   ? 'You just drafted the ' + teamName + ' (' + sport+ ')'
-    //   : this.state.ownerMap[data.ownerId].owner_name + ' just drafted the ' + teamName + ' (' + sport+ ')'
+    const myOwnerId = this.props.activeLeague.my_owner_id
+    const thisIsMe = myOwnerId === data.ownerId
 
-    // this.setState({snackbarMessage:snackbarMessage, snackbarOpen:true})
-    // data['thisIsMe'] = thisIsMe
-    // this.props.onDraftPick(data)      
+    const teamName =  this.props.teams[data.teamId].team_name
+    const sport = this.props.teams[data.teamId].sport
+    const snackbarMessage = 'The previous pick of ' + teamName + ' (' + sport+ ') was just rolled back'
+
+    this.setState({snackbarMessage:snackbarMessage, snackbarOpen:true})
+    data['thisIsMe'] = thisIsMe
+    this.props.onRollback(data)      
   }
 
   onUpdateQueue = (newQueue) => {
@@ -468,42 +457,16 @@ DraftContainer.propTypes = {
   classes: PropTypes.object.isRequired,
 }
 
-export default connect(
-  state =>
-    ({
-      user : state.user,
-      activeLeague : state.activeLeague,
-      draft : state.draft,
-      teams:state.teams
+export default R.compose(
+  withStyles(styles),
+  connect(R.pick(['user', 'activeLeague', 'draft', 'teams']), 
+    {onEnterDraft: clickedEnterDraft,
+      onStartDraft: handleStartDraft,
+      onSetDraftMode: handleSetDraftMode,
+      onDraftPick: handleDraftPick,
+      onSetUpdateQueue: handleUpdateQueue,
+      onRecieveMessage: handleRecieveMessage,
+      onClickedLeague: clickedLeague,
+      onRollback: handleRollback,
     }),
-  dispatch =>
-    ({
-      onEnterDraft(room_id, owner_id) {
-        dispatch(
-          clickedEnterDraft(room_id, owner_id))
-      },
-      onStartDraft() {
-        dispatch(
-          handleStartDraft())
-      },
-      onSetDraftMode(mode) {
-        dispatch(
-          handleSetDraftMode(mode))
-      },
-      onDraftPick(data) {
-        dispatch(
-          handleDraftPick(data))
-      },
-      onSetUpdateQueue(queue) {
-        dispatch(
-          handleUpdateQueue(queue))
-      },
-      onRecieveMessage(message) {
-        dispatch(
-          handleRecieveMessage(message))
-      },
-      onClickedLeague(league_id, user_id) {
-        dispatch(
-          clickedLeague(league_id, user_id))
-      },
-    }))(withStyles(styles)(DraftContainer))
+)(DraftContainer)

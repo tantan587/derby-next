@@ -15,7 +15,6 @@ class DraftLobby {
   async Create() {
 
     const roomIds = await socketIoHelpers.GetFutureDrafts()
-    console.log(roomIds)
     roomIds.forEach( roomId =>
     {
       this.addToDraftRoom(roomId)
@@ -64,12 +63,10 @@ class DraftLobby {
 
     socket.on('join', roomInfo =>
     {
-      console.log(roomInfo)
       roomId = roomInfo.roomId
       socket.join(roomId)
       if(draftIsGood())
       {
-        console.log('I joined!')
         this.draftRooms[roomId].Manager.OwnerJoined(socket.id, roomInfo.owner_id)
       }
     })

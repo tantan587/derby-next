@@ -128,6 +128,9 @@ const AssembleDraft =  (owners, results, my_owner_id, rules, teamMap) =>{
   let allTeams = Object.keys(teamMap).filter(x => x > 99999)
   let availableTeams = [].concat(allTeams)
   let eligibleTeams = [].concat(allTeams)
+
+  let resultsToEnter = []
+
   results.forEach(element => {
     switch (element.action_type){
     case 'STATE':
@@ -137,11 +140,17 @@ const AssembleDraft =  (owners, results, my_owner_id, rules, teamMap) =>{
     }
     case 'PICK':
     {
-      allPicks.push(element.action.pick)
-      ownersMap[element.initiator].push(element.action)
-      const index = availableTeams.indexOf(element.action.teamId)
-      availableTeams.splice(index, 1)
-      draftedTeams.push(element.action.teamId)
+      resultsToEnter.push({
+        pick:element.action.pick,
+        ownerId:element.initiator,
+        action:element.action,
+        teamId:element.action.teamId
+      })
+      break
+    }
+    case 'ROLLBACK':
+    {
+      resultsToEnter.splice(-1,1)
       break
     }
     case 'QUEUE':
@@ -158,6 +167,14 @@ const AssembleDraft =  (owners, results, my_owner_id, rules, teamMap) =>{
       break
     }
     }
+  })
+
+  resultsToEnter.forEach(x => {
+    allPicks.push(x.pick)
+    ownersMap[x.ownerId].push(x.action)
+    const index = availableTeams.indexOf(x.teamId)
+    availableTeams.splice(index, 1)
+    draftedTeams.push(x.teamId)
   })
 
   queue = queue.filter(team => {

@@ -10,6 +10,7 @@ function DraftManager(roomId, draftEmitter) {
   let timeToDraft = 5
   var draftIsUp = false
   let draftState = 'pre'
+  let clientSetTimeout = false
  
   this.Create = async (socketMap = {}) =>
   {
@@ -95,6 +96,8 @@ function DraftManager(roomId, draftEmitter) {
       that.pick = that.pick -1
       let previousOwnerId = getOwnerIdByPick(that.pick)
       let data = that.owners.UndraftTeam(previousOwnerId, that.pick)
+      socketIoHelpers.InsertDraftAction(
+        roomId, previousOwnerId, 'ROLLBACK', {pick:that.pick})
       draftEmitter.EmitRollback(data.teamId, data.ownerId, data.eligibleTeams)
       that.counter = timeToDraft
     }
@@ -127,6 +130,7 @@ function DraftManager(roomId, draftEmitter) {
   this.Timeout = (amountOfTime) =>
   {
     console.log('in timeout')
+    clientSetTimeout = true
     draftState = C.DRAFT_STATE.TIMEOUT
     clearTimers()
     socketIoHelpers.InsertDraftState(roomId,draftState)
@@ -158,7 +162,6 @@ function DraftManager(roomId, draftEmitter) {
 
   const waitToStartDraft = async () => {
     draftIsUp = true
-    
     clearTimers()
 
     if (draftState === C.DRAFT_STATE.LIVE)
@@ -266,10 +269,19 @@ function DraftManager(roomId, draftEmitter) {
   }
 
   const timeIn = () => {
+    
     draftState = C.DRAFT_STATE.LIVE
     socketIoHelpers.InsertDraftState(roomId, draftState)
     draftEmitter.EmitModeChange(draftState)
-    waitToAutoDraft(that.counter)
+    if(clientSetTimeout)
+    {
+      clientSetTimeout = false
+      waitToAutoDraft(that.counter)
+    }
+    else{
+      waitToStartDraft()
+    }
+    
   }
 }
 
