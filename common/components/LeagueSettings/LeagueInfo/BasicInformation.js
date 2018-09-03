@@ -164,7 +164,7 @@ const BasicInformation = withStyles(styles)(class extends Component {
 
         <div className={classes.field}>
           <div className={classes.label}>
-            <div>Amount of Members:</div>
+            <div>Number of Owners:</div>
           </div>
           <div className={classes.formRoot} style={{ display: 'flex' }}>
             <Select

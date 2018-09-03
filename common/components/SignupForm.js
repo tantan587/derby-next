@@ -69,10 +69,6 @@ const genders = [
     value: 'NA',
     label: 'N/A',
   },
-  {
-    value: 'Other',
-    label: 'Other',
-  },
 ]
 
 
@@ -97,12 +93,13 @@ class SignupForm extends React.Component {
   }
 
   handleChange = name => event => {
+    console.log(name, event.target.value)
     if(name==='terms'){
       this.setState({[name]: event.target.checked, dirty: true})
-    }else{
+    }
+    else{
       this.setState({[name]: event.target.value, dirty: true})
     }
- 
   }
 
 

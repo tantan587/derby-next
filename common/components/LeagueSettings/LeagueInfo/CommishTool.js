@@ -2,6 +2,7 @@ import React from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import Grid from '@material-ui/core/Grid'
 import Typography from '@material-ui/core/Typography'
+import Card from '@material-ui/core/Card'
 import {connect} from 'react-redux'
 import {withRouter} from 'next/router'
 import DraftSettings from './DraftSettings'
@@ -11,6 +12,7 @@ import C from '../../../constants'
 const R = require('ramda')
 import StyledButton from '../../Navigation/Buttons/StyledButton'
 import {handleReorderDraft} from '../../../actions/draft-actions'
+import Link from 'next/link'
 
 const styles = theme =>({
   root: {
@@ -153,16 +155,41 @@ class CommishTool extends React.Component {
         <div className={classes.root}>
           <div className={classes.content}>
             <Grid container justify="space-between" className={classes.rootSmall} spacing={40} onKeyPress={(event) => this.keypress(event)}>
-              <Grid item xs={12} md={12} lg={6} className={classes.gridMargins}>
+              <Grid item xs={12} md={12} lg={7} className={classes.gridMargins}>
                 <div>
                   <div className={classes.titleSmall}>Draft Settings</div>
                   <DraftSettings draftType={draftType} pickTime={pickTime} draftDate={draftDate} handleChange={this.handleChange}/>
                 </div>
               </Grid>
-              <Grid item xs={12} md={12} lg={6} className={classes.gridMargins}>
+              <Grid item xs={12} md={12} lg={5} className={classes.gridMargins}>
                 <div>
                   <div className={classes.titleSmall}>Reorder Draft</div>
                   <ReorderDraft owners={owners} onUpdateOrder={this.onUpdateOrder}/>
+                </div>
+              </Grid>
+              <Grid item xs={12} md={12} lg={7} className={classes.gridMargins}>
+                <div>
+                  <div className={classes.titleSmall}>Invite League Members</div>
+                  <Card>
+                    <div  style={{margin:30}}>
+                      <Typography variant='title' >
+                        {'Inviting your friends to join your Derby league is as easy as 1-2-3!'}
+                      </Typography>
+                      <br/>
+                      <Typography variant='subheading' >
+                        {'1) Invite your friends to create an account on the '}
+                        <Link href='/signup'><a>{'site'}</a></Link>
+                      </Typography>
+                      <br/>
+                      <Typography variant='subheading'>
+                        {'2) Email your friends your league name and league password'}
+                      </Typography>
+                      <br/>
+                      <Typography variant='subheading'>
+                        {'3) Ensure your friends sign up before the draft deadline'}
+                      </Typography>
+                    </div>
+                  </Card>
                 </div>
               </Grid>
               <Grid item xs={12} md={12} className={classes.gridMargins}>

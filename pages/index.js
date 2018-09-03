@@ -107,7 +107,7 @@ class Index extends React.Component {
     const {classes, user} = this.props
     const howToPlay = [
       {name:'1) Create Your Free Account', src:'/static/icons/HowToPlayIcons/CreateAccount.svg', link:'/signup'}, //create account
-      {name:'2) Join a League of Friends', src:'/static/icons/HowToPlayIcons/DraftTeam.svg', link:'/participate'}, //particpate form remove protection
+      {name:'2) Join a League of Friends', src:'/static/icons/HowToPlayIcons/DraftTeam.svg', link:'/signup'}, //particpate form remove protection
       {name:'3) Draft your Teams', src:'/static/icons/HowToPlayIcons/FormLeague.svg', link:'/signup'}, //page of images
       {name:'4) Watch and Win the Race', src:'/static/icons/HowToPlayIcons/WatchWin.svg', link:'/signup'} //page of images
     ]

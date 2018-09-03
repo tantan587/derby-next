@@ -6,6 +6,7 @@ import Typography from '@material-ui/core/Typography'
 import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
 import Grid from '@material-ui/core/Grid'
+import Tooltip from '@material-ui/core/Tooltip'
 import Countdown from './Countdown'
 import SimpleSnackbar from './SimpleSnackbar'
 import DraftOrder from './DraftOrder'
@@ -370,9 +371,13 @@ class DraftContainer extends React.Component {
                           <Button onClick={this.onRestartDraft}>
                             {'Restart Draft'}
                           </Button>
-                          <Button disabled={draft.mode !== 'timeout' || draft.pick === 0} onClick={this.onRollbackPreviousPick}>
-                            {'Roll Back Previous Pick'}
-                          </Button>
+                          <Tooltip title='Button is only active when draft is paused'>
+                            <span>
+                              <Button disabled={draft.mode !== 'timeout' || draft.pick === 0} onClick={this.onRollbackPreviousPick}>
+                                {'Roll Back Previous Pick'}
+                              </Button>
+                            </span>
+                          </Tooltip>
                           {
                             user.admin ? 
                               <form  noValidate>
