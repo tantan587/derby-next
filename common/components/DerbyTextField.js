@@ -32,7 +32,7 @@ const styles = {
 
 class DerbyTextField extends React.Component {
   render() {
-    const { classes } = this.props
+    const { classes, ...rest } = this.props
     const parsedErrorText = this.props.errorText || ''
     return (
       <TextField
@@ -46,7 +46,8 @@ class DerbyTextField extends React.Component {
         margin="normal"
         type={this.props.type}
         InputProps={{ classes: { underline: classes.underline } }}
-        onChange = {this.props.onChange}/>
+        onChange = {this.props.onChange}
+        {...rest}/>
     )
   }
 }

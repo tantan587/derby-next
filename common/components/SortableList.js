@@ -38,15 +38,15 @@ export default class SortableList extends Component {
               <Scrollbars autoHide style={{ height: maxHeight }}>
                 {items && items.map((item, index) => (
                   <Draggable key={item.id} draggableId={item.id} index={index}>
-                    {(provided) => (
+                    {(provided) => (console.log(provided),
                       <div
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
-                        style={getItemStyle(
-                          provided.draggableProps.style,
-                          this.props.marginBottom
-                        )}
+                        // style={getItemStyle(
+                        //   provided.draggableProps.style,
+                        //   this.props.marginBottom
+                        // )}
                       >
                     
                         {item.card}
