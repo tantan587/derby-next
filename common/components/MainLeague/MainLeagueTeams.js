@@ -55,67 +55,71 @@ class MainLeagueTeams extends React.Component {
         //points:activeLeague.teams[team.team_id].points
       }
     })
-    myTeams.sort((x,y) => {return x.rank > y.rank ?  1 : - 1})
-    myTeams.forEach((x,i) => {
-      x.rank = i+1
+    myTeams.sort((x, y) => { return x.rank > y.rank ? 1 : - 1 })
+    myTeams.forEach((x, i) => {
+      x.rank = i + 1
     })
-    const values=R.map(x => x.sport_id, this.props.activeLeague.rules)
+    const values = R.map(x => x.sport_id, this.props.activeLeague.rules)
     values.unshift('All')
     values.push('My Teams')
     let ownerName = activeLeague.owners.find(x => x.owner_id === activeLeague.my_owner_id).owner_name
     let filteredMyTeams = myTeams
-    let confs = [...new Set(filteredMyTeams.map(x => x.conference))].sort((a,b) => { return a > b})
-    
+    let confs = [...new Set(filteredMyTeams.map(x => x.conference))].sort((a, b) => { return a > b })
+
     R.values(contentFilter[page]).forEach(filter => {
-      filteredMyTeams = Filterer(filteredMyTeams, filter, {ownerName})
-      if(filter.type === 'tab'){
+      filteredMyTeams = Filterer(filteredMyTeams, filter, { ownerName })
+      if (filter.type === 'tab') {
         confs = [...new Set(filteredMyTeams.map(x => x.conference))].sort()
       }
     })
 
     confs.unshift('All')
     const filters = [{
-      type:'tab',
-      displayType:'sportsName',
+      type: 'tab',
+      displayType: 'sportsIcon',
       values,
-      column:'sport_id',
-      defaultTab:0,
-      tabStyles:{backgroundColor:'#e3dac9',
-        color:'#48311A',
-        selectedBackgroundColor:'white', 
-        selectedColor:'#229246',
-        fontSize:16}
-    },{type:'dropdown',
-      values:confs,
-      column:'conference',
-      name:'Conference'
+      column: 'sport_id',
+      defaultTab: 0,
+      tabStyles: {
+        backgroundColor: '#392007',
+        color: 'white',
+        selectedBackgroundColor: '#392007',
+        selectedColor: '#EBAB38',
+        fontSize: 16
+      }
+    }, {
+      type: 'dropdown',
+      values: confs,
+      column: 'conference',
+      name: 'Conference'
     },
-    {type:'search',
-      column:'team_name',
+    {
+      type: 'search',
+      column: 'team_name',
     },
     ]
     return (
       <div>
         <TeamsDialog />
 
-        <Title color='white' backgroundColor='#EBAB38' title='All Teams'/>
-        <FilterCreator filters={filters} page={page}/>
+        <Title color='white' backgroundColor='#EBAB38' title='All Teams' />
+        <FilterCreator filters={filters} page={page} />
         <DerbyTableContainer
           usePagination={true}
           myRows={filteredMyTeams}
           //orderInd={true}
-          myHeaders = {[
-            {label: 'Logo', key: 'logo_url', sortId:'team_name', imageInd:true},
-            {label: 'Team Name', key: 'team_name'},
-            {label: 'Sport', key: 'sport_id', imageInd:true},
-            {label: 'Conference', key: 'conference'},
-            {label: 'Owner Name', key: 'owner_name'},
-            {label: 'Record', key: 'record', sortId:'percentage'},
-            {label: 'Derby Points', key: 'points'},
-            {label: 'Proj. Points ', key: 'projPoints'},
-            {label: 'Rank', key: 'rank'},
+          myHeaders={[
+            { label: 'Logo', key: 'logo_url', sortId: 'team_name', imageInd: true },
+            { label: 'Team Name', key: 'team_name' },
+            { label: 'Sport', key: 'sport_id', imageInd: true },
+            { label: 'Conference', key: 'conference' },
+            { label: 'Owner Name', key: 'owner_name' },
+            { label: 'Record', key: 'record', sortId: 'percentage' },
+            { label: 'Derby Points', key: 'points' },
+            { label: 'Proj. Points ', key: 'projPoints' },
+            { label: 'Rank', key: 'rank' },
             // {label: 'Points', key: 'points'}
-          ]}/>
+          ]} />
       </div>
     )
   }
