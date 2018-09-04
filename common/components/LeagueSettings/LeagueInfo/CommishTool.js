@@ -11,6 +11,7 @@ import C from '../../../constants'
 const R = require('ramda')
 import StyledButton from '../../Navigation/Buttons/StyledButton'
 import {handleReorderDraft} from '../../../actions/draft-actions'
+import SuccessSnackbar from '../../UI/SuccessSnackbar'
 
 const styles = theme =>({
   root: {
@@ -68,6 +69,7 @@ class CommishTool extends React.Component {
 
         },
       fireRedirect:false,
+      snackbar: false,
       owners:this.props.activeLeague.owners.sort((a,b) => {
         return a.draft_position > b.draft_position ? 1 : -1 })
     }
@@ -123,7 +125,7 @@ class CommishTool extends React.Component {
     }
     else
     {
-      this.setState({fireRedirect:true})
+      this.setState({fireRedirect:true, snackbar:true})
       this.props.onUpdateLeague(this.state.leagueInfo, this.props.activeLeague.league_id)
       this.props.onRedorderDraft(this.state.owners.map(x => x.owner_id),this.props.activeLeague.league_id)
     }
@@ -140,6 +142,10 @@ class CommishTool extends React.Component {
     if (e.key === 'Enter') { 
       this.props.onSubmit(e)
     }
+  }
+
+  handleClose = (event, reason) => {
+    this.setState({snackbar: false})
   }
 
   render() {
@@ -177,6 +183,7 @@ class CommishTool extends React.Component {
                 text="Save Settings"
                 onClick={this.onSubmit}
               />
+              <SuccessSnackbar onClose={this.handleClose} stateKey={this.state.snackbar} message='Settings Saved' />
               <br/>
               <br/>
             </Grid>
