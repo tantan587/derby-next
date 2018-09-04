@@ -241,8 +241,6 @@ class CustomizeTeam extends Component {
               >
                 <CloseIcon />
               </IconButton> */}
-            )}
-          />
         </Grid>
         <br/>
         <br/>`
