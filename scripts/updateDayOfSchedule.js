@@ -113,7 +113,6 @@ const previousGamesFromKnexBySport = async (sport_id) => {
   let now = new Date()
   let dayCount = getDayCount(now)
   let today_games = await knex('sports.schedule')
-    .where('day_count', '<', 1539)
     .where('day_count', '<', dayCount)
     .andWhere('sport_id', sport_id)
     .whereNotIn('status', ['Postponed', 'Canceled'])
