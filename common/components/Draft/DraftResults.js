@@ -53,7 +53,7 @@ class DraftResults extends React.Component {
         lastYearPoints:activeLeague.teams[x.team_id].lastYearPoints || 0 , 
         ranking:activeLeague.teams[x.team_id].ranking } : x
     })
-    draftResults.sort(function(a,b){return b.overallPick - a.overallPick})
+    draftResults.sort(function(a,b){return a.overallPick - b.overallPick})
 
     let extraTableRow = {}
     extraTableRow.freq = activeLeague.owners.length
