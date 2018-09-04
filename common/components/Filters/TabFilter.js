@@ -8,7 +8,13 @@ import SportText from '../Icons/SportText'
 import ContainerDimensions from 'react-container-dimensions'
 
 
-const styles = () => ({
+const styles = theme => ({
+  container: {
+    width:'96%',
+    [theme.breakpoints.only('xs')]: {
+      width:'100%'
+    }
+  },
   button : {
     color:'black',
     borderRadius: '0px',
@@ -16,7 +22,12 @@ const styles = () => ({
   },
   appBar : {
     //height:'50px',
-    boxShadow: ['none']}
+    marginLeft:'2%',
+    boxShadow: ['none'],
+    [theme.breakpoints.only('xs')]: {
+      marginLeft:'0%'
+    }
+  }
 })
 
 class TabFilter extends React.Component {
@@ -31,7 +42,7 @@ class TabFilter extends React.Component {
   componentDidMount() {
     this.filterRows(this.state.index)
   }
-  
+
   handleTabClick = (index) => () =>
   {
     this.setState({ index})
@@ -50,23 +61,23 @@ class TabFilter extends React.Component {
     const {index} = this.state
     let height = displayType ==='sportsIcon' ? 100 : 50
     return (
-      <div style={{width:'96%'}}>
+      <div className={classes.container}>
         <AppBar position="static"
           className={classes.appBar}
-          style={{backgroundColor:tabStyles.backgroundColor, marginLeft:'2%', height:height, minHeight:height }} >
+          style={{backgroundColor:tabStyles.backgroundColor, height:height, minHeight:height }} >
           <Scrollbars autoHide style={{ width: '100%'}}>
             <div style={{display:'flex', justifyContent:'space-between', alignItems:'flex-end',height:height }}>
               {tabs.map((x,i) => {
-                
+
                 let style = i === index ? {backgroundColor:tabStyles.selectedBackgroundColor,
                   color:tabStyles.selectedColor} : {color:tabStyles.color}
 
-                
+
                 let display = x
                 let textInd = false
 
                 if (displayType ==='sportsIcon')
-                  display = <SportIconText color={style.color} sportId={x}/> 
+                  display = <SportIconText color={style.color} sportId={x}/>
                 else if (displayType ==='sportsName')
                   display = <SportText color={style.color} sportId={x} fontSize={tabStyles.fontSize}/>
                 else
@@ -78,10 +89,10 @@ class TabFilter extends React.Component {
                   onClick={this.handleTabClick(i)}>
 
                   <ContainerDimensions>
-                    { ({width}) => 
+                    { ({width}) =>
                     {
                       if (textInd)
-                        return <div style={{fontSize: width < 90 && x.length > 16 ? 9 : 12}}>{x}</div> 
+                        return <div style={{fontSize: width < 90 && x.length > 16 ? 9 : 12}}>{x}</div>
                       return display}}
                   </ContainerDimensions>
                 </Button>

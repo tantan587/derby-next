@@ -40,13 +40,30 @@ const styles = (theme) => ({
   },
   activeDay: {
     color: `${theme.palette.primary.main} !important`,
-  }
+  },
+  Xs: {
+    [theme.breakpoints.only('xs')]: {
+      display: 'inline'
+    },
+    [theme.breakpoints.up('sm')]: {
+      display: 'none'
+    },
+  },
+  Reg: {
+    [theme.breakpoints.up('sm')]: {
+      display: 'inline'
+    },
+    [theme.breakpoints.only('xs')]: {
+      display: 'none'
+    },
+  },
 })
 
 const Day = ({classes}, onUpdateDate, currDay) => (date, index) => {
+  console.log(index, currDay, date.getDay())
   return (
     <div
-      className={classNames(classes.day, {[classes.activeDay]: index === currDay})}
+      className={classNames(classes.day, {[classes.activeDay]: date.getDay() === currDay})}
       onClick={() => onUpdateDate(date)}
     >
       <Typography
@@ -78,18 +95,45 @@ class DayPicker extends Component {
   render() {
     const {classes, date, onUpdateDate} = this.props
     let offset = GetWeekOffsetRange(date)
+    let offsetSm = GetWeekOffsetRange(date)
+    let offsetXs = GetWeekOffsetRange(date)
+    const { start, end } = offset
+    // console.log(date.getDay(), -start)
+    if (5 > end && end > 1) {
+      offsetXs.start += 3
+      offsetXs.end += 3
+    } else if (end === 1) {
+      offsetXs.start += 6
+      offsetXs.end += 6
+    }
+
+
     const DateRange = R.range(offset.start, offset.end).map((offset) => {
       return this.changeDateByOffset(date,offset)
     })
+    const DateRangeSm = R.range(offset.start, offset.end - 2).map((offset) => {
+      return this.changeDateByOffset(date,offset)
+    })
+    const DateRangeXs = R.range(offset.start, offset.end - 4).map((offset) => {
+      return this.changeDateByOffset(date,offset)
+    })
+    // console.log(DateRange, 'hi', date)
     return (
       <div className={classes.week}>
         <div className={classes.arrow}
           onClick={() => onUpdateDate(this.changeDateByOffset(date,-1))}>
-          <ChevronLeftIcon fontSize="inherit"/></div>
-        {DateRange.map(Day({classes}, onUpdateDate, date.getDay()))}
+          <ChevronLeftIcon fontSize="inherit"/>
+        </div>
+        <div className={classes.Reg}>
+          {DateRange.map(Day({classes}, onUpdateDate, date.getDay()))}
+        </div>
+        <div className={classes.Xs}>
+          {DateRangeXs.map(Day({classes}, onUpdateDate, date.getDay()))}
+        </div>
         <div className={classes.arrow}
           onClick={() => onUpdateDate(this.changeDateByOffset(date,1))}>
-          <ChevronRightIcon fontSize="inherit"/></div>
+          <ChevronRightIcon fontSize="inherit"/>
+        </div>
         <DatePicker
           style={{marginLeft:20}}
           keyboard

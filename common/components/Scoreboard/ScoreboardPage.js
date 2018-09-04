@@ -55,7 +55,7 @@ class ScoreboardPage extends React.Component {
   componentDidUpdate(prevProps, prevState){
 
     const {dayCount} = this.state
-    if(dayCount && (dayCount != prevState.dayCount || 
+    if(dayCount && (dayCount != prevState.dayCount ||
       prevProps.updateTime.games !== this.props.updateTime.games))
     {
       let mySchedule = []
@@ -78,7 +78,7 @@ class ScoreboardPage extends React.Component {
       mySchedule = this.sortGames(Object.values(this.props.liveGames[dayCount]))
     this.setState({mySchedule})
   }
-  
+
   onUpdateDate = (date) =>
   {
     let dayCount = GetDayCountStr(date)
@@ -87,6 +87,7 @@ class ScoreboardPage extends React.Component {
       this.props.onDateChange(dayCount)
     }
     this.setState({date, dayCount})
+    console.log({date, dayCount})
   }
 
   sortGames = (games) =>
@@ -120,7 +121,7 @@ class ScoreboardPage extends React.Component {
       column:'sport_id',
       defaultTab:0,
       tabStyles:{backgroundColor:'#392007', color:'white',
-        selectedBackgroundColor:'#392007', 
+        selectedBackgroundColor:'#392007',
         selectedColor:'#EBAB38'}
     }
     return (

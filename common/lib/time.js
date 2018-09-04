@@ -24,7 +24,8 @@ export const GetWeekOffsetRange = (date) => {
   let dayOfWeek = date.getDay()
   let start = -dayOfWeek
   let end = 7-dayOfWeek
-  return {start,end}
+  // console.log('date??', date.getDay(), {start, end})
+  return {start, end}
 }
 
 
@@ -51,10 +52,10 @@ export const GetCountdownTimeObj = (num) =>
   const day = hour * 24
   let obj = {}
   obj.days = Math.floor(num / day)
-  obj.hours = Math.floor((num- obj.days *day) / hour) 
+  obj.hours = Math.floor((num- obj.days *day) / hour)
   obj.minutes = Math.floor((num- obj.days *day - obj.hours*hour) / min)
   obj.seconds = Math.floor((num- obj.days *day- obj.hours*hour- obj.minutes*min) / sec)
-  
+
   return obj
 }
 
@@ -82,7 +83,7 @@ export const GetDayCountStr = (date) => {
 export const GetNextDay = (inputDay, forward) =>
 {
   const date = new Date(inputDay+'T00:00:00')
-    
+
   date.setDate(date.getDate() + (forward ? 1 : -1))
   let month = date.getMonth() + 1
   month = month < 10 ? '0' + month : month
