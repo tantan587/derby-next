@@ -207,17 +207,39 @@ const getLeague = async (league_id, user_id, res, type) => {
 
 const getUserInfo = async (user_id) => {
   let user = 
-    await knex('user.user')
+    await knex('users.users')
       .where('user_id', user_id)
       .select('*')
   
   return user[0]
+}
+
+const buildLeagueSignUpEmail = async (user_id, league_info) => {
+  let user = await getUserInfo(user_id)
+  let draft_date = draft_time_for_email(league_info.draftDate)
+  return {
+    email: user.email,
+    first_name: user.first_name,
+    league_name: league_info.name,
+    league_password: league_info.password,
+    draft_day: draft_date[0],
+    draft_time: draft_date[1]
+  }
 }
 const timeZoneList = {
   '04': 'EST',
   '05': 'CST',
   '06': 'MST',
   '07': 'PST'
+}
+
+const draft_time_for_email = (raw_date) => {
+  let date = raw_date.split('T')[0].split('-')
+  let raw_time = raw_date.split('T')[1]
+  let raw_hour = raw_time.split(':')[0] - 4
+  let hour = raw_hour > 12 ? [raw_hour-12,"PM"] : [raw_hour, "AM"]
+  let minute = raw_time.split(':')[1]
+  return [`${date[1]}/${date[2]}`, `${hour[0]}:${minute} ${hour[1]} ET`]
 }
 
 const getSportLeagues = (league_id) =>{
@@ -801,5 +823,5 @@ module.exports = {
   handleReduxResponse,
   DeleteLeague, 
   timeZoneList,
-  getUserInfo
+  buildLeagueSignUpEmail
 }
