@@ -146,7 +146,7 @@ class CommishTool extends React.Component {
     }
   }
 
-  handleClose = (event, reason) => {
+  handleClose = () => {
     this.setState({snackbar: false})
   }
 
@@ -161,7 +161,7 @@ class CommishTool extends React.Component {
         <div className={classes.root}>
           <div className={classes.content}>
             <Grid container justify="space-between" className={classes.rootSmall} spacing={40} onKeyPress={(event) => this.keypress(event)}>
-              <Grid item xs={12} md={12} lg={7} className={classes.gridMargins}>
+              <Grid item xs={12} md={12} lg={8} className={classes.gridMargins}>
                 <div>
                   <div className={classes.titleSmall}>Draft Settings</div>
                   <DraftSettings draftType={draftType} pickTime={pickTime} draftDate={draftDate} handleChange={this.handleChange}/>
@@ -173,7 +173,7 @@ class CommishTool extends React.Component {
                   <ReorderDraft owners={owners} onUpdateOrder={this.onUpdateOrder}/>
                 </div>
               </Grid>
-              <Grid item xs={12} md={12} lg={7} className={classes.gridMargins}>
+              <Grid item xs={12} md={12} lg={8} className={classes.gridMargins}>
                 <div>
                   <div className={classes.titleSmall}>Invite League Members</div>
                   <Card>
