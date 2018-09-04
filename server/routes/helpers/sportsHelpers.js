@@ -146,7 +146,7 @@ const createGame = row => {
       team_name:row.sport_id !== '107' ? row.h_city + ' ' + row.h_name : row.h_name,
       url:row.h_url,
       team_id:row.home_team_id,
-      lost:row.winner === 'T',
+      lost:row.winner === 'A',
       record:(row.h_wins + '-' + row.h_losses) + (row.h_ites > 0 ? '-' + row.h_ties : '')
     },
     away : {
