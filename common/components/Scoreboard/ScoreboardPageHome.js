@@ -40,7 +40,7 @@ const styles = theme => ({
   }
 })
 
-class ScoreboardPage extends React.Component {
+class ScoreboardPageHome extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -102,35 +102,17 @@ class ScoreboardPage extends React.Component {
   render() {
     //const { classes, liveGames} = this.props
 
-    const {contentFilter, activeLeague} = this.props
+    const {contentFilter} = this.props
     const {mySchedule, date} = this.state
     const page='scoreboard'
-
-
-    let myTeams = Object.keys(activeLeague.teams).filter(team_id => activeLeague.teams[team_id].owner_id === activeLeague.my_owner_id)
-    let ownerName = activeLeague.owners.find(x => x.owner_id === activeLeague.my_owner_id).owner_name
-
-    //filters data based on page
-    //when data changes, filter changes based on the key. 
-    //x[filter.key] == filter.value. key for scoreboard is sport_id
-    //have to get owner name in here, or change how filters work
-    let newSchedule = mySchedule.map(game => {
-      let teamOwnerName = ''
-      if(myTeams.includes(game.away.team_id)||myTeams.includes(game.home.team_id)){
-        teamOwnerName = ownerName
-      }
-      return {...game, owner_name: teamOwnerName}
-    })
-  
+ 
     const sports = R.values(sportLeagues).sort((x,y) => x.order > y.order).map(x => x.sport_id)
     sports.unshift('All')
-    sports.push('My Teams')
 
-    // console.log(newSchedule)
 
-    let filteredScoreData = newSchedule //mySchedule
+    let filteredScoreData = mySchedule //mySchedule
     R.values(contentFilter[page]).forEach(filter => {
-      filteredScoreData = Filterer(newSchedule, filter, {ownerName})
+      filteredScoreData = Filterer(mySchedule, filter)
     })
 
     // const sports = R.values(sportLeagues).sort((x,y) => x.order > y.order).map(x => x.sport_id)
@@ -169,4 +151,4 @@ export default R.compose(
   withStyles(styles),
   connect(R.pick(['contentFilter', 'teams', 'liveGames', 'activeLeague', 'schedule', 'updateTime'])
     , {openDialog: handleOpenDialog,onDateChange:clickedDateChange })
-)(ScoreboardPage)
+)(ScoreboardPageHome)

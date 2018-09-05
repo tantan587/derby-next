@@ -1,6 +1,6 @@
 import React from 'react'
 import LayoutUser from '../common/components/LayoutUser'
-import ScoreboardPage from '../common/components/Scoreboard/ScoreboardPage'
+import ScoreboardPageHome from '../common/components/Scoreboard/ScoreboardPageHome'
 import withRoot from '../common/components/withRoot'
 import withRedux from 'next-redux-wrapper'
 import storeFactory from '../common/store'
@@ -13,7 +13,7 @@ class Scoreboard extends React.Component {
         <LayoutUser >
           <ReloadProtector 
             ProtectedRoute={() => 
-              <ScoreboardPage redirectInd={true}/>} />
+              <ScoreboardPageHome redirectInd={true}/>} />
         </LayoutUser>
       </div>
     )
