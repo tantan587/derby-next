@@ -85,8 +85,12 @@ class ScoreboardPageHome extends React.Component {
     if(!this.props.liveGames[dayCount])
     {
       this.props.onDateChange(dayCount)
+        .then(()=> this.setState({date, dayCount}))
     }
-    this.setState({date, dayCount})
+    else{
+      this.setState({date, dayCount})
+    }
+    
   }
 
   sortGames = (games) =>
