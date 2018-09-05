@@ -237,9 +237,9 @@ const draft_time_for_email = (raw_date) => {
   let date = raw_date.split('T')[0].split('-')
   let raw_time = raw_date.split('T')[1]
   let raw_hour = raw_time.split(':')[0] - 4
-  let hour = raw_hour > 12 ? [raw_hour-12,'PM'] : [raw_hour, 'AM']
+  let hour = raw_hour > 12 ? [raw_hour-12,'PM', date[2]] : raw_hour<0 ? [12+raw_hour, 'PM', date[2]-1] : [raw_hour, 'AM']
   let minute = raw_time.split(':')[1]
-  return [`${date[1]}/${date[2]}`, `${hour[0]}:${minute} ${hour[1]} ET`]
+  return [`${date[1]}/${hour[2]}`, `${hour[0]}:${minute} ${hour[1]} ET`]
 }
 
 const getSportLeagues = (league_id) =>{
