@@ -102,6 +102,11 @@ class BottomNav extends React.Component {
               <img src='/static/icons/Footer/social_media_icon_twitter.svg' width='50' height='auto' />
             </a>
           </div>
+          <div style={{ marginLeft: 20, display: 'inline-block' }}>
+            <a href="https://www.instagram.com/derbyfantasy/">
+              <img src='/static/images/instagram_icon.png' width='50' height='auto' />
+            </a>
+          </div>
           <br />
           <a href="http://fantasydata.com/" target="_blank">
             <img src="https://fantasydata.com/images/badges/fantasydata-light-wide.png" alt="Powered by FantasyData.com" />
