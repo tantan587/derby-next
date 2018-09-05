@@ -70,7 +70,7 @@ function DraftManager(roomId, draftEmitter) {
     await socketIoHelpers.RestartDraft(roomId)
     that.pick = 0
     that.owners.ResetEligible()
-    that.start_time = new Date(new Date().getTime() + 5000)
+    that.start_time = new Date(new Date().getTime() + 10000)
     draftEmitter.EmitReset(that.start_time.toJSON())
     draftState = 'pre'
     await waitToStartDraft()
@@ -146,6 +146,13 @@ function DraftManager(roomId, draftEmitter) {
   this.TimeIn = () =>
   {
     timeIn()
+  }
+
+  this.ResetOnUpdate = async () =>
+  {
+    await socketIoHelpers.UpdateDirtyToFalse(roomId)
+    await this.Create(this.owners.SocketMap())
+    await this.Start()
   }
 
   const onStartDraft = async () => {

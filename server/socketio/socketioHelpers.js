@@ -135,14 +135,37 @@ const RestartDraft = (roomId) =>{
       .where('room_id', roomId)
       .del()
       .then( () => {
-        return InsertDraftAction(roomId, 'server', 'STATE', {'mode':'pre'})
-          .then(() => {return})
+        return knex.withSchema('draft').table('settings')
+          .transacting(t)
+          .where('room_id', roomId)
+          .update({state:'pre'})
+          .then( () => {
+            return InsertDraftAction(roomId, 'server', 'STATE', {'mode':'pre'})
+              .then(() => {return})
+          })
       })
       .then(()=>{
         t.commit
         return
       })
   })
+}
+
+const UpdateDirtyToFalse = (roomId) => {
+  console.log('im in')
+  return knex.withSchema('draft').table('settings')
+    .where('room_id', roomId)
+    .update({
+      'dirty':'f'
+    })
+    .then( () => {return} )
+}
+
+const GetDirtyDrafts = async () => {
+  const str1 = `SELECT room_id from draft.settings WHERE dirty = 't' 
+   AND state = 'pre'`
+  const resp = await knex.raw(str1)
+  return resp.rows.map(x =>x.room_id)
 }
 
 module.exports = {
@@ -153,5 +176,7 @@ module.exports = {
   InsertDraftAction,
   RestartDraft,
   CheckDraftBeforeInsertingPick,
-  GetDraftResults
+  GetDraftResults,
+  UpdateDirtyToFalse,
+  GetDirtyDrafts,
 }

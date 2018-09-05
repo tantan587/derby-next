@@ -27,7 +27,8 @@ class DraftLobby {
   }
 
   async Activate() {
-    setInterval(() => this.CheckForActiveDraft(), 2000)
+    setInterval(() => this.CheckForActiveDraft(), 10000)
+    setInterval(async () => await this.CheckForDirtyDrafts(), 2000)
 
     this.draftNSP.on('connection', socket => 
     { 
@@ -45,10 +46,20 @@ class DraftLobby {
       }
       if(this.draftRooms[roomId] && !this.draftRooms[roomId].Manager)
       {
-
         this.draftRooms[roomId].Manager = new DraftManager(roomId, this.draftRooms[roomId].Emitter)
         await this.draftRooms[roomId].Manager.Create()
         await this.draftRooms[roomId].Manager.Start()
+      }
+    })}
+
+  async CheckForDirtyDrafts() {
+    const roomIds = await socketIoHelpers.GetDirtyDrafts()
+    roomIds.forEach(async roomId => {
+      
+      if(this.draftRooms[roomId] && this.draftRooms[roomId].Manager && this.draftRooms[roomId].Manager.DraftIsUp())
+      {
+        console.log('reseting', roomId)
+        await this.draftRooms[roomId].Manager.ResetOnUpdate()
       }
     })}
 

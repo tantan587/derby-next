@@ -117,7 +117,8 @@ const createLeague = async (req) => {
                     type: req.body.leagueInfo.draftType,
                     room_id: Math.random().toString(36).substr(2, 10),
                     draft_position: JSON.stringify([owner_id]),
-                    seconds_pick: req.body.leagueInfo.pickTime
+                    seconds_pick: req.body.leagueInfo.pickTime,
+                    dirty:true
                   })
                   .then(() => {
                     return knex.withSchema('fantasy').table('sports')
@@ -195,7 +196,7 @@ const joinLeague = async (req) => {
                       .table('settings')
                       .transacting(trx)
                       .where('league_id',league_id)
-                      .update('draft_position', JSON.stringify(draft_position))
+                      .update({draft_position:JSON.stringify(draft_position), dirty:true})
                       .then(()=> {return})
                   })//draft settings
               }) //fantasy leagues
@@ -217,18 +218,14 @@ const joinLeague = async (req) => {
 
 const updateLeague =  (req) => {
   
-  return knex.transaction((trx) => {
-    knex.withSchema('draft').table('settings')
-      .transacting(trx)
-      .update({
-        start_time: req.body.leagueInfo.draftDate,
-        type: req.body.leagueInfo.draftType,
-        seconds_pick: req.body.leagueInfo.pickTime
-      })
-      .where('league_id', req.body.league_id)
-      .then(trx.commit)
-      .catch(trx.rollback)
-  }) //trans
+  return  knex.withSchema('draft').table('settings')
+    .update({
+      start_time: req.body.leagueInfo.draftDate,
+      type: req.body.leagueInfo.draftType,
+      seconds_pick: req.body.leagueInfo.pickTime,
+      dirty:true
+    })
+    .where('league_id', req.body.league_id)
     .then(() => {
       return 
     })

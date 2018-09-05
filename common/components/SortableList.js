@@ -46,8 +46,7 @@ export default class SortableList extends Component {
                         style={getItemStyle(
                           provided.draggableProps.style,
                           this.props.marginBottom
-                        )}
-                      >
+                        )}>
                     
                         {item.card}
                       </div>
