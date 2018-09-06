@@ -55,7 +55,7 @@ class BottomNav extends React.Component {
       [{ text: 'Home', link: '/' },
         { text: 'Rules', link: '/rules' },
         { text: 'FAQ', link: '/faq' },
-        { text: 'Private Policy', link: '/privacy' },
+        { text: 'Privacy Policy', link: '/privacy' },
         { text: 'Login', link: '/login' },
         { text: 'Sign Up', link: '/signup' }]
 
