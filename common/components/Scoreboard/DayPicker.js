@@ -95,23 +95,20 @@ class DayPicker extends Component {
   render() {
     const {classes, date, onUpdateDate} = this.props
     let offset = GetWeekOffsetRange(date)
-    let offsetSm = GetWeekOffsetRange(date)
     let offsetXs = GetWeekOffsetRange(date)
-    const { start, end } = offset
-    // console.log(date.getDay(), -start)
-    if (5 > end && end > 1) {
-      offsetXs.start += 3
-      offsetXs.end += 3
-    } else if (end === 1) {
+
+    const { end } = offset
+
+    if (5 > end && end > 1) { // HACK
+      offsetXs.start += 3     // .getDay() returns an int between 0 and 6
+      offsetXs.end += 3       // it's not ideal to assume that a piece
+    } else if (end === 1) {   // of UI will be between 0 and 6
       offsetXs.start += 6
       offsetXs.end += 6
     }
 
 
     const DateRange = R.range(offset.start, offset.end).map((offset) => {
-      return this.changeDateByOffset(date,offset)
-    })
-    const DateRangeSm = R.range(offset.start, offset.end - 2).map((offset) => {
       return this.changeDateByOffset(date,offset)
     })
     const DateRangeXs = R.range(offset.start, offset.end - 4).map((offset) => {

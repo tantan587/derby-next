@@ -24,7 +24,11 @@ const styles = theme => ({
     backgroundSize: 'cover',
     minHeight: '600px',
     marginLeft:'3%',
-    width:'94%'
+    width:'94%',
+    [theme.breakpoints.only('xs')]: {
+      marginLeft:'0%',
+      width:'100%'
+    }
   },
   'cards': {
     display: 'flex',
@@ -113,8 +117,8 @@ class MainLeagueHome extends React.Component {
               Button={() => <StyledButton text="View Complete Standings" link='/mainleaguestandings'/>}
             >
               <Standings owners={owners.sort((x,y) => {
-                return x.rank > y.rank ? 1 
-                  : x.rank < y.rank ? - 1 
+                return x.rank > y.rank ? 1
+                  : x.rank < y.rank ? - 1
                     : x.owner_name > y.owner_name ? 1
                       : -1
               }
