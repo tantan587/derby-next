@@ -1,4 +1,5 @@
 const R = require('ramda')
+import React from 'react'
 import {connect} from 'react-redux'
 import { withRouter } from 'next/router'
 import { slide as Menu } from 'react-burger-menu'

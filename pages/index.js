@@ -210,7 +210,7 @@ class Index extends React.Component {
           <Typography variant='headline' className={classes.greenCopy}>
           There’s nothing like being part of a team. How about being a part of 15 of them? In Derby Fantasy Wins League,
           you will build a bond with two NFL, two NBA, two MLB, two NHL, one EPL, three NCAA Football,
-          and three NCAA Men’s Basketball soccer teams. When they win, you do!
+          and three NCAA Men’s Basketball teams. When they win, you do!
           </Typography>
           <br/>
           <br/>
