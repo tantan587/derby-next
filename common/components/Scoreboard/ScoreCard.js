@@ -12,7 +12,8 @@ const styles = (theme) => (console.log(theme), {
   container: {
     maxWidth: 600,
     marginBottom: 20,
-    marginRight:20,
+    marginLeft:10,
+    marginRight:10
   },
   title: {
     fontWeight: 'bold',
