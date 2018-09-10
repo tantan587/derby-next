@@ -12,7 +12,7 @@ const styles = {
     fontFamily: '\'Roboto\', sans-serif'
   },
   arrowRight: {
-    width: 0, 
+    width: 0,
     height: 0,
     borderTop: '10px solid #EBAB38',
     borderBottom: '10px solid #EBAB38',
@@ -27,7 +27,7 @@ class StandingsRace extends React.Component {
     let sd = new Date(Object.values(seasons).map(x => x.start).sort()[0])
     let season_start = new Date(sd.getFullYear(), sd.getMonth(), 1)
     let ed = new Date(Object.values(seasons).map(x => x.end).sort()[Object.keys(seasons).length - 1])
-    
+
     //need to adjust this if it doesnt end on Exactly at the end of a month
     let season_end =ed//= new Date(ed.getFullYear(), ed.getMonth(), 30)
     let current_time = new Date()
@@ -38,7 +38,7 @@ class StandingsRace extends React.Component {
 
     const mostPoints = findMostPoints(owners)
     const horseWidth = owner => (owner.total_points / mostPoints) * 100
-    
+
     return (
       <div className={classes.root}>
         <div style={{ display: 'flex' }}>
@@ -74,13 +74,20 @@ class StandingsRace extends React.Component {
             color: 'white',
             textTransform: 'uppercase'
           }}>
-            <div style={{ position: 'relative', width: 500, top: 0, left: 0 }}>
+            <div style={{
+              position: 'relative',
+              width: '96vw',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              top: 0,
+              left: 0,
+            }}>
               <span style={{ fontWeight: 600, position: 'relative', marginLeft:10 }}>
               Derby Fantasy Wins League
               </span>
               &nbsp; &nbsp; Season Progress
             </div>
-                
           </div>
           <div className={classes.arrowRight}></div>
           <div style={{ backgroundColor: '#EBAB38', width: `${restDifference * 100}%` }} />

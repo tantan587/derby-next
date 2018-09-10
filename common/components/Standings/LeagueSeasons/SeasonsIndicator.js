@@ -14,6 +14,9 @@ const SeasonsIndicator = ({ start, end, fullDifference, seasons }) =>
           style={{
             backgroundColor: '#0E7838',
             color: 'white',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
             width: ( Date.parse(seasons[sportId].end) - Date.parse(seasons[sportId].start) ) / fullDifference * 100 + '%'
           }}>
           &nbsp; &nbsp; { sportLeagues[sportId].displayName } season

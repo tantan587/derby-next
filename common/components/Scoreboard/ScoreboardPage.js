@@ -55,7 +55,7 @@ class ScoreboardPage extends React.Component {
   componentDidUpdate(prevProps, prevState){
 
     const {dayCount} = this.state
-    if(dayCount && (dayCount != prevState.dayCount || 
+    if(dayCount && (dayCount != prevState.dayCount ||
       prevProps.updateTime.games !== this.props.updateTime.games))
     {
       let mySchedule = []

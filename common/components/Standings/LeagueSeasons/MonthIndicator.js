@@ -1,3 +1,4 @@
+import { withStyles } from '@material-ui/core/styles'
 
 // const  monthDiff = (d1, d2) => {
 //   var months
@@ -7,10 +8,18 @@
 //   return months <= 0 ? 0 : months
 // }
 
+const styles = theme => ({
+  month: {
+    [theme.breakpoints.only('xs')]: {
+      fontSize: '1.35vh',
+      lineHeight: '200%',
+    }
+  }
+})
 
-const MonthIndicator = () => {
-  //this needs to be automated 
-  const monthsToRender = [null, 'sep', null, 'nov', null, 'jan \'19', null, 'mar', null, 'may', null, 'jul', null, 'sep', null]
+const MonthIndicator = withStyles(styles)(({ classes }) => {
+  //this needs to be automated
+  const monthsToRender = [null, 'sep', null, 'nov', null, 'jan', null, 'mar', null, 'may', null, 'jul', null, 'sep', null]
   const NUM_MONTHS = monthsToRender.length
 
 
@@ -23,14 +32,16 @@ const MonthIndicator = () => {
       backgroundColor: '#299149',
       borderTop: '1px solid white',
       borderBottom: '1px solid white',
-      paddingTop: '2px'
+      // paddingTop: '2px'
     }}>
       {
-        monthsToRender.map((month, i) => <div key={i} style={{
+        monthsToRender.map((month, i) => <div key={i} className={classes.month} style={{
           // backgroundColor: '#299149',
           color: 'white',
+          // fontSize: '16px',
           width: 100 / NUM_MONTHS + '%',
           textAlign: 'center',
+          // alignSelf: 'center'
           borderLeft: '1px solid white',
           borderRight: '1px solid white',
         }}
@@ -40,6 +51,6 @@ const MonthIndicator = () => {
       }
     </div>
   )
-}
+})
 
 export default MonthIndicator

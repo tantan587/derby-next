@@ -8,16 +8,19 @@ import StandingsSeasons from '../Standings/StandingsSeasons'
 import StandingsRace from '../Standings/StandingsRace'
 import OwnerSilk from '../Icons/Avatars/OwnerSilk'
 
-const styles = {
+const styles = theme => ({
   container: {
-    left: '50%',
-    textAlign: 'center',
-    marginTop : '100px'
+    width: '94%',
+    marginLeft: '3%',
+    [theme.breakpoints.only('xs')]: {
+      width: '100%',
+      marginLeft: '0%',
+    }
   },
   field: {
     textAlign: 'center',
   }
-}
+})
 
 const styleProps = {
   Container:{
@@ -46,7 +49,7 @@ const styleProps = {
       borderRight: '1px solid white',
       borderLeft: '1px solid white'
     }),
-    TableCellComponent: (i, n) => i === 0 ? <td 
+    TableCellComponent: (i, n) => i === 0 ? <td
       style={{ height: 80, width: 80, borderBottom: '1px solid white' }}>{OwnerSilk(n.avatar, {height:90})}</td> : false,
     TableRow: {
       borderRight: '1px solid white'
@@ -56,7 +59,7 @@ const styleProps = {
 
 class MainLeagueStandings extends React.Component {
   render() {
-    const {activeLeague} = this.props
+    const {classes, activeLeague} = this.props
     let owners = []
     if (activeLeague.owners)
       owners = this.props.activeLeague.owners
@@ -73,8 +76,7 @@ class MainLeagueStandings extends React.Component {
           title="STANDINGS"
           subheading={this.props.activeLeague.league_name}
         />
-        <div style={{ width: '94%', marginLeft: '3%' }}>
-          
+        <div className={classes.container}>
           <StandingsSeasons />
           <StandingsRace
             owners={owners_race}
