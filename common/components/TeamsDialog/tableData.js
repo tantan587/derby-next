@@ -29,8 +29,8 @@ export const organizeData = (data) => {
       result: result[0], //homeTeamScore > awayTeamScore ? 'W' : 'L',
       score: `${Math.max(homeTeamScore, awayTeamScore)}-${Math.min(homeTeamScore, awayTeamScore)}`,
       location: 'Home',
-      derby_points: derbyPointsObject.regular_season.win
-
+      derby_points: derbyPointsObject.regular_season.win,
+      derby_result_points: result[0] === 'W' ? derbyPointsObject.regular_season.win : result[0] === 'L' ? 0 : derbyPointsObject.regular_season.tie
     }
     return tableData
   } else {
@@ -43,7 +43,9 @@ export const organizeData = (data) => {
       result: result[1], //awayTeamScore > homeTeamScore ? 'W' : awayTeamScore < homeTeamScore ? 'L': 'D',
       score: `${Math.max(awayTeamScore, homeTeamScore)}-${Math.min(awayTeamScore, homeTeamScore)}`,
       location: 'Away',
-      derby_points: derbyPointsObject.regular_season.win
+      derby_points: derbyPointsObject.regular_season.win,
+      derby_result_points: result[1] === 'W' ? derbyPointsObject.regular_season.win : result[1] === 'L' ? 0 : derbyPointsObject.regular_season.tie
+
     }
     return tableData
   }
