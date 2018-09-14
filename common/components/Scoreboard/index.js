@@ -42,8 +42,8 @@ const formatDate = (date) => `${MonthNames[date.getMonth()]} ${date.getDate()}, 
 class Scoreboard extends Component {
 
   render() {
-    const {classes, scoreData, date, onUpdateDate} = this.props
-    const scoreCards = scoreData.map((x,i) => <ScoreCard key={i} useRightSide={false} scoreboardData={x}/>)
+    const {classes, scoreData, date, onUpdateDate, activeLeague} = this.props
+    const scoreCards = scoreData.map((x,i) => <ScoreCard key={i} useRightSide={false} scoreboardData={x} activeLeague={activeLeague}/>)
  
     return (
       <div className={classes.container}>

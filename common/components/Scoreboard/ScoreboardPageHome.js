@@ -106,7 +106,7 @@ class ScoreboardPageHome extends React.Component {
   render() {
     //const { classes, liveGames} = this.props
 
-    const {contentFilter} = this.props
+    const {contentFilter, activeLeague} = this.props
     const {mySchedule, date} = this.state
     const page='scoreboard'
  
@@ -144,7 +144,7 @@ class ScoreboardPageHome extends React.Component {
       <div>
         <Title color='white' backgroundColor='#EBAB38' title={'Scoreboard'} />
         <FilterCreator filters={[filter]} page={page} />
-        <ScoreboardBody scoreData={filteredScoreData} date={date} onUpdateDate={this.onUpdateDate} />
+        <ScoreboardBody scoreData={filteredScoreData} date={date} onUpdateDate={this.onUpdateDate} activeLeague={activeLeague}/>
       </div>
 
     )

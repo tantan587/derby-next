@@ -7,6 +7,8 @@ import Paper from '@material-ui/core/Paper'
 import {LeftRight} from './ScoreCardLayouts'
 import TeamSection from './TeamSection'
 import MetaPB from './RightSideContent/MetaPB'
+import TeamsDialog from '../TeamsDialog/TeamsDialog'
+
 
 const styles = (theme) => (console.log(theme), {
   container: {
@@ -43,18 +45,27 @@ const styles = (theme) => (console.log(theme), {
 })
 
 
-const TeamScoreRow = ({classes, team, totalInd}) => {
+const TeamScoreRow = ({classes, team, totalInd, activeLeague}) => {
+  let record_and_points = team.record
+  let owner_name = ''
+  if(activeLeague.success){
+    let owner_id = team.team_id in activeLeague.teams ? activeLeague.teams[team.team_id].owner_id : false
+    owner_name = owner_id ? activeLeague.owners.find(owner => owner.owner_id===owner_id).owner_name : 'N/A'
+    let points = team.team_id in activeLeague.teams ? `, ${activeLeague.teams[team.team_id].points} points` : ''
+    record_and_points = `${team.record} ${points}`
+  }
   return (
     <LeftRight
       totalInd={totalInd}
       className={classes.Row}
-      style={{color:team.lost ? '#777' : '#000'}}
+      style={ {color:team.lost ? '#777' : '#000'}}
       classes={R.pick(['R', 'RValues'], classes)}
       L={<TeamSection
         lostInd={team.lost}
         team_name={team.team_name}
         logo_url={team.url}
-        record={team.record}/>}
+        record={record_and_points}
+        owner_name={owner_name}/>}
       R={team.score.map(x => <Typography children={x} variant="subheading" color="inherit" />)}
     />
   )
@@ -63,9 +74,12 @@ const TeamScoreRow = ({classes, team, totalInd}) => {
 class ScoreCard extends Component {
 
   render() {
-    const {classes, useRightSide, scoreboardData} = this.props
+    const {classes, useRightSide, scoreboardData, activeLeague} = this.props
     const totalInd=scoreboardData.header[scoreboardData.header.length-1] === 'T'
     return (
+      <div>
+      <TeamsDialog />
+
       <Grid
         item
         container
@@ -89,8 +103,8 @@ class ScoreCard extends Component {
             L={<Typography children={<b>{scoreboardData.status}</b>} variant="subheading" color="primary"/>}
             R={scoreboardData.header.map((x,i) => <Typography key={i} children={x} variant="subheading" color="inherit" />)}
           />
-          <TeamScoreRow totalInd={totalInd} classes={classes} team={scoreboardData.away}/>
-          <TeamScoreRow totalInd={totalInd} classes={classes} team={scoreboardData.home}/>
+          <TeamScoreRow totalInd={totalInd} classes={classes} team={scoreboardData.away} activeLeague={activeLeague}/>
+          <TeamScoreRow totalInd={totalInd} classes={classes} team={scoreboardData.home} activeLeague={activeLeague}/>
           {/* <Typography className={classes.venue} variant="caption"><b>Location</b>{': ' + scoreboardData.stadium}</Typography> */}
         </Grid>
         {useRightSide ? 
@@ -104,6 +118,8 @@ class ScoreCard extends Component {
           /> : <div/>
         }
       </Grid>
+      </div>
+
     )
   }
 }
