@@ -14,7 +14,8 @@ const TeamSection = ({
   lostInd,
   logo_url = 'https://upload.wikimedia.org/wikipedia/en/2/24/Atlanta_Hawks_logo.svg',
   team_name = 'Rays',
-  record='(28-30, 36 Points)'
+  record='(28-30, 36 Points)',
+  owner_name='N/A'
 }) => (
   <LTB
     classes={classes}
@@ -35,9 +36,10 @@ const TeamSection = ({
     )}
     B={(
       <Typography
-        variant="caption"
-        children={record}
-      />
+        variant="caption">
+      {owner_name} <br />
+      {record}
+        </Typography>
     )}
   />
 )
