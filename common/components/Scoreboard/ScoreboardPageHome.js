@@ -2,7 +2,6 @@ import React from 'react'
 import { connect } from 'react-redux'
 //import { compose } from 'redux'
 import { withStyles } from '@material-ui/core/styles'
-import { handleOpenDialog } from '../../actions/dialog-actions'
 import {clickedDateChange} from '../../actions/sport-actions'
 import Title from '../Navigation/Title'
 import {GetDayCountStr} from '../../lib/time'
@@ -10,6 +9,7 @@ import sportLeagues from '../../../data/sportLeagues.json'
 import ScoreboardBody from './'
 import FilterCreator from '../Filters/FilterCreator'
 import Filterer from '../Filters/Filterer'
+import TeamsDialog from '../TeamsDialog/TeamsDialog'
 const R = require('ramda')
 
 
@@ -118,11 +118,6 @@ class ScoreboardPageHome extends React.Component {
     R.values(contentFilter[page]).forEach(filter => {
       filteredScoreData = Filterer(mySchedule, filter)
     })
-
-    // const sports = R.values(sportLeagues).sort((x,y) => x.order > y.order).map(x => x.sport_id)
-    // sports.unshift('All')
-    // sports.push('My Teams')
-
     const filter = {
       type:'tab',
       displayType:'sportsIcon',
@@ -132,16 +127,10 @@ class ScoreboardPageHome extends React.Component {
       tabStyles:{backgroundColor:'#392007', color:'white',
         selectedBackgroundColor:'#392007', 
         selectedColor:'#EBAB38'}
-    }
-    // ,  
-    // {
-    //   type: 'tab',
-    //   values: this.props.activeLeague.owners.filter(x => x.owner_id === this.props.activeLeague.my_owner_id).map(x => x.owner_name),
-    //   column: 'My Teams'
-    // }    
-  
+    }  
     return (
       <div>
+        <TeamsDialog/>
         <Title color='white' backgroundColor='#EBAB38' title={'Scoreboard'} />
         <FilterCreator filters={[filter]} page={page} />
         <ScoreboardBody scoreData={filteredScoreData} date={date} onUpdateDate={this.onUpdateDate} activeLeague={activeLeague}/>
@@ -154,5 +143,5 @@ class ScoreboardPageHome extends React.Component {
 export default R.compose(
   withStyles(styles),
   connect(R.pick(['contentFilter', 'teams', 'liveGames', 'activeLeague', 'schedule', 'updateTime'])
-    , {openDialog: handleOpenDialog,onDateChange:clickedDateChange })
+    , {onDateChange:clickedDateChange })
 )(ScoreboardPageHome)

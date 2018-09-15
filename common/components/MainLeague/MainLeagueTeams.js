@@ -2,7 +2,6 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { withStyles } from '@material-ui/core/styles'
-import { handleOpenDialog } from '../../actions/dialog-actions'
 import Title from '../Navigation/Title'
 import DerbyTableContainer from '../Table/DerbyTableContainer'
 import TeamsDialog from '../TeamsDialog/TeamsDialog'
@@ -129,8 +128,7 @@ MainLeagueTeams.propTypes = {
   classes: PropTypes.object.isRequired,
 }
 
-const mapDispatchToProps = (dispatch) => ({
-  openDialog: () => dispatch(handleOpenDialog)
+const mapDispatchToProps = () => ({
 })
 
 export default connect(

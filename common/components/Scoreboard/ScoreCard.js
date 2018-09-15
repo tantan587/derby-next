@@ -7,10 +7,8 @@ import Paper from '@material-ui/core/Paper'
 import {LeftRight} from './ScoreCardLayouts'
 import TeamSection from './TeamSection'
 import MetaPB from './RightSideContent/MetaPB'
-import TeamsDialog from '../TeamsDialog/TeamsDialog'
 
-
-const styles = (theme) => (console.log(theme), {
+const styles = (theme) => ({
   container: {
     maxWidth: 600,
     marginBottom: 20,
@@ -53,7 +51,7 @@ const TeamScoreRow = ({classes, team, totalInd, activeLeague}) => {
     let owner_id = team.team_id in activeLeague.teams ? activeLeague.teams[team.team_id].owner_id : false
     owner_name = owner_id ? activeLeague.owners.find(owner => owner.owner_id===owner_id).owner_name : 'N/A'
     let points = team.team_id in activeLeague.teams ? `, ${activeLeague.teams[team.team_id].points} points` : ''
-    record_and_points = `${team.record} ${points}`
+    record_and_points = `${team.record}${points}`
   }
   return (
     <LeftRight
@@ -65,6 +63,7 @@ const TeamScoreRow = ({classes, team, totalInd, activeLeague}) => {
         lostInd={team.lost}
         team_name={team.team_name}
         logo_url={team.url}
+        team_id={team.team_id}
         record={record_and_points}
         owner_name={owner_name}/>}
       R={team.score.map(x => <Typography children={x} variant="subheading" color="inherit" />)}
@@ -79,46 +78,44 @@ class ScoreCard extends Component {
     const totalInd=scoreboardData.header[scoreboardData.header.length-1] === 'T'
     return (
       <div>
-      <TeamsDialog />
-
-      <Grid
-        item
-        container
-        className={classes.container}
-        style={{maxWidth:useRightSide? 600: 400}}
-        xs={12}
-        direction="row"
-        component={Paper}
-      > 
         <Grid
           item
-          className={classes.left}
           container
+          className={classes.container}
+          style={{maxWidth:useRightSide? 600: 400}}
           xs={12}
-          md={useRightSide ? 7 : 12}
-        >
-          <LeftRight
-            totalInd={totalInd}
-            className={classes.Header}
-            classes={R.pick(['R', 'RValues'], classes)}
-            L={<Typography children={<b>{scoreboardData.status}</b>} variant="subheading" color="primary"/>}
-            R={scoreboardData.header.map((x,i) => <Typography key={i} children={x} variant="subheading" color="inherit" />)}
-          />
-          <TeamScoreRow totalInd={totalInd} classes={classes} team={scoreboardData.away} activeLeague={activeLeague}/>
-          <TeamScoreRow totalInd={totalInd} classes={classes} team={scoreboardData.home} activeLeague={activeLeague}/>
-          {/* <Typography className={classes.venue} variant="caption"><b>Location</b>{': ' + scoreboardData.stadium}</Typography> */}
-        </Grid>
-        {useRightSide ? 
+          direction="row"
+          component={Paper}
+        > 
           <Grid
-            className={classes.right}
+            item
+            className={classes.left}
+            container
             xs={12}
-            md={5}
-            children={(
-              <MetaPB />
-            )}
-          /> : <div/>
-        }
-      </Grid>
+            md={useRightSide ? 7 : 12}
+          >
+            <LeftRight
+              totalInd={totalInd}
+              className={classes.Header}
+              classes={R.pick(['R', 'RValues'], classes)}
+              L={<Typography children={<b>{scoreboardData.status}</b>} variant="subheading" color="primary"/>}
+              R={scoreboardData.header.map((x,i) => <Typography key={i} children={x} variant="subheading" color="inherit" />)}
+            />
+            <TeamScoreRow totalInd={totalInd} classes={classes} team={scoreboardData.away} activeLeague={activeLeague}/>
+            <TeamScoreRow totalInd={totalInd} classes={classes} team={scoreboardData.home} activeLeague={activeLeague}/>
+            {/* <Typography className={classes.venue} variant="caption"><b>Location</b>{': ' + scoreboardData.stadium}</Typography> */}
+          </Grid>
+          {useRightSide ? 
+            <Grid
+              className={classes.right}
+              xs={12}
+              md={5}
+              children={(
+                <MetaPB />
+              )}
+            /> : <div/>
+          }
+        </Grid>
       </div>
 
     )

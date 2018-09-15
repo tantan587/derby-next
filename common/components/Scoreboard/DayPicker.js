@@ -59,8 +59,7 @@ const styles = (theme) => ({
   },
 })
 
-const Day = ({classes}, onUpdateDate, currDay) => (date, index) => {
-  console.log(index, currDay, date.getDay())
+const Day = ({classes}, onUpdateDate, currDay) => (date) => {
   return (
     <div
       className={classNames(classes.day, {[classes.activeDay]: date.getDay() === currDay})}
