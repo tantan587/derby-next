@@ -110,7 +110,6 @@ class TopNavHome extends React.Component {
               :
               <div className={classes.logInOut}>
                 <LogoutButton  color='#707070' backgroundColor='#ffffff'/>
-                {/* <AdminButton color='#707070' backgroundColor='#ffffff'/> */}
               </div>
             }
             <br/>
