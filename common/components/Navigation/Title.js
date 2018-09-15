@@ -11,6 +11,7 @@ const styles = () => ({
     zIndex:2,
     height:'45px',
     paddingTop:10,
+    paddingBottom:45,
     marginBottom:0,
     paddingLeft:'3%',
   },

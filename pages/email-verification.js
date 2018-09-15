@@ -14,7 +14,7 @@ class EmailVerificationPage extends React.Component {
         <LayoutUser >
           <ReloadProtector 
             ProtectedRoute={() => 
-              <EmailVerification url={this.props.url}/>}/>
+              <EmailVerification/>}/>
         </LayoutUser>
       </div>
     )

@@ -24,8 +24,8 @@ const TeamSection = ({
   team_id = 101101,
   logo_url = 'https://upload.wikimedia.org/wikipedia/en/2/24/Atlanta_Hawks_logo.svg',
   team_name = 'Rays',
-  record='(28-30, 36 Points)',
-  owner_name='N/A',
+  //record='(28-30, 36 Points)',
+  //owner_name='N/A',
   handleOpenDialog,
   clickedOneTeam
 }) => (
@@ -55,8 +55,8 @@ const TeamSection = ({
     B={(
       <Typography
         variant="caption">
-        {owner_name} <br />
-        {record}
+        {/* {owner_name} <br />
+        {record} */}
       </Typography>
     )}
   />

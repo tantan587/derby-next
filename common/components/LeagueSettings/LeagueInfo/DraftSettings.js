@@ -18,14 +18,13 @@ const styles = theme => ({
       width: '75%',
     },
     [theme.breakpoints.down('sm')]: {
-      height: 225,
+      height: 300,
     },
   },
   formRoot: {
     width: '60%',
     [theme.breakpoints.down('sm')]: {
-      width: '100%',
-      marginTop: 8
+      width: '100%'
     }
   },
   textField: {

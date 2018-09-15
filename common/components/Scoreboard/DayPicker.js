@@ -59,9 +59,10 @@ const styles = (theme) => ({
   },
 })
 
-const Day = ({classes}, onUpdateDate, currDay) => (date) => {
+const Day = ({classes}, onUpdateDate, currDay) => (date, i) => {
   return (
     <div
+      key={i}
       className={classNames(classes.day, {[classes.activeDay]: date.getDay() === currDay})}
       onClick={() => onUpdateDate(date)}
     >
@@ -113,7 +114,7 @@ class DayPicker extends Component {
     const DateRangeXs = R.range(offset.start, offset.end - 4).map((offset) => {
       return this.changeDateByOffset(date,offset)
     })
-    // console.log(DateRange, 'hi', date)
+    console.log(date)
     return (
       <div className={classes.week}>
         <div className={classes.arrow}
@@ -134,8 +135,8 @@ class DayPicker extends Component {
           style={{marginLeft:20}}
           keyboard
           label="Or pick a date"
-          format="MM/DD/YYYY"
-          value={date}
+          format="MM/dd/yyyy"
+          value={new Date()}
           onChange={(d) => onUpdateDate(d)}
           animateYearScrolling={false}
         />

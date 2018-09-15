@@ -85,8 +85,7 @@ class EmailVerification extends Component {
   }
 
   componentDidMount() {
-    console.log(this.props)
-    const {i: user_id, c: verification_code} = this.props.url.query;
+    const {i: user_id, c: verification_code} = this.props.router.query;
     (user_id && verification_code)
       ? this.handleDoVerify(user_id, verification_code)
       : this.handleIsValid(user_id)
@@ -131,7 +130,7 @@ class EmailVerification extends Component {
     this.setState({ code: e.target.value }, () => {
       const isValid = /\d\s\d\s\d\s\d/.test(this.state.code)
       if (isValid) {
-        const {i: user_id} = this.props.url.query
+        const {i: user_id} = this.props.router.query
         this.setState({meta: META.LOADING})
         this.handleDoVerify(user_id, this.state.code)
       }
@@ -139,7 +138,7 @@ class EmailVerification extends Component {
   }
 
   async handleResend() {
-    const {i: user_id} = this.props.url.query
+    const {i: user_id} = this.props.router.query
     this.setState({loading: true}, async () => {
       const response = await this.props.doResend(user_id).then()  
       if (response.ok) window.location.reload()
@@ -289,13 +288,15 @@ class EmailVerification extends Component {
 
   render() {
     return (
-      <Grid
-        container
-        alignItems="center"
-        justify="center"
-        className={this.props.classes.container}
-        children={this.determineStatus()}
-      />
+      <div style={{height:1000}}>
+        <Grid
+          container
+          alignItems="center"
+          justify="center"
+          className={this.props.classes.container}
+          children={this.determineStatus()}
+        />
+      </div>
     )
   }
 }

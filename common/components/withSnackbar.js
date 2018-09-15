@@ -1,5 +1,4 @@
-const R = require('ramda')
-import React,{Component} from 'react'
+import {Component} from 'react'
 import autobind from 'react-autobind'
 import Snackbar from '@material-ui/core/Snackbar'
 import IconButton from '@material-ui/core/IconButton'
@@ -11,7 +10,7 @@ function WithSnackbar(WrappedComponent) {
     constructor(props) {
       super(props)
       autobind(this)
-      this.state = {message: SB[props.url.query.SB] || '', visible: true}
+      this.state = {message: props.router && SB[props.router.query.SB] || '', visible: true}
     }
 
     hideSnackbar() {
@@ -21,26 +20,26 @@ function WithSnackbar(WrappedComponent) {
     render() {
       const message = this.state.message
       return message.length 
-      ? [
-        <WrappedComponent key="WB" {...this.props} />,
-        <Snackbar
-          key="SB"
-          anchorOrigin={{vertical: 'bottom', horizontal: 'left'}}
-          open={this.state.visible}
-          autoHideDuration={6000}
-          message={message}
-          action={(
-            <IconButton
-              key="close"
-              aria-label="Close"
-              color="inherit"
-              onClick={this.hideSnackbar}
-            >
-              <CloseIcon />
-            </IconButton>
-          )}
-        />
-      ] : <WrappedComponent {...this.props} />
+        ? [
+          <WrappedComponent key="WB" {...this.props} />,
+          <Snackbar
+            key="SB"
+            anchorOrigin={{vertical: 'bottom', horizontal: 'left'}}
+            open={this.state.visible}
+            autoHideDuration={6000}
+            message={message}
+            action={(
+              <IconButton
+                key="close"
+                aria-label="Close"
+                color="inherit"
+                onClick={this.hideSnackbar}
+              >
+                <CloseIcon />
+              </IconButton>
+            )}
+          />
+        ] : <WrappedComponent {...this.props} />
     }
   } 
 }

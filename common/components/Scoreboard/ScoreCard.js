@@ -4,7 +4,7 @@ import {withStyles} from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper'
-import {LeftRight} from './ScoreCardLayouts'
+import {LeftRightOptionalBottom} from './ScoreCardLayouts'
 import TeamSection from './TeamSection'
 import MetaPB from './RightSideContent/MetaPB'
 
@@ -12,8 +12,8 @@ const styles = (theme) => ({
   container: {
     maxWidth: 600,
     marginBottom: 20,
-    marginLeft:10,
-    marginRight:10
+    marginLeft:0,
+    marginRight:20
   },
   title: {
     fontWeight: 'bold',
@@ -54,7 +54,7 @@ const TeamScoreRow = ({classes, team, totalInd, activeLeague}) => {
     record_and_points = `${team.record}${points}`
   }
   return (
-    <LeftRight
+    <LeftRightOptionalBottom
       totalInd={totalInd}
       className={classes.Row}
       style={ {color:team.lost ? '#777' : '#000'}}
@@ -67,6 +67,8 @@ const TeamScoreRow = ({classes, team, totalInd, activeLeague}) => {
         record={record_and_points}
         owner_name={owner_name}/>}
       R={team.score.map(x => <Typography children={x} variant="subheading" color="inherit" />)}
+      B={<Typography variant="caption">{`${owner_name} ${record_and_points}`}</Typography>}
+      //B={<Typography variant="caption">{owner_name}<br/>{record_and_points}</Typography>}
     />
   )
 }
@@ -94,7 +96,7 @@ class ScoreCard extends Component {
             xs={12}
             md={useRightSide ? 7 : 12}
           >
-            <LeftRight
+            <LeftRightOptionalBottom
               totalInd={totalInd}
               className={classes.Header}
               classes={R.pick(['R', 'RValues'], classes)}

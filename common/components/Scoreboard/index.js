@@ -70,7 +70,7 @@ class Scoreboard extends Component {
           paragraph={true}
         />
         <div style={{display:'flex', justifyContent:'center', flexWrap:'wrap'}}>
-          {scoreCards.map(x => x)}
+          {scoreCards}
         </div>
 
       </div>
