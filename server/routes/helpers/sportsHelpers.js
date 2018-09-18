@@ -170,6 +170,11 @@ const createGame = row => {
   {
   case '101': case '102':
   {
+    if(baseGame.status === 'InProgress')
+    {
+      let quarter_text = baseGame.quarter == 2 ? '2nd' : baseGame.quarter == 3 ? '3rd' : baseGame.quarter == 1 ? '1st' : baseGame.quarter == 4 ? '4th' : 'OT'
+      baseGame.status = `${baseGame.time} - ${quarter_text}` 
+    }
     baseGame.header = ['1','2','3','4','T']
     baseGame.home.score = [
       gameExtra.home_quarter_1 || 0,
@@ -206,6 +211,11 @@ const createGame = row => {
   }
   case '104':
   {
+    if(baseGame.status === 'InProgress')
+    {
+      let quarter_text = baseGame.quarter == 2 ? '2nd' : baseGame.quarter == 3 ? '3rd' : baseGame.quarter == 1 ? '1st' : 'OT'
+      baseGame.status = `${baseGame.time} - ${quarter_text}` 
+    }
     baseGame.header = ['1','2','3','T']
     baseGame.home.score = [
       gameExtra.home_period_1 || 0,
@@ -221,6 +231,11 @@ const createGame = row => {
   }
   case '105':
   {
+    if(baseGame.status === 'InProgress')
+    {
+      let quarter_text = baseGame.quarter == 2 ? '2nd' : baseGame.quarter == 3 ? '3rd' : baseGame.quarter == 1 ? '1st' : baseGame.quarter == 4 ? '4th' : 'OT'
+      baseGame.status = `${baseGame.time} - ${quarter_text}` 
+    }
     baseGame.header = ['1','2','3','4','T']
     baseGame.home.score = [
       gameExtra.home_period_1 || 0,
@@ -238,6 +253,11 @@ const createGame = row => {
   }
   case '106': case'107':
   {
+    if(baseGame.status === 'InProgress')
+    {
+      let quarter_text = baseGame.quarter == 2 ? '2nd half' : baseGame.quarter == 1 ? '1st half' : 'OT'
+      baseGame.status = `${baseGame.time} - ${quarter_text}` 
+    }
     baseGame.header = ['1','2','T']
     baseGame.home.score = [
       gameExtra.home_first_half || 0,

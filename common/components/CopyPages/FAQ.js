@@ -16,7 +16,7 @@ const FAQPage = withStyles(theme => ({
       <div style={styles.P}><span style={{ fontWeight: 600 }}>What are we doing here?</span> 
         <br/>
         <br/>
-        <div>Derby Fantasy Wins League is brand a new fantasy sports game: the multi-sport fantasy wins league, where participants earn points for team wins instead of individual player statistics.</div>
+        <div>Derby Fantasy Wins League is a brand new fantasy sports game: the multi-sport fantasy wins league, where participants earn points for team wins instead of individual player statistics.</div>
       </div>
       <br/>
       <br/>
