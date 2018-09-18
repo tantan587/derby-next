@@ -1,5 +1,4 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { withStyles } from '@material-ui/core/styles'
 import Title from '../Navigation/Title'
@@ -8,6 +7,7 @@ import TeamsDialog from '../TeamsDialog/TeamsDialog'
 import sportLeagues from '../../../data/sportLeagues.json'
 import FilterCreator from '../Filters/FilterCreator'
 import Filterer from '../Filters/Filterer'
+import {clickedLeague} from '../../actions/fantasy-actions'
 const R = require('ramda')
 
 const styles = {
@@ -23,7 +23,10 @@ const styles = {
 
 class MainLeagueTeams extends React.Component {
 
-  
+  componentWillMount(){
+    this.props.onClickedLeague(this.props.activeLeague.league_id, this.props.user.id)
+  }
+
 
   render() {
     const page = 'teams'
@@ -124,20 +127,8 @@ class MainLeagueTeams extends React.Component {
   }
 }
 
-MainLeagueTeams.propTypes = {
-  classes: PropTypes.object.isRequired,
-}
-
-const mapDispatchToProps = () => ({
-})
-
-export default connect(
-  state => ({
-    contentFilter:state.contentFilter,
-    teams: state.teams,
-    activeLeague : state.activeLeague
-  }),
-  mapDispatchToProps,
+export default R.compose(
+  connect(R.pick(['activeLeague', 'user', 'contentFilter', 'teams']), {onClickedLeague: clickedLeague})
 )(withStyles(styles)(MainLeagueTeams))
 
 

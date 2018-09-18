@@ -8,6 +8,7 @@ import TeamsDialog from '../TeamsDialog/TeamsDialog'
 import sportLeagues from '../../../data/sportLeagues.json'
 import FilterCreator from '../Filters/FilterCreator'
 import Filterer from '../Filters/Filterer'
+import {clickedLeague} from '../../actions/fantasy-actions'
 const R = require('ramda')
 
 const styles = {
@@ -23,7 +24,9 @@ const styles = {
 
 class MainLeagueRoster extends React.Component {
 
-  
+  componentWillMount(){
+    this.props.onClickedLeague(this.props.activeLeague.league_id, this.props.user.id)
+  }
 
   render() {
     const page = 'roster'
@@ -106,16 +109,22 @@ MainLeagueRoster.propTypes = {
   classes: PropTypes.object.isRequired,
 }
 
-const mapDispatchToProps = () => ({
-})
+// const mapDispatchToProps = () => ({
+//   onClickedLeague:clickedLeague
+// })
 
-export default connect(
-  state => ({
-    contentFilter: state.contentFilter,
-    teams: state.teams,
-    activeLeague : state.activeLeague
-  }),
-  mapDispatchToProps,
+// export default connect(
+//   state => ({
+//     contentFilter: state.contentFilter,
+//     teams: state.teams,
+//     user:state.user,
+//     activeLeague : state.activeLeague
+//   }),
+//   mapDispatchToProps,
+// )(withStyles(styles)(MainLeagueRoster))
+
+export default R.compose(
+  connect(R.pick(['activeLeague', 'user', 'contentFilter', 'teams']), {onClickedLeague: clickedLeague})
 )(withStyles(styles)(MainLeagueRoster))
 
 
