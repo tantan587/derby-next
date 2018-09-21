@@ -21,9 +21,10 @@ const DialogHead = ({ oneTeam, classes }) =>
     return null
   }
   return (
-    <div style={{ display: 'flex', width: 575, margin: '35px 10px 35px 35px', justifyContent: 'space-around' }}>
+    <div style={{ display: 'flex', width: 575, margin: '35px 0px 35px 30px', justifyContent: 'center' }}>
       <img
-        style={{maxWidth:100, maxHeight:100}}
+        preserveAspectRatio='true'
+        style={{ maxHeight:100, marginLeft:20, marginRight:35}}
         src={oneTeam.logo_url || 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Chicago_Cubs_logo.svg/99px-Chicago_Cubs_logo.svg.png'}
       />
       <div>

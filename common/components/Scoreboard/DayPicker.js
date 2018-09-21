@@ -114,7 +114,6 @@ class DayPicker extends Component {
     const DateRangeXs = R.range(offset.start, offset.end - 4).map((offset) => {
       return this.changeDateByOffset(date,offset)
     })
-    console.log(date)
     return (
       <div className={classes.week}>
         <div className={classes.arrow}
@@ -136,7 +135,7 @@ class DayPicker extends Component {
           keyboard
           label="Or pick a date"
           format="MM/dd/yyyy"
-          value={new Date()}
+          value={date}
           onChange={(d) => onUpdateDate(d)}
           animateYearScrolling={false}
         />

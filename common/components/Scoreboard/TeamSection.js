@@ -1,7 +1,7 @@
 import {withStyles} from '@material-ui/core/styles'
 //import Avatar from '@material-ui/core/Avatar'
 import Typography from '@material-ui/core/Typography'
-import {LTB} from './ScoreCardLayouts'
+import Grid from '@material-ui/core/Grid'
 import { connect } from 'react-redux'
 import { handleOpenDialog } from '../../actions/dialog-actions.js'
 import { clickedOneTeam } from '../../actions/sport-actions.js'
@@ -27,40 +27,80 @@ const TeamSection = ({
   //record='(28-30, 36 Points)',
   //owner_name='N/A',
   handleOpenDialog,
-  clickedOneTeam
-}) => (
-  <LTB
-    classes={classes}
-    L={(
-      <img
-        preserveAspectRatio='true' 
-        //alt={`${team_name} Logo`}
-        src={logo_url}
-        style={{maxWidth:'40px', maxHeight:'40px'}}
-      />
-    )}
-    T={(
-      <Typography
+  clickedOneTeam,
+  totalInd,
+  score,
+  nameRecordPoints
+}) => {
+  let total = totalInd ? score.pop() : null
+  return (
+    <Grid
+      container
+      alignItems="center"
+      justifyContent='center'
+      style={{marginBottom: 30, padding: '0 10px', height:50}}
+    >
+      <Grid item xs={2} style={{marginBottom:-4, textAlign:'center'}}>
+        <img
+          preserveAspectRatio='true' 
+          src={logo_url}
+          style={{ maxHeight:'40px', maxWidth:40}}
+        />
+      </Grid>
+      <Grid item xs={4}>
+        <Typography
+          variant="body2"
+          className={classes.teamName}
+          style={{fontWeight: lostInd ? 'normal':'bold', color: lostInd ? '#777':'#000'}}
+          children={team_name}
+          onClick={() => {
+            clickedOneTeam(team_id)
+              .then(() => handleOpenDialog())
+          }}
+        />
+      </Grid>
+      
+      <Grid
+        item
+        className={classes.R}
+        container
         variant="body2"
-        className={classes.teamName}
-        style={{fontWeight: lostInd ? 'normal':'bold', color: lostInd ? '#777':'#000'}}
-        children={team_name}
-        onClick={() => {
-          console.log('hello')
-          clickedOneTeam(team_id)
-            .then(() => handleOpenDialog())
-        }}
-      />
-    )}
-    B={(
-      <Typography
-        variant="caption">
-        {/* {owner_name} <br />
-        {record} */}
-      </Typography>
-    )}
-  />
-)
+        xs={totalInd ? 4 : 6}
+      >
+        {score.map((x, i) => {
+          return <Grid
+            key={i}
+            container
+            item
+            style={{justifyContent: 'center'}}
+            //className={classes.RValues}
+            xs={Math.floor(12/score.length)}
+            children={<Typography children={x} variant="subheading" color="inherit" />}
+            alignItems="center"
+          />})}
+      </Grid>
+      { totalInd ? 
+        <Grid 
+          container
+          style={{justifyContent: 'center'}}
+          children={<Typography children={total} variant="subheading" color="inherit" />}
+          variant="body2"
+          alignItems="center"
+          xs={2}/> :
+        null
+      }
+      
+      <Grid container alignItems='center'></Grid>
+      <Grid item
+        xs={2}/>
+      <Grid item
+        style={{display:'flex', justifyContent:'left'}}
+        //className={classes.L}
+        children={<Typography variant="caption">{nameRecordPoints}</Typography>}
+        variant="body2"
+        xs={10}/>
+    </Grid>
+  )}
 
 export default connect(
   null,

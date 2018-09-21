@@ -39,37 +39,49 @@ const styles = (theme) => ({
   },
   Header: {marginBottom: 30, borderBottom: `1px solid ${theme.palette.grey.A200}`, padding: '10px 10px 10px 10px', height:50},
   Row: {marginBottom: 30, padding: '0 10px'},
-  R: {},
-  RValues: {justifyContent: 'center'}
+  R: {height:30},
+  RValues: {justifyContent: 'center', height:30}
 })
 
 
-const TeamScoreRow = ({classes, team, totalInd, activeLeague}) => {
+const TeamScoreRow = ({team, totalInd, activeLeague}) => {
   let record_and_points = team.record
   let owner_name = ''
   if(activeLeague.success){
     let owner_id = team.team_id in activeLeague.teams ? activeLeague.teams[team.team_id].owner_id : false
     owner_name = owner_id ? activeLeague.owners.find(owner => owner.owner_id===owner_id).owner_name : 'N/A'
-    let points = team.team_id in activeLeague.teams ? `, ${activeLeague.teams[team.team_id].points} points` : ''
-    record_and_points = `${team.record}${points}`
+    let points = team.team_id in activeLeague.teams ? `${activeLeague.teams[team.team_id].points} points` : ''
+
+    
+    record_and_points = points === '' ? team.record : `${team.record} | ${points}`
   }
   return (
-    <LeftRightOptionalBottom
-      totalInd={totalInd}
-      className={classes.Row}
-      style={ {color:team.lost ? '#777' : '#000'}}
-      classes={R.pick(['R', 'RValues'], classes)}
-      L={<TeamSection
-        lostInd={team.lost}
-        team_name={team.team_name}
-        logo_url={team.url}
-        team_id={team.team_id}
-        record={record_and_points}
-        owner_name={owner_name}/>}
-      R={team.score.map(x => <Typography children={x} variant="subheading" color="inherit" />)}
-      B={<Typography variant="caption">{`${owner_name} ${record_and_points}`}</Typography>}
-      //B={<Typography variant="caption">{owner_name}<br/>{record_and_points}</Typography>}
-    />
+    <TeamSection
+      lostInd={team.lost}
+      team_name={team.team_name}
+      logo_url={team.url}
+      team_id={team.team_id}
+      record={record_and_points}
+      owner_name={owner_name}
+      score={team.score.map(x => x)}
+      nameRecordPoints={`${owner_name} | ${record_and_points}`}
+      totalInd={totalInd}/>
+    // <LeftRightOptionalBottom
+    //   totalInd={totalInd}
+    //   className={classes.Row}
+    //   style={ {color:team.lost ? '#777' : '#000'}}
+    //   classes={R.pick(['R', 'RValues'], classes)}
+    //   L={<TeamSection
+    //     lostInd={team.lost}
+    //     team_name={team.team_name}
+    //     logo_url={team.url}
+    //     team_id={team.team_id}
+    //     record={record_and_points}
+    //     owner_name={owner_name}/>}
+    //   R={team.score.map(x => <Typography children={x} variant="subheading" color="inherit" />)}
+    //   B={<Typography variant="caption">{`${owner_name} | ${record_and_points}`}</Typography>}
+    //   //B={<Typography variant="caption">{owner_name}<br/>{record_and_points}</Typography>}
+    // />
   )
 }
 

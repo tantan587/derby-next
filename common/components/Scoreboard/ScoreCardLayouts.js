@@ -36,14 +36,6 @@ export const LeftRightOptionalBottom = ({L, R, B, totalInd, classes = {}, ...res
   let T = totalInd ? R.pop() : null
 
   return (
-    // <Grid alignItems="center" container> 
-    //   <Grid item style={{display:'flex', justifyContent:'center'}} xs={6}>
-    //     <Typography style={{textAlign:'center'}}>{'Left'}</Typography>
-    //   </Grid>
-    //   <Grid item xs={6}>
-    //     Right
-    //   </Grid>
-    // </Grid>
     <Grid
       container
       alignItems="center"
@@ -67,7 +59,6 @@ export const LeftRightOptionalBottom = ({L, R, B, totalInd, classes = {}, ...res
           return <Grid
             key={i}
             container
-            item
             className={classes.RValues}
             xs={Math.floor(12/R.length)}
             children={oneR}
@@ -76,24 +67,24 @@ export const LeftRightOptionalBottom = ({L, R, B, totalInd, classes = {}, ...res
       </Grid>
       { totalInd ? 
         <Grid 
-          item
+          container
           className={classes.RValues}
           style={{textAlign:'center'}}
           children={T}
           variant="body2"
+          alignItems="center"
           xs={2}/> :
         null
       }
-      <br/>
-      <Grid alignItems='center'></Grid>
+      
+      <Grid container alignItems='center'></Grid>
       <Grid item
         xs={2}/>
       <Grid item
         style={{display:'flex', justifyContent:'left'}}
-        className={classes.L}
         children={B}
         variant="body2"
-        xs={6}/>
+        xs={10}/>
     </Grid>
   )}
 
