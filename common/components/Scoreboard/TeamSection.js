@@ -10,7 +10,7 @@ const styles = {
   L: {
     justifyContent: 'center'
   },
-  teamName: {
+  pointer: {
     '&:hover': {
       textDecoration: 'underline',
       cursor: 'pointer',
@@ -45,12 +45,17 @@ const TeamSection = ({
           preserveAspectRatio='true' 
           src={logo_url}
           style={{ maxHeight:'40px', maxWidth:40}}
+          className={classes.pointer}
+          onClick={() => {
+            clickedOneTeam(team_id)
+              .then(() => handleOpenDialog())
+          }}
         />
       </Grid>
       <Grid item xs={4}>
         <Typography
           variant="body2"
-          className={classes.teamName}
+          className={classes.pointer}
           style={{fontWeight: lostInd ? 'normal':'bold', color: lostInd ? '#777':'#000'}}
           children={team_name}
           onClick={() => {
