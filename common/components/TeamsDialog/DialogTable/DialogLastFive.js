@@ -6,7 +6,7 @@ import TableRow from '@material-ui/core/TableRow'
 
 const DialogLastFive = ({ tableData,lastFive }) => {
 
-  return <Table>
+  return <Table style={{ width: '100%', display: 'block', overflowX: 'auto', whiteSpace: 'nowrap' }}>
     <TableHead style={{ backgroundColor: '#229246' }}>
       <TableRow>
         <TableCell style={{ color: 'white' }}>Date</TableCell>

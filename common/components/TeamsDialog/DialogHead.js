@@ -1,17 +1,45 @@
 import { withStyles } from '@material-ui/core/styles'
 
-const styles = {
+const styles = theme => ({
+  container: {
+    paddingTop: 20,
+    width: '100%',
+    [theme.breakpoints.only('xs')]: {
+      flexDirection: 'column',
+      margin: 0,
+      '& > :last-child': {
+        paddingBottom: 20
+      }
+      // padding: '12px 8px 0px 8px',
+    },
+    [theme.breakpoints.up('sm')]: {
+      '& > :last-child': {
+        position: 'relative',
+        right: '8vw'
+      }
+    },
+    '& > *': {
+      paddingLeft: 12,
+    }
+  },
+  statsContatiner: {
+    [theme.breakpoints.only('xs')]: {
+      flexDirection: 'column',
+      margin: 0
+    }
+  },
   value: {
     fontWeight: 600,
     fontSize: 18,
-    margin: '5px 0px'
+    margin: '5px 0px',
+    overflow: 'hidden'
   },
   key: {
     fontWeight: 500,
     fontSize: 12,
     color: 'grey',
   }
-}
+})
 
 
 const DialogHead = ({ oneTeam, classes }) =>
@@ -21,12 +49,12 @@ const DialogHead = ({ oneTeam, classes }) =>
     return null
   }
   return (
-    <div style={{ display: 'flex', width: 575, margin: '35px 10px 35px 35px', justifyContent: 'space-around' }}>
+    <div className={classes.container} style={{ display: 'flex', justifyContent: 'space-around' }}>
       <img
         style={{maxWidth:100, maxHeight:100}}
         src={oneTeam.logo_url || 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Chicago_Cubs_logo.svg/99px-Chicago_Cubs_logo.svg.png'}
       />
-      <div>
+      <div style={{ width: 315 }}>
         <div style={{
           fontFamily: '\'Roboto\', sans-serif',
           fontSize: 26,
@@ -35,8 +63,8 @@ const DialogHead = ({ oneTeam, classes }) =>
         }}>
           {oneTeam.team_name || 'Chicago Cubs'}
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 10, width: 375 }}>
-          <div>
+        <div className={classes.statsContatiner} style={{ display: 'flex', justifyContent: 'space-between', marginTop: 10 }}>
+          <div style={{ width: '50%' }}>
             <div className={classes.value}>
               {oneTeam.owner || 'XXX'} <span className={classes.key}>Owner</span>
             </div>
@@ -47,7 +75,7 @@ const DialogHead = ({ oneTeam, classes }) =>
               {oneTeam.projected || 'XXX'} <span className={classes.key}>Projected Record</span>
             </div>
           </div>
-          <div>
+          <div style={{ width: '50%' }}>
             <div className={classes.value}>
               {oneTeam.points || oneTeam.points === 0 ? oneTeam.points : 'XXX'} <span className={classes.key}>Current Points</span>
             </div>
