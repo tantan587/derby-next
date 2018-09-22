@@ -101,7 +101,7 @@ const CheckDraftBeforeInsertingPick = (roomId, pick) =>
 {  
   let str1 = `select action ->> 'pick' as pick, action_type 
    from draft.results where room_id = '`+ roomId + `' 
-   and action_type = 'PICK' or action_type='ROLLBACK' order by server_ts desc limit 1`
+   and (action_type = 'PICK' or action_type='ROLLBACK') order by server_ts desc limit 1`
 
   return knex.raw(str1)
     .then((result) => {
