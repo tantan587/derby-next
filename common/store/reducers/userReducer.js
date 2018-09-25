@@ -40,6 +40,7 @@ export default (state = {}, action={ type: null }) => {
     }
   case C.PRESSED_LOGIN:
   case C.LOGOUT:
+  case C.STATUS_401:
     return {
       id: '',
       first_name: '',
