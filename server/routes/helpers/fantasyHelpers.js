@@ -153,7 +153,7 @@ const getLeague = async (league_id, user_id, res, type) => {
       if(conferenceList.includes(teamRow.conference_id)){
         eligible_ranking = i
         i++
-      }
+      
       teams[teamRow.team_id] = {
         owner_id:teamRow.owner_id,
         overall_pick:teamRow.overall_pick,
@@ -164,6 +164,7 @@ const getLeague = async (league_id, user_id, res, type) => {
         ranking:parseInt(teamRow.ranking),
         eligible_ranking: eligible_ranking,
         points:reg_points+bonus_points+playoff_points}
+      }
     })
 
     const total_eligible_teams = i-1

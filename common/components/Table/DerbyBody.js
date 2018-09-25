@@ -70,13 +70,13 @@ class DerbyBody extends React.Component {
                   onClick={() => {
                     if (n.team_id)
                     {
-                      handleOpenDialog(n)
                       clickedOneTeam(n.team_id)
+                        .then(() => handleOpenDialog())
                     }
                     else
                     {
-                      handleOpenDialog(n)
                       clickedOneTeam(n[header.id].team_id)
+                        .then(() => handleOpenDialog())
                     }
                   }
                   } src={n[header.id].url || n[header.id]} 
@@ -108,8 +108,8 @@ class DerbyBody extends React.Component {
                   <div
                     className={classes.teamName}
                     onClick={() => {
-                      handleOpenDialog(n)
                       clickedOneTeam(n.team_id)
+                        .then(() => handleOpenDialog())
                     }}
                   >
                     {n[header.id]}

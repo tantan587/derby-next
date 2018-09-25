@@ -29,11 +29,11 @@ const LinkHelper = ({
         inset
         style={{marginLeft:-30, marginBottom:10}}
         primary={<div className={classes.text}>{children}</div>}
-        primaryTypographyProps={{
-          variant: 'body1',
-          className: classes.linkAnchor,
-          color: 'inherit',
-        }}
+        // primaryTypographyProps={{
+        //   variant: 'body1',
+        //   className: classes.linkAnchor,
+        //   color: 'inherit',
+        // }}
       />
     ) : (
       <Link href={href}>

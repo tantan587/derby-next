@@ -2,6 +2,8 @@ import Document, { Head, Main, NextScript } from 'next/document'
 import JssProvider from 'react-jss/lib/JssProvider'
 import getContext from '../styles/getContext'
 import stylesheet from '../styles/style.css'
+import React from 'react'
+import flush from 'styled-jsx/server'
 
 export default class MyDocument extends Document {
   render() {
@@ -76,11 +78,14 @@ MyDocument.getInitialProps = ctx => {
     ...page,
     stylesContext: context,
     styles: (
-      <style
-        id="jss-server-side"
-        // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: context.sheetsRegistry.toString() }}
-      />
+      <React.Fragment>
+        <style
+          id="jss-server-side"
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: context.sheetsRegistry.toString() }}
+        />
+        {flush() || null}
+      </React.Fragment>
     ),
   }
 }

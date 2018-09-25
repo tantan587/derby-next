@@ -7,6 +7,8 @@ import Title from '../Navigation/Title'
 import StandingsSeasons from '../Standings/StandingsSeasons'
 import StandingsRace from '../Standings/StandingsRace'
 import OwnerSilk from '../Icons/Avatars/OwnerSilk'
+import {clickedLeague} from '../../actions/fantasy-actions'
+const R = require('ramda')
 
 const styles = theme => ({
   container: {
@@ -58,6 +60,10 @@ const styleProps = {
 }
 
 class MainLeagueStandings extends React.Component {
+
+  componentWillMount(){
+    this.props.onClickedLeague(this.props.activeLeague.league_id, this.props.user.id)
+  }
   render() {
     const {classes, activeLeague} = this.props
     let owners = []
@@ -105,10 +111,6 @@ MainLeagueStandings.propTypes = {
   classes: PropTypes.object.isRequired,
 }
 
-export default connect(
-  state =>
-    ({
-      activeLeague : state.activeLeague,
-    }),
-  null
+export default R.compose(
+  connect(R.pick(['activeLeague', 'user']), {onClickedLeague: clickedLeague})
 )(withStyles(styles)(MainLeagueStandings))

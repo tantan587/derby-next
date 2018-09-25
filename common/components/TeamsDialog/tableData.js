@@ -9,8 +9,7 @@ export const organizeData = (data) => {
 
   const homeTeamName = teams[game.home_team_id] ? teams[game.home_team_id].team_name : 'UNKNOWN'
   const homeTeamScore = game.home_team_score
-
-  const derbyPointsObject = oneTeam.scoring[oneTeam.scoring_type_id]
+  const derbyPointsObject = oneTeam.scoring[oneTeam.scoring_type_id || 1]
 
   const result = homeTeamScore > awayTeamScore ? ['W', 'L'] : awayTeamScore > homeTeamScore ? ['L', 'W'] : ['D', 'D']
 
@@ -20,7 +19,6 @@ export const organizeData = (data) => {
     } else{
       result[1] = 'OTL'}
   }
-
 
   if (areWeHome) {
 
@@ -34,10 +32,6 @@ export const organizeData = (data) => {
     }
     return tableData
   } else {
-    // console.log(`we are against ${homeTeamName}`)
-    // console.log(`they scored ${homeTeamScore} and we scored ${awayTeamScore}`)
-    // console.log(`it is ${homeTeamScore > homeTeamScore} that we won`)
-    // console.log(`the formatted score looks like ${Math.max(awayTeamScore, homeTeamScore)}-${Math.min(awayTeamScore, homeTeamScore)}`)
     let tableData = {
       opponent: `@ ${homeTeamName}`,
       result: result[1], //awayTeamScore > homeTeamScore ? 'W' : awayTeamScore < homeTeamScore ? 'L': 'D',

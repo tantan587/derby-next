@@ -137,6 +137,7 @@ const createGame = row => {
     global_game_id : row.global_game_id,
     status:row.status,
     sport_id:parseInt(row.sport_id),
+    sport_season_id:parseInt(row.sport_season_id),
     date_time:row.date_time,
     start_time:fantasyHelpers.formatAMPM(new Date(row.date_time)),
     dayCount:row.day_count,
@@ -169,6 +170,11 @@ const createGame = row => {
   {
   case '101': case '102':
   {
+    if(baseGame.status === 'InProgress')
+    {
+      let quarter_text = baseGame.quarter == 2 ? '2nd' : baseGame.quarter == 3 ? '3rd' : baseGame.quarter == 1 ? '1st' : baseGame.quarter == 4 ? '4th' : 'OT'
+      baseGame.status = `${baseGame.time} - ${quarter_text}` 
+    }
     baseGame.header = ['1','2','3','4','T']
     baseGame.home.score = [
       gameExtra.home_quarter_1 || 0,
@@ -182,7 +188,7 @@ const createGame = row => {
       gameExtra.away_quarter_3 || 0,
       gameExtra.away_quarter_4 || 0,
       row.away_team_score]
-    return baseGame
+    break
   }
   case '103':
   {
@@ -201,10 +207,15 @@ const createGame = row => {
       ,gameExtra.away_hits || 0
       ,gameExtra.away_errors ||0
     ]
-    return baseGame
+    break
   }
   case '104':
   {
+    if(baseGame.status === 'InProgress')
+    {
+      let quarter_text = baseGame.quarter == 2 ? '2nd' : baseGame.quarter == 3 ? '3rd' : baseGame.quarter == 1 ? '1st' : 'OT'
+      baseGame.status = `${baseGame.time} - ${quarter_text}` 
+    }
     baseGame.header = ['1','2','3','T']
     baseGame.home.score = [
       gameExtra.home_period_1 || 0,
@@ -220,6 +231,11 @@ const createGame = row => {
   }
   case '105':
   {
+    if(baseGame.status === 'InProgress')
+    {
+      let quarter_text = baseGame.quarter == 2 ? '2nd' : baseGame.quarter == 3 ? '3rd' : baseGame.quarter == 1 ? '1st' : baseGame.quarter == 4 ? '4th' : 'OT'
+      baseGame.status = `${baseGame.time} - ${quarter_text}` 
+    }
     baseGame.header = ['1','2','3','4','T']
     baseGame.home.score = [
       gameExtra.home_period_1 || 0,
@@ -233,10 +249,15 @@ const createGame = row => {
       gameExtra.away_period_3 || 0,
       gameExtra.home_period_4 || 0,
       row.away_team_score]
-    return baseGame
+    break
   }
   case '106': case'107':
   {
+    if(baseGame.status === 'InProgress')
+    {
+      let quarter_text = baseGame.quarter == 2 ? '2nd half' : baseGame.quarter == 1 ? '1st half' : 'OT'
+      baseGame.status = `${baseGame.time} - ${quarter_text}` 
+    }
     baseGame.header = ['1','2','T']
     baseGame.home.score = [
       gameExtra.home_first_half || 0,
@@ -246,14 +267,17 @@ const createGame = row => {
       gameExtra.away_first_half || 0,
       gameExtra.away_second_half || 0,
       row.away_team_score]
-    return baseGame
+    break
   }
   
   default:
   {
     return {}
   }
-  } 
+  }
+  baseGame.away.score = baseGame.away.score.map(x => x === -1 ? 0 : x)
+  baseGame.home.score = baseGame.home.score.map(x => x === -1 ? 0 : x)
+  return baseGame 
 }
 
 const getSportLeagues = (league_id, res, type) =>{

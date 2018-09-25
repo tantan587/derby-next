@@ -93,7 +93,6 @@ class SignupForm extends React.Component {
   }
 
   handleChange = name => event => {
-    console.log(name, event.target.value)
     if(name==='terms'){
       this.setState({[name]: event.target.checked, dirty: true})
     }

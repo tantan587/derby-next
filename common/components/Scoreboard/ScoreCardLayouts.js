@@ -1,5 +1,4 @@
 import Grid from '@material-ui/core/Grid'
-
 export const LTB = ({L, T, B, classes = {}, ...rest}) => (
   <Grid
     container
@@ -33,8 +32,9 @@ export const LTB = ({L, T, B, classes = {}, ...rest}) => (
   </Grid>
 )
 
-export const LeftRight = ({L, R, totalInd, classes = {}, ...rest}) => {
+export const LeftRightOptionalBottom = ({L, R, B, totalInd, classes = {}, ...rest}) => {
   let T = totalInd ? R.pop() : null
+
   return (
     <Grid
       container
@@ -59,7 +59,6 @@ export const LeftRight = ({L, R, totalInd, classes = {}, ...rest}) => {
           return <Grid
             key={i}
             container
-            item
             className={classes.RValues}
             xs={Math.floor(12/R.length)}
             children={oneR}
@@ -68,14 +67,24 @@ export const LeftRight = ({L, R, totalInd, classes = {}, ...rest}) => {
       </Grid>
       { totalInd ? 
         <Grid 
-          item
+          container
           className={classes.RValues}
           style={{textAlign:'center'}}
           children={T}
           variant="body2"
+          alignItems="center"
           xs={2}/> :
         null
       }
+      
+      <Grid container alignItems='center'></Grid>
+      <Grid item
+        xs={2}/>
+      <Grid item
+        style={{display:'flex', justifyContent:'left'}}
+        children={B}
+        variant="body2"
+        xs={10}/>
     </Grid>
   )}
 

@@ -3,7 +3,6 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { withStyles } from '@material-ui/core/styles'
 import Grid from '@material-ui/core/Grid'
-import { handleOpenDialog } from '../../actions/dialog-actions'
 import Title from '../Navigation/Title'
 import Owner from '../Home/Owner'
 import Card from '../Home/Card'
@@ -158,8 +157,7 @@ class MainLeagueHome extends React.Component {
   }
 }
 
-const mapDispatchToProps = (dispatch) => ({
-  openDialog: () => dispatch(handleOpenDialog)
+const mapDispatchToProps = () => ({
 })
 
 export default compose(
