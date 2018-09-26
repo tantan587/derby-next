@@ -1,6 +1,6 @@
 import React from 'react'
 import LayoutUser from '../common/components/LayoutUser'
-import PreviewPage from '../common/components/PreviewPage1'
+import PreviewPage from '../common/components/PreviewPage'
 import withRoot from '../common/components/withRoot'
 import withRedux from 'next-redux-wrapper'
 import storeFactory from '../common/store'
