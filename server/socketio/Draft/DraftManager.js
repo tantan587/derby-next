@@ -222,28 +222,41 @@ function DraftManager(roomId, draftEmitter) {
     
     if(await canOwnerDraftTeam(ownerId, that.pick))
     {
-      const localPick = getThenIncrementPick() 
+      const canOwnerIncrement = incrementPickIfOwner(ownerId, that.pick) 
 
-      socketIoHelpers.InsertDraftAction(
-        roomId, ownerId, 'PICK', {pick:localPick, teamId:teamId},clientTs)
+      if (canOwnerIncrement === true)
+      {
+        const localPick = getPickForDraft()
+        socketIoHelpers.InsertDraftAction(
+          roomId, ownerId, 'PICK', {pick:localPick, teamId:teamId},clientTs)
 
-      that.owners.DraftTeam(ownerId, draftResult)
-      that.owners.RemoveTeam(teamId)
+        that.owners.DraftTeam(ownerId, draftResult)
+        that.owners.RemoveTeam(teamId)
 
-      console.log(localPick, teamId, ownerId)
+        console.log(localPick, teamId, ownerId)
 
-      socketIoHelpers.InsertDraftAction(
-        roomId, ownerId, 'QUEUE', {queue:draftResult.queue})
+        socketIoHelpers.InsertDraftAction(
+          roomId, ownerId, 'QUEUE', {queue:draftResult.queue})
 
-      draftEmitter.EmitDraftTeam(teamId,ownerId,draftResult.queue,draftResult.eligibleTeams)
+        draftEmitter.EmitDraftTeam(teamId,ownerId,draftResult.queue,draftResult.eligibleTeams)
 
-      waitToAutoDraft(timeToDraft)
+        waitToAutoDraft(timeToDraft)
+      }
     }
   }
-
-  const getThenIncrementPick = ()  => {
+  //
+  const incrementPickIfOwner = (ownerId, pick)  => {
+    if (ownerId !== that.draftPosition[that.draftOrder.find(x => x.pick === pick).ownerIndex])
+    {
+      console.log('cant draft, not your turn')
+      return false
+    }
     that.pick++
-    return that.pick -1  
+    return true
+  }
+
+  const getPickForDraft = () => {
+    return that.pick - 1
   }
 
   const getAutoDraftTeam = (ownerId) => {
