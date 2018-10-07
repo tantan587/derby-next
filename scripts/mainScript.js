@@ -12,6 +12,7 @@ const scriptAfterSeasonElos = require('./Analysis/adjustElosAfterSeason')
 const updateElos = require('./Analysis/updateElo')
 const updateEplElos = require('./Analysis/updateEloEPL')
 const fantasyHelpers = require('../server/routes/helpers/fantasyHelpers')
+const resetAllElos = require('./Analysis/resetElos')
 
 const runUpdate = async () => {
   await asyncForEach(process.argv, async (val,i) => {
@@ -103,6 +104,12 @@ const runUpdate = async () => {
       await fantasyHelpers.DeleteLeague(exitProcessInd, arr[1])
       break
     }
+
+    case 'resetElo': {
+      await resetAllElos.resetAllElosToToday(exitProcessInd)
+      break
+    }
+
     default:
     {
       break

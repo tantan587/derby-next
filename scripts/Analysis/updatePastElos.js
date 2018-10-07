@@ -5,12 +5,12 @@ const rpiUpdate = require('./cbbRPItracker.js')
 const dbSimulateHelpers = require('./databaseSimulateHelpers.js')
 const simulateHelpers = require('./simulateHelpers.js')
 
-
-const updatePastElos = async (knex) => {
+const updatePastElos = async (knex, sport_years, first = true) => {
     let teams =
         await knex('analysis.current_elo')
             //.where('team_id',"<",107000)
             .select('*')
+    
     
     let team_object = {}
     //should make this an object of the year and the team id, like it is elsewhere. 
@@ -18,9 +18,8 @@ const updatePastElos = async (knex) => {
     teams.forEach(team => {
         team_object[team.team_id] = {elo: Number(team.elo), year: team.year}
     })
+    console.log('total teams: ', teams.length)
 
-
-    
     var today = new Date()
     //this is the calculation of day count normally:
     let day_count = getDayCount(today)
@@ -34,11 +33,15 @@ const updatePastElos = async (knex) => {
             .orderBy('day_count')
             .select('*')
     
-    updateElosBySchedule(schedule, team_object)
+    //filter schedule so that only includes game for correct season object
+    let filtered_schedule = schedule.filter(game => {
+        return sport_years[game.sport_id] === game.year
+    })
+    updateElosBySchedule(filtered_schedule, team_object)
     //for college basketball - need to add in that this doesn't happen during the playoffs
     //below won't work, since it is just for one game, i don't think...
     //any_cbb ? rpiUpdate.cbbUpdateAllRpi(home_wins, away_wins, neutral_wins, home_losses, away_losses, neutral_losses) : 0
-    await deleteAndUpdateElos(knex, team_object, day_count)
+    await deleteAndUpdateElos(knex, team_object, day_count, first, sport_years)
     console.log('updated Past Elos')
 
 }
@@ -107,15 +110,38 @@ const updateElosPerLeague = (sport_id, game_list) => {
         ) : 0
         })
 }
-const deleteAndUpdateElos = async (knex, team_list, today) => {
+const deleteAndUpdateElos = async (knex, team_list, today, first, sport_years) => {
 
     let teams_for_insert = Object.keys(team_list).map(team_id =>{
         return {team_id: team_id, elo: team_list[team_id].elo, year: team_list[team_id].year}
     })
     //will need this to be update when have multiple years
+    if(first){
     await knex('analysis.current_elo').truncate()
     await knex('analysis.current_elo').insert(teams_for_insert)
-    
+    }else{
+        let current_elos = 
+            await knex('analysis.current_elo')
+                .leftOuterJoin('sports.team_info', 'sports.team_info.team_id', 'analysis.current_elo.team_id')
+        
+        let filtered_old_elos = current_elos.filter(team => {
+            return sport_years[team.sport_id] != team.year
+        })
+
+        console.log('length old elos: ', filtered_old_elos.length)
+        console.log(filtered_old_elos[0])
+        let old_elos_for_insert = filtered_old_elos.map(team => {
+            if(team.team_id != null){
+                return {team_id: team.team_id, elo: team.elo, year: team.year} 
+            }
+        })
+
+        await knex('analysis.current_elo').truncate()
+        await knex('analysis.current_elo').insert(teams_for_insert)
+        console.log('new inserted')
+        await knex('analysis.current_elo').insert(old_elos_for_insert)
+    }
+
     let insert_for_historical = teams_for_insert.map(team => {
         return {...team, day_count: today}
     })
