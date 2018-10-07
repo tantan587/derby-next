@@ -36,6 +36,9 @@ function Owners(socketMap) {
           teamId:element.action.teamId
         })
       }
+      else if (element.acton_type === 'AUTODRAFT') {
+        this.ToggleAutoDraft(element.initiator, element.action.toggle)
+      }
       else if(element.action_type == 'ROLLBACK')
       {
         resultsToEnter.splice(-1,1)
@@ -72,6 +75,14 @@ function Owners(socketMap) {
   this.TryUpdateQueue = (data) =>
   {
     return owners[data.ownerId].TryUpdateQueue(data.teamId)
+  }
+
+  this.ToggleAutoDraft = (ownerId, value) => {
+    owners[ownerId].ToggleAutoDraft(value)
+  }
+
+  this.GetAutoDraftState = (ownerId) => {
+    return owners[ownerId].GetAutoDraft()
   }
 
   this.GetNextTeam = (ownerId) =>

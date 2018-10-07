@@ -27,7 +27,9 @@ const Emitters = (io,roomId) =>
     DRAFT_TEAM : new Emitter(io, roomId,'draftTeam', 
       {ownerId:'string', teamId: 'string', queue: 'object', eligibleTeams: 'object'}),
     ROLLBACK : new Emitter(io, roomId,'rollback', 
-      {ownerId:'string', teamId: 'string', eligibleTeams: 'object'})
+      {ownerId:'string', teamId: 'string', eligibleTeams: 'object'}),
+    AUTO_DRAFT : new Emitter(io, roomId,'changeAutoDraft', 
+      {ownerId:'string',  value: 'boolean'})
   }
 }
 

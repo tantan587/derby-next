@@ -8,6 +8,7 @@ function DraftManager(roomId, draftEmitter) {
   
   var that = this
   let timeToDraft = 5
+  var autoDraftTime = 5
   var draftIsUp = false
   let draftState = 'pre'
   let clientSetTimeout = false
@@ -101,6 +102,23 @@ function DraftManager(roomId, draftEmitter) {
       draftEmitter.EmitRollback(data.teamId, data.ownerId, data.eligibleTeams)
       that.counter = timeToDraft
     }
+  }
+
+  this.ToggleAutoDraft = (socketId) => {
+    let ownerId = that.owners.GetOwnerIdFromSocketId(socketId)
+    if(ownerId)
+    {
+      performToggleAutoDraft(ownerId)
+    }
+    
+  }
+
+  const performToggleAutoDraft =  (ownerId) => {
+    that.owners.ToggleAutoDraft(ownerId)
+    let value = that.owners.GetAutoDraftState(ownerId)
+    socketIoHelpers.InsertDraftAction(
+      roomId, ownerId, 'AUTODRAFT', {toggle:value})
+    draftEmitter.EmitAutoDraftState(ownerId, value )
   }
   
   this.TryUpdateQueue = (data) => {
@@ -197,14 +215,20 @@ function DraftManager(roomId, draftEmitter) {
       this.EndDraft()
     }
     else{
-      that.counter = timeOnClock
+      const ownerId = getOwnerIdByPick(that.pick)
+      let autoDraftValue = that.owners.GetAutoDraftState(ownerId)
+      that.counter = autoDraftValue ? autoDraftTime : timeOnClock
       clearTimers()
       draftEmitter.EmitDraftTick(that.counter, that.pick)
       that.timer = setInterval(async () => {
         if(that.counter === 0){
           clearInterval(that.timer)
-          const ownerId = getOwnerIdByPick(that.pick)
           const teamId = getAutoDraftTeam(ownerId)
+          if(autoDraftValue === false)
+          {
+            performToggleAutoDraft(ownerId)
+          }
+            
           //comes back with information to ppick for the team
           let draftResult = that.owners.TryDraft(ownerId,teamId, that.pick)
 

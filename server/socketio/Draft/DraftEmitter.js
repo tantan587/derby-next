@@ -71,6 +71,14 @@ class DraftEmitter {
         ownerId:data.ownerId})
   }
 
+  EmitAutoDraftState(ownerId, value) {
+    this.draftEmitters.AUTO_DRAFT.Emit(
+      {
+        ownerId,value
+      }
+    )
+  }
+
   EmitDraftTeam(teamId, ownerId, queue, eligibleTeams) {
     this.draftEmitters.DRAFT_TEAM.Emit(
       {

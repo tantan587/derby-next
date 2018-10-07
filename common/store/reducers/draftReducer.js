@@ -14,7 +14,8 @@ export default (state = {}, action={ type: null }) => {
       rules:action.rules,
       messages:action.messages,
       filterInfo:{},
-      eligibleTeams:action.eligibleTeams
+      eligibleTeams:action.eligibleTeams,
+      autoDraftOwnersMap:action.autoDraftOwnersMap
     }
   case C.UPDATE_DRAFT_MODE:
     return {
@@ -53,6 +54,12 @@ export default (state = {}, action={ type: null }) => {
       messages:[]
     }
   }
+  case C.TOGGLE_AUTO_DRAFT:
+  {
+    state.autoDraftOwnersMap[action.ownerId] = action.value
+    return {...state, autoDraftOwnersMap:state.autoDraftOwnersMap}
+  }
+
   case C.DRAFT_PICK_ROLLBACK:
   {
     const newAvailable = state.availableTeams

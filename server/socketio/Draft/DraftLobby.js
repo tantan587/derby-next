@@ -153,6 +153,14 @@ class DraftLobby {
       
     })
 
+    socket.in(roomId).on('toggleAutoDraft', () => {
+      if(draftIsGood())
+      {
+        this.draftRooms[roomId].Manager.ToggleAutoDraft(socket.id)
+      }
+      
+    })
+
     socket.in(roomId).on('addqueue', (data) => {
       if(draftIsGood())
       {

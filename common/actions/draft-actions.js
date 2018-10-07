@@ -57,3 +57,10 @@ export const handleRollback = (data) =>
     data
   })
 
+export const handleToggleAutoDraft = (ownerId, value) =>
+  ({
+    type: C.TOGGLE_AUTO_DRAFT,
+    ownerId,
+    value
+  })
+

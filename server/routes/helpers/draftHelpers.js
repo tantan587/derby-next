@@ -121,10 +121,12 @@ const AssembleDraft =  (owners, results, my_owner_id, rules, teamMap) =>{
   let mode = 'pre'
   let allPicks = []
   let ownersMap = {}
+  let autoDraftOwnersMap = {}
   let draftedTeams = []
   let queue = []
   let messages = []
   owners.map(x => ownersMap[x.owner_id] = [])
+  owners.map(x => autoDraftOwnersMap[x.owner_id] = false)
   let allTeams = Object.keys(teamMap).filter(x => x > 99999)
   let availableTeams = [].concat(allTeams)
   let eligibleTeams = [].concat(allTeams)
@@ -151,6 +153,11 @@ const AssembleDraft =  (owners, results, my_owner_id, rules, teamMap) =>{
     case 'ROLLBACK':
     {
       resultsToEnter.splice(-1,1)
+      break
+    }
+    case 'AUTODRAFT':
+    {
+      autoDraftOwnersMap[element.initiator] = element.action.toggle
       break
     }
     case 'QUEUE':
@@ -204,6 +211,7 @@ const AssembleDraft =  (owners, results, my_owner_id, rules, teamMap) =>{
     queue,
     rules,
     messages,
+    autoDraftOwnersMap,
     eligibleTeams}
 }
 

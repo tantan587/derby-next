@@ -19,7 +19,8 @@ import {clickedEnterDraft,
   handleDraftPick,
   handleUpdateQueue,
   handleRecieveMessage,
-  handleRollback} from '../../actions/draft-actions'
+  handleRollback,
+  handleToggleAutoDraft} from '../../actions/draft-actions'
 import { connect } from 'react-redux'
 import Divider from '@material-ui/core/Divider'
 import Chat from './Chat'
@@ -63,11 +64,11 @@ class DraftContainer extends React.Component {
       ownerMap:{},
       sawPickError:false,
       sockets:['whoshere', 'people','message','start','reset',
-        'startTick','draftTick', 'draftTeam', 'modechange', 'queueResp', 'rollback'],
+        'startTick','draftTick', 'draftTeam', 'modechange', 'queueResp', 'rollback', 'changeAutoDraft'],
       functions : [this.handleWhosHere, this.handlePeople,this.handleMessage,
         this.handleStart, this.handleReset,
         this.handleStartTick, this.handleDraftTick, this.handleDraftTeam,
-        this.handleModeChange, this.handleQueueResp, this.handleRollback]
+        this.handleModeChange, this.handleQueueResp, this.handleRollback, this.handleAutoDraft]
     }
   }
 
@@ -186,6 +187,10 @@ class DraftContainer extends React.Component {
       
   }
 
+  handleAutoDraft = (data) => {
+    this.props.onToggleAutoDraft(data.ownerId, data.value)
+  }
+
   onDraftButton = (teamId) => {
     const {activeLeague, draft} = this.props
     const myTurn = this.state.myDraftPosition ===
@@ -292,6 +297,10 @@ class DraftContainer extends React.Component {
   onTimeIn = () => {
     this.socket.emit('timein')
   }
+
+  onToggleAutoDraft = () => {
+    this.socket.emit('toggleAutoDraft')
+  }
   
   onUpdateLinesToShow = event => {
     this.setState({linesToShow:event.target.value})
@@ -337,10 +346,13 @@ class DraftContainer extends React.Component {
                     </Grid>
                     <Grid item xs={12}>
                       <DraftOrder 
-                        owners={Object.values(ownerMap)}
-                        myOwnerName={ ownerMap[activeLeague.my_owner_id]  ? ownerMap[activeLeague.my_owner_id].owner_name : ''}  
+                        ownersMap={ownerMap}
+                        myOwnerName={ ownerMap[activeLeague.my_owner_id]  ? ownerMap[activeLeague.my_owner_id].owner_name : ''} 
+                        myOwnerId={activeLeague.my_owner_id}
                         draftOrder={activeLeague.draftOrder}
                         currPick={draft.pick}
+                        autoDraftMap={draft.autoDraftOwnersMap}
+                        toggleAutoDraft={this.onToggleAutoDraft}
                         mode={draft.mode}/>
                     </Grid>
                     <Divider style={{backgroundColor:'white'}}/>
@@ -473,5 +485,6 @@ export default R.compose(
       onRecieveMessage: handleRecieveMessage,
       onClickedLeague: clickedLeague,
       onRollback: handleRollback,
+      onToggleAutoDraft : handleToggleAutoDraft
     }),
 )(DraftContainer)

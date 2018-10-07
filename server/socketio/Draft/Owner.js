@@ -2,7 +2,7 @@ const draftHelpers = require('../../routes/helpers/draftHelpers')
 
 function Owner(ownerId, draftRules, allTeamsByRank, teamMap) {
   this.ownerId = ownerId
-
+  var autoDraft = false
   var queue = []
   var pickToTeamsMap = []
   var drafted = []
@@ -54,6 +54,18 @@ function Owner(ownerId, draftRules, allTeamsByRank, teamMap) {
   this.DraftTeam = (draftData) => {
     updatePick(draftData)
     updateEligible(draftData)
+  }
+
+  this.ToggleAutoDraft = (value) => {
+    if(typeof value === 'undefined')
+      autoDraft = !autoDraft
+    else{
+      autoDraft = value
+    }
+  }
+
+  this.GetAutoDraft = () => {
+    return autoDraft
   }
 
   const updateEligible = (draftData) => {
