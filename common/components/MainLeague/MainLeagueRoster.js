@@ -9,6 +9,7 @@ import sportLeagues from '../../../data/sportLeagues.json'
 import FilterCreator from '../Filters/FilterCreator'
 import Filterer from '../Filters/Filterer'
 import {clickedLeague} from '../../actions/fantasy-actions'
+import {withRouter} from 'next/router'
 const R = require('ramda')
 
 const styles = {
@@ -32,9 +33,12 @@ class MainLeagueRoster extends React.Component {
     const page = 'roster'
     const {teams, activeLeague, contentFilter} = this.props
     const sportLeagueIds = R.keys(sportLeagues)
+    const ownerIdToStart = this.props.router.query.a || activeLeague.my_owner_id
     let default_tab = activeLeague.owners.sort((a,b) => {
-      return a.owner_name.toLowerCase() > b.owner_name.toLowerCase ? 1 : -1 })
-      .findIndex(owner => owner.owner_id === activeLeague.my_owner_id)
+      return a.owner_name.toLowerCase() > b.owner_name.toLowerCase() ? 1 : -1 })
+      .findIndex(owner => owner.owner_id === ownerIdToStart)
+
+
     let myTeams = Object.values(teams).filter(team => sportLeagueIds.includes(team.sport_id)).map(team => 
     {
       let owner = null 
@@ -66,7 +70,6 @@ class MainLeagueRoster extends React.Component {
     R.values(contentFilter[page]).forEach(filter => {
       filteredMyTeams = Filterer(filteredMyTeams, filter)
     })
-
     const filters = [{
       type:'tab',
       values: this.props.activeLeague.owners.map(x => x.owner_name).sort((a,b) => {
@@ -124,6 +127,7 @@ MainLeagueRoster.propTypes = {
 // )(withStyles(styles)(MainLeagueRoster))
 
 export default R.compose(
+  withRouter,
   connect(R.pick(['activeLeague', 'user', 'contentFilter', 'teams']), {onClickedLeague: clickedLeague})
 )(withStyles(styles)(MainLeagueRoster))
 

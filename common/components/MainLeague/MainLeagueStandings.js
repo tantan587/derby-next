@@ -8,6 +8,7 @@ import StandingsSeasons from '../Standings/StandingsSeasons'
 import StandingsRace from '../Standings/StandingsRace'
 import OwnerSilk from '../Icons/Avatars/OwnerSilk'
 import {clickedLeague} from '../../actions/fantasy-actions'
+import Router from 'next/router'
 const R = require('ramda')
 
 const styles = theme => ({
@@ -54,7 +55,8 @@ const styleProps = {
     TableCellComponent: (i, n) => i === 0 ? <td
       style={{ height: 80, width: 80, borderBottom: '1px solid white' }}>{OwnerSilk(n.avatar, {height:90})}</td> : false,
     TableRow: {
-      borderRight: '1px solid white'
+      borderRight: '1px solid white',
+      cursor: 'pointer',
     }
   }
 }
@@ -71,8 +73,13 @@ class MainLeagueStandings extends React.Component {
       owners = this.props.activeLeague.owners
     let owners_race = owners.sort((a,b) => {
       return a.owner_name.toLowerCase() > b.owner_name.toLowerCase ? 1 : -1 
-    }).map(x => x)
+    }).map(x => {return {...x, onClick:(o) => {Router.push(Router.push('/mainleagueroster?a=' + o))}}})
+
+
     let owners_table = owners.sort((a,b) => {return a.rank - b.rank})
+      .map(x => {return {...x, onClick:(y) => {
+        console.log(y)
+        Router.push('/mainleagueroster?a=' + y.owner_id)}}})
 
     return(
       <div>

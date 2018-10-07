@@ -29,7 +29,6 @@ export default class DraftQueue extends React.Component {
   }
 
   Card = (team,item) => {
-    console.log(team)
     return (
       <Card style={{height: 40, width:'90%', marginLeft:'5%',  backgroundColor:'#555555'}}>
         <ContainerDimensions>

@@ -136,6 +136,7 @@ class DerbyBody extends React.Component {
               extraTableRow && n['pick'] % extraTableRow.freq === 1 && i !==0 ?
                 this.extraRowRender(extraTableRow,i,n) : null,
               <TableRow
+                onClick={n.onClick ? () => n.onClick(n) : null}
                 hover
                 tabIndex={-1}
                 key={i}
