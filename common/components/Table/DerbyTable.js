@@ -61,7 +61,9 @@ class DerbyTable extends React.Component {
       label: header.label,
       button:header.button,
       imageInd:header.imageInd,
-      disableSort:header.disableSort
+      disableSort:header.disableSort,
+      onClick:header.onClick,
+      toolTip:header.toolTip
     }))
 
     const sliceStart = usePagination ?  page * rowsPerPage : 0

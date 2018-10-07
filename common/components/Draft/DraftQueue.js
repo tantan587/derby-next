@@ -1,11 +1,12 @@
 import React from 'react'
 import Typography from '@material-ui/core/Typography'
 import CloseIcon from '@material-ui/icons/Close'
-import ReorderIcon from '@material-ui/icons/Reorder'
+//import ReorderIcon from '@material-ui/icons/Reorder'
 //import { Scrollbars } from 'react-custom-scrollbars'
 import SortableList from '../SortableList'
 import Card from '@material-ui/core/Card'
 import Grid from '@material-ui/core/Grid'
+import SportIcon from '../Icons/SportIcon'
 import ContainerDimensions from 'react-container-dimensions'
 
 
@@ -28,7 +29,7 @@ export default class DraftQueue extends React.Component {
   }
 
   Card = (team,item) => {
-
+    console.log(team)
     return (
       <Card style={{height: 40, width:'90%', marginLeft:'5%',  backgroundColor:'#555555'}}>
         <ContainerDimensions>
@@ -43,7 +44,8 @@ export default class DraftQueue extends React.Component {
                 justify={'flex-start'}
               >
                 <Grid item xs={2}>
-                  <ReorderIcon style={{width:'auto',height:20, marginTop:3, color:'white'}}/>
+                  {/* <ReorderIcon style={{width:'auto',height:20, marginTop:3, color:'white'}}/> */}
+                  <SportIcon sportId={team.sport_id} style={{width:'auto', height:20}} color='white'/>
                 </Grid>
                 <Grid item xs={8}>
                   <Typography variant="body2" style={{ color: '#FFFFFF', 

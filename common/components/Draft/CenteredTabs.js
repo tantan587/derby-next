@@ -35,12 +35,18 @@ const styles = () => ({
 
 class CenteredTabs extends React.Component {
   state = {
-    value: 1
+    value: 2,
+    defaultSportId:0,
+    defaultConferenceId:-1
   };
 
   handleChange = (event, value) => {
     this.setState({ value })
   };
+
+  navigateToSport = (sportId, conferenceId) => {
+    this.setState({value:1, defaultSportId:sportId, defaultConferenceId:conferenceId})
+  }
 
   render() {
     const { classes } = this.props
@@ -74,11 +80,13 @@ class CenteredTabs extends React.Component {
         </Tabs>
         {value === 0 && <Roster/>}
         {value === 1 && <TeamDisplay
+          defaultSportId={this.state.defaultSportId}
+          defaultConferenceId={this.state.defaultConferenceId}
           onAddQueue={this.props.onAddQueue}
           onUpdateQueue={this.props.onUpdateQueue} 
           onDraftButton={this.props.onDraftButton}
           allowDraft={this.props.allowDraft}/>}
-        {value === 2 && <RosterGrid/>}
+        {value === 2 && <RosterGrid navigateToSport={this.navigateToSport}/>}
         {value === 3 && <DraftResults/>}
       </div>
     )

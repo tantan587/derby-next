@@ -62,17 +62,17 @@ class DerbyHeader extends React.Component {
                     sortDirection={orderBy === column.id ? order : false}
                   >
                     <Tooltip
-                      title="Sort"
+                      title={column.toolTip || 'Sort'}
                       placement={column.numeric ? 'bottom-end' : 'bottom-start'}
                       enterDelay={300}
                     >
                       <TableSortLabel
                         classes={{root: classes.deepheader, icon: orderByDisplay !== column.id && classes.icon}}
-                        disabled={column.disableSort}
+                        //disabled={column.disableSort}
                         style={styleProps && styleProps.TableSortLabel}
                         active={orderByDisplay === column.id}
                         direction={order}
-                        onClick={this.createSortHandler(column.sortId, column.id)}
+                        onClick={column.onClick  ? () => column.onClick(column.id) : this.createSortHandler(column.sortId, column.id) }
                       >
                         {column.label}
                       </TableSortLabel>

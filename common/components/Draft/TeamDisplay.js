@@ -39,7 +39,7 @@ class TeamDisplay extends React.Component {
   // }
   render() {
     const page = 'draft-teams'
-    const {  draft, teams,activeLeague, allowDraft, contentFilter} = this.props
+    const {  draft, teams,activeLeague, allowDraft, contentFilter, defaultSportId, defaultConferenceId} = this.props
     const allTeams = draft.allTeams
     const queue = draft.queue
     let confs = []
@@ -97,12 +97,13 @@ class TeamDisplay extends React.Component {
         })
       }
     }
+    let sportIds = ['All'].concat(R.map(x => x.sport_id, this.props.activeLeague.rules))
     const filters = [{
       type:'tab',
       displayType:'sportsName',
-      values:['All'].concat(R.map(x => x.sport_id, this.props.activeLeague.rules)),
+      values:sportIds,
       column:'sport_id',
-      defaultTab:0,
+      defaultTab:sportIds.indexOf(defaultSportId) || 0,
       filtersToNotRemove:[3],
       tabStyles:{backgroundColor:'#e3dac9',
         color:'#48311A',
@@ -112,7 +113,8 @@ class TeamDisplay extends React.Component {
     },{type:'dropdown',
       values:confs,
       column:'conference',
-      name:'Conference'
+      name:'Conference',
+      defaultValue:defaultConferenceId
     },
     {type:'search',
       column:'team_name',

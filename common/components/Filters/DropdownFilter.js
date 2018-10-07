@@ -33,6 +33,15 @@ class DropdownFilter extends React.Component {
     clickedUpdateFilter({key:column, value, type:'dropdown'}, filterId)
   }
 
+  componentDidMount() {
+    const { column, clickedUpdateFilter, filterId, defaultValue} = this.props
+    if(defaultValue !== -1)
+    {
+      clickedUpdateFilter({key:column, value:defaultValue, type:'dropdown'}, filterId)
+    }
+    
+  }
+
   render() {
     const {dropdowns, classes, name, value, displayFunction} = this.props
     return (

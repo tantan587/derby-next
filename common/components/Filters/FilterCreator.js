@@ -85,6 +85,7 @@ class FilterCreator extends React.Component {
                 value={values[i]}
                 clickedUpdateFilter={this.clickedUpdateFilter}
                 key={i}
+                defaultValue={filter.defaultValue}
                 displayFunction={filter.displayFunction || ((x) => x)} 
                 dropdowns={filter.values}
                 filterId={i} 

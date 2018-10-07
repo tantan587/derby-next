@@ -366,6 +366,7 @@ class DraftContainer extends React.Component {
                         <Divider style={{backgroundColor:'white'}}/>
                       </Grid>
                       <CenteredTabs
+                        onUpdateFilter={this.props.onUpdateFilter}
                         onUpdateQueue={this.onUpdateQueue}
                         onAddQueue={this.onAddQueue}
                         onDraftButton={this.onDraftButton}
@@ -485,6 +486,6 @@ export default R.compose(
       onRecieveMessage: handleRecieveMessage,
       onClickedLeague: clickedLeague,
       onRollback: handleRollback,
-      onToggleAutoDraft : handleToggleAutoDraft
+      onToggleAutoDraft : handleToggleAutoDraft,
     }),
 )(DraftContainer)
