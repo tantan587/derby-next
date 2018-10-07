@@ -22,7 +22,7 @@ const updatePastElos = async (knex, sport_years, first = true) => {
 
     var today = new Date()
     //this is the calculation of day count normally:
-    let day_count = getDayCount(today)
+    let day_count = getDayCount(today)-1
     console.log('day count: ', day_count)
 
     let schedule = 
