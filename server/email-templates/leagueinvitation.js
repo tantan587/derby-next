@@ -2,7 +2,7 @@ const path = require('path')
 const dev = process.env.NODE_ENV !== 'production'
 const header = path.join(__dirname, '/Derby_Email_headline_Welcome-to-Derby_2.jpg')
 const footer1 = path.join(__dirname, '/Derby_Email_sports_icons_2x.png')
-const footer2 = path.join(__dirname, '/Derby_Email_footer_text_2x.png')
+const footer2 = path.join(__dirname, '/Derby_Email_footer_newest.png')
 
 const leagueInviteSubject = (user) => `[Derby] League Invitation`
 
@@ -41,7 +41,7 @@ const leagueInviteBody = (user) => {
             <img src="cid:Derby_Email_sports_icons_2x.png" width="600" height="66">
           </p>
           <p>
-            <img src="cid:Derby_Email_footer_text_2x.png" width="600" height="50">
+            <img src="cid:Derby_Email_footer_newest.png" width="600" height="83">
           </p>
         </td>
       </tr>
