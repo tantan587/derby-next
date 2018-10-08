@@ -24,7 +24,7 @@ const inclusiveFilter = (data, filter) => {
 }
 
 const exclusiveFilter = (data, filter, options) => {
-  if (filter.value === 'All')
+  if (typeof filter.value === 'undefined' || filter.value === 'All')
     return data
   if (filter.value === 'My Teams')
     return data.filter(x => x['owner_name'] == options.ownerName)

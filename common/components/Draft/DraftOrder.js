@@ -111,7 +111,7 @@ class DraftOrder extends React.Component {
               Auto Draft
           </Typography>
           <Switch
-            checked={autoDraftMap[myOwnerId]}
+            checked={autoDraftMap ? autoDraftMap[myOwnerId] : false}
             classes={{
               root: classes.root,
               bar: classes.switchRoot,
