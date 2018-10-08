@@ -681,9 +681,19 @@ const copy_epl_elo = async () => {
 
 }
 
+const sport_last_year = {
+    101: 2018, 
+    102: 2017,
+    103: 2018, 
+    104: 2018,
+    105: 2017,
+    106: 2018,
+    107: 2018
+}
+
 const adjustElosAfterSeason = async (exitProcess, sports='baseball') => {
     if(sports === 'allP'){ //this is only to be used on reset
-        await updatePastElos(knex)
+        await updatePastElos(knex, sport_last_year)
         await adjustPastElosBySportEOS(101)
         await adjustPastElosBySportEOS(102)
         await adjustPastElosBySportEOS(103)
