@@ -35,7 +35,7 @@ const styles = () => ({
 
 class CenteredTabs extends React.Component {
   state = {
-    value: 2,
+    value: 1,
     defaultSportId:0,
     defaultConferenceId:-1
   };
