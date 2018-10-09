@@ -173,7 +173,7 @@ const createGame = row => {
     if(baseGame.status === 'InProgress')
     {
       let period_text = baseGame.period == 2 ? '2nd' : baseGame.period == 3 ? '3rd' : baseGame.period == 1 ? '1st' : baseGame.period == 4 ? '4th' : baseGame.period == 'Half' ? 'Halftime': 'OT'
-      baseGame.status = period_text === 'Halftime' ? 'Halftime' : `${baseGame.time} - ${quarter_text}` 
+      baseGame.status = period_text === 'Halftime' ? 'Halftime' : `${baseGame.time} - ${period_text}` 
     }
     baseGame.header = ['1','2','3','4','T']
     baseGame.home.score = [
