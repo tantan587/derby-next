@@ -157,7 +157,7 @@ const createGame = row => {
       lost:row.winner === 'H',
       record:(row.a_wins + '-' + row.a_losses) + (row.a_ites > 0 ? '-' + row.a_ties : '') 
     },
-    stadium : 'Unavaliable'
+    stadium : 'Unavailable'
   }
   
   if(baseGame.status === 'Scheduled')
@@ -172,8 +172,8 @@ const createGame = row => {
   {
     if(baseGame.status === 'InProgress')
     {
-      let quarter_text = baseGame.quarter == 2 ? '2nd' : baseGame.quarter == 3 ? '3rd' : baseGame.quarter == 1 ? '1st' : baseGame.quarter == 4 ? '4th' : 'OT'
-      baseGame.status = `${baseGame.time} - ${quarter_text}` 
+      let period_text = baseGame.period == 2 ? '2nd' : baseGame.period == 3 ? '3rd' : baseGame.period == 1 ? '1st' : baseGame.period == 4 ? '4th' : baseGame.period == 'Half' ? 'Halftime': 'OT'
+      baseGame.status = period_text === 'Halftime' ? 'Halftime' : `${baseGame.time} - ${quarter_text}` 
     }
     baseGame.header = ['1','2','3','4','T']
     baseGame.home.score = [
@@ -213,8 +213,8 @@ const createGame = row => {
   {
     if(baseGame.status === 'InProgress')
     {
-      let quarter_text = baseGame.quarter == 2 ? '2nd' : baseGame.quarter == 3 ? '3rd' : baseGame.quarter == 1 ? '1st' : 'OT'
-      baseGame.status = `${baseGame.time} - ${quarter_text}` 
+      let period_text = baseGame.period == 2 ? '2nd' : baseGame.period == 3 ? '3rd' : baseGame.period == 1 ? '1st' : 'OT'
+      baseGame.status = `${baseGame.time} - ${period_text}` 
     }
     baseGame.header = ['1','2','3','T']
     baseGame.home.score = [
@@ -227,14 +227,14 @@ const createGame = row => {
       gameExtra.away_period_2 || 0,
       gameExtra.away_period_3 || 0,
       row.away_team_score]
-    return baseGame
+    break
   }
   case '105':
   {
     if(baseGame.status === 'InProgress')
     {
-      let quarter_text = baseGame.quarter == 2 ? '2nd' : baseGame.quarter == 3 ? '3rd' : baseGame.quarter == 1 ? '1st' : baseGame.quarter == 4 ? '4th' : 'OT'
-      baseGame.status = `${baseGame.time} - ${quarter_text}` 
+      let period_text = baseGame.period == 2 ? '2nd' : baseGame.period == 3 ? '3rd' : baseGame.period == 1 ? '1st' : baseGame.period == 4 ? '4th' : 'OT'
+      baseGame.status = `${baseGame.time} - ${period_text}` 
     }
     baseGame.header = ['1','2','3','4','T']
     baseGame.home.score = [
@@ -255,8 +255,8 @@ const createGame = row => {
   {
     if(baseGame.status === 'InProgress')
     {
-      let quarter_text = baseGame.quarter == 2 ? '2nd half' : baseGame.quarter == 1 ? '1st half' : 'OT'
-      baseGame.status = `${baseGame.time} - ${quarter_text}` 
+      let period_text = baseGame.period == 2 ? '2nd half' : baseGame.period == 1 ? '1st half' : 'OT'
+      baseGame.status = `${baseGame.time} - ${period_text}` 
     }
     baseGame.header = ['1','2','T']
     baseGame.home.score = [
