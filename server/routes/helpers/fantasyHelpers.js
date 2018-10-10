@@ -109,7 +109,6 @@ const getLeague = async (league_id, user_id, res, type) => {
     const seasons = {}
     let sport_seasons = []
     seasonsInfo.rows.forEach(x => {
-      console.log(x)
       sport_seasons.push(x.sport_season_id)
       if(!seasons[x.sport_id])
       {
@@ -125,7 +124,7 @@ const getLeague = async (league_id, user_id, res, type) => {
           seasons[x.sport_id].end = x.end_season_date
         }
       }
-      else(x.season_type ===3)
+      else if (x.season_type ===3)
       {
         seasons[x.sport_id].playoffs = x.start_season_date
         if(x.sport_id!==107)
@@ -134,8 +133,6 @@ const getLeague = async (league_id, user_id, res, type) => {
         }
       }
     })
-    console.log(seasons)
-
 
     const ownerGames = await getOwnersUpcomingGames(my_owner_id, sport_seasons)
 
