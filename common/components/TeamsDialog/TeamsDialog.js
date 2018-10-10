@@ -11,25 +11,36 @@ import DialogInfo from './DialogInfo'
 import DialogLastFive from './DialogTable/DialogLastFive'
 import DialogNextFive from './DialogTable/DialogNextFive'
 
-const styles = () => {
-  return {
-    root: {
-      minHeight: 48,
+const styles = theme => ({
+  root: {
+    minHeight: 48,
+  },
+  container: {
+    [theme.breakpoints.only('sm')]: {
+      width: 'calc(100vw - 40px)'
     },
-    indicator: {
-      height: 10,
-      backgroundColor: '#229246',
-      color: 'black',
-      transition: 'none'
+  },
+  indicator: {
+    height: 10,
+    backgroundColor: '#229246',
+    color: 'black',
+    transition: 'none'
+  },
+  green: {
+    backgroundColor: '#229246',
+  },
+  dialog_styles: {
+    fontFamily: '\'Roboto\', sans-serif',
+  },
+  paper: {
+    [theme.breakpoints.down('sm')]: {
+      margin: 20
     },
-    green: {
-      backgroundColor: '#229246',
-    },
-    dialog_styles: {
-      fontFamily: '\'Roboto\', sans-serif',
+    [theme.breakpoints.down('xs')]: {
+      margin: 12
     }
   }
-}
+})
 
 class TeamsDialog extends Component {
   state = {
@@ -75,7 +86,7 @@ class TeamsDialog extends Component {
         open={open}
         onClose={handleCloseDialog}
         maxWidth={false}
-        classes={{ root: classes.dialog_styles }}
+        classes={{ root: classes.dialog_styles, paper: classes.paper }}
       >
         <div
           onClick={handleCloseDialog}
@@ -88,18 +99,16 @@ class TeamsDialog extends Component {
         >
           x
         </div>
-        <div style={{ width: 775, height: 650 }}>
-          <div style={{ height: '30%' }}>
-            <DialogHead
-              oneTeam={oneTeam}
-            />
-          </div>
+        <div className={classes.container} style={{ height: 650 }}>
+          <DialogHead oneTeam={oneTeam} />
           <div style={{ height: '60%' }}>
             <Tabs
               value={value}
               onChange={this.handleChange}
               style={{ height: 20, marginLeft: 40 }}
               classes={{ root: classes.root, indicator: classes.indicator }}
+              scrollable
+              scrollButtons="auto"
             >
               <Tab
                 classes={{ root: classes.green }}
@@ -123,7 +132,7 @@ class TeamsDialog extends Component {
                 }}
                 label="ADDITIONAL INFO" />
             </Tabs>
-            <div style={{ height: '89%', }}> { /* scrolling div */ }
+            <div style={{ height: '89%' }}> { /* scrolling div */ }
               {{
                 0: <DialogLastFive
                   oneTeam={oneTeam}

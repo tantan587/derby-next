@@ -5,7 +5,7 @@ import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 
 const DialogNextFive = ({ tableData, nextFive, }) =>
-  <Table>
+  <Table style={{ width: '100%', display: 'block', overflowX: 'auto', whiteSpace: 'nowrap' }}>
     <TableHead style={{ backgroundColor: '#229246' }}>
       <TableRow>
         <TableCell style={{ color: 'white' }}>Date</TableCell>
@@ -17,7 +17,7 @@ const DialogNextFive = ({ tableData, nextFive, }) =>
     <TableBody>
       {
         nextFive.map((game, idx) => {
-          
+
           return <TableRow key={game.game_id}>
             <TableCell>{game.date_time|| '4/322/18'}</TableCell>
             <TableCell>{tableData[idx].opponent || 'Rockies'}</TableCell>
