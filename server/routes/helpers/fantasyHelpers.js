@@ -109,6 +109,7 @@ const getLeague = async (league_id, user_id, res, type) => {
     const seasons = {}
     let sport_seasons = []
     seasonsInfo.rows.forEach(x => {
+      console.log(x)
       sport_seasons.push(x.sport_season_id)
       if(!seasons[x.sport_id])
       {
@@ -133,6 +134,7 @@ const getLeague = async (league_id, user_id, res, type) => {
         }
       }
     })
+    console.log(seasons)
 
 
     const ownerGames = await getOwnersUpcomingGames(my_owner_id, sport_seasons)
@@ -154,16 +156,16 @@ const getLeague = async (league_id, user_id, res, type) => {
         eligible_ranking = i
         i++
       
-      teams[teamRow.team_id] = {
-        owner_id:teamRow.owner_id,
-        overall_pick:teamRow.overall_pick,
-        reg_points,
-        bonus_points,
-        playoff_points,
-        proj_points:parseFloat(teamRow.proj_points),
-        ranking:parseInt(teamRow.ranking),
-        eligible_ranking: eligible_ranking,
-        points:reg_points+bonus_points+playoff_points}
+        teams[teamRow.team_id] = {
+          owner_id:teamRow.owner_id,
+          overall_pick:teamRow.overall_pick,
+          reg_points,
+          bonus_points,
+          playoff_points,
+          proj_points:parseFloat(teamRow.proj_points),
+          ranking:parseInt(teamRow.ranking),
+          eligible_ranking: eligible_ranking,
+          points:reg_points+bonus_points+playoff_points}
       }
     })
 
