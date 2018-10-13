@@ -52,9 +52,9 @@ class ScoreboardPage extends React.Component {
     }
   }
 
-  componentWillMount(){
-    this.props.onClickedLeague(this.props.activeLeague.league_id, this.props.user.id)
-  }
+  // componentWillMount(){
+  //   this.props.onClickedLeague(this.props.activeLeague.league_id, this.props.user.id)
+  // }
 
   componentDidUpdate(prevProps, prevState){
 

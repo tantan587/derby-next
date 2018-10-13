@@ -51,6 +51,7 @@ const DialogHead = ({ oneTeam, classes }) =>
   return (
     <div className={classes.container} style={{ display: 'flex', justifyContent: 'space-around' }}>
       <img
+        preserveAspectRatio='true'
         style={{maxWidth:100, maxHeight:100}}
         src={oneTeam.logo_url || 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Chicago_Cubs_logo.svg/99px-Chicago_Cubs_logo.svg.png'}
       />
