@@ -22,6 +22,23 @@ const styles = theme => ({
     marginRight: theme.spacing.unit,
     width: '100%',
   },
+  container: {
+    [theme.breakpoints.only('xl')]: {
+      width: '25%'
+    },
+    [theme.breakpoints.only('lg')]: {
+      width: '25%'
+    },
+    [theme.breakpoints.only('md')]: {
+      width: '30%'
+    },
+    [theme.breakpoints.only('sm')]: {
+      width: '40%'
+    },
+    [theme.breakpoints.only('xs')]: {
+      width: '50%'
+    },
+  }
 })
 
 class DropdownFilter extends React.Component {
@@ -37,7 +54,7 @@ class DropdownFilter extends React.Component {
     const {dropdowns, classes, name, value, displayFunction} = this.props
     return (
 
-      <div style={{width:'20%', float:'left'}}>
+      <div className={classes.container} style={{float:'left'}}>
         <TextField
           id="drowndown"
           select
@@ -45,7 +62,7 @@ class DropdownFilter extends React.Component {
           className={classes.textField}
           value={value || ''}
           onChange={this.handleChange()}
-          style={{marginTop:5, marginLeft:38}}
+          style={{marginTop:5}}
           SelectProps={{
             MenuProps: {
               className: classes.menu,

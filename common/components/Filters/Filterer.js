@@ -7,7 +7,7 @@ const Filterer = (data, filter, options) => {
     rtnData = exclusiveFilter(rtnData, filter, options)
     break
   }
-    
+
   case 'search': {
     rtnData = searchFilter(rtnData, filter)
     break

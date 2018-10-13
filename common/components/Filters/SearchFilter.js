@@ -9,8 +9,24 @@ import Grid from '@material-ui/core/Grid'
 
 
 
-const styles = () => ({
-
+const styles = theme => ({
+  container: {
+    [theme.breakpoints.only('xl')]: {
+      width: '25%'
+    },
+    [theme.breakpoints.only('lg')]: {
+      width: '25%'
+    },
+    [theme.breakpoints.only('md')]: {
+      width: '30%'
+    },
+    [theme.breakpoints.only('sm')]: {
+      width: '40%'
+    },
+    [theme.breakpoints.only('xs')]: {
+      width: '50%'
+    },
+  }
 })
 
 class SearchFilter extends React.Component {
@@ -30,17 +46,19 @@ class SearchFilter extends React.Component {
     this.filterRows(this.state.value)
   }
 
-  
+
   filterRows = word => {
     const {column, clickedUpdateFilter, filterId} = this.props
     clickedUpdateFilter({key:column, value:word, type:'search'}, filterId)
   }
 
   render() {
+    const { classes } = this.props
+
     let localValue = this.props.value === '\n' ? '' : this.props.value
     localValue = localValue || ''
     return(
-      <Grid container spacing={24} style={{width:'25%', float:'left', marginLeft:'10%', marginRight:'0%', marginTop:10}}>
+      <Grid container spacing={24} className={classes.container} style={{marginTop:10}}>
         <Grid item xs={12}>
           <Grid container alignItems='flex-end' direction='row'>
             <Grid item xs={10} sm={10}

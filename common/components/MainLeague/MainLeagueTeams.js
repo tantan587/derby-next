@@ -24,15 +24,15 @@ const styles = {
 
 class MainLeagueTeams extends React.Component {
 
-  
+
 
   render() {
     const page = 'teams'
     const {teams, activeLeague, contentFilter} = this.props
     const sportLeagueIds = R.keys(sportLeagues)
-    let myTeams = Object.values(teams).filter(team => sportLeagueIds.includes(team.sport_id) && team.eligible).map(team => 
+    let myTeams = Object.values(teams).filter(team => sportLeagueIds.includes(team.sport_id) && team.eligible).map(team =>
     {
-      let owner = null 
+      let owner = null
       let points = 0
       let projPoints = 0
       let rank = 999
@@ -65,7 +65,7 @@ class MainLeagueTeams extends React.Component {
     let ownerName = activeLeague.owners.find(x => x.owner_id === activeLeague.my_owner_id).owner_name
     let filteredMyTeams = myTeams
     let confs = [...new Set(filteredMyTeams.map(x => x.conference))].sort((a,b) => { return a > b})
-    
+
     R.values(contentFilter[page]).forEach(filter => {
       filteredMyTeams = Filterer(filteredMyTeams, filter, {ownerName})
       if(filter.type === 'tab'){
@@ -80,28 +80,33 @@ class MainLeagueTeams extends React.Component {
       values,
       column:'sport_id',
       defaultTab:0,
-      tabStyles:{backgroundColor:'#e3dac9',
+      tabStyles: {
+        backgroundColor:'#e3dac9',
         color:'#48311A',
-        selectedBackgroundColor:'white', 
+        selectedBackgroundColor:'white',
         selectedColor:'#229246',
-        fontSize:16}
-    },{type:'dropdown',
+        fontSize:16
+      }
+    },
+    {
+      type:'dropdown',
       values:confs,
       column:'conference',
       name:'Conference'
     },
-    {type:'search',
+    {
+      type:'search',
       column:'team_name',
-    },
-    ]
+    }]
+
     return (
       <div>
         <TeamsDialog />
-
         <Title color='white' backgroundColor='#EBAB38' title='All Teams'/>
         <FilterCreator filters={filters} page={page}/>
         <DerbyTableContainer
           usePagination={true}
+          noBreak={true}
           myRows={filteredMyTeams}
           //orderInd={true}
           myHeaders = {[
@@ -114,7 +119,6 @@ class MainLeagueTeams extends React.Component {
             {label: 'Derby Points', key: 'points'},
             {label: 'Proj. Points ', key: 'projPoints'},
             {label: 'Rank', key: 'rank'},
-            // {label: 'Points', key: 'points'}
           ]}/>
       </div>
     )
@@ -137,5 +141,3 @@ export default connect(
   }),
   mapDispatchToProps,
 )(withStyles(styles)(MainLeagueTeams))
-
-
