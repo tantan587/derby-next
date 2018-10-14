@@ -148,14 +148,14 @@ const createGame = row => {
       url:row.h_url,
       team_id:row.home_team_id,
       lost:row.winner === 'A',
-      record:(row.h_wins + '-' + row.h_losses) + (row.h_ites > 0 ? '-' + row.h_ties : '')
+      record:(row.h_wins + '-' + row.h_losses) + (row.h_ties > 0 ? '-' + row.h_ties : '')
     },
     away : {
       team_name:row.sport_id !== '107' ? row.a_city + ' ' + row.a_name : row.a_name,
       url:row.a_url,
       team_id:row.away_team_id,
       lost:row.winner === 'H',
-      record:(row.a_wins + '-' + row.a_losses) + (row.a_ites > 0 ? '-' + row.a_ties : '') 
+      record:(row.a_wins + '-' + row.a_losses) + (row.a_ties > 0 ? '-' + row.a_ties : '') 
     },
     stadium : 'Unavailable'
   }
@@ -173,7 +173,8 @@ const createGame = row => {
     if(baseGame.status === 'InProgress')
     {
       let period_text = baseGame.period == 2 ? '2nd' : baseGame.period == 3 ? '3rd' : baseGame.period == 1 ? '1st' : baseGame.period == 4 ? '4th' : baseGame.period == 'Half' ? 'Halftime': 'OT'
-      baseGame.status = period_text === 'Halftime' ? 'Halftime' : `${baseGame.time} - ${period_text}` 
+      let baseGameTime = baseGame.time === '---' ? 'End of' : baseGame.time + '-'
+      baseGame.status = period_text === 'Halftime' ? 'Halftime' : `${baseGameTime} ${period_text}` 
     }
     baseGame.header = ['1','2','3','4','T']
     baseGame.home.score = [
