@@ -32,9 +32,9 @@ class MainLeagueTeams extends React.Component {
     const page = 'teams'
     const {teams, activeLeague, contentFilter} = this.props
     const sportLeagueIds = R.keys(sportLeagues)
-    let myTeams = Object.values(teams).filter(team => sportLeagueIds.includes(team.sport_id) && team.eligible).map(team => 
+    let myTeams = Object.values(teams).filter(team => sportLeagueIds.includes(team.sport_id) && team.eligible).map(team =>
     {
-      let owner = null 
+      let owner = null
       let points = 0
       let projPoints = 0
       let rank = 999
@@ -77,37 +77,38 @@ class MainLeagueTeams extends React.Component {
 
     confs.unshift('All')
     const filters = [{
-      type: 'tab',
-      displayType: 'sportsIcon',
+      type:'tab',
+      displayType:'sportsIcon',
       values,
-      column: 'sport_id',
-      defaultTab: 0,
+      column:'sport_id',
+      defaultTab:0,
       tabStyles: {
-        backgroundColor: '#392007',
-        color: 'white',
-        selectedBackgroundColor: '#392007',
-        selectedColor: '#EBAB38',
-        fontSize: 16
+        backgroundColor:'#e3dac9',
+        color:'#48311A',
+        selectedBackgroundColor:'white',
+        selectedColor:'#229246',
+        fontSize:16
       }
-    }, {
-      type: 'dropdown',
-      values: confs,
-      column: 'conference',
-      name: 'Conference'
     },
     {
-      type: 'search',
-      column: 'team_name',
+      type:'dropdown',
+      values:confs,
+      column:'conference',
+      name:'Conference'
     },
-    ]
+    {
+      type:'search',
+      column:'team_name',
+    }]
+
     return (
       <div>
         <TeamsDialog />
-
         <Title color='white' backgroundColor='#EBAB38' title='All Teams' />
         <FilterCreator filters={filters} page={page} />
         <DerbyTableContainer
           usePagination={true}
+          noBreak={true}
           myRows={filteredMyTeams}
           //orderInd={true}
           myHeaders={[
