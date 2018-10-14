@@ -172,8 +172,8 @@ const createGame = row => {
   {
     if(baseGame.status === 'InProgress')
     {
-      let period_text = baseGame.period == 2 ? '2nd' : baseGame.period == 3 ? '3rd' : baseGame.period == 1 ? '1st' : baseGame.period == 4 ? '4th' : baseGame.period == 'Half' ? 'Halftime': 'OT'
-      let baseGameTime = baseGame.time === '---' ? 'End of' : baseGame.time + '-'
+      let period_text = baseGame.period == 2 ? '2nd' : baseGame.period == 3 ? '3rd' : baseGame.period == 1 ? '1st' : baseGame.period == 4 ? '4th' : baseGame.period == 'HALF' ? 'Halftime': 'OT'
+      let baseGameTime = baseGame.time === '---' ? 'End of' : baseGame.time + ' -'
       baseGame.status = period_text === 'Halftime' ? 'Halftime' : `${baseGameTime} ${period_text}` 
     }
     baseGame.header = ['1','2','3','4','T']
