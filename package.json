@@ -6,7 +6,7 @@
   "scripts": {
     "prestart": "npm run build",
     "start": "next start",
-    "build": "next build",
+    "build": "npm run typecheck && next build",
     "typecheck": "tsc ./server/**/*.ts --outDir jsoutput",
     "devstart" : "node server/server.js",
     "dev": "npm run typecheck && npm run devstart",
