@@ -6,12 +6,12 @@
   "scripts": {
     "prestart": "npm run build",
     "start": "next start",
-    "build": "npm run typecheck && next build",
+    "build": "next build",
     "typecheck": "tsc ./server/**/*.ts --outDir jsoutput",
     "devstart" : "node server/server.js",
     "dev": "npm run typecheck && npm run devstart",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "heroku-postbuild": "next build"
+    "heroku-postbuild": "npm run typecheck && next build"
   },
   "engines": {
     "npm": "6.3.0"
