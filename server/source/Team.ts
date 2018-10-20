@@ -1,7 +1,7 @@
 class Team {
   TeamId:number
 
-  constructor(teamId:string)
+  constructor(teamId:number)
   {
     this.TeamId = teamId
   }
