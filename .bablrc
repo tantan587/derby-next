@@ -9,7 +9,8 @@
   ],
   "presets": [
     "next/babel",
-    "@zeit/next-typescript/babel"
+    "@zeit/next-typescript/babel",
+    "transform-object-rest-spread"
   ],
   "ignore": []
 }
