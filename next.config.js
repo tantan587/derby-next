@@ -1,10 +1,10 @@
 const path = require('path')
 const glob = require('glob')
-require('babel-register')
 const withTypescript = require('@zeit/next-typescript')
 
 module.exports = withTypescript({
-  webpack: (config) => {
+  webpack: (config, { defaultLoaders} ) => {
+    defaultLoaders.babel.options.plugins.push(['transform-object-rest-spread'])
     config.module.rules.push(
       {
         test: /\.(css|scss)/,
