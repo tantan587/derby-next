@@ -1,5 +1,6 @@
 const path = require('path')
 const glob = require('glob')
+require('babel-register')
 const withTypescript = require('@zeit/next-typescript')
 
 module.exports = withTypescript({

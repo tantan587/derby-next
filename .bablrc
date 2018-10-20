@@ -4,11 +4,13 @@
       "wrap-in-js",
       {
         "extensions": ["css$", "scss$"]
-      }
+      },
+      "transform-object-rest-spread"
     ]
   ],
   "presets": [
     "next/babel",
+    "stage-0",
     "@zeit/next-typescript/babel"
   ],
   "ignore": []

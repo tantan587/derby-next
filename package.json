@@ -7,8 +7,8 @@
     "prestart": "npm run build",
     "start": "next start",
     "build": "next build",
-    "typecheck": "tsc ./server/**/*.ts --outDir jsoutput",
-    "devstart": "node server/server.js",
+    "typecheck": "tsc --outDir jsoutput",
+    "devstart": "babel-node server/server.js",
     "dev": "npm run typecheck && npm run devstart",
     "test": "echo \"Error: no test specified\" && exit 1",
     "heroku-postbuild": "npm run typecheck && next build"
@@ -22,6 +22,7 @@
   "dependencies": {
     "@material-ui/core": "^3.0.3",
     "@material-ui/icons": "^3.0.1",
+    "@types/es6-promise": "^3.3.0",
     "@zeit/next-typescript": "^1.1.1",
     "autoprefixer": "^7.2.4",
     "babel-plugin-module-resolver": "^3.0.0",
@@ -90,7 +91,12 @@
     "uuid": "^3.1.0"
   },
   "devDependencies": {
+    "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
+    "babel-cli": "^6.26.0",
     "babel-eslint": "^8.0.3",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-register": "^6.26.0",
     "eslint": "^4.19.1",
     "eslint-plugin-react": "^7.5.1",
     "tslint-config-airbnb": "^5.11.0"

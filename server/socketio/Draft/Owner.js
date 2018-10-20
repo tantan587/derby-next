@@ -1,4 +1,5 @@
 const draftHelpers = require('../../routes/helpers/draftHelpers')
+const League = require('../../source/League.ts')
 
 function Owner(ownerId, draftRules, allTeamsByRank, teamMap) {
   this.ownerId = ownerId
@@ -9,6 +10,7 @@ function Owner(ownerId, draftRules, allTeamsByRank, teamMap) {
   var here = false
   var eligibleTeams = [].concat(allTeamsByRank)
   var theDraftRules = JSON.parse(JSON.stringify(draftRules))
+  var ok = new League('hello')
   
   this.TryUpdateQueue = (teamId) =>
   {
