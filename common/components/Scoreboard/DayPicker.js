@@ -111,7 +111,7 @@ class DayPicker extends Component {
     const DateRange = R.range(offset.start, offset.end).map((offset) => {
       return this.changeDateByOffset(date,offset)
     })
-    const DateRangeXs = R.range(offset.start, offset.end - 4).map((offset) => {
+    const DateRangeXs = R.range(offsetXs.start, offsetXs.end - 4).map((offset) => {
       return this.changeDateByOffset(date,offset)
     })
     return (

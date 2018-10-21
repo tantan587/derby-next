@@ -7,7 +7,7 @@ import DayPicker from './DayPicker'
 import ScoreCard from './ScoreCard'
 import {MonthNames, GetWeekOffsetRange } from '../../lib/time'
 
-const styles = (theme) => ({
+const styles = theme => ({
   container: {
     padding: '20px 0',
     margin: '0 3%',
@@ -19,6 +19,16 @@ const styles = (theme) => ({
   caption: {
     marginTop: 5,
     marginBottom: 15,
+    [theme.breakpoints.only('xs')]: {
+      display: 'none'
+    }
+  },
+  captionXs: {
+    marginTop: 5,
+    marginBottom: 15,
+    [theme.breakpoints.up('sm')]: {
+      display: 'none'
+    }
   },
   body1: {
     fontSize: '1em',
@@ -34,6 +44,27 @@ const getDateRangeForWeek = (date) => {
   prev.setDate(date.getDate() + offset.start)
   let next = new Date(date.getTime())
   next.setDate(date.getDate() + offset.end -1 )
+  console.log('hi', offset, prev, next)
+  return `${formatDate(prev)} - ${formatDate(next)}`
+}
+
+const getDateRangeForWeekXs = (date) => {
+
+  let offset = GetWeekOffsetRange(date)
+
+  if (5 > offset.end && offset.end > 1) { // HACK
+    offset.start += 3     // .getDay() returns an int between 0 and 6
+    offset.end += 3       // it's not ideal to assume that a piece
+  } else if (offset.end === 1) {   // of UI will be between 0 and 6
+    offset.start += 6
+    offset.end += 6
+  }
+
+  let prev = new Date(date.getTime())
+  prev.setDate(date.getDate() + offset.start)
+  let next = new Date(date.getTime())
+  next.setDate(date.getDate() + offset.end -5 )
+  console.log('hi', offset, prev, next)
   return `${formatDate(prev)} - ${formatDate(next)}`
 }
 
@@ -44,7 +75,7 @@ class Scoreboard extends Component {
   render() {
     const {classes, scoreData, date, onUpdateDate, activeLeague} = this.props
     const scoreCards = scoreData.map((x,i) => <ScoreCard key={i} useRightSide={false} scoreboardData={x} activeLeague={activeLeague}/>)
- 
+
     return (
       <div className={classes.container}>
         <Typography
@@ -57,6 +88,12 @@ class Scoreboard extends Component {
           variant="caption"
           gutterBottom
           children={getDateRangeForWeek(date)}
+        />
+        <Typography
+          className={classes.captionXs}
+          variant="caption"
+          gutterBottom
+          children={getDateRangeForWeekXs(date)}
         />
         <DayPicker
           date={date}
