@@ -26,7 +26,7 @@ nextApp.prepare()
     app.use(require('cookie-parser')())
     app.use(session({
       store: new (require('connect-pg-simple')(session))({
-        conString: require('../knexfile.js')[process.env.NODE_ENV].connection,
+        conString: require('../knexfile')[process.env.NODE_ENV].connection,
         schemaName: 'users',
         tableName : 'session',
       }),
@@ -46,7 +46,7 @@ nextApp.prepare()
     app.get('*', (req, res) => {
       return handle(req, res)
     })
-
+    console.log(process.versions.node)
     server.listen(process.env.PORT || 3000, (err) => {
       if (err) throw err
     })
