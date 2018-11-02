@@ -2,7 +2,7 @@ const simulateHelpers = require('./simulateHelpers.js')
 
 
 class Game{
-    constructor(global_game_id, home, away, sport_id, sport_season_id, year, home_result=0, away_result=0){
+    constructor(global_game_id, home, away, sport_id, sport_season_id, year, season_type, home_result=0, away_result=0){
         this.global_game_id = global_game_id
         this.home = home
         this.away = away
@@ -10,6 +10,7 @@ class Game{
         this.away_result = away_result
         this.sport_id = sport_id
         this.sport_season_id = sport_season_id
+        this.season_type = season_type
         this.year = year
         //this.day = day
         this.all_simulate_results = {home: {wins: 0, losses: 0, ties: 0},  away: {wins: 0, losses: 0, ties: 0}}

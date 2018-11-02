@@ -232,7 +232,6 @@ const fantasyProjections = (all_teams, day, points, sport_structures, year_seaso
 }
 
 
-
 const pureValueRankMethod = (array_of_all_teams, structure, data_for_insert, day) => {
     findPointsAbove(array_of_all_teams, structure)
     array_of_all_teams.sort(function (a, b) { return a.rank_above_last[structure.sport_structure_id] + a.rank_above_average[structure.sport_structure_id] - b.rank_above_last[structure.sport_structure_id] - b.rank_above_average[structure.sport_structure_id] })
@@ -308,4 +307,15 @@ const rankTeams = (array_of_all_teams, structure, data_for_insert, day) => {
 }
 
 
-module.exports = {Series, moreWins, simulateGame, updateProjections, simulateNHLGame, createImpactArray, fantasyProjections, simulateBowlGame, simulateEPLGame, individualSportTeamsWithYear}
+module.exports = {
+    Series,
+    moreWins,
+    simulateGame, 
+    updateProjections, 
+    simulateNHLGame, 
+    createImpactArray, 
+    fantasyProjections, 
+    simulateBowlGame, 
+    simulateEPLGame, 
+    individualSportTeamsWithYear
+}

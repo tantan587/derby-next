@@ -298,6 +298,7 @@ methods.updateBowlWins = async (knex, bowl_wins, playoff_wins, sport_season_id) 
     return 0
 }
 
+
 //this should use sport_season_id
 methods.updatePlayoffStandings = async (knex, newStandings) =>
 {

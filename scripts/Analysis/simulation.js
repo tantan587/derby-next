@@ -12,6 +12,7 @@ const math = require('mathjs')
 const updateProjections = require('./updateProjections')
 const fantasyHelpers = require('../../server/routes/helpers/fantasyHelpers')
 
+//adding in something that looks to see if the sport structure is active. If it is not active, it does not need to be run
 
 //this is the overall simulate function - runs for each sport
 //eventually needs to add in how it detects if in the middle of a season
@@ -72,9 +73,11 @@ async function simulate(exitProcess, simulations = 10000, all=false)
 //function which simulates NBA, NFL, NHL, MLB - default set to 10 for now to modify later
 const simulateProfessionalLeague = (all_games_list, teams, sport_id, points, simulations = 10) => {
   const years = Object.keys(teams[sport_id])
+  let date = new Date()
   let game_projections = []
   let all_seasons_sport_teams = []
   years.forEach(year => { 
+    // let hasPlayoffsStarted = simulateHelpers.playoffsStarted(knex, sport_id, year)
     let sport_teams = simulateHelpers.individualSportTeamsWithYear(teams, sport_id, year)
     if(seasonsFinished[sport_id][year]){
       sport_teams.forEach(team =>
@@ -85,7 +88,10 @@ const simulateProfessionalLeague = (all_games_list, teams, sport_id, points, sim
       all_seasons_sport_teams.push(...sport_teams)}
     else{
       let sport_games = year in all_games_list[sport_id] ? all_games_list[sport_id][year] : createRandomGameSchedule(sport_id, year, teams)
-
+      // if(hasPlayoffsStarted){
+      //   let playoff_games = sport_games.filter(game => game.season_type == 3)
+      //   let pastPlayoffResults = await dbSimulateHelpers.createPastGamesArrayWithScores(knex, teams, date, sport_id, true )
+      // }
       for(var x=0; x<simulations; x++){
         sport_games.forEach(game => {
           //console.log(game)
@@ -125,6 +131,7 @@ const simulateProfessionalLeague = (all_games_list, teams, sport_id, points, sim
       //return {...sport_teams}
     }
   })
+  console.log(sport_id, ' simulated')
 
   //creates game projections for impact, and also calculating each temas iwnning percentage
   //let game_projections = simulateHelpers.createImpactArray(all_games_list, sport_id, points, years)
@@ -208,6 +215,7 @@ const simulateCFB = (all_games_list, teams, points, simulations = 10) => {
       all_seasons_cfb_teams.push(...cfb_teams)
     } 
   })
+  console.log('CFB simulated')
   //creates game projections for impact, and also calculating each temas iwnning percentage
   //let game_projections = simulateHelpers.createImpactArray(all_games_list, '105', points, years)
   return [all_seasons_cfb_teams, game_projections]
@@ -309,7 +317,7 @@ const simulateCBB = (all_games_list, teams, points, simulations = 10) => {
       all_seasons_cbb_teams.push(...cbb_teams)
     }
   })
-
+  console.log('CBB simulated')
   //let game_projections = simulateHelpers.createImpactArray(all_games_list, '106', points, years)
 
   return [all_seasons_cbb_teams, game_projections]
@@ -357,6 +365,7 @@ const simulateEPL = (all_games_list, teams, points, simulations = 10) => {
       all_seasons_epl_teams.push(...epl_teams)
     }
   })
+  console.log('EPL simulated')
   //creates game projections for impact, and also calculating each temas iwnning percentage
   //let game_projections = simulateHelpers.createImpactArray(all_games_list, '107', points, years)
   return [all_seasons_epl_teams, game_projections]
@@ -387,6 +396,7 @@ const createRandomGameSchedule = (sport_id, year, all_teams) => {
 }
 //testFunctionsWithPastGames()
 
+//need to eventually not hardcode seasons finished
 const seasonsFinished = {
   101: {2018: true, 2019: false}, 
   102: {2017: true, 2018: false}, 
@@ -396,6 +406,7 @@ const seasonsFinished = {
   106: {2018: true, 2019: false},
   107: {2018: true, 2019: false}
 }
+
 
 module.exports = {simulate}
 

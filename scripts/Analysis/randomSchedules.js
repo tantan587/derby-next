@@ -13,6 +13,27 @@ const math = require('mathjs')
         .where('sport_id', sportId)
 } */
 
+const randomNFLSchedule = (teams) => {
+    let team_list = Object.keys(teams).map(key => teams[key])
+    let schedule = []
+    let x = 0
+    let divisions = [['South', '10201'], ['Central', '10201'], ['West', '10201'], ['North', '10201'],
+    ['South', '10202'], ['Central', '10202'], ['West', '10202'], ['North', '10202']]
+    let teams_in_divisions = []
+    //divide teams into an array by div/conference
+    divisions.forEach(division =>{
+        let div = team_list.filter(team => (team.conference===division[1] && team.division === division[0]))
+            teams_in_divisions.push(div)
+        })
+    
+    let afc = team_list.filter(team => team.conference === '10202')
+    let nfc = team_list.filter(team => team.conference === '10201')
+    
+    scheduleIntradivision(teams_in_divisions, schedule, '102', 2)
+
+
+}
+
 const randomNBASchedule =  (teams) => {
     //let teams = await getTeams(knex, '101')
     //schedule contains home team id, away team id, sport id, game id
@@ -144,6 +165,7 @@ const interLeagueSchedule = (division_1, division_2, schedule, x=0) => {
     })
 }
 
+//schedules the intradivision games in a sport, randomizing who is home and away
 const scheduleIntradivision = (teams_in_divisions, schedule, sport_id, games) => {
     let x = 0
     let teams_for_sched = []

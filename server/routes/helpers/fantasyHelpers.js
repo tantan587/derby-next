@@ -710,6 +710,20 @@ const getStandingDataPlayoffAndRegular = async (seasons_for_pull, sport_structur
   return teamMap
 }
 
+const getSportsForFantasy = async (league_id, useEPL, knex) => {
+  let leagueRulesInfo = 
+    await knex('fantasy.leagues')
+      .where('league_id', league_id)
+      .leftOuterJoin('fantasy.league_rules', 'fantasy.league_rules.league_rule_id', 'fantasy.leagues.league_rule_id')
+      .leftOuterJoin('fantasy.conference_rules', 'fantasy.conference_rules.conference_rule_id', 'fantasy.leagues.conference_rule_id')
+      .select('*')
+  
+  let league_rules = leagueRulesInfo[0].league_rules
+  let conference_rules = leagueRulesInfo[0].conference_rules
+
+  return league_rules
+}
+
 //this should be deprecated if draftHelpers works
 const updateFantasy = (league_id, res) =>
 {

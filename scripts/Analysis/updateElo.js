@@ -94,8 +94,16 @@ async function updateElos(exitProcess)
     for(team in elo_adjusted){
         let prom = await updateOneElo(knex, elo_adjusted[team]['team_id'], elo_adjusted[team]['elo'], elo_adjusted[team]['year'])
     }
+    //this is to keep track of each day count that we update the elo for
+    let today = new Date()
+    let dayCount = getDayCount(today) - 1
+    await insertTrueDayCount(knex, 'analysis', 'elo_updates', dayCount)
     if(exitProcess)
         process.exit()
+}
+
+const insertTrueDayCount = async (knex, schema, table, day_count) => {
+    await knex.withSchema(schema).table(table).insert({day_count: day_count, updated: true})
 }
 
 module.exports = {updateElos}

@@ -1,10 +1,12 @@
 const Game = require('./GameClass.js')
 const Team = require('./TeamClass.js')
 
+//adding in to the spor structures a filter to only pull active sportstructures
 const getSportStructures = async (knex) => {
     let structures = 
         await knex('fantasy.sports_structure')
         .innerJoin('fantasy.league_bundle', 'fantasy.league_bundle.league_bundle_id', 'fantasy.sports_structure.league_bundle_id')
+        .where('active', true)
         .select('*')
     
     return structures
@@ -30,15 +32,20 @@ const yearSeasonIds = async (knex) => {
 }
 
 //function to pull the past games, to use if we want to update elos, or to test simulation for other sports
-const pullPastGames = (knex, day) =>
+//also used to pull past playoffGames for simulation
+const pullPastGames = async (knex, day, playoffsOnly = false, sport_id = [101, 102, 103, 104, 105, 106, 107]) =>
 {
-    return knex('sports.schedule')
-        .where('sports.schedule.day_count', "<", day) //need to test if want to go past today, or e this day count
-        //.where('season_type',1) 
-        .select('*')
-        .then(game => {
-            //console.log(game)
-            return game})
+    let seasonTypes = playoffsOnly ? [3] : [1, 3]
+    let schedules = 
+        await knex('sports.schedule')
+            .leftOuterJoin('sports.sport_season', 'sports.schedule.sport_season_id', 'sports.sport_season.sport_season_id')
+            .where('sports.schedule.day_count', "<", day) //need to test if want to go past today, or e this day count
+            .whereIn('season_type', seasonTypes)
+            .whereIn('sport_id', sport_id)
+            .whereNot('sports.schedule.status', 'Postponed')
+            .select('*')
+
+    return schedules
 }
 
 //this would be the normal simulate function, used to pull the future games 
@@ -48,7 +55,7 @@ const pullFutureGames = async (knex, day) =>
         await knex('sports.schedule')
             .leftOuterJoin('sports.sport_season', 'sports.schedule.sport_season_id', 'sports.sport_season.sport_season_id')
             .where('sports.schedule.day_count', ">", day) //need to test if want to go past today, or include this day count
-            .where('sports.schedule.season_type',1) 
+            .whereIn('sports.schedule.season_type', [1, 3]) 
             .whereNot('sports.schedule.status', 'Postponed')
             //.whereIn('sport_season_id',"<",22)
             .select('*')
@@ -135,7 +142,7 @@ const createGamesArray = async (knex, all_teams, day) => {
         if(!(game.year in all_games[game.sport_id])){
             all_games[game.sport_id][game.year] = []
         }
-        all_games[game.sport_id][game.year].push(new Game(game.global_game_id, all_teams[game.sport_id][game.year][game.home_team_id], all_teams[game.sport_id][game.year][game.away_team_id], game.sport_id, game.sport_season_id))
+        all_games[game.sport_id][game.year].push(new Game(game.global_game_id, all_teams[game.sport_id][game.year][game.home_team_id], all_teams[game.sport_id][game.year][game.away_team_id], game.sport_id, game.sport_season_id, game.year, game.season_type))
     })
     let cbb_games = await pullCBBGames2018(knex)
     let cfb_games = await pullCFBGames2017(knex)
@@ -163,15 +170,25 @@ const createPastGamesArray = (all_teams, day) => {
     })}
 
 //creates an array of played games by sport, with the past games, to use either for updating elos
-const createPastGamesArrayWithScores = async (knex, all_teams, day) => {
-    all_games = {101:[], 102:[],103:[],104:[],105:[],106:[],107:[]}
-    return pullPastGames(knex, day)
-    .then(games => {
-        games.forEach(game => {
-            all_games[game.sport_id].push(new Game(game.global_game_id, all_teams[game.sport_id][game.year][game.home_team_id], all_teams[game.sport_id][game.year][game.away_team_id], game.sport_id, game.sport_season_id, game.year, game.home_team_score, game.away_team_score))
-        })
-    return all_games
-    })}
+const createPastGamesArrayWithScores = async (knex, all_teams, day, sport_id, playoffsOnly = false) => {
+    let all_games
+    let pastGames
+    if(sport_id){
+        all_games = {}
+        all_games[sport_id] = []
+        pastGames = await pullPastGames(knex, day, playoffsOnly, [sport_id])
+    }else{
+        all_games = {101:[], 102:[],103:[],104:[],105:[],106:[],107:[]}
+        pastGames = await pullPastGames(knex, day)
+    }   
+    
+    pastGames.forEach(game => {
+        all_games[game.sport_id].push(new Game(game.global_game_id, all_teams[game.sport_id][game.year][game.home_team_id], all_teams[game.sport_id][game.year][game.away_team_id], game.sport_id, game.sport_season_id, game.year, game.season_type, game.home_team_score, game.away_team_score))
+    })
+
+    return pastGames
+
+}
 
 const getPointsStructure = async (knex, scoring_type = 1) => {
     return knex
@@ -186,4 +203,60 @@ const getPointsStructure = async (knex, scoring_type = 1) => {
         return point_map
         })
     }
-module.exports = {createGamesArray, createPastGamesArray, createTeams, createPastGamesArrayWithScores, getSportStructures, yearSeasonIds}
+
+//checks to see if playoffs have already started for the sport. If they have, returns true. 
+//if they have not, returns false
+const playoffsStarted = async (knex, sport_id, year) => {
+    let status = await checkDateComparedToToday(knex, 'start_season_date', true, sport_id, year)
+    if(status.playoff){
+        return true
+    }else{
+        return false
+    }
+}
+
+//compares one of the columns from sport season to today, and returns if it is after or before, depending on parameter
+const checkDateComparedToToday = async (knex, columnToLookAt, after=true, sport_id, year) => {
+    let today = new Date()
+    let seasons = 
+        await knex('sports.sport_season')
+        .where('sport_id', sport_id)
+        .andWhere('year', year)
+        .whereIn('season_type', [1, 3])
+        .select('*')
+    
+    let regular = seasons.filter(season => season.season_type == 1)[0]
+    let playoff = seasons.filter(season => season.season_type == 3)[0]
+
+    console.log(playoff)
+    let statusToReturn = {regular: false, playoff: false}
+    if(after){
+        console.log('after')
+        if(regular[columnToLookAt]<=today){
+            statusToReturn['regular'] = true
+        }
+        if(playoff[columnToLookAt]<=today){
+            statusToReturn['playoff'] = true
+        }
+    }else{
+        if(regular[columnToLookAt]>=today){
+            statusToReturn['regular'] = true
+        }
+        if(playoff[columnToLookAt]>=today){
+            statusToReturn['playoff'] = true
+        } 
+    }
+    
+    return statusToReturn
+}
+
+module.exports = {
+    createGamesArray, 
+    createPastGamesArray, 
+    createTeams, 
+    createPastGamesArrayWithScores, 
+    getSportStructures, 
+    yearSeasonIds,
+    checkDateComparedToToday,
+    playoffsStarted
+}

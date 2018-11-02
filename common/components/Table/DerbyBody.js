@@ -70,13 +70,13 @@ class DerbyBody extends React.Component {
                   onClick={() => {
                     if (n.team_id)
                     {
+                      handleOpenDialog(n)
                       clickedOneTeam(n.team_id)
-                        .then(() => handleOpenDialog())
                     }
                     else
                     {
+                      handleOpenDialog(n)
                       clickedOneTeam(n[header.id].team_id)
-                        .then(() => handleOpenDialog())
                     }
                   }
                   } src={n[header.id].url || n[header.id]} 
@@ -108,8 +108,8 @@ class DerbyBody extends React.Component {
                   <div
                     className={classes.teamName}
                     onClick={() => {
+                      handleOpenDialog(n)
                       clickedOneTeam(n.team_id)
-                        .then(() => handleOpenDialog())
                     }}
                   >
                     {n[header.id]}
@@ -136,7 +136,6 @@ class DerbyBody extends React.Component {
               extraTableRow && n['pick'] % extraTableRow.freq === 1 && i !==0 ?
                 this.extraRowRender(extraTableRow,i,n) : null,
               <TableRow
-                onClick={n.onClick ? () => n.onClick(n) : null}
                 hover
                 tabIndex={-1}
                 key={i}

@@ -200,4 +200,4 @@ const createSoccerLeague = async (knex, sport_id, sportName, api, promiseToGet, 
 
 }
 
-module.exports = {createCollegeSport, createProfessionalSport, createSoccerLeague}
+module.exports = {createCollegeSport, createProfessionalSport, createSoccerLeague, getSeasonData}

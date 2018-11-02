@@ -154,7 +154,9 @@ const arrangeGamesBySport = (today_games) => {
   return games_by_sport
 }
 
-
+// const updateNFLGames = (week, season, minutes) => {
+//   let games = await db_helpers.getFdata(knex, 'NFL', )
+// }
 
 
 module.exports = {
