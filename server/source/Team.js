@@ -2,10 +2,11 @@
 //const Record = require('./Record')
 
 class Team {
-  constructor(inpTeamId, todaysDayCount) {
-    this.Schedule = []
-    this.today = todaysDayCount
-    this.teamId =inpTeamId
+  constructor(teamId, city, name, schedule) {
+    this.Schedule = schedule
+    this.City = city
+    this.Name = name
+    this.TeamId =teamId
   }
 
   GetRecord() {

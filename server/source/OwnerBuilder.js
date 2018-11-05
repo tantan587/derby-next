@@ -6,7 +6,7 @@ class OwnerBuilder {
   constructor() {
   }
 
-  async CreateOwners(leagueId) {
+  async CreateTeams(leagueId) {
     let owners = await this.GetOwnersFromDb(leagueId)
     let teams = await this.GetOwnerTeamsFromDb(leagueId)
 
@@ -14,7 +14,7 @@ class OwnerBuilder {
     owners.forEach(x => {
       ownerIdToOwner[x.owner_id] = new Owner(x.owner_id, leagueId, x.user_id)
     })
-    
+
     teams.forEach(x => ownerIdToOwner[x.owner_id].AddTeam(x.team_id))
 
     return Object.values(ownerIdToOwner)
