@@ -3,7 +3,6 @@ import { withStyles } from '@material-ui/core/styles'
 import Popper from '@material-ui/core/Popper'
 import Typography from '@material-ui/core/Typography'
 import DialogContent from '@material-ui/core/DialogContent'
-import DialogContentText from '@material-ui/core/DialogContentText'
 import Fade from '@material-ui/core/Fade'
 import Paper from '@material-ui/core/Paper'
 
