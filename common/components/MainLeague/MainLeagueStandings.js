@@ -71,15 +71,18 @@ class MainLeagueStandings extends React.Component {
     let owners = []
     if (activeLeague.owners)
       owners = this.props.activeLeague.owners
-    let owners_race = owners.sort((a,b) => {
-      return a.owner_name.toLowerCase() > b.owner_name.toLowerCase ? 1 : -1 
+    const owners_race = owners.sort((a,b) => {
+      return a.owner_name.toLowerCase() > b.owner_name.toLowerCase ? 1 : -1
     }).map(x => {return {...x, onClick:(o) => {Router.push(Router.push('/mainleagueroster?a=' + o))}}})
 
 
-    let owners_table = owners.sort((a,b) => {return a.rank - b.rank})
-      .map(x => {return {...x, onClick:(y) => {
-        console.log(y)
-        Router.push('/mainleagueroster?a=' + y.owner_id)}}})
+    const owners_table = owners
+      .sort((a,b) => a.rank - b.rank)
+      .map(owner => ({...owner, onClick: owner =>
+        Router
+          .push('/mainleagueroster?a=' + owner.owner_id)
+          .then(() => window.scrollTo(0, 0))
+      }))
 
     return(
       <div>
