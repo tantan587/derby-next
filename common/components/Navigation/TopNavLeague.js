@@ -27,6 +27,12 @@ const styles = (theme) => ({
     [theme.breakpoints.down('sm')]: {
       display: 'none'
     },
+    [theme.breakpoints.only('md')]: {
+      '& button': {
+        paddingLeft: 10,
+        paddingRight: 10,
+      }
+    }
   },
   menuButton: {
     marginLeft: -12,
@@ -52,7 +58,7 @@ class TopNavLeague extends React.Component {
   }
   state = {
     hoverIndex: -1
-  };
+  }
 
 
   setHover = (hoverIndex) => {
@@ -94,10 +100,10 @@ class TopNavLeague extends React.Component {
               {this.setHoverToButton('default', 3, '/mainleaguescoreboard', 'Scoreboard')}
               {this.setHoverToButton('default', 4, '/mainleagueroster', 'Rosters')}
               {this.setHoverToButton('default', 5, '/mainleagueteams', 'Teams')}
-              {this.setHoverToButton('league', 6)}
+              {this.setHoverToButton('default', 6, '/draftrecap', 'Draft Recap')}
+              {this.setHoverToButton('league', 7)}
               <div style={{ float: 'right' }}>
-                {this.setHoverToButton('default', 7, '/logout', 'Log out')
-                }
+                {this.setHoverToButton('default', 8, '/logout', 'Log out')}
               </div>
             </div>
           </Toolbar>
