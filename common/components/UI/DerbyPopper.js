@@ -1,7 +1,9 @@
 import { Component, Fragment } from 'react'
-// import { withStyles } from '@material-ui/core/styles'
+import { withStyles } from '@material-ui/core/styles'
 import Popper from '@material-ui/core/Popper'
 import Typography from '@material-ui/core/Typography'
+import DialogContent from '@material-ui/core/DialogContent'
+import DialogContentText from '@material-ui/core/DialogContentText'
 import Fade from '@material-ui/core/Fade'
 import Paper from '@material-ui/core/Paper'
 
@@ -28,7 +30,7 @@ class DerbyPopper extends Component {
   }
 
   render() {
-    const { children, season } = this.props
+    const { children, season, classes } = this.props
     const { anchorEl, open } = this.state
     const id = open ? 'simple-popper' : null
 
@@ -39,14 +41,28 @@ class DerbyPopper extends Component {
           {({ TransitionProps }) => (
             <Fade {...TransitionProps} timeout={350}>
               <Paper>
-                <Typography>{
+                <DialogContent>{
                   season.playoffs ?
-                    `Start: ${new Date(season.start).toLocaleDateString('en-US')}
-                    Playoffs: ${new Date(season.playoffs).toLocaleDateString('en-US')}
-                    End: ${new Date(season.end).toLocaleDateString('en-US')}` :
-                    `Start: ${new Date(season.start).toLocaleDateString('en-US')}
-                    End: ${new Date(season.end).toLocaleDateString('en-US')}`
-                }</Typography>
+                    <Typography>
+                      <div>
+                        <span className={classes.span}>Start:</span> {new Date(season.start).toLocaleDateString('en-US')}
+                      </div>
+                      <div>
+                        <span className={classes.span}>Playoffs:</span> {new Date(season.playoffs).toLocaleDateString('en-US')}
+                      </div>
+                      <div>
+                        <span className={classes.span}>End:</span> {new Date(season.end).toLocaleDateString('en-US')}
+                      </div>
+                    </Typography> :
+                    <Typography>
+                      <div>
+                        <span className={classes.span}>Start:</span> {new Date(season.start).toLocaleDateString('en-US')}
+                      </div>
+                      <div>
+                        <span className={classes.span}>End:</span> {new Date(season.end).toLocaleDateString('en-US')}
+                      </div>
+                    </Typography>
+                }</DialogContent>
               </Paper>
             </Fade>
           )}
@@ -56,4 +72,4 @@ class DerbyPopper extends Component {
   }
 }
 
-export default DerbyPopper
+export default withStyles({ span: { fontFamily: 'museo-slab-bold', color: 'rgb(34, 146, 70)' } })(DerbyPopper)
