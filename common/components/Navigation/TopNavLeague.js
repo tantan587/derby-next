@@ -65,7 +65,7 @@ class TopNavLeague extends React.Component {
     this.setState({ hoverIndex: hoverIndex })
   }
 
-  setHoverToButton = (buttonType, index, link, name) => {
+  setHoverToButton = (buttonType, index, link, name, items) => {
     let hoverColor = this.state.hoverIndex === index ? '#EBAB38' : 'white'
     return <div
       onMouseEnter={() => this.setHover(index)}
@@ -74,7 +74,7 @@ class TopNavLeague extends React.Component {
       {buttonType == 'league'
         ? <LeaguesButton name='Leagues' color={hoverColor} />
         : buttonType == 'extra' ?
-          <LeagueExtraButton color={hoverColor} name={name} />
+          <LeagueExtraButton color={hoverColor} name={name} items={items} />
           : buttonType == 'home'
             ? <MenuButton color={hoverColor} link={link} name={name} isHomeLogo={true} />
             : <MenuButton color={hoverColor} link={link} name={name} />
@@ -83,7 +83,21 @@ class TopNavLeague extends React.Component {
   }
 
   render() {
-    const { classes, toggleMobileNav } = this.props
+    const { classes, activeLeague, toggleMobileNav } = this.props
+
+    console.log('hello, commish?', activeLeague.imTheCommish)
+
+    const leagueItems = [
+      { text: 'League Home', link: '/mainleaguehome' },
+      { text: 'Draft Room', link: '/livedraft' },
+      { text: 'Team Settings', link: '/mainleagueteamsettings' },
+      ...(activeLeague.imTheCommish ? [{ text:'Commish Tools', link:'/mainleaguesettings' }] : [])
+    ]
+
+    const rosterItems = [
+      { text: 'By Owner', link: '/mainleagueroster' },
+      { text: 'Grid View', link: '/mainleagueroster' },
+    ]
 
     return (
       <div className={classes.root}>
@@ -95,10 +109,10 @@ class TopNavLeague extends React.Component {
 
             {this.setHoverToButton('home', 0, '/')}
             <div className={classes.flex}>
-              {this.setHoverToButton('extra', 1, null, this.props.activeLeague.league_name)}
+              {this.setHoverToButton('extra', 1, null, activeLeague.league_name, leagueItems)}
               {this.setHoverToButton('default', 2, '/mainleaguestandings', 'Standings')}
               {this.setHoverToButton('default', 3, '/mainleaguescoreboard', 'Scoreboard')}
-              {this.setHoverToButton('default', 4, '/mainleagueroster', 'Rosters')}
+              {this.setHoverToButton('extra', 4, null, 'Rosters', rosterItems)}
               {this.setHoverToButton('default', 5, '/mainleagueteams', 'Teams')}
               {this.setHoverToButton('default', 6, '/draftrecap', 'Draft Recap')}
               {this.setHoverToButton('league', 7)}
