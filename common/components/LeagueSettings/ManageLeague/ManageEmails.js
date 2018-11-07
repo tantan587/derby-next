@@ -68,7 +68,7 @@ class ManageEmails extends Component {
       R.map(this.props.sendInvite),
       Promise.all.bind(Promise),
     )(selected_invites)
-    .then(() => this.setState(resetSelectedInvites))
+      .then(() => this.setState(resetSelectedInvites))
   }
 
   onRemoveOwnerClick() {
@@ -77,7 +77,7 @@ class ManageEmails extends Component {
       R.map(this.props.deleteInvite),
       Promise.all.bind(Promise),
     )(selected_invites)
-    .then(() => this.setState(resetSelectedInvites))
+      .then(() => this.setState(resetSelectedInvites))
   }
 
   onInputChange(e) {
@@ -104,7 +104,6 @@ class ManageEmails extends Component {
 
   render() {
     const { classes, invites, activeLeague } = this.props
-    console.log('invirtes is here', invites, activeLeague.league_id)
     const members = R.values(R.filter(R.propEq('league_id', activeLeague.league_id), (invites.data || {})))
 
     const inviteCopy = 'Invite members to join your league by adding their names to the Member List. Emailing them an invitation will send them a unique link and password along with instructions on how to join your league.'

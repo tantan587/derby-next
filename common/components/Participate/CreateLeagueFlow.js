@@ -14,7 +14,7 @@ class CreateLeagueFlow extends React.Component {
 
   updatePage = () => {
     const {progress} = this.props.user
-    if (progress === 2)//3)
+    if (progress === 3)
       Router.push('/mainleaguehome')
     else
       this.props.onMakeProgress(this.props.user.progress + 1 )
