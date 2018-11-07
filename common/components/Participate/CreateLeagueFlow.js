@@ -40,13 +40,12 @@ class CreateLeagueFlow extends React.Component {
     const {progress} = this.props.user
     console.log(this.props.user)
     let component = null
-    // if(progress === 3)
-    // {
-    //   let page3 = <ManageEmails updatePage={this.updatePage}/>
-    //   component = <ParticipateFlowContentWrapper page={page3} title='Choose Friends'/>
-    // }
-    //else 
-    if(progress === 2)
+    if(progress === 3)
+    {
+      let page3 = <ManageEmails updatePage={this.updatePage}/>
+      component = <ParticipateFlowContentWrapper page={page3} title='Choose Friends'/>
+    }
+    else if(progress === 2)
     {
       let page2 =  <CustomizeTeam updatePage={this.updatePage}/>
       component = <ParticipateFlowContentWrapper page={page2} title='Customize Owner'/>

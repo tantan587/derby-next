@@ -8,7 +8,7 @@ const styles = theme => ({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
-    height: 250,
+    height: 140,
     [theme.breakpoints.down('md')]: {
       width: 250
     }
@@ -21,27 +21,31 @@ const styles = theme => ({
   }
 })
 
-const ManageForm = withStyles(styles)(({ classes }) =>
-  <div className={classes.root}>
+const ManageForm = withStyles(styles)(({ classes, form, onInputChange, onFormSubmit }) =>
+  <form className={classes.root} onSubmit={onFormSubmit}>
     <div className={classes.title}>New Member Info</div>
-    <TextField
+    {/*<TextField
       className={classes.textMargin}
       label="New Member First Name"
     />
     <TextField
       className={classes.textMargin}
       label="New Member Last Name"
-    />
+    />*/}
     <TextField
+      name="email"
       className={classes.textMargin}
       label="New Member Email"
+      onChange={onInputChange}
+      value={form.email}
     />
     <div style={{ alignSelf: 'flex-end', marginTop: 20 }}>
       <StyledButton
+        onClick={onFormSubmit}
         text="Add to Member List"
         height={20}
       />
     </div>
-  </div>)
+  </form>)
 
 export default ManageForm
