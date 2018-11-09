@@ -54,6 +54,13 @@ const statusColors = {
   'Not Invited Yet': '#FA3035'
 }
 
+const determineStatus = (member) => {
+  if (member.status) {
+    if (member.username && member.status === 'invited_to_signup') return 'signedup'
+    else return member.status
+  } else return null
+}
+
 const ManageTable = withStyles(styles)(({ classes, selectedInvites, members, onCheckboxChange, onEmailInviteClick, onRemoveOwnerClick }) =>
   <div>
     <div className={classes.title}>Member List</div>
@@ -73,10 +80,10 @@ const ManageTable = withStyles(styles)(({ classes, selectedInvites, members, onC
                 <div>{ R.has('email')(member) && member.email }</div>
               </div>
               <div style={{ flex: 5 }}>
-                {R.has('name')(member) && member.name}
+                {R.has('username')(member) && member.username}
               </div>
               <div style={{ flex: 3, color: statusColors[member.status] }}>
-                { R.has('status')(member) && member.status }
+                { determineStatus(member) }
               </div>
               <div style={{ flex: 1 }}>
                 <DerbyCheckbox

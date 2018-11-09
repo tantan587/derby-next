@@ -1,4 +1,5 @@
-import React from 'react'
+import * as R from 'ramda'
+import React, {Fragment} from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
@@ -9,7 +10,6 @@ import DerbyTextField from '../DerbyTextField'
 import Title from '../Navigation/Title'
 import { clickedJoinLeague, updateError } from '../../actions/fantasy-actions'
 import StyledButton from '../Navigation/Buttons/StyledButton'
-const R = require('ramda')
 
 const styles = {
   container: {
@@ -44,28 +44,21 @@ const styles = {
 class JoinLeagueForm extends React.Component {
   constructor(props) {
     super(props)
+    try {
+      this.prefill = props.router.query.code && JSON.parse(atob(this.props.router.query.code))
+    } catch(err) {
+      this.prefill = false
+    }
     this.state = {
-      league_name:'',
-      league_password:'',
+      league_name: R.path(['league_name'], this.prefill) || '',
+      league_password: R.path(['league_password'], this.prefill) || '',
+      prefilled: !!this.prefill,
       fireRedirect: false,
-      prefilled: false,
     }
   }
 
-  componentDidMount() {
-    if (this.props.router.query.code) {
-      const prefill = JSON.parse(atob(this.props.router.query.code))
-      if (this.props.user.id !== prefill.user_id) {
-        alert('This invite is not for you')
-        this.props.router.push('/')
-      }
-      if (prefill.league_name && prefill.league_password)
-        this.setState({
-          league_name: prefill.league_name,
-          league_password: prefill.league_password,
-          prefilled: true,
-        })
-    }
+  componentDidUpdate() {
+
   }
 
   componentWillUnmount() {
@@ -85,8 +78,7 @@ class JoinLeagueForm extends React.Component {
     })
   }
 
-  handleSubmit(e)
-  {
+  handleSubmit(e) {
     const { onJoinLeague } = this.props
     this.setState({fireRedirect:true})
     e.preventDefault()
@@ -106,39 +98,53 @@ class JoinLeagueForm extends React.Component {
   render() {
     const { classes, user } = this.props
     const errorText = user.error[C.PAGES.JOIN_LEAGUE]
+    const isInviteNotForCurrentUser = this.state.prefilled && user.id !== this.prefill.user_id
 
     return (
       <div>
         <Title color='white' backgroundColor='#EBAB38' title='Join League'/>
-        <form className={classes.container} noValidate autoComplete="off"
-          onKeyPress={(event) => this.keypress(event)}>
+        <form
+          noValidate
+          className={classes.container}
+          autoComplete="off"
+          onKeyPress={(event) => this.keypress(event)}
+        >
+
           <Typography variant="display2" className={classes.title} gutterBottom>
             Join Existing League
           </Typography>
-          <DerbyTextField
-            style={{width:300}}
-            label="League name"
-            value={this.state.league_name}
-            onChange = {this.handleChange('league_name')}
-            disabled={this.state.prefilled}
-          />
-          <DerbyTextField
-            style={{width:300}}
-            label="Password"
-            value={this.state.league_password}
-            onChange = {this.handleChange('league_password')}
-            disabled={this.state.prefilled}
-            />
-          <Typography variant='subheading' style={{color:'red', marginTop:20}}>
-            {errorText}
-          </Typography>
-          <StyledButton
-            onClick={(event) => this.submit(event)}
-            width={130}
-            height={40}
-            text="Join League"
-            styles={{ marginTop: errorText ? 16 : 40, fontSize: 15, fontWeight: 500 }}
-          />
+          {isInviteNotForCurrentUser ? (
+            <Typography variant="subheading" gutterBottom>
+              This invite is not for you. Please login with the email this invite is associated to and revisit the link again.
+            </Typography>
+          ) : (
+            <Fragment>
+              <DerbyTextField
+                style={{width:300}}
+                label="League name"
+                value={this.state.league_name}
+                onChange = {this.handleChange('league_name')}
+                disabled={this.state.prefilled}
+              />
+              <DerbyTextField
+                style={{width:300}}
+                label="Password"
+                value={this.state.league_password}
+                onChange = {this.handleChange('league_password')}
+                disabled={this.state.prefilled}
+                />
+              <Typography variant='subheading' style={{color:'red', marginTop:20}}>
+                {errorText}
+              </Typography>
+              <StyledButton
+                onClick={(event) => this.submit(event)}
+                width={130}
+                height={40}
+                text="Join League"
+                styles={{ marginTop: errorText ? 16 : 40, fontSize: 15, fontWeight: 500 }}
+              />
+            </Fragment>
+          )}
         </form>
         <div style={{height:700}}/>
       </div>

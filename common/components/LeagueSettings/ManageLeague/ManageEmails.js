@@ -8,7 +8,7 @@ import ManageTable from './ManageTable'
 import ManageForm from './ManageForm'
 import StyledButton from '../../Navigation/Buttons/StyledButton'
 
-import {getInvites, createInvite, sendInvite, deleteInvite} from '../../../actions/invite-actions'
+import {getInvites, createInvite, createInviteSignup, sendInvite, sendInviteBulk, deleteInvite, deleteInviteBulk, clearInviteError} from '../../../actions/invite-actions'
 
 const styles = () => ({
   root: {
@@ -63,21 +63,24 @@ class ManageEmails extends Component {
 
   onEmailInviteClick() {
     const selected_invites = R.keys(R.filter(R.equals(true), this.state.selected_invites))
-
-    R.pipe(
-      R.map(this.props.sendInvite),
-      Promise.all.bind(Promise),
-    )(selected_invites)
-      .then(() => this.setState(resetSelectedInvites))
+    return this.props.sendInviteBulk(selected_invites)
+    // selected_invites.map((invite_id) => this.props.sendInvite(invite_id).catch())
+    // R.pipe(
+    //   R.map(this.props.sendInvite),
+    //   Promise.all.bind(Promise),
+    // )(selected_invites)
+    //   .then(() => this.setState(resetSelectedInvites))
   }
 
   onRemoveOwnerClick() {
     const selected_invites = R.keys(R.filter(R.equals(true), this.state.selected_invites))
-    R.pipe(
-      R.map(this.props.deleteInvite),
-      Promise.all.bind(Promise),
-    )(selected_invites)
-      .then(() => this.setState(resetSelectedInvites))
+    const emails = R.pipe(R.props(selected_invites), R.map(R.prop('email')))(this.props.invites.data)
+    return this.props.deleteInviteBulk({emails, invite_ids: selected_invites})
+    // R.pipe(
+    //   R.map(this.props.deleteInvite),
+    //   Promise.all.bind(Promise),
+    // )(selected_invites)
+    //   .then(() => this.setState(resetSelectedInvites))
   }
 
   onInputChange(e) {
@@ -88,16 +91,36 @@ class ManageEmails extends Component {
 
   onFormSubmit(e) {
     e.preventDefault()
-    this.props.createInvite({
-      ...this.state.form,
-      league_id: this.props.activeLeague.league_id,
+    const invitePayload = {...this.state.form, league_id: this.props.activeLeague.league_id}
+
+    this.props.createInvite(invitePayload)
+    .then(() => {
+      if (this.props.invites.error) {
+        if (this.props.invites.error.code === 400) {
+          this.props.clearInviteError()
+          this.onCreateInviteSignup(confirm('User is not currently registered. Do you want to send them an invite?'))  
+        }
+      }
     })
-    this.setState(resetFormInvite)
+  }
+
+  onCreateInviteSignup = (shouldSendInvite) => {
+    const invitePayload = {...this.state.form, league_id: this.props.activeLeague.league_id}
+    if (shouldSendInvite) {
+      this.props.createInviteSignup(invitePayload)
+        .then(() => {
+           if (this.props.invites.error) {
+             if (this.props.invites.error.code === 422) {
+               this.props.clearInviteError()
+               alert('You have already invited this user.')
+             }
+           }
+        })
+    }
   }
 
   onSubmit = () => {
-    if(this.props.updatePage)
-    {
+    if(this.props.updatePage) {
       this.props.updatePage()
     }
   }
@@ -152,7 +175,11 @@ export default R.compose(
   connect(R.pick(['activeLeague', 'invites']), {
     getInvites,
     createInvite,
+    createInviteSignup,
     sendInvite,
+    sendInviteBulk,
     deleteInvite,
+    deleteInviteBulk,
+    clearInviteError,
   }),
 )(ManageEmails)
