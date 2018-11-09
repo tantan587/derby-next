@@ -61,6 +61,12 @@ module.exports.sendInvite = (user_id, league_id) => Promise.all([
   else return false
 })
 
+module.exports.sendInviteBulk = (invites) => {
+  return Promise.all(invites.map(invite => {
+    return sendGeneric(invite, leagueinviteTemplates)
+  }))
+}
+
 module.exports.isLeagueMember = (user_id, league_id) => knex('fantasy.owners')
   .where('user_id', user_id)
   .andWhere('league_id', league_id)
