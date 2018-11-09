@@ -1,6 +1,7 @@
 import React from 'react'
 import DerbyTableContainer from '../Table/DerbyTableContainer'
 import { connect } from 'react-redux'
+import Router from 'next/router'
 import TeamsDialog from '../TeamsDialog/TeamsDialog'
 
 const styleProps = {
@@ -28,9 +29,17 @@ const styleProps = {
   }
 }
 
+const GridOwner = ({ owner }) => <div
+  style={{ cursor: 'pointer' }}
+  onClick={() =>
+    Router
+      .push('/mainleagueroster?a=' + owner.owner_id)
+      .then(() => window.scrollTo(0, 0))}
+>{owner.owner_name}</div>
+
 
 class RosterGrid extends React.Component {
-  
+
   navigateToSport = (key) => {
     let dict = {}
     this.props.activeLeague.rules.forEach(sport => {
@@ -39,31 +48,41 @@ class RosterGrid extends React.Component {
       })
     })
 
-    if(key.includes('-'))
-      this.props.navigateToSport(key.substring(0,3), -1)
-    else
-      this.props.navigateToSport(key.substring(0,3), dict[key])
+    Router
+      .push(`/mainleagueteams?sp=${key.substring(0,3)}${key.includes('-') ? '' : `&conf=${dict[key]}`}`)
   }
+
   render() {
     const {  draft, teams, activeLeague } = this.props
     const headers = [{label: 'Owner', key: 'owner_name'}]
     const nonStrictLeagueCount = {}
     activeLeague.rules.forEach(sport => {
       //we need to display it by conference
-      if(sport.conf_strict && sport.num === sport.conferences.length)
-      {
+      if(sport.conf_strict && sport.num === sport.conferences.length) {
         //let first_label = ['101', '104', '107'].includes(sport.sport_id) ? '' : sport.sport + '-'
-        sport.conferences.forEach(conf => headers.push( 
-          {label: sport.sport  + (['101', '104'].includes(sport.sport_id) ? 
-            ('-' + conf.conference[4]) : ['107'].includes(sport.sport_id) ? '' :('-' + conf.conference[0])), key: conf.conference_id, imageInd:true, disableSort:true,
-          onClick:this.navigateToSport, toolTip:'Navigate'}))
+        sport.conferences.forEach(conf => headers.push(
+          { label: sport.sport  + (['101', '104'].includes(sport.sport_id) ?
+            ('-' + conf.conference[4]) :
+            ['107'].includes(sport.sport_id) ?
+              '' :
+              ('-' + conf.conference[0])),
+          key: conf.conference_id,
+          imageInd:true,
+          disableSort:true,
+          onClick:this.navigateToSport,
+          toolTip:'Navigate'}))
       }
-      else{
+      else {
         let arr = Array.apply(null, {length: sport.num}).map(Number.call, Number)
         arr.forEach(i => {
-          headers.push( 
-            {label: sport.sport + '-' + (i+1), key: sport.sport_id + '-'+(i+1),  imageInd:true,disableSort:true,
-              onClick:this.navigateToSport, toolTip:'Navigate'})
+          headers.push({
+            label: sport.sport + '-' + (i+1),
+            key: sport.sport_id + '-'+(i+1),
+            imageInd:true,
+            disableSort:true,
+            onClick:this.navigateToSport,
+            toolTip:'Navigate'
+          })
           nonStrictLeagueCount[sport.sport_id] = 1
         }
         )
@@ -76,31 +95,32 @@ class RosterGrid extends React.Component {
       owner_draft_picks[ownerId] = owner ? owner.draft_position : -1
     })
 
-     
-    
-    const rows = []
-    Object.keys(draft.owners).sort(function(a,b){
-      return owner_draft_picks[a] - owner_draft_picks[b]}).map(ownerId => {
-      
-      let row = {}
-      let owner = activeLeague.owners.find(owner => owner.owner_id === ownerId)
-      row.owner_name = owner ? owner.owner_name : ''
-      draft.owners[ownerId].map(pick => {
-        let team = teams[pick.teamId]
-        let key = team.conference_id
-        if(nonStrictLeagueCount[team.sport_id] > 0)
-        {
-          key = team.sport_id + '-'+ nonStrictLeagueCount[team.sport_id]
-          nonStrictLeagueCount[team.sport_id]++
-        }
-        row[key] = {}
-        row[key].url = team.logo_url
-        row[key].team_id = team.team_id
-      })
 
-      rows.push(row)
-      Object.keys(nonStrictLeagueCount).map(x => {nonStrictLeagueCount[x] = 1})
-    })
+
+    const rows = []
+    Object.keys(draft.owners)
+      .sort((a,b) => owner_draft_picks[a] - owner_draft_picks[b])
+      .map(ownerId => {
+
+        let row = {}
+        let owner = activeLeague.owners.find(owner => owner.owner_id === ownerId)
+        row.owner_name = owner ? <GridOwner owner={owner} /> : ''
+        draft.owners[ownerId].map(pick => {
+          let team = teams[pick.teamId]
+          let key = team.conference_id
+          if(nonStrictLeagueCount[team.sport_id] > 0)
+          {
+            key = team.sport_id + '-'+ nonStrictLeagueCount[team.sport_id]
+            nonStrictLeagueCount[team.sport_id]++
+          }
+          row[key] = {}
+          row[key].url = team.logo_url
+          row[key].team_id = team.team_id
+        })
+
+        rows.push(row)
+        Object.keys(nonStrictLeagueCount).map(x => {nonStrictLeagueCount[x] = 1})
+      })
     return (
       <div style={{height:730, minHeight:730, maxHeight:730}}>
         <TeamsDialog/>
@@ -121,4 +141,4 @@ export default connect(
       draft : state.draft,
       teams:state.teams,
       activeLeague:state.activeLeague,
-    }),  null)(RosterGrid)
+    }), null)(RosterGrid)

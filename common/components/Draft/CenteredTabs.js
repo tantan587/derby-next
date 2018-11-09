@@ -64,17 +64,17 @@ class CenteredTabs extends React.Component {
           scrollable
           //centered
         >
-          <Tab label="ROSTER" 
+          <Tab label="ROSTER"
             classes={{label: classes.deeptext}}
             className={ value === 0 ? classes.tabSelected : classes.tab}
             style={{borderLeft: '0.1em solid #E2E2E2', padding: '0.5em'}}/>
-          <Tab label="TEAMS" 
+          <Tab label="TEAMS"
             classes={{label: classes.deeptext}}
             className={ value === 1 ? classes.tabSelected : classes.tab} />
-          <Tab label="ROSTER GRID" 
+          <Tab label="ROSTER GRID"
             classes={{label: classes.deeptext}}
             className={ value === 2 ? classes.tabSelected : classes.tab}/>
-          <Tab label="DRAFT RESULTS" 
+          <Tab label="DRAFT RESULTS"
             classes={{label: classes.deeptext}}
             className={ value === 3 ? classes.tabSelected : classes.tab} />
         </Tabs>
@@ -83,7 +83,7 @@ class CenteredTabs extends React.Component {
           defaultSportId={this.state.defaultSportId}
           defaultConferenceId={this.state.defaultConferenceId}
           onAddQueue={this.props.onAddQueue}
-          onUpdateQueue={this.props.onUpdateQueue} 
+          onUpdateQueue={this.props.onUpdateQueue}
           onDraftButton={this.props.onDraftButton}
           allowDraft={this.props.allowDraft}/>}
         {value === 2 && <RosterGrid navigateToSport={this.navigateToSport}/>}
@@ -98,5 +98,3 @@ CenteredTabs.propTypes = {
 }
 
 export default withStyles(styles)(CenteredTabs)
-
-

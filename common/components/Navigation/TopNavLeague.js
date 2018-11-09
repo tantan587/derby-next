@@ -85,8 +85,6 @@ class TopNavLeague extends React.Component {
   render() {
     const { classes, activeLeague, toggleMobileNav } = this.props
 
-    console.log('hello, commish?', activeLeague.imTheCommish)
-
     const leagueItems = [
       { text: 'League Home', link: '/mainleaguehome' },
       { text: 'Draft Room', link: '/livedraft' },
