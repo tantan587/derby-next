@@ -12,7 +12,7 @@ const styles = theme => ({
       }
       // padding: '12px 8px 0px 8px',
     },
-    [theme.breakpoints.up('sm')]: {
+    [theme.breakpoints.up('md')]: {
       '& > :last-child': {
         position: 'relative',
         right: '8vw'
@@ -28,6 +28,12 @@ const styles = theme => ({
       margin: 0
     }
   },
+  teamContainer: {
+    width: 315,
+    [theme.breakpoints.only('sm')]: {
+      width: '50%'
+    }
+  },
   value: {
     fontWeight: 600,
     fontSize: 18,
@@ -38,7 +44,7 @@ const styles = theme => ({
     fontWeight: 500,
     fontSize: 12,
     color: 'grey',
-  }
+  },
 })
 
 
@@ -55,7 +61,7 @@ const DialogHead = ({ oneTeam, classes }) =>
         style={{height:100}}
         src={oneTeam.logo_url || 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Chicago_Cubs_logo.svg/99px-Chicago_Cubs_logo.svg.png'}
       />
-      <div style={{ width: 315 }}>
+      <div className={classes.teamContainer}>
         <div style={{
           fontFamily: '\'Roboto\', sans-serif',
           fontSize: 26,
