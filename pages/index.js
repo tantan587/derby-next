@@ -136,7 +136,7 @@ class Index extends React.Component {
 
             {
               <div style={{display:'flex', alignItems:'flex-end', justifyContent:'center', flexWrap:'wrap'}}>
-                {R.values(sportLeagues).sort((a,b) => a.order > b.order).map((x,i) => {
+                {R.values(sportLeagues).sort((a,b) => a.order > b.order ? 1 : -1 ).map((x,i) => {
                   return <SportIconText key={i} sportId={x.sport_id} />
                 })
                 }
