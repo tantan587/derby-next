@@ -94,7 +94,7 @@ class TopNavLeague extends React.Component {
 
     const rosterItems = [
       { text: 'By Owner', link: '/mainleagueroster' },
-      { text: 'Grid View', link: '/mainleagueroster' },
+      { text: 'Grid View', link: '/draftgrid' },
     ]
 
     return (
@@ -110,9 +110,11 @@ class TopNavLeague extends React.Component {
               {this.setHoverToButton('extra', 1, null, activeLeague.league_name, leagueItems)}
               {this.setHoverToButton('default', 2, '/mainleaguestandings', 'Standings')}
               {this.setHoverToButton('default', 3, '/mainleaguescoreboard', 'Scoreboard')}
-              {this.setHoverToButton('extra', 4, null, 'Rosters', rosterItems)}
+              {activeLeague.draftInfo && activeLeague.draftInfo.mode === 'post' ?
+                this.setHoverToButton('extra', 4, null, 'Rosters', rosterItems) :
+                this.setHoverToButton('default', 4, '/mainleagueroster', 'Rosters')}
               {this.setHoverToButton('default', 5, '/mainleagueteams', 'Teams')}
-              {this.setHoverToButton('default', 6, '/draftrecap', 'Draft Recap')}
+              {activeLeague.draftInfo && activeLeague.draftInfo.mode === 'post' && this.setHoverToButton('default', 6, '/draftrecap', 'Draft Recap')}
               {this.setHoverToButton('league', 7)}
               <div style={{ float: 'right' }}>
                 {this.setHoverToButton('default', 8, '/logout', 'Log out')}
