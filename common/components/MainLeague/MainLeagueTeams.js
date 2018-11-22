@@ -1,6 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { withStyles } from '@material-ui/core/styles'
+import {withRouter} from 'next/router'
 import Title from '../Navigation/Title'
 import DerbyTableContainer from '../Table/DerbyTableContainer'
 import TeamsDialog from '../TeamsDialog/TeamsDialog'
@@ -30,7 +31,7 @@ class MainLeagueTeams extends React.Component {
 
   render() {
     const page = 'teams'
-    const {teams, activeLeague, contentFilter} = this.props
+    const {teams, activeLeague, contentFilter, router} = this.props
     const sportLeagueIds = R.keys(sportLeagues)
     let myTeams = Object.values(teams).filter(team => sportLeagueIds.includes(team.sport_id) && team.eligible).map(team =>
     {
@@ -38,13 +39,13 @@ class MainLeagueTeams extends React.Component {
       let points = 0
       let projPoints = 0
       let rank = 999
-      if (activeLeague.teams[team.team_id])
-      {
+      if (activeLeague.teams[team.team_id]) {
         owner = activeLeague.owners.find(owner => owner.owner_id === activeLeague.teams[team.team_id].owner_id)
         points = activeLeague.teams[team.team_id].points
         projPoints = activeLeague.teams[team.team_id].proj_points
         rank = activeLeague.teams[team.team_id].ranking
       }
+
       return {
         ...team,
         record:team.wins + '-' + team.losses + '-' + team.ties,
@@ -76,10 +77,14 @@ class MainLeagueTeams extends React.Component {
     })
 
     confs.unshift('All')
+    const { query } = router
+    const { conf } = query
+
     const filters = [{
       type:'tab',
       displayType:'sportsIcon',
       values,
+      defaultValue: conf,
       column:'sport_id',
       defaultTab:0,
       tabStyles: {
@@ -93,6 +98,7 @@ class MainLeagueTeams extends React.Component {
     {
       type:'dropdown',
       values:confs,
+      defaultValue: conf,
       column:'conference',
       name:'Conference'
     },
@@ -129,7 +135,6 @@ class MainLeagueTeams extends React.Component {
 }
 
 export default R.compose(
+  withRouter,
   connect(R.pick(['activeLeague', 'user', 'contentFilter', 'teams']), {onClickedLeague: clickedLeague})
 )(withStyles(styles)(MainLeagueTeams))
-
-

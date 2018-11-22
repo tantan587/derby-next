@@ -12,8 +12,8 @@ class CreatePassword extends React.Component {
     return (
       <div>
         <LayoutUser >
-          <ReloadProtector 
-            ProtectedRoute={() => 
+          <ReloadProtector
+            ProtectedRoute={() =>
               <CreatePasswordForm/>}/>
         </LayoutUser>
       </div>

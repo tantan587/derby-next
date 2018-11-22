@@ -13,16 +13,15 @@ const styleProps = {
 }
 
 class Roster extends React.Component {
-  
+
   componentWillMount() {
-    this.props.onFilterTab({}) 
+    this.props.onFilterTab({})
   }
   render() {
     const page = 'draft-roster'
     const {  draft,teams, activeLeague, contentFilter } = this.props
     let ownerId
     let default_tab = activeLeague.owners.find(x => {return x.owner_id === activeLeague.my_owner_id}).draft_position
-    console.log(default_tab)
     let draftedTeams = []
 
     if (contentFilter[page] )
@@ -46,7 +45,7 @@ class Roster extends React.Component {
       defaultTab: default_tab,
       tabStyles:{backgroundColor:'#e3dac9',
         color:'#48311A',
-        selectedBackgroundColor:'white', 
+        selectedBackgroundColor:'white',
         selectedColor:'#229246',
         fontSize:10}
     }]

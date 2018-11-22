@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import C from '../../constants'
 import Title from '../Navigation/Title'
 import LeagueSettings from '../LeagueSettings/LeagueSettings'
-import { Typography } from '@material-ui/core';
+import { Typography } from '@material-ui/core'
 
 class MainLeagueSettings extends React.Component {
 
@@ -28,12 +28,12 @@ class MainLeagueSettings extends React.Component {
                   <Typography style={{ textAlign:'center'}}  variant='display1'>Current season is underway.</Typography> :
                   <Typography style={{ textAlign:'center'}}  variant='display1'>Draft Is Live.</Typography>
                 }
-                <Typography style={{marginTop:50, textAlign:'center'}} variant='display1'>Changes are no longer allowed.</Typography> 
+                <Typography style={{marginTop:50, textAlign:'center'}} variant='display1'>Changes are no longer allowed.</Typography>
               </div>
             </div>
 
         }
-        
+
       </div>
     )
   }

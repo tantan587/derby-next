@@ -52,11 +52,11 @@ class DropdownFilter extends React.Component {
 
   componentDidMount() {
     const { column, clickedUpdateFilter, filterId, defaultValue} = this.props
-    if(defaultValue !== -1)
-    {
-      clickedUpdateFilter({key:column, value:defaultValue, type:'dropdown'}, filterId)
+
+    if (defaultValue && defaultValue !== -1) {
+      clickedUpdateFilter({ key:column, value:defaultValue, type:'dropdown' }, filterId)
     }
-    
+
   }
 
   render() {

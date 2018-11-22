@@ -11,7 +11,10 @@ class FilterCreator extends React.Component {
 
   constructor(props) {
     super(props)
-    this.state = {page:this.props.page, values:{}}
+    this.state = {
+      page: this.props.page,
+      values: {}
+    }
   }
 
   clickedUpdateFilter =  (filter, filterId) =>{
@@ -24,10 +27,8 @@ class FilterCreator extends React.Component {
   removeFiltersBelow = (filterId, filtersToNotRemove) => {
     const {filters} = this.props
     const {values} = this.state
-    for(let i = filterId +1; i < filters.length; i++)
-    {
-      if(!filtersToNotRemove || !filtersToNotRemove.includes(i))
-      {
+    for(let i = filterId +1; i < filters.length; i++) {
+      if(!filtersToNotRemove || !filtersToNotRemove.includes(i)) {
         delete values[i]
         this.props.handleRemoveFilter(this.state.page, i)
       }
@@ -38,8 +39,8 @@ class FilterCreator extends React.Component {
   // componentWillUnmount() {
   //   this.props.handleClearFilters(this.state.page)
   // }
-  
-  
+
+
   render() {
     const {filters } = this.props
     const {values} = this.state
@@ -47,48 +48,48 @@ class FilterCreator extends React.Component {
       <div>
         {
           filters.map((filter,i) => {
-            if (filter.type === 'checkbox')
-            {
+
+            if (filter.type === 'checkbox') {
               let value = values[i] || filter.values.map(x => {return {val:x.val, label:x.label}})
               return <CheckboxFilter
                 clickedUpdateFilter={this.clickedUpdateFilter}
                 filterId={i}
-                key={i} 
-                value={value} 
+                key={i}
+                value={value}
                 column={filter.column}/>
             }
-            if (filter.type === 'tab')
-            {
+
+            if (filter.type === 'tab') {
               return <TabFilter
                 filterId={i}
                 removeFiltersBelow={this.removeFiltersBelow}
                 clickedUpdateFilter={this.clickedUpdateFilter}
                 filtersToNotRemove={filter.filtersToNotRemove}
-                key={i} 
+                key={i}
                 displayType={filter.displayType}
-                tabs={filter.values} 
+                tabs={filter.values}
                 column={filter.column}
                 defaultTab={filter.defaultTab}
                 tabStyles={filter.tabStyles}/>
             }
-            if (filter.type === 'search')
-            {
+
+            if (filter.type === 'search') {
               return <SearchFilter key={i}
                 filterId={i}
                 value={values[i]}
-                column={filter.column} 
+                column={filter.column}
                 clickedUpdateFilter={this.clickedUpdateFilter}/>
             }
-            if (filter.type === 'dropdown')
-            {
+
+            if (filter.type === 'dropdown') {
               return <DropdownFilter key={i}
                 value={values[i]}
                 clickedUpdateFilter={this.clickedUpdateFilter}
                 key={i}
                 defaultValue={filter.defaultValue}
-                displayFunction={filter.displayFunction || ((x) => x)} 
+                displayFunction={filter.displayFunction || ((x) => x)}
                 dropdowns={filter.values}
-                filterId={i} 
+                filterId={i}
                 name={filter.name}
                 column={filter.column}/>
             }
