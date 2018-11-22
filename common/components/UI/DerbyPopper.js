@@ -29,7 +29,7 @@ class DerbyPopper extends Component {
   }
 
   render() {
-    const { children, season, classes } = this.props
+    const { children, season, classes, usePlayoffs = true } = this.props
     const { anchorEl, open } = this.state
     const id = open ? 'simple-popper' : null
 
@@ -41,7 +41,7 @@ class DerbyPopper extends Component {
             <Fade {...TransitionProps} timeout={350}>
               <Paper>
                 <DialogContent>{
-                  season.playoffs ?
+                  usePlayoffs ?
                     <Typography>
                       <div>
                         <span className={classes.span}>Start:</span> {new Date(season.start).toLocaleDateString('en-US')}

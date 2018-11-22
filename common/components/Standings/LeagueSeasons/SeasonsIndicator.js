@@ -65,7 +65,7 @@ const SeasonsIndicator = ({ start, end, fullDifference, seasons, classes }) =>
           width: (Date.parse(seasons[sportId].start) - start) / fullDifference * 100 + '%'
         }} />
         {
-          seasons[sportId].playoffs ?
+          sportId != 107 ?
             <DerbyPopper season={seasons[sportId]}>
               {({ handleOpen, handleClose, id }) =>
                 <div
@@ -91,7 +91,7 @@ const SeasonsIndicator = ({ start, end, fullDifference, seasons, classes }) =>
                   />
                 </div>}
             </DerbyPopper> :
-            <DerbyPopper season={seasons[sportId]}>
+            <DerbyPopper usePlayoffs ={false} season={seasons[sportId]}>
               {({ handleOpen, handleClose, id }) =>
                 <FullSeason
                   seasons={seasons}
