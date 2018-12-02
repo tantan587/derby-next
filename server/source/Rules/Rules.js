@@ -9,6 +9,11 @@ class Rules {
     this.Sports[sport.Id] = sport
   }
 
+  GetRule(sportId)
+  {
+    return this.Sports[sportId]
+  }
+
   SportAlreadyExists(sportId)
   {
     return this.Sports[sportId]

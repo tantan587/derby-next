@@ -1,4 +1,4 @@
-//const OwnerBuilder = require('./OwnerBuilder')
+const OwnerBuilder = require('./OwnerBuilder')
 const TeamBuilder = require('./TeamBuilder')
 const RuleBuilder = require('./Rules/RulesBuilder')
 class League {
@@ -6,21 +6,19 @@ class League {
   constructor(inpLeagueId) {
     this.leagueId = inpLeagueId
     this.Owners = []
-    this.Teams = []
     this.Rules = {}
-    //var rules = []
-    //var scoring = []
-    //var season = []
   }
 
   async Create() {
-    //let ownerBuilder = new OwnerBuilder()
-    //this.Owners = await ownerBuilder.CreateOwners(this.leagueId)
+    let ownerBuilder = new OwnerBuilder()
     let teamBuilder = new TeamBuilder()
     let ruleBuilder = new RuleBuilder()
-    this.Teams = await teamBuilder.CreateTeamsByLeague(this.leagueId)
+    let teams= await teamBuilder.CreateTeamsByLeague(this.leagueId)
+    this.Owners = await ownerBuilder.Create(this.leagueId, teams)
     this.Rules = await ruleBuilder.Create(this.leagueId)  
-    console.log(this.Rules) 
+
+    //console.log(this.Owners)
+    this.Owners[0].CalculateTotalPoints(this.Rules)
   }
 
 }

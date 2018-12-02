@@ -1,4 +1,4 @@
-
+const Record = require('./Record')
 
 class Game {
 
@@ -17,15 +17,14 @@ class Game {
 
   Outcome() {
     if (this.Winner === '---')
-      return Game.Result.NP
+      return new Record()
     else if (this.Winner === 'T')
-      return Game.Result.Tie
+      return new Record(0,0,1)
     else if ((this.Winner === 'H' && this.TeamId === this.HomeTeamId) ||
       (this.Winner === 'A' && this.TeamId === this.AwayTeamId))
-      return Game.Result.Win
+      return new Record(1,0,0)
     else 
-      return Game.Result.Loss
+      return new Record(0,1,0)
   }
 }
-Game.Result = {Win:'W', Loss:'L', Tie:'T', NP:'NP'}
 module.exports = Game

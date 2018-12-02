@@ -1,26 +1,25 @@
 const DayCountCreator = require('./DayCountCreator')
+const Record = require('./Record')
 
 class Schedule {
   constructor(games) {
     this.Games = games
   }
 
-  Record(daysBack) {
-    if (typeof daysBack === 'undefined')
-      daysBack = 365
+  Record(endDateDaysBack = 0, startDatedaysBack = 365) {
 
     let dayCountCreator = new DayCountCreator()
     let todaysDayCount =  dayCountCreator.GetDayCountByDate(new Date())
     
 
     return this.Games.filter(game => {
-      return game.DayCount <= todaysDayCount && game.DayCount > (todaysDayCount - daysBack)
+      return game.DayCount <= (todaysDayCount - endDateDaysBack) && 
+      game.DayCount > (todaysDayCount - startDatedaysBack)
     })
-      .reduce((tally, game) => {
-        let outcome = game.Outcome()
-        tally[outcome] = (tally[outcome] || 0) + 1
-        return tally
-      } , {})
+      .reduce((overall, game) => {
+        overall.AddOutcome(game.Outcome())
+        return overall
+      } , new Record())
   }
 }
 module.exports = Schedule

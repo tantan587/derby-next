@@ -21,7 +21,7 @@ class TeamBuilder {
     let rtnTeams = []
     let cb = async x => {
       let schedule = await scheduleBuilder.CreateSchedule(x.team_id,sportStructureId)
-      rtnTeams.push(new Team(x.team_id, teamInfo[x.team_id].city, teamInfo[x.team_id].name, schedule))
+      rtnTeams.push(new Team(teamInfo[x.team_id].sport_id, x.team_id, teamInfo[x.team_id].city, teamInfo[x.team_id].name, schedule))
     }
     
     for (let index = 0; index < teamsByLeague.length; index++) {

@@ -1,4 +1,4 @@
-class PointRules {
+class PointRule {
   constructor(sportId, regWin, regTie, playWin,
     bye, champion, finalist, appearance, bowlWin,
     milestonePoints, milestone)
@@ -17,4 +17,4 @@ class PointRules {
   }
 }
 
-module.exports = PointRules
+module.exports = PointRule

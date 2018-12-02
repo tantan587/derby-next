@@ -2,7 +2,7 @@ const knex = require('../../db/connection')
 const Rules = require('./Rules')
 const ConferenceRule = require('./ConferenceRule')
 const SportRule = require('./SportRule')
-const PointRules = require('./PointRules')
+const PointRule = require('./PointRule')
 
 class RulesBuilder {
 
@@ -28,7 +28,7 @@ class RulesBuilder {
       
     let dict = {}
     pointRules.rows.map(points => {
-      dict[points.sport_id] = new PointRules(
+      dict[points.sport_id] = new PointRule(
         points.sport_id, 
         points.regular_season.win,
         points.regular_season.tie,

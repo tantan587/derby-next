@@ -13,7 +13,6 @@ class ScheduleBuilder {
     let schedule = await this.GetScheduleFromDb(teamId, sportsStructureId)
 
     let rtnSchedule =  new Schedule(schedule.rows.map(x => new Game(x, teamId)))
-    console.log(rtnSchedule.Record(7))
     return rtnSchedule
   }
 
