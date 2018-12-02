@@ -1,4 +1,7 @@
 const knex = require('../db/connection')
+const Game = require('./Game')
+const Schedule = require('./Schedule')
+
 
 class ScheduleBuilder {
 
@@ -8,7 +11,10 @@ class ScheduleBuilder {
   async CreateSchedule(teamId, sportsStructureId) {
     
     let schedule = await this.GetScheduleFromDb(teamId, sportsStructureId)
-    return schedule.rows.map(x => x.global_game_id)
+
+    let rtnSchedule =  new Schedule(schedule.rows.map(x => new Game(x, teamId)))
+    console.log(rtnSchedule.Record(7))
+    return rtnSchedule
   }
 
   async GetScheduleFromDb(teamId, sportsStructureId) {

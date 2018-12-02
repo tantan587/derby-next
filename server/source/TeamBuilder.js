@@ -28,7 +28,7 @@ class TeamBuilder {
       await cb(teamsByLeague[index])
     }
 
-    console.log(rtnTeams)
+    //console.log(rtnTeams)
     return rtnTeams
   }
 
