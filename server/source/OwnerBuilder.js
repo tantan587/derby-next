@@ -14,7 +14,7 @@ class OwnerBuilder {
 
     let ownerIdToOwner = {}
     owners.forEach(x => {
-      ownerIdToOwner[x.owner_id] = new Owner(x.owner_id, leagueId, x.user_id)
+      ownerIdToOwner[x.owner_id] = new Owner(x.owner_id, leagueId, x.user_id, x.avatar)
     })
 
     teamIds.forEach(x => ownerIdToOwner[x.owner_id].AddTeam(teamDict[x.team_id]))

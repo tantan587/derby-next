@@ -1,6 +1,7 @@
 
 const Patterns = {
   'Default' : {
+    file: './static/icons/Silks/derby_silk_avatar_default.svg',
     silk : {
       type : 'default'
     },
@@ -9,6 +10,7 @@ const Patterns = {
     }
   },
   'BlockFrame' : {
+    file: './static/icons/Silks/derby_silk_avatar_block_frame.svg',
     silk: {
       type: 'd',
       str:['M41.71,24.44V35.84H30.32V24.44H41.71m4.14-4.14H26.18V40H45.85V20.3Z']
@@ -19,6 +21,7 @@ const Patterns = {
     }
   },
   'DoubleCross' : {
+    file: './static/icons/Silks/derby_silk_avatar_double_cross.svg',
     silk: {
       type: 'points',
       str:['46.18 34.65 39.37 34.65 39.37 27.74 44.22 27.74 44.22 21.01 39.37 21.01 39.37 15.79 32.64 15.79 32.64 21.01 27.79 21.01 27.79 27.74 32.64 27.74 32.64 34.65 25.82 34.65 25.82 41.38 32.64 41.38 32.64 46.61 39.37 46.61 39.37 41.38 46.18 41.38 46.18 34.65']
@@ -29,6 +32,7 @@ const Patterns = {
     }
   },
   'Sashes' : {
+    file: './static/icons/Silks/derby_silk_avatar_sashes.svg',
     silk: {
       type: 'points',
       str:['50.91 9.08 36.02 23.97 21.12 9.08 15.12 12.59 31.26 28.73 18.23 41.76 19.4 50.11 36.02 33.49 52.55 50.03 53.7 41.66 40.78 28.73 56.9 12.61 50.91 9.08']
@@ -39,6 +43,7 @@ const Patterns = {
     }
   },
   'DiagonalQuartered' : {
+    file: './static/icons/Silks/derby_silk_diagonal_quartered.svg',
     silk: {
       type: 'points',
       str:['19.52 51.48 21.49 65.3 50.51 65.3 52.43 51.49 35.91 35.02 19.52 51.48',
@@ -51,6 +56,7 @@ const Patterns = {
     }
   },
   'DiamondFrame' : {
+    file: './static/icons/Silks/derby_silk_avatar_diamond_frame.svg',
     silk: {
       type: 'd',
       str:['M36,20.68l9.18,9.46L36,39.6l-9.18-9.46L36,20.68m0-6L21.05,30.14,36,45.55,50.95,30.14,36,14.72Z']
@@ -61,6 +67,7 @@ const Patterns = {
     }
   },
   'Dot' : {
+    file: './static/icons/Silks/derby_silk_avatar_dot.svg',
     silk: {
       type: 'circle',
     },
@@ -69,6 +76,7 @@ const Patterns = {
     }
   },
   'Hoop' : {
+    file: './static/icons/Silks/derby_silk_avatar_hoop.svg',
     silk: {
       type: 'points',
       str:['16.71 30.7 55.45 30.7 56.8 21.21 15.4 21.21 16.71 30.7']
@@ -79,6 +87,7 @@ const Patterns = {
     }
   },
   'Quartered' : {
+    file: './static/icons/Silks/derby_silk_avatar_quartered.svg',
     silk: {
       type: 'points',
       str:['36.35 65.3 50.51 65.3 54.79 35.3 36.35 35.3 36.35 65.3',
@@ -91,6 +100,7 @@ const Patterns = {
     }
   },
   'Sash' : {
+    file: './static/icons/Silks/derby_silk_avatar_sash.svg',
     silk: {
       type: 'points',
       str:['61.25 15.12 21.4 64.71 19.57 51.85 52.98 10.26 61.25 15.12']
@@ -101,6 +111,7 @@ const Patterns = {
     }
   },
   'Star' : {
+    file: './static/icons/Silks/derby_silk_avatar_star.svg',
     silk: {
       type: 'points',
       str:['36 37.25 27.57 43.12 30.54 33.28 22.36 27.08 32.63 26.87 36 17.16 39.37 26.87 49.65 27.08 41.46 33.28 44.43 43.12 36 37.25']
@@ -111,6 +122,7 @@ const Patterns = {
     }
   },
   'TriangularPanel' : {
+    file: './static/icons/Silks/derby_silk_avatar_triangular_panel2.svg',
     silk: {
       type: 'points',
       str:['18.33 10.66 10.09 15.51 35.52 40.94 61.31 15.15 53.06 10.31 35.52 27.85 18.33 10.66']
@@ -121,6 +133,7 @@ const Patterns = {
     }
   },
   'TriangularPanel2' : {
+    file: './static/icons/Silks/derby_silk_avatar_triangular_panel2.svg',
     silk: {
       type: 'points',
       str:['16.64 28.5 17.97 38.62 36.44 26.89 54.11 38.11 55.45 28 36.44 15.92 16.64 28.5']

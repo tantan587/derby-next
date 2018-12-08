@@ -1,10 +1,12 @@
 const RuleCalculator = require('./Rules/RuleCalculator')
 
+
 class Owner {
-  constructor(ownerId, leagueId, userId) {
+  constructor(ownerId, leagueId, userId, avatar) {
     this.OwnerId = ownerId
     this.LeagueId = leagueId
     this.UserId = userId
+    this.Avatar = avatar
     this.Teams = []
   }
 
