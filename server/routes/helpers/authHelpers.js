@@ -206,7 +206,7 @@ const sendEmail = (user, {subject, body, inline} = {}) => {
         to: user.email,
         subject: subject ? subject(user) : '[Derby] Test Email',
         html: body ? body(user) : '<h1>This message does not contain a body</h1>',
-        inline: inline,
+        inline: inline ? inline(user) : [],
       }
       return mailGun.messages().send(mgConfig)
     })

@@ -6,6 +6,8 @@ const footer2 = path.join(__dirname, '/Derby_Email_footer_newest.png')
 
 const leagueInviteSubject = (user) => `[Derby] League Invitation`
 
+const createInline = () => [header, footer1, footer2]
+
 const leagueInviteBody = (user) => {
   const HOST = dev ? 'http://localhost:3000' : 'http://www.derby-fwl.com'
   const LINK = `${HOST}/email-verification?i=${user.user_id}&c=${user.verification_code}`
@@ -49,4 +51,4 @@ const leagueInviteBody = (user) => {
   `)
 }
 
-module.exports = {subject: leagueInviteSubject, body: leagueInviteBody, inline: [header, footer1, footer2]}
+module.exports = {subject: leagueInviteSubject, body: leagueInviteBody, inline: createInline}

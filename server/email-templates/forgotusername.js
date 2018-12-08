@@ -5,6 +5,8 @@ const footer2 = path.join(__dirname, '/Derby_Email_footer_newest.png')
 
 const forgotusernameSubject = (user) => `[Derby] Forgot Username`
 
+const createInline = () => [header, footer1, footer2]
+
 const forgotusernameBody = (user) => `
   <table width="100%" border="0" cellspacing="0" cellpadding="0">
     <tr>
@@ -27,4 +29,4 @@ const forgotusernameBody = (user) => `
   </table>
 `
 
-module.exports = {subject: forgotusernameSubject, body: forgotusernameBody, inline: [header, footer1, footer2]}
+module.exports = {subject: forgotusernameSubject, body: forgotusernameBody, inline: createInline}

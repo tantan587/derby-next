@@ -6,6 +6,8 @@ const footer2 = path.join(__dirname, '/Derby_Email_footer_newest.png')
 
 const signupSubject = (user) => `[Derby] Email Verification`
 
+const createInline = () => [header, footer1, footer2]
+
 const signupBody = (user) => {
   const HOST = dev ? 'http://localhost:3000' : 'http://www.derby-fwl.com'
   const LINK = `${HOST}/email-verification?i=${user.user_id}&c=${user.verification_code}`
@@ -34,4 +36,4 @@ const signupBody = (user) => {
   `)
 }
 
-module.exports = {subject: signupSubject, body: signupBody, inline: [header, footer1, footer2]}
+module.exports = {subject: signupSubject, body: signupBody, inline: createInline}

@@ -6,6 +6,8 @@ const footer2 = path.join(__dirname, '/Derby_Email_footer_newest.png')
 
 const forgotpasswordSubject = (user) => `[Derby] Forgot Password`
 
+const createInline = () => [header, footer1, footer2]
+
 const forgotpasswordBody = (user) => {
   const HOST = dev ? 'http://localhost:3000' : 'http://www.derby-fwl.com'
   const LINK = `${HOST}/createpassword`
@@ -41,4 +43,4 @@ const forgotpasswordBody = (user) => {
   `)
 }
 
-module.exports = {subject: forgotpasswordSubject, body: forgotpasswordBody, inline: [header, footer1, footer2]}
+module.exports = {subject: forgotpasswordSubject, body: forgotpasswordBody, inline: createInline}

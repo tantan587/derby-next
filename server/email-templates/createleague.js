@@ -4,7 +4,9 @@ const header = path.join(__dirname, '/Derby_Email_headline_A-New-Way-to-Play_2.j
 const footer1 = path.join(__dirname, '/Derby_Email_sports_icons_2x.png')
 const footer2 = path.join(__dirname, '/Derby_Email_footer_newest.png')
 
-const createLeagueSubject = (user) => `You've Created a League!`
+const createLeagueSubject = () => `You've Created a League!`
+
+const createInline = () => [header, footer1, footer2]
 
 const createLeagueBody = (user) => {
   const HOST = dev ? 'http://localhost:3000' : 'http://www.derby-fwl.com'
@@ -38,4 +40,4 @@ const createLeagueBody = (user) => {
   `)
 }
 
-module.exports = {subject: createLeagueSubject, body: createLeagueBody, inline: [header, footer1, footer2]}
+module.exports = {subject: createLeagueSubject, body: createLeagueBody, inline: createInline}
