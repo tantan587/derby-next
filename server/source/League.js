@@ -18,7 +18,9 @@ class League {
     this.Rules = await ruleBuilder.Create(this.leagueId)  
 
     //console.log(this.Owners)
-    this.Owners[0].CalculateTotalPoints(this.Rules)
+    this.Owners.forEach(x => x.CalculateTotalPoints(this.Rules))
+    this.Owners.sort((x,y) => y.TotalPoints - x.TotalPoints)
+    this.Owners.forEach(x => console.log(x.TotalPoints))
   }
 
 }

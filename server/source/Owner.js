@@ -2,12 +2,15 @@ const RuleCalculator = require('./Rules/RuleCalculator')
 
 
 class Owner {
-  constructor(ownerId, leagueId, userId, avatar) {
+  constructor(ownerId, leagueId, userId, username,  avatar, ownerName) {
     this.OwnerId = ownerId
     this.LeagueId = leagueId
     this.UserId = userId
+    this.Username = username
     this.Avatar = avatar
+    this.OwnerName = ownerName
     this.Teams = []
+    this.TotalPoints = 0
   }
 
   AddTeam(teamId) {
@@ -17,8 +20,7 @@ class Owner {
   CalculateTotalPoints(rules) {
 
     let ruleCalculator = new RuleCalculator()
-    return this.Teams.reduce((total, team) => {
-      console.log(total)
+    this.TotalPoints = this.Teams.reduce((total, team) => {
       return total + ruleCalculator.CalculateTotal(
         rules.GetRule(team.SportId), team.GetRecord())
     },0)

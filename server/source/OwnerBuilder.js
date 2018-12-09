@@ -14,7 +14,7 @@ class OwnerBuilder {
 
     let ownerIdToOwner = {}
     owners.forEach(x => {
-      ownerIdToOwner[x.owner_id] = new Owner(x.owner_id, leagueId, x.user_id, x.avatar)
+      ownerIdToOwner[x.owner_id] = new Owner(x.owner_id, leagueId, x.user_id, x.username, x.avatar, x.owner_name)
     })
 
     teamIds.forEach(x => ownerIdToOwner[x.owner_id].AddTeam(teamDict[x.team_id]))
@@ -23,9 +23,10 @@ class OwnerBuilder {
   }
 
   async GetOwnersFromDb(leagueId) {
+
     return await knex('fantasy.owners')
       .where('league_id', leagueId)
-      .select('*')
+      .join('users.users', 'fantasy.owners.user_id', '=', 'users.users.user_id')
   }
 
   async GetOwnerTeamsFromDb(leagueId) {

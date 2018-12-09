@@ -9,44 +9,37 @@ const Patterns = require('../../common/components/Icons/Avatars/Patterns')
 
 const  buildIt = async () => {
  
+  let user = {}
+  user.email = 'yoni.h.silverman@gmail.com'
+  
   let league = new League('87cf6bb3-d3b0-4f61-9bc3-a8e873dd8fd2')
   await league.Create()
-  let primary = Colors[league.Owners[3].Avatar.primary]
-  let secondary = Colors[league.Owners[3].Avatar.secondary]
-  let file = Patterns[league.Owners[3].Avatar.pattern].file
+  user.Owners = league.Owners
 
 
-  fs.readFile(file, 'utf8', function(err, contents) {
+  let cb = async (x,i) => {
+    let primary = Colors[x.Avatar.primary]
+    let secondary = Colors[x.Avatar.secondary]
+    let file = Patterns[x.Avatar.pattern].file
+  
+    let contents = await fs.readFile(file, 'utf8') 
     let temp = contents.replace('.cls-1{fill:#ccc;}.cls-2{fill:#231f20;}.cls-3{fill:#fff;}',
-      '.cls-1{fill:#000;}.cls-2{fill:'+primary+';}.cls-3{fill:'+secondary+';}')
-    fs.writeFile('./static/icons/Silks/test.svg', temp)
-      .then(() => {
-        fs.readFile('./static/icons/Silks/test.svg')
-          .then((buffer) => svg2png(buffer, {height:300, width:300}))
-          .then(buffer => 
-            fs.writeFile('./static/icons/Silks/test1.png', buffer)
-              .then(() => process.exit())
-          )
-          .catch(e => console.error(e))
-      })
-      
-    console.log('The file was saved!')
-  })
-
-
-
+      '.cls-1{fill:#000;}.cls-2{fill:'+secondary+';}.cls-3{fill:'+primary+';}')
+    await fs.writeFile('./static/icons/Silks/test.svg', temp)
   
+    let buffer = await fs.readFile('./static/icons/Silks/test.svg')
+    buffer = await svg2png(buffer, {height:300, width:300})
+    await fs.writeFile('./server/email-templates/test'+i+'.png', buffer)
+  }
   
+  for (let index = 0; index < 4; index++) {
+    console.log(index)
+    await cb(league.Owners[index], index)
+  }
 
-  
-  // let user = {}
-  // user.email = 'yoni.h.silverman@gmail.com'
-  // user.first_name = 'Jon'
-  // user.password = 'Hello'
-
-  // authHelpers.sendEmail(user, weeklyEmailTemplate)
-  //   .then(() => process.exit())
-  
+  await authHelpers.sendEmail(user, weeklyEmailTemplate)
+  process.exit()
+   
 }
 
 buildIt()

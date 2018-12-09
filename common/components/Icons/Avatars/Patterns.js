@@ -43,7 +43,7 @@ const Patterns = {
     }
   },
   'DiagonalQuartered' : {
-    file: './static/icons/Silks/derby_silk_diagonal_quartered.svg',
+    file: './static/icons/Silks/derby_silk_avatar_diagonal_quartered.svg',
     silk: {
       type: 'points',
       str:['19.52 51.48 21.49 65.3 50.51 65.3 52.43 51.49 35.91 35.02 19.52 51.48',
@@ -122,7 +122,7 @@ const Patterns = {
     }
   },
   'TriangularPanel' : {
-    file: './static/icons/Silks/derby_silk_avatar_triangular_panel2.svg',
+    file: './static/icons/Silks/derby_silk_avatar_triangular_panel.svg',
     silk: {
       type: 'points',
       str:['18.33 10.66 10.09 15.51 35.52 40.94 61.31 15.15 53.06 10.31 35.52 27.85 18.33 10.66']
