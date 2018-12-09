@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 600 206"><defs>
+<style>.cls-1{fill:#fff;}.cls-2{stroke:#f00;stroke-width:2}.cls-3{fill:#0f0;}.cls-4{font-family:Roboto;font-size:7px;fill:#fff}</style>
+</defs><title>derby_silk_avatar_cross_of_sash</title>
+
+<g id="background">
+  <image x="0" y="0" width="600" height="86" xlink:href="http://localhost:3000/static/icons/EmailTest/header1.svg" />
+  <image x="0" y="86" width="600" height="150"  xlink:href="http://localhost:3000/static/icons/EmailTest/dirt.svg"/>
+  <text class="cls-4" x="4" y="92">NAME 1</text>
+  <text class="cls-4" x="4" y="100">NAME 2</text>
+  <text class="cls-4" x="4" y="108">NAME 3</text>
+  <image x="10" y="100" height="10" width="50"  xlink:href="http://localhost:3000/static/icons/EmailTest/recursion.svg" />
+  <image x="15" y="92" height="10" width="50"  xlink:href="http://localhost:3000/static/icons/EmailTest/horse2.svg" />
+  <image x="22" y="84" height="10"  width="50" xlink:href="http://localhost:3000/static/icons/EmailTest/horse3.svg" />
+</g>
+</svg>

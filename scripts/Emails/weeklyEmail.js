@@ -8,7 +8,16 @@ const Patterns = require('../../common/components/Icons/Avatars/Patterns')
  
 
 const  buildIt = async () => {
+  // const path = require('path')
+  // const image3 = path.join(__dirname, '/test3.png')
+  // console.log(image3)
+  // process.exit()
+  
  
+  let buffer = await fs.readFile('./static/icons/EmailTest/test.svg')
+  buffer = await svg2png(buffer, {height:412, width:1200})
+  await fs.writeFile('./server/email-templates/stands.png', buffer)
+
   let user = {}
   user.email = 'yoni.h.silverman@gmail.com'
   
@@ -43,3 +52,4 @@ const  buildIt = async () => {
 }
 
 buildIt()
+

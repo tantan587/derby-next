@@ -1,6 +1,7 @@
 const path = require('path')
-const dev = process.env.NODE_ENV !== 'production'
+//const dev = process.env.NODE_ENV !== 'production'
 const header = path.join(__dirname, '/Derby_Email_headline_Welcome-to-Derby_2.jpg')
+const header1 = path.join(__dirname, '/stands.png')
 const footer1 = path.join(__dirname, '/Derby_Email_sports_icons_2x.png')
 const footer2 = path.join(__dirname, '/Derby_Email_footer_newest.png')
 const image0 = path.join(__dirname, '/test0.png')
@@ -8,18 +9,23 @@ const image1 = path.join(__dirname, '/test1.png')
 const image2 = path.join(__dirname, '/test2.png')
 const image3 = path.join(__dirname, '/test3.png')
 
-const forgotpasswordSubject = (user) => `[Derby] Weekly Report`
+const forgotpasswordSubject = () => '[Derby] Weekly Report'
 
-const createInline = () => [header, footer1, footer2, image0, image1, image2, image3]
+const createInline = () => [header, header1, footer1, footer2, image0, image1, image2, image3]
 
 const forgotpasswordBody = (user) => {
-  const HOST = dev ? 'http://localhost:3000' : 'http://www.derby-fwl.com'
-  const LINK = `${HOST}/createpassword`
+  //const HOST = dev ? 'http://localhost:3000' : 'http://www.derby-fwl.com'
+  //const LINK = `${HOST}/createpassword`
   return (`
   <table width="100%" border="0" cellspacing="0" cellpadding="0">
       <tr>
         <td align="center">
+        <div>
           <img src="cid:Derby_Email_headline_Welcome-to-Derby_2.jpg" width="600" height="181">
+          </div>
+          <div>
+          <img src="cid:stands.png" width="600">
+          </div>
           <div style="width: 600px; font-family: 'Roboto'; font-size: 1.2em; margin: 30px; color: 'black';">
             <table width="100%" border="0" cellspacing="0" cellpadding="0">
               <tr style="font-family: 'Roboto'; font-size: 1.4em;">
