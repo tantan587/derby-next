@@ -50,7 +50,7 @@ const forgotpasswordBody = (user) => {
                 <img src="cid:test1.png" width="100" height="100">
                  </td>
                  <td width="25%" style="text-align:center">
-                <img src="cid:test2.png" width="100" height="100">
+                <img src="cid:test2.png" width="100" height="100"/>
                  </td>
                  <td width="25%" style="text-align:center">
                 <img src="cid:test3.png" width="100" height="100">
