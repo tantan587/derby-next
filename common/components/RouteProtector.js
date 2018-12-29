@@ -29,7 +29,7 @@ class RouteProtector extends React.Component {
   render () {
 
     const {ProtectedRoute, user, status, classes, checkCommish} = this.props
-    console.log('hello', this.props)
+
     if(!status.loaded) {
       return(<div style={{height:1000}}><CircularProgress className={classes.progress} size={50} /></div>)
     }
@@ -46,7 +46,6 @@ class RouteProtector extends React.Component {
 
         return(null)
       }
-      console.log('route', user)
       // Pass the received 'props' and created functions to the ProtectedRoute component
       return (
         <ProtectedRoute/>
