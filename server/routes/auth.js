@@ -33,6 +33,7 @@ router.post('/signup', authHelpers.loginRedirect, (req, res)  => {
         return handleReduxResponse(res, 400, {type: C.SIGNUP_FAIL, error:response.error})
       }
     })
+    .catch(console.error)
 })
 
 router.post('/login', authHelpers.loginRedirect, (req, res, next) => {

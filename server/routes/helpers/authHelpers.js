@@ -126,7 +126,10 @@ function handleErrors(req) {
 
 const getUserLeagues = (user, cb) =>{
   
-  return  knex.withSchema('fantasy').table('leagues').where('user_id',user.user_id).innerJoin('owners', 'leagues.league_id', 'owners.league_id')
+  return  knex.withSchema('fantasy').table('leagues').where({
+    user_id: user.user_id,
+    status: 'confirmed',
+  }).innerJoin('owners', 'leagues.league_id', 'owners.league_id')
     .then(result =>
     {
       let leagues = []
@@ -212,6 +215,24 @@ const sendEmail = (user, {subject, body, inline} = {}) => {
     })
 }
 
+const sendGeneric = (context, {to, subject, body, inline}) => {
+  return knex('users.email_auth')
+    .select('*')
+    .where('application', 'forgotpassword')
+    .first()
+    .then(({api_key: apiKey, domain, email}) => {
+      const mailGun = mailer({apiKey, domain})
+      const mgConfig = {
+        from: email,
+        to: to(context),
+        subject: subject(context),
+        html: body(context),
+        inline: inline,
+      }
+      return mailGun.messages().send(mgConfig)
+    })
+}
+
 function handleReduxResponse(res, code, action)
 {
   res.status(code).json(action)
@@ -227,4 +248,5 @@ module.exports = {
   updatePassword,
   createNewPassword,
   sendEmail,
+  sendGeneric,
 }
