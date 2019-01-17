@@ -24,7 +24,8 @@ import MobileNav from '../common/components/Navigation/MobileNav'
 
 //https://github.com/zeit/next.js/tree/master/examples/with-global-stylesheet
 
-
+import logNumber from './random'
+logNumber(5)
 
 const styles = (theme) =>  ({
   section1: {

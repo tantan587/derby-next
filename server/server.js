@@ -4,6 +4,7 @@ const authRoutes = require('./routes/auth')
 const fantasyRoutes = require('./routes/fantasy')
 const sportRoutes = require('./routes/sports')
 const draftRoutes = require('./routes/draft')
+const inviteRoutes = require('./routes/invites')
 
 const app = require('express')()
 const server = require('http').Server(app)
@@ -42,6 +43,7 @@ nextApp.prepare()
     app.use('/api', fantasyRoutes)
     app.use('/api', sportRoutes)
     app.use('/api', draftRoutes)
+    app.use('/api', inviteRoutes)
 
     app.get('*', (req, res) => {
       return handle(req, res)

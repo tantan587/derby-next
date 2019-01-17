@@ -7,9 +7,10 @@ const styles = {
   }
 }
 
-const DerbyCheckbox = withStyles(styles)(({ classes, onClick, state }) => <Checkbox
+const DerbyCheckbox = withStyles(styles)(({ classes, onClick, state, checked }) => <Checkbox
   classes={{ root: classes.root }}
   onClick={onClick && onClick.bind(null, state)} // Pass in the function and the piece of state to change, that's all
+  checked={checked}
 />)
 
 export default DerbyCheckbox

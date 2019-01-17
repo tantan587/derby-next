@@ -11,6 +11,8 @@ class ToggleProvider extends Component {
       toggle: this.toggle.bind(this),
     }
   }
+
+
   toggle(key) {
     this.setState({data: {
       ...this.state.data,

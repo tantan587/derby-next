@@ -1,8 +1,9 @@
 const R = require('ramda')
 const knex = require('../../db/connection')
-const {sendEmail} = require('./authHelpers')
+const {sendEmail, sendGeneric} = require('./authHelpers')
 const EMAIL_VERIFICATION = require('../../../common/constants/email_verification')
 const signupTemplates = require('../../email-templates/signup')
+const leagueinviteTemplates = require('../../email-templates/leagueinvite')
 
 module.exports.getById = (user_id) => knex('users.users')
   .where('user_id', user_id)
@@ -35,17 +36,40 @@ module.exports.verify = (user_id, verification_code) => knex('users.users')
     } else return {type: EMAIL_VERIFICATION.NOT_FOUND}
   })
 
-  module.exports.resendEmail = (user_id) => knex('users.users')
-    .where({user_id, verified: false})
-    .update({
-      verification_code: Math.floor(1000 + Math.random() * 9000),
-      expires_at: knex.raw("now() + INTERVAL '24 hours'"),
-      number_of_tries: 0,
-    })
-    .returning('*')
-    .then(([userObj]) => {
-      if (userObj) {
-        return sendEmail(userObj, signupTemplates)
-      }
-      else return false
-    })
+module.exports.resendEmail = (user_id) => knex('users.users')
+  .where({user_id, verified: false})
+  .update({
+    verification_code: Math.floor(1000 + Math.random() * 9000),
+    expires_at: knex.raw("now() + INTERVAL '24 hours'"),
+    number_of_tries: 0,
+  })
+  .returning('*')
+  .then(([userObj]) => {
+    if (userObj) {
+      return sendEmail(userObj, signupTemplates)
+    }
+    else return false
+  })
+
+module.exports.sendInvite = (user_id, league_id) => Promise.all([
+  knex('users.users').where({user_id}).first(),
+  knex('fantasy.leagues').where({league_id}).first(),
+]).then(([user, league]) => {
+  if (user && league) {
+    return sendGeneric({user, league}, leagueinviteTemplates)
+  }
+  else return false
+})
+
+module.exports.sendInviteBulk = (invites) => {
+  return Promise.all(invites.map(invite => {
+    return sendGeneric(invite, leagueinviteTemplates)
+  }))
+}
+
+module.exports.isLeagueMember = (user_id, league_id) => knex('fantasy.owners')
+  .where('user_id', user_id)
+  .andWhere('league_id', league_id)
+  .first()
+  .then(R.is(Object))
+
