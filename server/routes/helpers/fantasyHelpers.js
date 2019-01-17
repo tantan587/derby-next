@@ -765,10 +765,10 @@ const formatGameDateShort = (date) => {
 const DeleteLeague = async (exitProcess, leagueName) => {
 
 
-  const str = `select c.room_id, b.owner_id, a.league_id 
-   from fantasy.leagues a, fantasy.owners b, draft.settings c 
+  const str = `select b.room_id, a.league_id 
+   from fantasy.leagues a, draft.settings b 
    where league_name = '` + leagueName +`' 
-   and a.league_id = b.league_id and a.league_id = c.league_id`
+   and a.league_id = b.league_id`
 
 
   let result = await knex.raw(str)
@@ -781,7 +781,15 @@ const DeleteLeague = async (exitProcess, leagueName) => {
     
     let league_id = result.rows[0].league_id
     let room_id = result.rows[0].room_id
-    let owners = result.rows.map(x => x.owner_id)
+
+    let ownerStr = `select b.owner_id 
+      from fantasy.leagues a, fantasy.owners b 
+      where league_name = '` + leagueName +`' 
+      and a.league_id = b.league_id`
+
+    let ownerResult = await knex.raw(ownerStr)
+
+    let owners = ownerResult.rows.map(x => x.owner_id)
 
     await knex('fantasy.leagues').where('league_id', league_id).del()
     console.log('Deleted from fantasy.leagues')
@@ -799,6 +807,8 @@ const DeleteLeague = async (exitProcess, leagueName) => {
     console.log('Deleted from draft.results')
     await knex('fantasy.points').whereIn('owner_id', owners).del()
     console.log('Deleted from fantasy.points')
+    await knex('fantasy.invites').where('league_id', league_id).del()
+    console.log('Deleted from fantasy.invites')
     
   }
   if(exitProcess)
