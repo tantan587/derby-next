@@ -1,0 +1,5 @@
+# robots.txt for https://www.derby-fwl.com/
+
+User-agent: *
+Disallow: /redirectlogin
+Disallow: /login
