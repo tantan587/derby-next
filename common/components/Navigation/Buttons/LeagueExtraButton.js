@@ -8,24 +8,7 @@ const R = require('ramda')
 class LeaguesExtraButton extends React.Component {
 
   render() {
-    const { color, backgroundColor, name, activeLeague } = this.props
-    
-    const items = [
-      {
-        text:'League Home',
-        link:'/mainleaguehome'},
-      {
-        text:'Draft Room',
-        link:'/livedraft'},
-      {
-        text:'Team Settings',
-        link:'/mainleagueteamsettings'}]
-    if(activeLeague.imTheCommish)
-    {
-      items.push({ 
-        text:'Commish Tools', 
-        link:'/mainleaguesettings'})
-    }
+    const { color, backgroundColor, name, items } = this.props
 
     return (
       <MenuBase

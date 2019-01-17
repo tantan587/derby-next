@@ -29,17 +29,21 @@ class RouteProtector extends React.Component {
   render () {
 
     const {ProtectedRoute, user, status, classes, checkCommish} = this.props
-  
-    if(!status.loaded)
-    {
+
+    if(!status.loaded) {
       return(<div style={{height:1000}}><CircularProgress className={classes.progress} size={50} /></div>)
     }
-    else{
-      if(Object.keys(user).length === 0 || user.loggedIn === false || (checkCommish && !this.props.activeLeague.imTheCommish)) {
+
+    else {
+      if (Object.keys(user).length === 0 ||
+        user.loggedIn === false ||
+        (checkCommish && !this.props.activeLeague.imTheCommish)) {
+
         if (typeof document !== 'undefined'){
           this.props.updateForceLogin(this.props.previousPage)
           Router.push('/redirectlogin')
         }
+
         return(null)
       }
       // Pass the received 'props' and created functions to the ProtectedRoute component

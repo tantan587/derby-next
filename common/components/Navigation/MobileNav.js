@@ -30,7 +30,6 @@ const Variants = {
 class SwipeComponent extends React.Component {
 
   swiped = (e, deltaX, deltaY, isFlick, velocity) => {
-    // console.log("You Swiped...", e, deltaX, deltaY, isFlick, velocity)
     if (deltaX > 90 && velocity > 0.25) {
       this.props.onCloseNav()
     }

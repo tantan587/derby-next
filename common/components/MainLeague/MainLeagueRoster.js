@@ -39,15 +39,15 @@ class MainLeagueRoster extends React.Component {
       .findIndex(owner => owner.owner_id === ownerIdToStart)
 
 
-    let myTeams = Object.values(teams).filter(team => sportLeagueIds.includes(team.sport_id)).map(team => 
+    let myTeams = Object.values(teams).filter(team => sportLeagueIds.includes(team.sport_id)).map(team =>
     {
-      let owner = null 
+      let owner = null
       if (activeLeague.teams[team.team_id])
         owner = activeLeague.owners.filter(owner => owner.owner_id === activeLeague.teams[team.team_id].owner_id)[0]
       let points = 0
       let projPoints = 0
       let rank = 999
-      
+
       if (activeLeague.teams[team.team_id])
       {
         owner = activeLeague.owners.find(owner => owner.owner_id === activeLeague.teams[team.team_id].owner_id)
@@ -73,13 +73,13 @@ class MainLeagueRoster extends React.Component {
     const filters = [{
       type:'tab',
       values: this.props.activeLeague.owners.map(x => x.owner_name).sort((a,b) => {
-        return a.toLowerCase() > b.toLowerCase() ? 1 : -1 
+        return a.toLowerCase() > b.toLowerCase() ? 1 : -1
       }),
       column:'owner_name',
       defaultTab: default_tab, //this.props.activeLeague.owners.sort((a,b) => {return a.owner_name - b.owner_name}).findIndex(owner => owner.owner_id === activeLeague.my_owner_id),
       tabStyles:{backgroundColor:'#e3dac9',
         color:'#48311A',
-        selectedBackgroundColor:'white', 
+        selectedBackgroundColor:'white',
         selectedColor:'#229246',
         fontSize:12}
     }]
@@ -130,5 +130,3 @@ export default R.compose(
   withRouter,
   connect(R.pick(['activeLeague', 'user', 'contentFilter', 'teams']), {onClickedLeague: clickedLeague})
 )(withStyles(styles)(MainLeagueRoster))
-
-

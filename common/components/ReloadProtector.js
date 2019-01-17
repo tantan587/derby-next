@@ -27,16 +27,12 @@ class ReloadProtector extends React.Component {
   render () {
 
     const {ProtectedRoute, status, classes} = this.props
-
-    if(!status.loaded)
-    {
+    console.log('hello', this.props)
+    if(!status.loaded) {
       return(<div style={{height:1000}}><CircularProgress className={classes.progress} size={50} /></div>)
     }
-    else{
-      return (
-        <ProtectedRoute/>
-      )
-    }
+
+    return <ProtectedRoute/>
   }
 }
 

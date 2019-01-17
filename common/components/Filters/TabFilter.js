@@ -43,9 +43,8 @@ class TabFilter extends React.Component {
     this.filterRows(this.state.index)
   }
 
-  handleTabClick = (index) => () =>
-  {
-    this.setState({ index})
+  handleTabClick = (index) => () => {
+    this.setState({ index })
     this.filterRows(index)
 
   }
