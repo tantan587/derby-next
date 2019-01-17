@@ -1,6 +1,6 @@
 import React from 'react'
 import DateFnsUtils from 'material-ui-pickers/utils/date-fns-utils'
-import MuiPickersUtilsProvider from 'material-ui-pickers/utils/MuiPickersUtilsProvider'
+import { MuiPickersUtilsProvider } from 'material-ui-pickers'
 import storeFactory from '../store'
 import { Provider } from 'react-redux'
 import ToggleProvider from '../providers/ToggleProvider'
