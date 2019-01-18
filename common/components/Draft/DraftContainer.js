@@ -82,11 +82,11 @@ class DraftContainer extends React.Component {
     this.socket = io('/draft')
     this.socket.on('connect', () => {
       // Connected, let's sign-up for to receive messages for this room
-      this.socket.emit('join', 
-        {roomId: this.props.activeLeague.room_id, 
+      this.socket.emit('join',
+        {roomId: this.props.activeLeague.room_id,
           owner_id:this.props.activeLeague.my_owner_id })
     })
-    this.state.sockets.map((socket,i) => 
+    this.state.sockets.map((socket,i) =>
       this.socket.on(socket, this.state.functions[i]))
     let myDraftPosition =-1
     const ownerMap = {}
@@ -99,7 +99,7 @@ class DraftContainer extends React.Component {
         myDraftPosition = owner.draft_position
       }
       ownerMap[owner.owner_id] =
-       {draft_position:owner.draft_position, 
+       {draft_position:owner.draft_position,
          owner_name:owner.owner_name,
          here:here,
          avatar:owner.avatar}
@@ -108,7 +108,7 @@ class DraftContainer extends React.Component {
   }
 
   componentWillUnmount() {
-    this.state.sockets.map((socket,i) => 
+    this.state.sockets.map((socket,i) =>
       this.socket.off(socket, this.state.functions[i]))
     this.socket.close()
   }
@@ -130,12 +130,12 @@ class DraftContainer extends React.Component {
     else{
       ownerMap[owner.owner_id].here = false
     }
-    const snackbarMessage = this.props.activeLeague.my_owner_id === owner.owner_id 
+    const snackbarMessage = this.props.activeLeague.my_owner_id === owner.owner_id
       ? 'You just ' + owner.state
       : ownerMap[owner.owner_id].owner_name + ' has ' + owner.state
     this.setState(
-      {snackbarOpen:true, 
-        ownerMap:ownerMap, 
+      {snackbarOpen:true,
+        ownerMap:ownerMap,
         snackbarMessage:snackbarMessage
       })
   }
@@ -147,7 +147,7 @@ class DraftContainer extends React.Component {
 
   handleReset = () => {
     this.props.onSetDraftMode('pre')
-    this.setState({ 
+    this.setState({
       startTime:0})
   }
 
@@ -164,7 +164,7 @@ class DraftContainer extends React.Component {
     this.props.onSetDraftMode(mode)
     if (mode === C.DRAFT_STATE.POST)
     {
-      this.props.onClickedLeague(this.props.activeLeague.league_id,  this.props.user.id) 
+      this.props.onClickedLeague(this.props.activeLeague.league_id,  this.props.user.id)
     }
   }
 
@@ -183,8 +183,8 @@ class DraftContainer extends React.Component {
       }
     }
     this.setState({countdownTime: data.counter, sawPickError})
-    
-      
+
+
   }
 
   handleAutoDraft = (data) => {
@@ -195,9 +195,9 @@ class DraftContainer extends React.Component {
     const {activeLeague, draft} = this.props
     const myTurn = this.state.myDraftPosition ===
       activeLeague.draftOrder[draft.pick].ownerIndex
-    if(this.props.draft.mode ==='live' && 
+    if(this.props.draft.mode ==='live' &&
     (this.props.draft.queue.length > 0 || teamId) && myTurn)
-      this.socket.emit('draft', 
+      this.socket.emit('draft',
         {teamId: teamId ? teamId : draft.queue[0],
           clientTs:new Date()
         })
@@ -226,7 +226,7 @@ class DraftContainer extends React.Component {
 
     this.setState({snackbarMessage:snackbarMessage, snackbarOpen:true})
     data['thisIsMe'] = thisIsMe
-    this.props.onDraftPick(data)      
+    this.props.onDraftPick(data)
   }
 
   handleRollback = (data) => {
@@ -239,11 +239,11 @@ class DraftContainer extends React.Component {
 
     this.setState({snackbarMessage:snackbarMessage, snackbarOpen:true})
     data['thisIsMe'] = thisIsMe
-    this.props.onRollback(data)      
+    this.props.onRollback(data)
   }
 
   onUpdateQueue = (newQueue) => {
-    this.socket.emit('queue', 
+    this.socket.emit('queue',
       {queue:newQueue, ownerId:this.props.activeLeague.my_owner_id})
     this.props.onSetUpdateQueue(newQueue)
   }
@@ -255,7 +255,7 @@ class DraftContainer extends React.Component {
         this.props.onSetUpdateQueue(payload.queue)
       else
         this.setState({snackbarMessage:
-          'You can\'t queue the ' + this.props.teams[parseInt(payload.teamId)].team_name, 
+          'You can\'t queue the ' + this.props.teams[parseInt(payload.teamId)].team_name,
         snackbarOpen:true})
     }
   }
@@ -263,8 +263,8 @@ class DraftContainer extends React.Component {
   onAddQueue = (item) => {
     if( !this.props.draft.queue.includes(item))
       this.socket.emit('addqueue',
-        {teamId:item, 
-          ownerId:this.props.activeLeague.my_owner_id, 
+        {teamId:item,
+          ownerId:this.props.activeLeague.my_owner_id,
           queue:this.props.draft.queue})
   }
 
@@ -301,7 +301,7 @@ class DraftContainer extends React.Component {
   onToggleAutoDraft = () => {
     this.socket.emit('toggleAutoDraft')
   }
-  
+
   onUpdateLinesToShow = event => {
     this.setState({linesToShow:event.target.value})
   }
@@ -318,36 +318,40 @@ class DraftContainer extends React.Component {
     const { classes, activeLeague ,draft, teams, user } = this.props
     const {countdownTime, startTime,
       snackbarOpen,snackbarMessage, ownerMap} = this.state
-    
-    
+
+
     const currDraftPick = draft.pick ? draft.pick : 0
 
     const myTurn = activeLeague.draftOrder[currDraftPick] && this.state.myDraftPosition ===
       activeLeague.draftOrder[currDraftPick].ownerIndex
 
-    const allowDraft = draft.mode==='live' && myTurn 
+    const allowDraft = draft.mode==='live' && myTurn
 
     return (
 
       <div className={classes.root}>
-        <Title backgroundColor='#EBAB38' color='white' title={'Live Draft - ' + activeLeague.league_name }/>
+        <Title backgroundColor='#EBAB38'
+          color='white'
+          title={'Live Draft - ' + activeLeague.league_name }
+          button={{ text: 'Draft Reference Guide', onClick: () => console.log('hello') }}
+        />
         <Grid container spacing={24} >
           <Grid item xs={12}>
             <div className={classes.paper}>
               <Grid container alignItems={'stretch'} direction='row' style={{height:'100%'}}>
-                <Grid item xs={12} sm={2} 
+                <Grid item xs={12} sm={2}
                   style={{backgroundColor:'black'}}>
                   <Grid container direction={'column'}>
                     <Grid item xs={12} style={{backgroundColor:'black'}}>
-                      <Countdown 
+                      <Countdown
                         countdownTime={countdownTime}
                         startTime={startTime}
                         mode={draft.mode}/>
                     </Grid>
                     <Grid item xs={12}>
-                      <DraftOrder 
+                      <DraftOrder
                         ownersMap={ownerMap}
-                        myOwnerName={ ownerMap[activeLeague.my_owner_id]  ? ownerMap[activeLeague.my_owner_id].owner_name : ''} 
+                        myOwnerName={ ownerMap[activeLeague.my_owner_id]  ? ownerMap[activeLeague.my_owner_id].owner_name : ''}
                         myOwnerId={activeLeague.my_owner_id}
                         draftOrder={activeLeague.draftOrder}
                         currPick={draft.pick}
@@ -375,9 +379,9 @@ class DraftContainer extends React.Component {
                     {
                       user.admin || activeLeague.imTheCommish ?
                         <div>
-                          <Button onClick={draft.mode === 'timeout' ? 
-                            this.onTimeIn : 
-                            draft.mode ==='live' ? 
+                          <Button onClick={draft.mode === 'timeout' ?
+                            this.onTimeIn :
+                            draft.mode ==='live' ?
                               this.onTimeout : null}>
                             {draft.mode === 'timeout' ? 'Continue' : 'Pause'}
                           </Button>
@@ -392,7 +396,7 @@ class DraftContainer extends React.Component {
                             </span>
                           </Tooltip>
                           {
-                            user.admin ? 
+                            user.admin ?
                               <form  noValidate>
                                 <TextField
                                   id="number"
@@ -409,15 +413,15 @@ class DraftContainer extends React.Component {
                         </div>
                         : null
                     }
-                    
+
                     <Grid item xs={12} style={{backgroundColor:'white'}} >
                     </Grid>
                   </Grid>
                 </Grid>
                 <Grid item xs={12} sm={2}  style={{backgroundColor:'black'}}>
                   <Grid item xs={12} style={{backgroundColor:'black'}}>
-                    <Typography key={'head'} variant='subheading' 
-                      style={{fontFamily:'HorsebackSlab', color:'white', 
+                    <Typography key={'head'} variant='subheading'
+                      style={{fontFamily:'HorsebackSlab', color:'white',
                         paddingTop:15, paddingBottom:15}}>
                         Draft Queue
                     </Typography>
@@ -429,11 +433,11 @@ class DraftContainer extends React.Component {
                     </Grid>
                     <Grid item xs={12} style={{marginBottom:5}}>
                       <Button
-                        disabled={!allowDraft} 
-                        style={{fontSize:14, 
+                        disabled={!allowDraft}
+                        style={{fontSize:14,
                           backgroundColor:allowDraft ? '#EBAB38' : '#b2b2b2',
                           fontStyle:allowDraft ? 'normal' : 'italic',
-                          marginTop:10, color:'white', width:'90%'}} 
+                          marginTop:10, color:'white', width:'90%'}}
                         onClick={() => this.onDraftButton()}>
                         DRAFT #1 TEAM
                       </Button>
@@ -442,11 +446,11 @@ class DraftContainer extends React.Component {
                     <Grid item xs={12}>
                       <div style={{height:300, maxHeight:300}}>
                         <div style={{color:'white'}}>
-                          
+
                           {/* //viewBox="0 -10 24 34" style={{width:24,height:34}}/> */}
                         </div>
                         <img src={'/static/icons/Derby_Chat_Bubble.svg'} viewBox="0 -10 24 64" style={{marginTop:5, width:24,height:20}}/>
-                        <Typography key={'head'} variant='subheading' 
+                        <Typography key={'head'} variant='subheading'
                           style={{fontFamily:'HorsebackSlab', color:'white',marginTop:-0,
                             paddingTop:0, paddingBottom:0, marginLeft:10,display:'inline-block'}}>
                             Chat
@@ -454,18 +458,18 @@ class DraftContainer extends React.Component {
                         <Chat onMessageSubmit={this.onMessageSubmit}/>
                       </div>
                     </Grid>
-                    
+
                   </Grid>
                 </Grid>
               </Grid>
             </div>
           </Grid>
         </Grid>
-        <SimpleSnackbar open={snackbarOpen} message={snackbarMessage} handleClose={this.onSnackbarClose}/>  
+        <SimpleSnackbar open={snackbarOpen} message={snackbarMessage} handleClose={this.onSnackbarClose}/>
         <br/>
-        <br/>  
         <br/>
-        <br/>  
+        <br/>
+        <br/>
       </div>
     )
   }
@@ -477,7 +481,7 @@ DraftContainer.propTypes = {
 
 export default R.compose(
   withStyles(styles),
-  connect(R.pick(['user', 'activeLeague', 'draft', 'teams']), 
+  connect(R.pick(['user', 'activeLeague', 'draft', 'teams']),
     {onEnterDraft: clickedEnterDraft,
       onStartDraft: handleStartDraft,
       onSetDraftMode: handleSetDraftMode,

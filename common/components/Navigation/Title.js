@@ -14,11 +14,18 @@ const styles = () => ({
     paddingBottom:45,
     marginBottom:0,
     paddingLeft:'3%',
+    paddingRight:'3%',
   },
   subheading: {
     marginLeft: 8,
     fontSize: 16,
     fontFamily: '"Roboto", sans-serif',
+  },
+  button: {
+    cursor: 'pointer',
+    fontFamily:'museo-slab-bold',
+    textTransform: 'uppercase',
+    fontSize: 12,
   },
   appBar : {
 
@@ -28,11 +35,20 @@ const styles = () => ({
 class Title extends React.Component {
 
   render() {
-    const {backgroundColor, title, subheading, color, classes, styles} = this.props
+    const {backgroundColor, title, subheading, color, classes, button, styles} = this.props
     return (
-      <Typography className={classes.title}  style={{backgroundColor:backgroundColor, color:color, ...styles}} variant="display1">
+      <Typography className={classes.title}
+        style={{
+          backgroundColor: backgroundColor,
+          color: color,
+          ...button && {display: 'flex', justifyContent: 'space-between'},
+          ...styles,
+        }}
+        variant="display1"
+      >
         {title}
-        <span className={classes.subheading}>{subheading}</span>
+        {subheading && <span className={classes.subheading}>{subheading}</span>}
+        {button && <div className={classes.button} onClick={button.onClick}>{button.text}</div>}
       </Typography>
     )
   }
