@@ -70,6 +70,31 @@ const standingsBySport = async (knex, sportName, api, promiseToGet, pull_paramet
       })
     }
   }
+  if(sportName === 'NFL'){
+    if(newStandings.every(team => team.wins+team.losses+team.ties === 16)){
+      let afcDivisionWinners = [newStandings[0], newStandings[4], newStandings[8], newStandings[12]]
+      let nfcDivisionWinners = [newStandings[16], newStandings[20], newStandings[24], newStandings[28]]
+      console.log('afc', afcDivisionWinners)
+      console.log('nfc', nfcDivisionWinners)
+      afcDivisionWinners.sort((a,b) => {return b.wins + b.ties/2 - a.wins - a.ties/2})
+      nfcDivisionWinners.sort((a,b) => {return b.wins + b.ties/2 - a.wins - a.ties/2})
+      let byeTeams = [
+        afcDivisionWinners[0],
+        afcDivisionWinners[1],
+        nfcDivisionWinners[0],
+        nfcDivisionWinners[1]
+      ]
+      await asyncForEach(byeTeams, async (team)=>{
+        await knex('sports.playoff_standings')
+        .where('team_id', team.team_id)
+        .andWhere('year', year)
+        .update({'byes': 1, 'playoff_status': 3})
+      })
+
+    }
+    console.log(newStandings[0])
+    
+  }
   return newStandings
 }
 

@@ -69,7 +69,7 @@ const runUpdate = async () => {
     }
     case 'standings':
     {
-      await script4.updateStandings(exitProcessInd)
+      await script4.updateStandings(exitProcessInd, arr[1])
       break
     }
     //'active':
