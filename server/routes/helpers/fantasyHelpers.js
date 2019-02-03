@@ -556,6 +556,7 @@ const updateTeamPoints = async (all) =>
             status > 2 ? points[fteam.scoring_type_id][sport_id].bonus.appearance : 0
         fteam.reg_points = points[fteam.scoring_type_id][sport_id].regular_season.win * team.wins + points[fteam.scoring_type_id][sport_id].regular_season.tie * team.ties
         fteam.playoff_points = points[fteam.scoring_type_id][sport_id].playoffs.win * team.playoff_wins
+        sport_id === '103' || sport_id === '102' ? fteam.playoff_points += points[fteam.scoring_type_id][sport_id].playoffs.bye * team.byes: 0
         //below depends on how we format bowl wins
         sport_id === '105' ? fteam.playoff_points += (points[fteam.scoring_type_id][sport_id].playoffs.bowl_win * team.bowl_wins) : 0
         fteam.bonus_points = bonus_win + bonus_points

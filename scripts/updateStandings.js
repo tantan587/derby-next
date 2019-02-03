@@ -74,8 +74,6 @@ const standingsBySport = async (knex, sportName, api, promiseToGet, pull_paramet
     if(newStandings.every(team => team.wins+team.losses+team.ties === 16)){
       let afcDivisionWinners = [newStandings[0], newStandings[4], newStandings[8], newStandings[12]]
       let nfcDivisionWinners = [newStandings[16], newStandings[20], newStandings[24], newStandings[28]]
-      console.log('afc', afcDivisionWinners)
-      console.log('nfc', nfcDivisionWinners)
       afcDivisionWinners.sort((a,b) => {return b.wins + b.ties/2 - a.wins - a.ties/2})
       nfcDivisionWinners.sort((a,b) => {return b.wins + b.ties/2 - a.wins - a.ties/2})
       let byeTeams = [
@@ -84,16 +82,17 @@ const standingsBySport = async (knex, sportName, api, promiseToGet, pull_paramet
         nfcDivisionWinners[0],
         nfcDivisionWinners[1]
       ]
+      //add in something here that uses the update playoff standings so that it 
+      //actually checks to find which teams actually had a bye, inc ase FD is wrong
+      //since we don't have tiebreakers
       await asyncForEach(byeTeams, async (team)=>{
         await knex('sports.playoff_standings')
         .where('team_id', team.team_id)
         .andWhere('year', year)
-        .update({'byes': 1, 'playoff_status': 3})
+        .update({'byes': 1})
       })
 
-    }
-    console.log(newStandings[0])
-    
+    }    
   }
   return newStandings
 }
@@ -149,8 +148,8 @@ const getCFBstandings = async (knex, sportName, api, promiseToGet, pull_paramete
         if(results[0] != undefined && results[1] !== undefined){
           standings_by_team_id[results[0]].wins--
           standings_by_team_id[results[1]].losses--
-          bowl_wins.push({team_id: results[0], bowl_wins: 1})
-          bowl_wins.push({team_id: results[1], bowl_wins: 0})
+          bowl_wins.push({team_id: results[0], bowl_wins: 1, year: year})
+          bowl_wins.push({team_id: results[1], bowl_wins: 0, year: year})
           let split = game.Day.split('T')[0].split('-')
           if(game.StadiumID===163 && split[2]<20 && split[1] == 12){
             standings_by_team_id[results[0]].wins ++
@@ -162,7 +161,7 @@ const getCFBstandings = async (knex, sportName, api, promiseToGet, pull_paramete
       if(playoff_stadium_ids.includes(game.StadiumID)){
         //next - check to see if the game was played before after dec. 29 or before jan.10 - to weed out non-playoff games
         let split = game.Day.split('T')[0].split('-')
-        if(split[2] >29 || split[2]<10){
+        if(split[2] > 27 || split[2]<10){
           //this checks if the stadium is in one of the two finalist stadiums - grabs two games
           if(finalist_stadium_ids_by_year[year].includes(game.StadiumID)){
             let playoff_result = [0, 0] //default results - game not played yet
@@ -170,8 +169,8 @@ const getCFBstandings = async (knex, sportName, api, promiseToGet, pull_paramete
               playoff_result = game.HomeTeamScore > game.AwayTeamScore ? [1,0] : [0,1]
             }
             playoff_teams.push(
-              {team_id: teamIdMap[game.GlobalHomeTeamID], playoff_wins: playoff_result[0], playoff_losses: playoff_result[1], playoff_status: 5, bowl_wins: 0},
-              {team_id: teamIdMap[game.GlobalAwayTeamID], playoff_wins: playoff_result[1], playoff_losses: playoff_result[0], playoff_status: 5, bowl_wins: 0}
+              {team_id: teamIdMap[game.GlobalHomeTeamID], playoff_wins: playoff_result[0], playoff_losses: playoff_result[1], playoff_status: 5, year: year},
+              {team_id: teamIdMap[game.GlobalAwayTeamID], playoff_wins: playoff_result[1], playoff_losses: playoff_result[0], playoff_status: 5, year: year}
             )
             finalist_team_ids.push(teamIdMap[game.GlobalHomeTeamID], teamIdMap[game.GlobalAwayTeamID])
           }
@@ -182,8 +181,8 @@ const getCFBstandings = async (knex, sportName, api, promiseToGet, pull_paramete
               let finalists = game.HomeTeamScore > game.AwayTeamScore ? [teamIdMap[game.GlobalHomeTeamID], teamIdMap[game.GlobalAwayTeamID]] : [teamIdMap[game.GlobalAwayTeamID], teamIdMap[game.GlobalHomeTeamID]]
               new_playoff_teams = playoff_teams.filter(team => finalists.includes(team.team_id) === false) //filters out finalists for new array to be added
               new_playoff_teams.push(
-                {team_id: finalists[0], playoff_wins: 2, playoff_losses: 0, playoff_status: 6},
-                {team_id: finalists[1], playoff_wins: 1, playoff_losses: 1, playoff_status: 5},)
+                {team_id: finalists[0], playoff_wins: 2, playoff_losses: 0, playoff_status: 6, year: year},
+                {team_id: finalists[1], playoff_wins: 1, playoff_losses: 1, playoff_status: 5, year: year},)
             }
           }else //if the team made a new years 6 bowl, just add them to playoffs as normal
           {
@@ -192,11 +191,19 @@ const getCFBstandings = async (knex, sportName, api, promiseToGet, pull_paramete
         }
         //note: still need to figure out a way to differentiate between playoff wins and normal bowl wins. NY6 teams all get playoff appearance points
       }
-    
+      if(game.Title = 'CFP National Championship'){
+        if(game.Status[0] === 'F'){ //only relevant if games is over - otherwise, no need to log extra result that this game is occuring
+          //since this is the last playoff game chronologicaly, can reshape playoff teams to new playoff teams
+          let finalists = game.HomeTeamScore > game.AwayTeamScore ? [teamIdMap[game.GlobalHomeTeamID], teamIdMap[game.GlobalAwayTeamID]] : [teamIdMap[game.GlobalAwayTeamID], teamIdMap[game.GlobalHomeTeamID]]
+          new_playoff_teams = playoff_teams.filter(team => finalists.includes(team.team_id) === false) //filters out finalists for new array to be added
+          new_playoff_teams.push(
+            {team_id: finalists[0], playoff_wins: 2, playoff_losses: 0, playoff_status: 6, year: year},
+            {team_id: finalists[1], playoff_wins: 1, playoff_losses: 1, playoff_status: 5, year: year},)
+        }
+      }
     })
     let new_bowl_wins = bowl_wins.filter(team => finalist_team_ids.includes(team.team_id)===false)
     let new_standings = Object.keys(standings_by_team_id).map(key => standings_by_team_id[key])
-    
     await db_helpers.updateBowlWins(knex, new_bowl_wins, new_playoff_teams, playoff_pull[0].sport_season_id)
 
     return new_standings

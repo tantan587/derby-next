@@ -78,7 +78,6 @@ const getSchedInfo = async (knex, sportName, api, promiseToGet, year, sport_seas
             teams[results[0]].playoff_status = 6
           }
           else{
-            console.log(results)
             teams[results[1]].playoff_status = 4
           }
         }

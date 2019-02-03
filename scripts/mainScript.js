@@ -83,7 +83,7 @@ const runUpdate = async () => {
     }
 
     case 'points': {
-      await scriptPoints.updatePoints(exitProcessInd)
+      await scriptPoints.updatePoints(exitProcessInd, arr[1])
       break
     }
 
