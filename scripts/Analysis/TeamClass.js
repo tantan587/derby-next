@@ -72,6 +72,30 @@ class Team {
         this.stdev_rank_above_average = {}
         this.overall_ranking = {}
         this.playoff_status = playoff_status
+        this.playoff_seed = 0
+        this.playoff_opponent = {name: 'NA'}
+        this.current_round = 0
+    }
+
+    printTeam(){
+        let result_for_print = ''
+        if(this.champions === 1){
+            result_for_print = 'won championship'
+        }else if(this.finalist === 1){
+            result_for_print = 'made finals'
+        }else if(this.playoff_appearances > 0){
+            result_for_print = 'made playoffs'
+        }else{
+            result_for_print = 'missed playoffs'
+        }
+        console.log(`${this.name} ${result_for_print}`)
+        let round = 1
+        this.playoff_wins.forEach(win_total => {
+            if(win_total > 0){
+                console.log(`Won ${win_total} games in round ${round}`)
+                round ++
+            }
+        })
     }
     
     addInitialRpiWL(wins,losses){

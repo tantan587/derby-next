@@ -46,13 +46,18 @@ const simulateAndFindSBTeams = (conference_teams, simulateHelpers) => {
 }
 
 //formula for NBA - if there will be tweaks, will add later - NHL playoffs work differently, with division winners having more importance
-const simulateNBAConferencePlayoffs = (conference, simulateHelpers) => {
-    let playoffs = conference.slice(0,8)
-    playoffs.forEach(team => {team.playoff_appearances++})
+const simulateNBAConferencePlayoffs = (conference, simulateHelpers, playoffsAlreadyStarted = false, starting_round = 1) => {
+    let playoffs
+    if(playoffsAlreadyStarted === false){
+        playoffs = conference.slice(0,8)
+        playoffs.forEach(team => {team.playoff_appearances++})
+    }else{
+        playoffs = conference
+    }
     let next_round = []
     let teams_remaining = playoffs.length
-    for(var round=1; round<4; round++){ //rounds
-        for(y=0; y<(teams_remaining/2); y++){
+    for(var round=starting_round; round<4; round++){ //rounds
+          for(y=0; y<(teams_remaining/2); y++){
             //console.log(playoffs.length)
             let a = playoffs.shift()
             let b = playoffs.pop()

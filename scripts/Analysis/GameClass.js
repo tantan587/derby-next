@@ -31,6 +31,10 @@ class Game{
         this.adjusted_impact = 0
         
     }
+
+    print_game(){
+        console.log(`${this.home.name} ${this.home_result}, ${this.away.name} ${this.away_result}`)
+    }
     
     play_game(){
     //need to add adjustment in this function for playoffs, neutral games

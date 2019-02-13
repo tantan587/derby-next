@@ -11,12 +11,14 @@ const randomSchedules = require('./randomSchedules.js')
 const math = require('mathjs')
 const updateProjections = require('./updateProjections')
 const fantasyHelpers = require('../../server/routes/helpers/fantasyHelpers')
-
+const findMissingElos = require('./findMissingElos')
+const midPlayoffSim = require('./playoffSim')
 
 //this is the overall simulate function - runs for each sport
 //eventually needs to add in how it detects if in the middle of a season
 async function simulate(exitProcess, simulations = 10000, all=false)
 {
+  await findMissingElos(knex)
   console.log('Simulation with ' + simulations + ' simulations')
   const sport_structures = await dbSimulateHelpers.getSportStructures(knex)
   const year_seasons = await dbSimulateHelpers.yearSeasonIds(knex)
@@ -32,14 +34,17 @@ async function simulate(exitProcess, simulations = 10000, all=false)
   /* this to be added back in later
   rpiHelpers.addRpiToTeamClass(knex,all_teams) */
   const games = await dbSimulateHelpers.createGamesArray(knex, all_teams,day_count)
-
+  const seasonData = await dbSimulateHelpers.findAllCurrentSeasonTypes(knex)
+  const seasonTypeIds = seasonData[0]
+  const playoffSeasonsInfo = seasonData[1]
+  const pastPlayoffGames = await dbSimulateHelpers.createPastGamesArrayWithScores(knex, all_teams, day_count, [3], playoffSeasonsInfo[0], playoffSeasonsInfo[1])
   //these are the functions for each individual season. 
-  const epl_teams = simulateEPL(games, all_teams, all_points, simulations)
-  const cfb_teams = simulateCFB(games, all_teams, all_points, simulations)
-  const mlb_teams = simulateProfessionalLeague(games, all_teams, '103', all_points, simulations)
-  const nba_teams = simulateProfessionalLeague(games, all_teams, '101', all_points, simulations)
-  const nfl_teams = simulateProfessionalLeague(games, all_teams, '102', all_points, simulations)
-  const nhl_teams = simulateProfessionalLeague(games, all_teams, '104', all_points, simulations)
+  const epl_teams = simulateEPL(games, all_teams, all_points, seasonTypeIds, simulations)
+  const cfb_teams = simulateCFB(games, all_teams, all_points, seasonTypeIds, simulations)
+  const mlb_teams = simulateProfessionalLeague(games, all_teams, '103', all_points, seasonTypeIds, simulations, pastPlayoffGames)
+  const nba_teams = simulateProfessionalLeague(games, all_teams, '101', all_points, seasonTypeIds, simulations, pastPlayoffGames)
+  const nfl_teams = simulateProfessionalLeague(games, all_teams, '102', all_points, seasonTypeIds, simulations, pastPlayoffGames)
+  const nhl_teams = simulateProfessionalLeague(games, all_teams, '104', all_points, seasonTypeIds, simulations, pastPlayoffGames)
   const cbb_teams = simulateCBB(games, all_teams, all_points, simulations)
   
   //team variables contain team projections as first object, game projections as second.
@@ -70,20 +75,22 @@ async function simulate(exitProcess, simulations = 10000, all=false)
 }
 
 //function which simulates NBA, NFL, NHL, MLB - default set to 10 for now to modify later
-const simulateProfessionalLeague = (all_games_list, teams, sport_id, points, simulations = 10) => {
+const simulateProfessionalLeague = (all_games_list, teams, sport_id, points, seasonTypeIds, simulations = 10, pastPlayoffGames) => {
   const years = Object.keys(teams[sport_id])
   let game_projections = []
   let all_seasons_sport_teams = []
   years.forEach(year => { 
     let sport_teams = simulateHelpers.individualSportTeamsWithYear(teams, sport_id, year)
-    if(seasonsFinished[sport_id][year]){
+    let currentSeasonId = seasonTypeIds[sport_id][year]
+    // if(seasonsFinished[sport_id][year]){
+    if(currentSeasonId === 4){
       sport_teams.forEach(team =>
       {
         team.reset()
         team.averages(1)
       })
       all_seasons_sport_teams.push(...sport_teams)}
-    else{
+    else if (currentSeasonId < 3){
       let sport_games = year in all_games_list[sport_id] ? all_games_list[sport_id][year] : createRandomGameSchedule(sport_id, year, teams)
 
       for(var x=0; x<simulations; x++){
@@ -91,19 +98,7 @@ const simulateProfessionalLeague = (all_games_list, teams, sport_id, points, sim
           //console.log(game)
           sport_id != '104' ? game.play_game(): game.play_NHL_game()
         })
-        sport_teams.sort(function(a,b){return b.wins-a.wins})
-        //find both finalists
-        let finalist_1 = playoffFunctions[sport_id](sport_teams.filter(team => team.conference === league_conference[sport_id][0]), simulateHelpers)
-        let finalist_2 = playoffFunctions[sport_id](sport_teams.filter(team => team.conference === league_conference[sport_id][1]), simulateHelpers)
-        let finalists = simulateHelpers.moreWins(finalist_1, finalist_2)
-        finalists.forEach(team=>{team.finalist++})
-        //finds champion. different for each sport because super bowl is neutral
-        let champion = sport_id === '102' ? simulateHelpers.Series(finalists[0], finalists[1],1, sport_id, 4, true):simulateHelpers.Series(finalists[0], finalists[1],7, sport_id, 4)
-        champion.champions++
-        //adjusts game by game impact, and update result with results of this sim
-        sport_games.forEach(game=>{
-          game.adjustImpact()
-        })
+        professionalPlayoffSimulation(sport_teams, sport_id, sport_games);
 
         //below is way to test how many games the team is playing, to test. Keeping it so can easily build and test for future.
         /*  sport_teams.forEach(team=>{
@@ -119,10 +114,43 @@ const simulateProfessionalLeague = (all_games_list, teams, sport_id, points, sim
       sport_teams.forEach(team => {
         team.averages(simulations)
       })
-      if(year in all_games_list[sport_id]){
-        game_projections.push(...simulateHelpers.createImpactArray(sport_games, sport_id, points))}
-      all_seasons_sport_teams.push(...sport_teams)
+      buildAllSeasonSportsTeams(year, all_games_list, sport_id, game_projections, sport_games, points, all_seasons_sport_teams, sport_teams);
       //return {...sport_teams}
+    }
+    else if(currentSeasonId == 3){
+      let playoff_teams = sport_teams.filter(team => {
+        return team.playoff_status > 2
+      })
+      let playoffsNotStarted = playoff_teams.every(team => {return team.playoff_wins === 0})
+      playoffsNotStarted  = true //this is not accurate - just as such so that it will work for now.
+      if(playoffsNotStarted){
+        for(var x=0; x<simulations; x++){
+          professionalPlayoffSimulation(sport_teams, sport_id, sport_games)
+          sport_teams.forEach(team => {team.reset()})
+        }
+        sport_teams.forEach(team => {
+          team.averages(simulations)
+        })
+        buildAllSeasonSportsTeams(year, all_games_list, sport_id, game_projections, sport_games, points, all_seasons_sport_teams, sport_teams);
+      }
+      else{
+        let sport_past_playoff_games = pastPlayoffGames[sport_id]
+        for(var x=0; x<simulations; x++){
+          let finalists = midPlayoffSim[sport_id](playoff_teams, sport_playoff_games, all_games_list[sport_id][year], simulateHelpers, playoffFunctions)
+          professionPlayoffChampionshipSimulation(finalists[0], finalists[1], sport_id)
+          sport_teams.forEach(team => {team.reset()})
+        }
+        sport_teams.forEach(team => {
+          team.averages(simulations)
+        })
+        buildAllSeasonSportsTeams(year, all_games_list, sport_id, game_projections, sport_games, points, all_seasons_sport_teams, sport_teams);
+        //need to fill in formula for what to do when playoffs are ongoing
+        /*
+        for each sport: need to pull schedule to find out where the standings are right now
+        after pulling the schedule, need to simulate from that point
+
+        */
+      }
     }
   })
 
@@ -132,20 +160,21 @@ const simulateProfessionalLeague = (all_games_list, teams, sport_id, points, sim
 }
 
 //function to simulate CFB - also figures out most likely playoff teams using formula
-const simulateCFB = (all_games_list, teams, points, simulations = 10) => {
+const simulateCFB = (all_games_list, teams, points, seasonTypeIds, simulations = 10) => {
   const years = Object.keys(teams['105'])
   let game_projections = []
   let all_seasons_cfb_teams = []
   years.forEach(year => { 
     let cfb_teams = simulateHelpers.individualSportTeamsWithYear(teams, '105', year)
-    if(seasonsFinished[105][year]){
+    let currentSeasonId = seasonTypeIds['105'][year]
+    if(currenSeasonId === 4){
       cfb_teams.forEach(team =>{
         team.reset()
         team.averages(1)
       })
       all_seasons_cfb_teams.push(...cfb_teams)
     }
-    else{
+    else if (currentSeasonId<3){
     //need to build in functionality to randomize college football schedule, and insert that below
       let cfb_games = year in all_games_list['105'] ? all_games_list['105'][year] : all_games_list['105'][year-1]
       for(var x=0; x<simulations; x++){
@@ -206,6 +235,9 @@ const simulateCFB = (all_games_list, teams, points, simulations = 10) => {
         game_projections.push(...simulateHelpers.createImpactArray(cfb_games, '105', points))
       }
       all_seasons_cfb_teams.push(...cfb_teams)
+    }
+    else if (currentSeasonId == 3){
+
     } 
   })
   //creates game projections for impact, and also calculating each temas iwnning percentage
@@ -377,6 +409,7 @@ const league_conference = {
 }
 
 const createRandomGameSchedule = (sport_id, year, all_teams) => {
+  console.log(sport_id)
   let sportRandom = randomSchedules.randomScheduleBySportID[sport_id].random(all_teams[sport_id][year])
   let fake_global = 1
   let game_list = sportRandom.map(game => {
@@ -390,12 +423,40 @@ const createRandomGameSchedule = (sport_id, year, all_teams) => {
 const seasonsFinished = {
   101: {2018: true, 2019: false}, 
   102: {2017: true, 2018: false}, 
-  103: {2018: false, 2019: false},
+  103: {2018: true, 2019: false},
   104: {2018: true, 2019: false}, 
-  105: {2017: true, 2018: false},
+  105: {2017: true, 2018: true},
   106: {2018: true, 2019: false},
   107: {2018: true, 2019: false}
 }
 
 module.exports = {simulate}
+
+function buildAllSeasonSportsTeams(year, all_games_list, sport_id, game_projections, sport_games, points, all_seasons_sport_teams, sport_teams) {
+  if (year in all_games_list[sport_id]) {
+    game_projections.push(...simulateHelpers.createImpactArray(sport_games, sport_id, points));
+  }
+  all_seasons_sport_teams.push(...sport_teams);
+
+}
+
+function professionalPlayoffSimulation(sport_teams, sport_id, sport_games) {
+  sport_teams.sort(function (a, b) { return b.wins - a.wins; });
+  //find both finalists
+  let finalist_1 = playoffFunctions[sport_id](sport_teams.filter(team => team.conference === league_conference[sport_id][0]), simulateHelpers);
+  let finalist_2 = playoffFunctions[sport_id](sport_teams.filter(team => team.conference === league_conference[sport_id][1]), simulateHelpers);
+  professionalPlayoffChampionshipSimulation(finalist_1, finalist_2, sport_id);
+  //adjusts game by game impact, and update result with results of this sim
+  sport_games.forEach(game => {
+    game.adjustImpact();
+  });
+}
+
+function professionPlayoffChampionshipSimulation(finalist_1, finalist_2, sport_id) {
+  let finalists = simulateHelpers.moreWins(finalist_1, finalist_2);
+  finalists.forEach(team => { team.finalist++; });
+  //finds champion. different for each sport because super bowl is neutral
+  let champion = sport_id === '102' ? simulateHelpers.Series(finalists[0], finalists[1], 1, sport_id, 4, true) : simulateHelpers.Series(finalists[0], finalists[1], 7, sport_id, 4);
+  champion.champions++;
+}
 

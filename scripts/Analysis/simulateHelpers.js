@@ -8,12 +8,12 @@ const individualSportTeamsWithYear = (all_teams, sport_id, year) => {
   }
 
 //Function to simulate an entire series - round is what round of the playoffs this is (1,2,3, etc.)
-const Series = (home, away, games, sport_id, round, neutral=false) => {
+const Series = (home, away, games, sport_id, round, neutral=false, games_played = 0) => {
     round--
     let clinch = Math.ceil(games/2)
     let homeGames = [0,1,4,6]
     let roadGames = [2,3,5]
-    let x = 0
+    let x = games_played
     while(home.playoff_wins[round] < clinch && away.playoff_wins[round] < clinch){
         let results = homeGames.includes(x) ? simulateGame(home, away, sport_id, neutral, true):simulateGame(away, home, sport_id, neutral, true)
         results[0].playoff_wins[round]++
