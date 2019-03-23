@@ -1,7 +1,8 @@
 const path = require('path')
 const glob = require('glob')
+const withTypescript = require('@zeit/next-typescript')
 
-module.exports = {
+module.exports = withTypescript({
   webpack: (config) => {
     config.module.rules.push(
       {
@@ -35,4 +36,4 @@ module.exports = {
     config.externals.push('fs')
     return config
   }
-}
+})

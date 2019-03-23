@@ -321,31 +321,47 @@ const handleJoinErrorsAndGetInfo= async (req) => {
     knex.raw(str)
       .then(result =>
       {
-        if (result.rows[0].leagueexists === '0') 
-        {
-          errorText.addError(C.PAGES.JOIN_LEAGUE,'Can not find this league')
-        }
-        else if (result.rows[0].leagueexists === '1' && result.rows[0].passconfirm === '0') 
-        {
-          errorText.addError(C.PAGES.JOIN_LEAGUE,'password does not match')
-        }
-        else if (league_info.total_enrolled === league_info.max_owners) 
-        {
-          errorText.addError(C.PAGES.JOIN_LEAGUE,'This league is already full')
-        }
-        else if (result.rows[0].leagueexists === '1' && result.rows[0].joined === '1') 
-        {
-          errorText.addError(C.PAGES.JOIN_LEAGUE,'You\'ve already joined this league')
-        }
-        if (errorText.foundError()) {
-          reject({
-            type: C.JOIN_LEAGUE_FAIL,
-            error: errorText})
-        }
-        else
-        {
-          resolve(league_info)
-        }
+        // Looking for users that are not confirmed yet that have been invited in the league, 
+        // if there is a user, and username and password is right, resolve with is_invited to true
+        knex('fantasy.owners')
+        .select('*')
+        .whereNot('status', 'confirmed')
+        .andWhere({
+          league_id: league_info.league_id,
+          user_id: req.user.user_id,
+        })
+        .returning('*')
+        .then(([owner]) => {
+          if (result.rows[0].leagueexists === '0') 
+          {
+            errorText.addError(C.PAGES.JOIN_LEAGUE,'Can not find this league')
+          }
+          else if (result.rows[0].leagueexists === '1' && result.rows[0].passconfirm === '0') 
+          {
+            errorText.addError(C.PAGES.JOIN_LEAGUE,'password does not match')
+          }
+          else if (league_info.total_enrolled === league_info.max_owners) 
+          {
+            errorText.addError(C.PAGES.JOIN_LEAGUE,'This league is already full')
+          }
+          else if (result.rows[0].leagueexists === '1' && result.rows[0].joined === '1') 
+          {
+            console.log('owner is here', owner, league_info, req.user)
+            if (owner) {
+              return resolve({...league_info, is_invited: true})
+            }
+            errorText.addError(C.PAGES.JOIN_LEAGUE,'You\'ve already joined this league')
+          }
+          if (errorText.foundError()) {
+            reject({
+              type: C.JOIN_LEAGUE_FAIL,
+              error: errorText})
+          }
+          else
+          {
+            resolve(league_info)
+          }  
+        })
       })
   })
 }
