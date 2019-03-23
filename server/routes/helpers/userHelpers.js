@@ -13,13 +13,19 @@ module.exports.getByEmail = (email) => knex('users.users')
   .where('email', email)
   .first()
 
+module.exports.isEmailInLeague = (league_id,email) => knex('fantasy.owners')
+  .join('users.users', 'fantasy.owners.user_id', 'users.users.user_id')
+  .where('fantasy.owners.league_id', league_id)
+  .andWhere('users.users.email', email)
+
 module.exports.isVerified = (user_id) => knex('users.users')
   .select('expires_at', 'verified', 'number_of_tries')
   .where('user_id', user_id)
   .first()
 
 module.exports.verify = (user_id, verification_code) => knex('users.users')
-  .whereRaw("expires_at > NOW()")
+  .whereRaw(`
+  expires_at > NOW()`)
   .andWhere('verified', false)
   .andWhere('user_id', user_id)
   .increment('number_of_tries', 1)
@@ -40,7 +46,8 @@ module.exports.resendEmail = (user_id) => knex('users.users')
   .where({user_id, verified: false})
   .update({
     verification_code: Math.floor(1000 + Math.random() * 9000),
-    expires_at: knex.raw("now() + INTERVAL '24 hours'"),
+    expires_at: knex.raw(`
+    now() + INTERVAL '24 hours'`),
     number_of_tries: 0,
   })
   .returning('*')

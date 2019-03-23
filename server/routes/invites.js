@@ -146,33 +146,43 @@ router.post('/invites', (req, res) => {
 
 router.post('/v2/invites', (req, res) => {
   const {email, league_id} = req.body
-  return userHelpers.getByEmail(email)
-    .then((user) => {
-      if (user) {
-        const invite_id = v4()
-        const from_id = req.user.user_id
-        const status = 'not_invited'
-        return knex('fantasy.invites')
-          .insert({
-            invite_id,
-            league_id,
-            from_id,
-            email,
-            status,
+  return userHelpers.isEmailInLeague(league_id,email)
+    .then((isInLeague) => {
+      console.log(isInLeague)
+      if (isInLeague.length > 0)
+      {
+        return res.status(401).json({code: 401, message: 'Bad Request'})
+      }
+      else {
+        return userHelpers.getByEmail(email)
+          .then((user) => {
+            if (user) {
+              const invite_id = v4()
+              const from_id = req.user.user_id
+              const status = 'not_invited'
+              return knex('fantasy.invites')
+                .insert({
+                  invite_id,
+                  league_id,
+                  from_id,
+                  email,
+                  status,
+                })
+                .returning('*')
+                .then(([invite]) => getInviteJSONv2(invite).then(res.json.bind(res)))
+                .catch((err) => {
+                  console.error(err)
+                  return res.status(422).json({code: 422, message: 'Unprocessable Entity'})
+                })
+            } else {
+              return res.status(400).json({code: 400, message: 'Bad Request'})
+            }
           })
-          .returning('*')
-          .then(([invite]) => getInviteJSONv2(invite).then(res.json.bind(res)))
           .catch((err) => {
             console.error(err)
-            return res.status(422).json({code: 422, message: 'Unprocessable Entity'})
+            return res.status(500).json({code: 500, message: 'Internal Server Error'})
           })
-      } else {
-        return res.status(400).json({code: 400, message: 'Bad Request'})
       }
-    })
-    .catch((err) => {
-      console.error(err)
-      return res.status(500).json({code: 500, message: 'Internal Server Error'})
     })
 })  
 
@@ -275,12 +285,18 @@ router.delete('/invites/:invite_id', (req, res) => {
     })
 })
 
-router.delete('/v2/invites/bulk', (req, res) => {
+router.delete('/v2/invites/bulk', async (req, res) => {
   const {emails, invite_ids} = req.body
+  
+  let resp = await knex('fantasy.owners').whereIn('owner_id', invite_ids).select('commissioner')
+  if (resp.some(x => x.commissioner == true))
+  {
+    return res.status(400).json({code: 400, message: 'Bad Request'})
+  }
   return Promise.all([
-      knex('fantasy.owners').whereIn('owner_id', invite_ids).del().returning('*').map(R.prop('owner_id')),
-      knex('fantasy.invites').whereIn('email', emails).del().returning('*').map(R.prop('invite_id')),
-    ])
+    knex('fantasy.owners').whereIn('owner_id', invite_ids).del().returning('*').map(R.prop('owner_id')),
+    knex('fantasy.invites').whereIn('email', emails).del().returning('*').map(R.prop('invite_id')),
+  ])
     .then(([deletedOwners, deletedInvites]) => {
       return res.json([...deletedOwners, ...deletedInvites])
     })

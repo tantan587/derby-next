@@ -76,11 +76,14 @@ class ManageEmails extends Component {
     const selected_invites = R.keys(R.filter(R.equals(true), this.state.selected_invites))
     const emails = R.pipe(R.props(selected_invites), R.map(R.prop('email')))(this.props.invites.data)
     return this.props.deleteInviteBulk({emails, invite_ids: selected_invites})
-    // R.pipe(
-    //   R.map(this.props.deleteInvite),
-    //   Promise.all.bind(Promise),
-    // )(selected_invites)
-    //   .then(() => this.setState(resetSelectedInvites))
+      .then(() => {
+        if (this.props.invites.error) {
+          if (this.props.invites.error.code === 400) {
+            this.props.clearInviteError()
+            alert('You can not remove the commissioner (yourself) from the league.')
+          }
+        }
+      })
   }
 
   onInputChange(e) {
@@ -94,14 +97,18 @@ class ManageEmails extends Component {
     const invitePayload = {...this.state.form, league_id: this.props.activeLeague.league_id}
 
     this.props.createInvite(invitePayload)
-    .then(() => {
-      if (this.props.invites.error) {
-        if (this.props.invites.error.code === 400) {
-          this.props.clearInviteError()
-          this.onCreateInviteSignup(confirm('User is not currently registered. Do you want to send them an invite?'))  
+      .then(() => {
+        if (this.props.invites.error) {
+          if (this.props.invites.error.code === 400) {
+            this.props.clearInviteError()
+            this.onCreateInviteSignup(confirm('User is not currently registered. Do you want to send them an invite?'))  
+          }
+          if (this.props.invites.error && this.props.invites.error.code === 401) {
+            this.props.clearInviteError()
+            alert('User is already enrolled in league')
+          }
         }
-      }
-    })
+      })
   }
 
   onCreateInviteSignup = (shouldSendInvite) => {
@@ -109,12 +116,12 @@ class ManageEmails extends Component {
     if (shouldSendInvite) {
       this.props.createInviteSignup(invitePayload)
         .then(() => {
-           if (this.props.invites.error) {
-             if (this.props.invites.error.code === 422) {
-               this.props.clearInviteError()
-               alert('You have already invited this user.')
-             }
-           }
+          if (this.props.invites.error) {
+            if (this.props.invites.error.code === 422) {
+              this.props.clearInviteError()
+              alert('You have already invited this user.')
+            }
+          }
         })
     }
   }
@@ -130,7 +137,8 @@ class ManageEmails extends Component {
     const members = R.values(R.filter(R.propEq('league_id', activeLeague.league_id), (invites.data || {})))
 
     const inviteCopy = 'Invite members to join your league by adding their names to the Member List. Emailing them an invitation will send them a unique link and password along with instructions on how to join your league.'
-    const settingsCopy = 'Your League is set for 10 Members. You can edit the number of league members in "Draft Info" tab above.'
+    const settingsCopy = `Your League is set for ${activeLeague.max_owners} Members. 
+    You can edit the number of league members in "Draft Info" tab above.`
 
     return (
       <div className={classes.root}>
@@ -151,6 +159,7 @@ class ManageEmails extends Component {
             <Grid item xs={12} sm={12} md={8} lg={8} className={classes.item}>
               <ManageTable
                 members={members}
+                maxOwners={activeLeague.max_owners}
                 selectedInvites={this.state.selected_invites}
                 onCheckboxChange={this.onCheckboxChange}
                 onEmailInviteClick={this.onEmailInviteClick}

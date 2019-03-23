@@ -9,8 +9,8 @@ const styles = theme => ({
   },
   header: {
     display: 'flex',
-    justifyContent: 'space-between',
-    padding: '11px 11px 4px 11px',
+    justifyContent: 'flex-start',
+    padding: '11px 21px 4px 11px',
     fontSize: 10,
     fontWeight: 500
   },
@@ -23,8 +23,10 @@ const styles = theme => ({
     }
   },
   tableRow: {
+
     display: 'flex',
-    justifyContent: 'space-between',
+    paddingRight:10,
+    justifyContent: 'flex-start',
     width: '100%',
     overflow: 'hidden',
     height: 35,
@@ -61,38 +63,46 @@ const determineStatus = (member) => {
   } else return null
 }
 
-const ManageTable = withStyles(styles)(({ classes, selectedInvites, members, onCheckboxChange, onEmailInviteClick, onRemoveOwnerClick }) =>
+const ManageTable = withStyles(styles)(({ 
+  classes, selectedInvites, members, maxOwners,  onCheckboxChange, onEmailInviteClick, onRemoveOwnerClick }) =>
   <div>
     <div className={classes.title}>Member List</div>
     <div style={{ overflowX: 'scroll' }}>
       <div className={classes.tableSize}>
         <div className={classes.header}>
-          <div style={{ flex: 5, marginLeft: 12, position: 'relative', left: 20 }}>Email</div>
-          <div style={{ flex: 5 }}>Username</div>
-          <div style={{ flex: 3 }}>Status</div>
-          <div style={{ flex: 1 }}>Select</div>
+          <div style={{ flex:  1, textAlign:'center' }}></div>
+          <div style={{ flex: 5, textAlign:'center' }}>Email</div>
+          <div style={{ flex: 5, textAlign:'center' }}>Username</div>
+          <div style={{ flex: 3, textAlign:'center'   }}>Status</div>
+          <div style={{ flex: 1, textAlign:'center', marginRight:0 }}>Select</div>
         </div>
         <div className={classes.tableBody}>
           {
-            members.map((member, idx) => <div key={idx} className={classes.tableRow}>
-              <div style={{ display: 'flex', flex: 5, marginLeft: 12 }}>
-                <div style={{ fontWeight: 600, width: 20 }}>{`${idx + 1}.`}</div>
-                <div>{ R.has('email')(member) && member.email }</div>
-              </div>
-              <div style={{ flex: 5 }}>
-                {R.has('username')(member) && member.username}
-              </div>
-              <div style={{ flex: 3, color: statusColors[member.status] }}>
-                { determineStatus(member) }
-              </div>
-              <div style={{ flex: 1 }}>
-                <DerbyCheckbox
-                  onClick={onCheckboxChange}
-                  state={member}
-                  checked={!!selectedInvites[member.invite_id]}
-                />
-              </div>
-            </div>)
+            Array.from(new Array(maxOwners),(val,index)=>index).map(idx => 
+            {
+              let member = members[idx]
+              return ( <div key={idx} className={classes.tableRow}>
+                <div style={{ flex: 1, textAlign:'center'  }}>
+                  {`${idx + 1}`}
+                </div>
+                <div style={{ flex: 5, textAlign:'center'  }}>
+                  {member && (R.has('email')(member) && member.email) }
+                </div>
+                <div style={{ flex: 5, textAlign:'center'  }}>
+                  {member && R.has('username')(member) && member.username}
+                </div>
+                <div style={{ flex: 3, textAlign:'center' , color: member && statusColors[member.status] }}>
+                  { member && determineStatus(member) } 
+                </div>
+                <div style={{ flex: 1, marginRight:-14 }}>
+                  {member &&
+                  <DerbyCheckbox
+                    onClick={onCheckboxChange}
+                    state={member}
+                    checked={!!selectedInvites[member.invite_id]}
+                  /> }
+                </div>
+              </div>)})
           }
           <div className={classes.buttons}>
             <StyledButton
