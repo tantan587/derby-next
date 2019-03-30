@@ -8,12 +8,12 @@ import teamsReducer from './teamsReducer'
 import userReducer from './userReducer'
 import draftReducer from './draftReducer'
 import dialogReducer from './dialogReducer'
+import draftRefReducer from './draftRefReducer'
 import oneTeamReducer from './oneTeamReducer'
 import updateTimeReducer from './updateTimeReducer'
 import liveGamesReducer from './liveGamesReducer'
 import contentFilterReducer from './contentFilterReducer'
 import sportSeasonsReducer from './sportSeasonsReducer'
-
 export default combineReducers({
   activeLeague: activeLeagueReducer,
   leagues: leaguesReducer,
@@ -24,6 +24,7 @@ export default combineReducers({
   user: userReducer,
   draft: draftReducer,
   teamsDialog: dialogReducer,
+  draftRefDialog: draftRefReducer,
   oneTeam : oneTeamReducer,
   updateTime : updateTimeReducer,
   liveGames : liveGamesReducer,

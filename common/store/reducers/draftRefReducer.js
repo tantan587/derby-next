@@ -6,11 +6,11 @@ const initialState = {
 
 export default (state = initialState, action = { type: null }) => {
   switch (action.type) {
-  case C.OPEN_DIALOG:
+  case C.OPEN_DRAFT_REF:
     return {
       open: true
     }
-  case C.CLOSE_DIALOG:
+  case C.CLOSE_DRAFT_REF:
     return {
       open: false,
     }

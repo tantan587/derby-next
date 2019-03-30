@@ -13,6 +13,7 @@ import DraftOrder from './DraftOrder'
 import DraftQueue from './DraftQueue'
 import CenteredTabs from './CenteredTabs'
 import Title from '../Navigation/Title'
+import DraftRefDialog from '../DraftRefDialog/DraftRefDialog'
 import {clickedEnterDraft,
   handleStartDraft,
   handleSetDraftMode,
@@ -21,6 +22,10 @@ import {clickedEnterDraft,
   handleRecieveMessage,
   handleRollback,
   handleToggleAutoDraft} from '../../actions/draft-actions'
+import {
+  handleOpenDraftRef,
+  handleCloseDraftRef
+} from '../../actions/draftRef-actions'
 import { connect } from 'react-redux'
 import Divider from '@material-ui/core/Divider'
 import Chat from './Chat'
@@ -330,17 +335,19 @@ class DraftContainer extends React.Component {
     return (
 
       <div className={classes.root}>
+        {console.log('where am I?')}
+        <DraftRefDialog />
         <Title backgroundColor='#EBAB38'
           color='white'
           title={'Live Draft - ' + activeLeague.league_name }
-          button={{ text: 'Draft Reference Guide', onClick: () => console.log('hello') }}
+          button={{ text: 'Draft Reference Guide', onClick: this.props.onOpenDraftRef }}
         />
-        <Grid container spacing={24} >
+         <Grid container spacing={24} >
           <Grid item xs={12}>
             <div className={classes.paper}>
               <Grid container alignItems={'stretch'} direction='row' style={{height:'100%'}}>
                 <Grid item xs={12} sm={2}
-                  style={{backgroundColor:'black'}}>
+                  stsyle={{backgroundColor:'black'}}>
                   <Grid container direction={'column'}>
                     <Grid item xs={12} style={{backgroundColor:'black'}}>
                       <Countdown
@@ -446,8 +453,6 @@ class DraftContainer extends React.Component {
                     <Grid item xs={12}>
                       <div style={{height:300, maxHeight:300}}>
                         <div style={{color:'white'}}>
-
-                          {/* //viewBox="0 -10 24 34" style={{width:24,height:34}}/> */}
                         </div>
                         <img src={'/static/icons/Derby_Chat_Bubble.svg'} viewBox="0 -10 24 64" style={{marginTop:5, width:24,height:20}}/>
                         <Typography key={'head'} variant='subheading'
@@ -464,7 +469,7 @@ class DraftContainer extends React.Component {
               </Grid>
             </div>
           </Grid>
-        </Grid>
+        </Grid> 
         <SimpleSnackbar open={snackbarOpen} message={snackbarMessage} handleClose={this.onSnackbarClose}/>
         <br/>
         <br/>
@@ -491,5 +496,6 @@ export default R.compose(
       onClickedLeague: clickedLeague,
       onRollback: handleRollback,
       onToggleAutoDraft : handleToggleAutoDraft,
+      onOpenDraftRef: handleOpenDraftRef
     }),
 )(DraftContainer)

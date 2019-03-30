@@ -80,7 +80,7 @@ class TeamsDialog extends Component {
       oneTeam.record = team.wins + '-' + team.losses + (team.ties > 0 ? '-' + team.ties : '')
       oneTeam.projected = Math.round(team.projected.wins) + '-' + Math.round(team.projected.losses) + (team.projected.ties > 0 ? '-' + Math.round(team.projected.ties) : '')
     }
-
+    console.log('am I rendered?')
     return (open && lastFive && nextFive ?
       <Dialog
         open={open}
