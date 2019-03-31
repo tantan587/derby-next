@@ -4,11 +4,12 @@ import sportLeagues from '../../../data/sportLeagues.json'
 class SportIcon extends React.Component {
 
   render() {
-    const {sportId, color, style} = this.props
+    const {sportId, color, iconColor, style} = this.props
     let sportLeague = sportLeagues[sportId]
     return (
       <SportIconSvg 
-        color={color ? color : 'white'} 
+        color={ iconColor ? iconColor :
+          color ? color : 'white' } 
         pattern={sportLeague.srcStr}
         style={style}
         viewBox={sportLeague.viewBox}

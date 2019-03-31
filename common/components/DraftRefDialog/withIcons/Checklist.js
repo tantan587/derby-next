@@ -42,23 +42,24 @@ const Checklist = ({ classes }) => {
       <Grid container alignItems="flex-end">
         <Grid item xs={12} sm={12} md={2} lg={2} className={classes.title}>Roster Checklist</Grid>
         <Grid item xs={12} sm={6} md={2} lg={2} className={classes.iconGrid}>
-          <SportIconText sportId={102} text={['NFL', 'NFC']} style={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }} />
-          <SportIconText sportId={102} text={['NFL', 'AFC']} style={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }} />
-          <SportIconText sportId={101} text={['NBA', 'WEST']} style={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }} />
+          <SportIconText sportId={102} text={['NFL', 'NFC']} iconColor="#666666" />
+          <SportIconText sportId={102} text={['NFL', 'AFC']} iconColor="#666666" />
+          <SportIconText sportId={101} text={['NBA', 'WEST']} iconColor="#666666" />
         </Grid>
         <Grid item xs={12} sm={6} md={2} lg={2} className={classes.iconGrid}>
-          <SportIconText sportId={101} text={['NBA', 'EAST']} style={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }} />
-          <SportIconText sportId={103} text={['MLB', 'NL']} style={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }} />
-          <SportIconText sportId={103} text={['MLB', 'AL']} style={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }} />
+          <SportIconText sportId={101} text={['NBA', 'EAST']} iconColor="#666666" />
+          <SportIconText sportId={103} text={['MLB', 'NL']} iconColor="#666666" />
+          <SportIconText sportId={103} text={['MLB', 'AL']} iconColor="#666666" />
         </Grid>
         <Grid item xs={12} sm={6} md={2} lg={2} className={classes.iconGrid}>
-          <SportIconText sportId={104} text={['NHL', 'WEST']} style={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }} />
-          <SportIconText sportId={104} text={['NHL', 'EAST']} style={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }} />
-          <SportIconText sportId={107} text={['EPL', 'SOCCER']} style={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }} />
+          <SportIconText sportId={104} text={['NHL', 'WEST']} iconColor="#666666" />
+          <SportIconText sportId={104} text={['NHL', 'EAST']} iconColor="#666666" />
+          <SportIconText sportId={107} text={['EPL', 'SOCCER']} iconColor="#666666" />
         </Grid>
         <Grid item xs={12} sm={6} md={2} lg={2} className={classes.iconGrid}>
           <SportIconTriple
             sportId={106}
+            iconColor="#666666"
             text={
               window.innerHeight > 1500 ?
               ["NCAAM BASKETBALL from", "10 MAJOR CONFERENCES"] :
@@ -69,6 +70,7 @@ const Checklist = ({ classes }) => {
         <Grid item xs={12} sm={6} md={2} lg={2} className={classes.iconGrid}>
           <SportIconTriple
             sportId={105}
+            iconColor="#666666"
             text={
               window.innerHeight > 1500 ?
               ["NCAAM FOOTBALL from", "10 MAJOR CONFERENCES"] :

@@ -30,17 +30,17 @@ const StyledDiv = ({ children }) =>
     {children}
   </div>
 
-const SportIconTriple = ({ sportId, text, color, classes, style }) =>
+const SportIconTriple = ({ sportId, text, color, iconColor, classes, style }) =>
   <div className={classes.container}>
     <div className={classes.icons}> 
       <StyledDiv>
-        <SportIcon color={color ? color : 'white'} sportId={sportId} />
+        <SportIcon color={color ? color : 'white'} iconColor={iconColor} sportId={sportId} />
       </StyledDiv>
       <StyledDiv>
-        <SportIcon color={color ? color : 'white'} sportId={sportId} />
+        <SportIcon color={color ? color : 'white'} iconColor={iconColor} sportId={sportId} />
       </StyledDiv>
       <StyledDiv>
-        <SportIcon color={color ? color : 'white'} sportId={sportId} />
+        <SportIcon color={color ? color : 'white'} iconColor={iconColor} sportId={sportId} />
       </StyledDiv>
     </div>
     <SportText text={text} sportId={sportId} color={color}/>

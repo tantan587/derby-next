@@ -10,6 +10,7 @@ import { withStyles } from '@material-ui/core/styles'
 import CloseIcon from '@material-ui/icons/Close'
 import { handleCloseDraftRef } from '../../actions/draftRef-actions'
 import { organizeData } from './tableData'
+import SportIconText from '../Icons/SportIconText'
 import Checklist from './withIcons/Checklist'
 
 const styles = theme => ({
@@ -151,18 +152,58 @@ class TeamsDialog extends Component {
           </Grid>
           <div className={H2}>Who do I need to draft?</div>
           <div className={H3}>H3 Subheadline</div>
-           <div>30 pixel padding on photo. Text wraps around photos. Paragraph Style -- Once the draft slot is full the team will be ckecked off the Roster Checklist</div>
-           <div className={H2}>How are points calulated?</div>
-           <div className={H3}>H3 Subheadline</div>
+          <div>30 pixel padding on photo. Text wraps around photos. Paragraph Style -- Once the draft slot is full the team will be ckecked off the Roster Checklist</div>
+          <div className={H2}>How are points calulated?</div>
+          <div className={H3}>H3 Subheadline</div>
           <div>30 pixel padding on photo. Text wraps around photos. Paragraph Style -- Once the draft slot is full the team will be ckecked off the Roster Checklist Lorem ipsum dolor sit clicking the "x" to the right of</div>    
           <div className={H2}>Who do I need to draft?</div>
           <div className={H3}>H3 Subheadline</div>
-           <div>30 pixel padding on photo. Text wraps around photos. Paragraph Style -- Once the draft slot is full the team will be ckecked off the Roster Checklist</div>
-           <div className={H2}>How are points calulated?</div>
-           <div className={H3}>H3 Subheadline</div>
+          <div>30 pixel padding on photo. Text wraps around photos. Paragraph Style -- Once the draft slot is full the team will be ckecked off the Roster Checklist</div>
+          <div className={H2}>How are points calulated?</div>
+          <div className={H3}>H3 Subheadline</div>
           <div>30 pixel padding on photo. Text wraps around photos. Paragraph Style -- Once the draft slot is full the team will be ckecked off the Roster Checklist Lorem ipsum dolor sit clicking the "x" to the right of</div>    
         {/* Icons section here */}
           <Checklist />
+          <div className={H2}>How are points calulated?</div>
+          <div className={H3}>H3 Subheadline</div>
+          <div>30 pixel padding on photo. Text wraps around photos. Paragraph Style -- Once the draft slot is full the team will be ckecked off the Roster Checklist Lorem ipsum dolor sit clicking the "x" to the right of</div>    
+          
+          
+          
+          <div style={{
+            display: 'flex',
+            flexFlow: 'row wrap',
+            justifyContent: 'center'
+          }}>
+            {
+              [[101, 'NFL', 100],
+               [102, 'NBA', 100],
+               [103, 'MLB', 100],
+               [104, 'NHL', 100],
+               [105, 'EPL', 100],
+               [106, 'NCAAM BASKETBALL', 100],
+               [107, 'NCAAM FOOTBALL', 100]]
+              .map(
+                data => <SportIconText
+                  idx={data[0]}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'flex-end',
+                    width: 140,
+                    margin: 5
+                  }}
+                  sportId={data[0]}
+                  text={[data[1], `${data[2]} points per win`]}
+                  color="#666666"
+                />
+              )
+            }
+          </div>
+
+
+
         </div>
         </DialogContent>
       </Dialog>

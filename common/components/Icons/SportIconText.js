@@ -11,7 +11,7 @@ const styles = theme => ({
 class SportIconText extends React.Component {
 
   render() {
-    const {sportId, color, text, style} = this.props
+    const {sportId, color, iconColor, text, style} = this.props
     return (
      
       sportId === 'All' || sportId === 'My Teams' ? 
@@ -23,12 +23,19 @@ class SportIconText extends React.Component {
           Teams
           </Typography>  
         </div>
-        : <div style={{ width:80, ...style}}> 
-          <SportIcon 
+        : <div
+            style={{
+              width:80,
+              ...{ display: 'flex', alignItems: 'center', flexDirection: 'column' },
+              ...style
+            }}
+          > 
+          <SportIcon
+            iconColor={iconColor}
             color={color ? color : 'white'} 
             sportId={sportId}
           />
-          <SportText text={text} sportId={sportId} color={color}/>
+          <SportText text={text} sportId={sportId} color={color} />
         </div>
       
     )
