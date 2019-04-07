@@ -54,7 +54,7 @@ const runUpdate = async () => {
 
     case 'playoff_schedule': //playoff schedule
     {
-      await script1.createSchedule(exitProcessInd)
+      await script1.createSchedule(exitProcessInd, arr[1])
       break
     }
     case 'schedule': //regular schedule
@@ -64,12 +64,12 @@ const runUpdate = async () => {
     }
     case 'playoff_standings':
     {
-      await script3.createStandingsPO(exitProcessInd)
+      await script3.createStandingsPO(exitProcessInd, arr[1])
       break
     }
     case 'standings':
     {
-      await script4.updateStandings(exitProcessInd)
+      await script4.updateStandings(exitProcessInd, arr[1])
       break
     }
     //'active':
@@ -83,7 +83,7 @@ const runUpdate = async () => {
     }
 
     case 'points': {
-      await scriptPoints.updatePoints(exitProcessInd)
+      await scriptPoints.updatePoints(exitProcessInd, arr[1])
       break
     }
 

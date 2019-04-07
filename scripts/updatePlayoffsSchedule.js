@@ -57,6 +57,39 @@ const getSchedInfo = async (knex, sportName, api, promiseToGet, year, sport_seas
       schedInfo = db_helpers.createScheduleForInsert(cleanSched, sport_id, idSpelling, teamIdMap, fantasyHelpers, myNull, sport_json, sport_season_id)
     }
 
+    if(sportName === 'NFL'){
+      let teams = {}
+      cleanSched.forEach(game => {
+        let home_team_id = teamIdMap[game['GlobalHomeTeam' + idSpelling]]
+        let away_team_id = teamIdMap[game['GlobalAwayTeam' + idSpelling]]
+        if(!(home_team_id in teams)){
+          teams[home_team_id] = {team_id: home_team_id, playoff_status: 3, year: year, sport_season_id: sport_season_id}
+        }
+        if(!(away_team_id in teams)){
+          teams[away_team_id] = {team_id: away_team_id, playoff_status: 3, year: year, sport_season_id: sport_season_id}
+        }
+        let results = game.HomeScore > game.AwayScore ? [home_team_id, away_team_id] : [away_team_id, home_team_id]
+        if(game.Week === 4){
+          teams[home_team_id].playoff_status = 5
+          teams[away_team_id].playoff_status = 5
+        }
+        if(game.IsOver === true){
+          if(game.Week === 4){
+            teams[results[0]].playoff_status = 6
+          }
+          else{
+            teams[results[1]].playoff_status = 4
+          }
+        }
+
+      })
+      let newStandings = Object.values(teams)
+      console.log(newStandings)
+      await asyncForEach(newStandings, async (team) => {
+        await db_helpers.updateOneStandingRow(knex, team.team_id, team.sport_season_id, 'playoff_status', team.playoff_status, true)
+      })
+
+    }
 
     if(sportName === 'CBB'){
       //this is used to get playoff standings for college basketball, for the tournament, and not to run the same pull twice
