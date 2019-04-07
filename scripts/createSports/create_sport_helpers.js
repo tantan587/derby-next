@@ -38,7 +38,7 @@ const getSeasonData = async (knex, sport_id) => {
   return {regular: regular_sport_seasons, playoff: playoff_sport_seasons, structures: active_sport_structure}
 }
 
-const createCollegeSport = async (knex, sport_id, sportName, api, promiseToGet) => {
+const createCollegeSport = async (knex, sport_id, sportName, api, promiseToGet, someTeams = false) => {
   let teamInfo = []
   let standings = []
   let playoff_standings = []
@@ -50,6 +50,11 @@ const createCollegeSport = async (knex, sport_id, sportName, api, promiseToGet) 
 
   let season_data = await getSeasonData(knex, sport_id)
 
+  if(someTeams){
+    newTeams = college_teams.filter(team => {return someTeams.includes(teamIdMap[team.GlobalTeamID])})
+    college_teams = newTeams
+  }
+  
   college_teams.forEach(team=>{
     let team_id = teamIdMap[team.GlobalTeamID]
     let team_division = sport_id == 105 ? team.Conference : '---'
