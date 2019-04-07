@@ -35,7 +35,7 @@ async function simulate(exitProcess, simulations = 10000, all=false)
   rpiHelpers.addRpiToTeamClass(knex,all_teams) */
   const games = await dbSimulateHelpers.createGamesArray(knex, all_teams,day_count)
   const seasonData = await dbSimulateHelpers.findAllCurrentSeasonTypes(knex)
-  const seasonTypeIds = seasonData[0]
+  const seasonTypeIds = seasonData[0] //1 is regular, 3 playoffs, 4 postseason
   const playoffSeasonsInfo = seasonData[1]
   const pastPlayoffGames = await dbSimulateHelpers.createPastGamesArrayWithScores(knex, all_teams, day_count, [3], playoffSeasonsInfo[0], playoffSeasonsInfo[1])
   //these are the functions for each individual season. 
@@ -83,6 +83,7 @@ const simulateProfessionalLeague = (all_games_list, teams, sport_id, points, sea
     let sport_teams = simulateHelpers.individualSportTeamsWithYear(teams, sport_id, year)
     let currentSeasonId = seasonTypeIds[sport_id][year]
     // if(seasonsFinished[sport_id][year]){
+    // current season ID represents wehre the season is at. 4 means after playoffs, 1 reg, 2 pr, 3 post
     if(currentSeasonId === 4){
       sport_teams.forEach(team =>
       {
