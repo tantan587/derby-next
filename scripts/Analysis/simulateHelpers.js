@@ -15,8 +15,19 @@ const Series = (home, away, games, sport_id, round, neutral=false, games_played 
     let roadGames = [2,3,5]
     let x = games_played
     while(home.playoff_wins[round] < clinch && away.playoff_wins[round] < clinch){
-        let results = homeGames.includes(x) ? simulateGame(home, away, sport_id, neutral, true):simulateGame(away, home, sport_id, neutral, true)
-        results[0].playoff_wins[round]++
+        if(home.playoff_games_played[round] <= x && away.playoff_games_played[round] <= x){
+            let results = homeGames.includes(x) ? simulateGame(home, away, sport_id, neutral, true):simulateGame(away, home, sport_id, neutral, true)
+            results[0].playoff_wins[round]++
+            results[1].playoff_losses[round]++
+            // results[0].playoff_games_played[round]++
+            // results[1].playoff_games_played[round]++
+        }else if((home.playoff_games_played[round] <= x && away.playoff_games_played[round] >= x)||
+                (home.playoff_games_played[round] >= x && away.playoff_games_played[round] <= x)){
+                    console.log(home.playoff_games_played)
+                    console.log(away.playoff_games_played)
+                    console.log('error detected: series sim')
+                    process.exit()
+        }
         x++
     }
     if(home.playoff_wins[round] === clinch){

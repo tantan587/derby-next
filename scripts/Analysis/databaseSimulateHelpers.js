@@ -30,9 +30,9 @@ const yearSeasonIds = async (knex) => {
 }
 
 //function to pull the past games, to use if we want to update elos, or to test simulation for other sports
-const pullPastGames = (knex, day, season_type = [1], sport_id = [101, 102, 103, 104, 105, 106, 107], years) =>
+const pullPastGames = async (knex, day, season_type = [1], sport_id = [101, 102, 103, 104, 105, 106, 107], years) =>
 {
-    return knex('sports.schedule')
+    let games = await knex('sports.schedule')
         .where('sports.schedule.day_count', "<", day) //need to test if want to go past today, or e this day count
         .whereIn('season_type', season_type) 
         .whereIn('sport_id', sport_id)
@@ -40,9 +40,8 @@ const pullPastGames = (knex, day, season_type = [1], sport_id = [101, 102, 103, 
         .whereNotIn('status', ['Postponed', 'Canceled'])
         .orderBy('day_count')
         .select('*')
-        .then(game => {
-            //console.log(game)
-            return game})
+   
+    return games
 }
 
 //this would be the normal simulate function, used to pull the future games 
@@ -175,7 +174,7 @@ const findAllCurrentSeasonTypes = async (knex) => {
 
             if(seasonTypeId === 3 && season.sport_id != 107){
                 playoffSeasonsInfo[0].push(season.sport_id)
-                playoffSeasonsInfo[1].push(seasons.year)
+                playoffSeasonsInfo[1].push(season.year)
             }
         }
     })
@@ -231,18 +230,21 @@ const createPastGamesArrayWithScores = async (knex, all_teams, day, season_type 
         let start_year = 2016
         let end_year = (new Date()).getFullYear()
         for(y = start_year; y <= end_year; y++){
-            years_to_pull.push(y)
+            years_to_fpull.push(y)
         }
     }else{
         years_to_pull = years
     }
-    return pullPastGames(knex, day, season_type, sport_id, years_to_pull)
-    .then(games => {
-        games.forEach(game => {
-            all_games[game.sport_id].push(new Game(game.global_game_id, all_teams[game.sport_id][game.year][game.home_team_id], all_teams[game.sport_id][game.year][game.away_team_id], game.sport_id, game.sport_season_id, game.year, game.home_team_score, game.away_team_score))
-        })
+    let games = await pullPastGames(knex, day, season_type, sport_id, years_to_pull)
+    games.forEach(game => {
+        all_games[game.sport_id].push(new Game(game.global_game_id, all_teams[game.sport_id][game.year][game.home_team_id], all_teams[game.sport_id][game.year][game.away_team_id], game.sport_id, game.sport_season_id, game.year, game.home_team_score, game.away_team_score))
+    })
+    //this is to add in the building playoff r
+/*     if(season_type === [3]){
+
+    } */
     return all_games
-    })}
+    }
 
 const getPointsStructure = async (knex, scoring_type = 1) => {
     return knex

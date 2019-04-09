@@ -1,5 +1,5 @@
 //these functions are for when playoffs are in the middle. Shoudl consolidate with playoffFunctions
-const buildCurrentPlayoffResults = (teams, pastSchedule, winsToClinchSeries, finalsRound) => {
+const buildCurrentPlayoffResults = (teams, pastSchedule, sport_id) => {
     let eliminated_teams = []
     pastSchedule.forEach(game => {
         if(game.home.current_round === 0){
@@ -17,17 +17,20 @@ const buildCurrentPlayoffResults = (teams, pastSchedule, winsToClinchSeries, fin
         }
         let current_round = game.home.current_round
         let results = game.home_result > game.away_result ? ['home', 'away'] : ['away', 'home']
-        game[results[0]].playoff_wins[current_round-1]++
+        game[results[0]].playoff_wins[current_round-1]++ //current round -1 because that is in the index
         game[results[1]].playoff_losses[current_round-1]++
+        game[results[0]].playoff_games_played[current_round-1]++
+        game[results[1]].playoff_games_played[current_round-1]++
+
         
-        if(game[results[0]].playoff_wins[current_round-1] === winsToClinchSeries){
+        if(game[results[0]].playoff_wins[current_round-1] === clinchWins[current_round-1]){
             eliminated_teams.push(game[results[1]])
             game[results[0]].current_round++
-            if(game[results[0]].current_round === finalsRound){
+/*             if(game[results[0]].current_round === finalsRound){
                 game[results[0]].finalist = 1
             }else if (game[results[0]].current_round > finalsRound){
                 game[results[0]].champions = 1
-            }
+            } */
         } 
     })
     return eliminated_teams
@@ -156,7 +159,8 @@ const playoffSimFunctions = {
     102: NHLPlayoffSim
 }
 
-module.exports = playoffSimFunctions
+module.exports = playoffSimFunctions, buildCurrentPlayoffResults
+
 function midRoundSim(conferenceTeamsRemaining, min_round, simulateHelpers) {
     let teamsPlayedThisRound = []
     let newTeamsLeft = []
@@ -177,3 +181,11 @@ function midRoundSim(conferenceTeamsRemaining, min_round, simulateHelpers) {
     return newTeamsLeft
 }
 
+const clinchWins = {
+    101: [7, 7, 7, 7],
+    102: [1, 1, 1, 1, 1],
+    103: [1, 5, 7, 7],
+    104: [7, 7, 7, 7],
+    105: [1, 1],
+    106: [1, 1, 1, 1, 1, 1, 1, 1, 1]
+}

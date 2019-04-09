@@ -75,6 +75,7 @@ class Team {
         this.playoff_seed = 0
         this.playoff_opponent = {name: 'NA'}
         this.current_round = 0
+        this.playoff_games_played = [0, 0, 0, 0, 0, 0, 0] //this is games played in each round of playoffs
     }
 
     printTeam(){
@@ -207,6 +208,7 @@ class Team {
         this.finalist = 0
         this.champions = 0
         this.bowl_wins = 0
+        this.playoff_game_results = []
     }
     
     cbb_reset(){
