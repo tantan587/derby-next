@@ -1,6 +1,7 @@
 //these functions are for when playoffs are in the middle. Shoudl consolidate with playoffFunctions
 const buildCurrentPlayoffResults = (teams, pastSchedule, sport_id) => {
     let eliminated_teams = []
+    teams.sort(function(a,b){ return b.wins - a.wins})
     pastSchedule.forEach(game => {
         if(game.home.current_round === 0){
             game.home.current_round = 1
@@ -12,17 +13,16 @@ const buildCurrentPlayoffResults = (teams, pastSchedule, sport_id) => {
         }
         if(game.away.current_round !== game.home.current_round){
             let bye_team = game.away.current_round > game.home.current_round ? 'home' : 'away'
-            game[bye_team].playoff_wins[game[bye_team].current_round]++
             game[bye_team].current_round++
         }
         let current_round = game.home.current_round
         let results = game.home_result > game.away_result ? ['home', 'away'] : ['away', 'home']
+        game.recordPlayoffOpponents(round)
         game[results[0]].playoff_wins[current_round-1]++ //current round -1 because that is in the index
         game[results[1]].playoff_losses[current_round-1]++
         game[results[0]].playoff_games_played[current_round-1]++
         game[results[1]].playoff_games_played[current_round-1]++
 
-        
         if(game[results[0]].playoff_wins[current_round-1] === clinchWins[current_round-1]){
             eliminated_teams.push(game[results[1]])
             game[results[0]].current_round++
@@ -34,6 +34,53 @@ const buildCurrentPlayoffResults = (teams, pastSchedule, sport_id) => {
         } 
     })
     return eliminated_teams
+}
+
+//maybe create a function that only looks at when two teams are tied for wins - that is the only scenario that matters, right?
+
+const playoffSeeds = (teams, sport_id) => {
+    let playoffTeams = teams.filter(t => t.playoff_status>2)
+    let n = numberPlayoffTeamsBySport[sport_id]
+
+    //for NBA:
+    let s = 1
+    let seeds = {}
+    playoffTeams.forEach(team => {
+        if(team.playoff_seed === 0){
+            team.playoff_seed = s
+            if(1 in team.playoff_opponents){
+                team.playoff_opponents[1].playoff_seed = n - s + 1
+            }
+        
+
+            s++
+            seeds[s] = team
+            seeds[n-s+1] = team.playoff_opponents[1]
+        }
+        if(2 in team.playoff_opponents){
+            let m = max(n+1 - team.playoff_seed, team.playoff_seed)
+            team.playoff_opponents[2].playoff_seed_options.push(n-m-3, 12 - n + m)
+        }
+
+    })
+    playoffTeams.forEach(team => {
+        if(2 in team.playoff_opponents){
+            if(!team.playoff_seed_options.includes(team.playoff_seed)){
+
+            }
+        }
+    })
+    teams.forEach(team => {
+        if(team.playoff_seed === 0){
+            team.playoff_seed = seeds.shift()
+            let opponents = Object.keys(team.playoff_opponents)
+            team.playoff_opponents[1].playoff_seed = n - team.playoff_seed + 1
+            
+            let opponentSeedIndex = seeds.lastIndexOf(teams.playoff_opponents[1].playoff_seed)
+            seeds.slice(opponentSeedIndex, opponentSeedIndex+1)
+        }
+        
+    })
 }
 
 const NHLPlayoffSim = (playoffTeams, playoffGamesScheduled, pastPlayoffGames, simulateHelpers, playoffFunctions) => {
@@ -188,4 +235,17 @@ const clinchWins = {
     104: [7, 7, 7, 7],
     105: [1, 1],
     106: [1, 1, 1, 1, 1, 1, 1, 1, 1]
+}
+
+const numberPlayoffTeamsBySport = {
+    101: 16,
+    102: 12,
+    103: 10,
+    104: 16,
+    105: 4,
+    106: 68
+}
+
+const NBAplayoffMatchups = {
+    1: [(1, 8), (2,7), (3,6), (4,5)]
 }

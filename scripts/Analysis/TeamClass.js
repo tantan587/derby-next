@@ -73,9 +73,11 @@ class Team {
         this.overall_ranking = {}
         this.playoff_status = playoff_status
         this.playoff_seed = 0
-        this.playoff_opponent = {name: 'NA'}
+        this.playoff_seed_options = []
+        this.playoff_opponents = {} //playoff opponents by round
         this.current_round = 0
         this.playoff_games_played = [0, 0, 0, 0, 0, 0, 0] //this is games played in each round of playoffs
+        this.wins_for_playoff_sorting = 0
     }
 
     printTeam(){

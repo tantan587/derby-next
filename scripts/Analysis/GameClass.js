@@ -224,6 +224,13 @@ class Game{
         
         return win_points
     }
+
+    recordPlayoffOpponents(round){
+        if(!(round in Object.keys(this.home.playoff_opponents))){
+            this.home.playoff_opponents[round] = this.away
+            this.away.playoff_opponents[round] = this.home
+        }
+    }
 }
 
 

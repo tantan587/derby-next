@@ -132,7 +132,7 @@ const simulateProfessionalLeague = (all_games_list, teams, sport_id, points, sea
         let eliminatedTeams = midPlayoffSim.buildCurrentPlayoffResults(playoff_teams, pastPlayoffGames[sport_id], sport_id )
       }
       for(var x=0; x<simulations; x++){
-        professionalPlayoffSimulation(sport_teams, sport_id)
+        professionalPlayoffSimulation(sport_teams, sport_id, true)
         sport_teams.forEach(team => {team.reset()})
       }
       sport_teams.forEach(team => {
@@ -255,7 +255,7 @@ const simulateCFB = (all_games_list, teams, points, seasonTypeIds, simulations =
       all_seasons_cfb_teams.push(...cfb_teams)
     }
     else if (currentSeasonId == 3){
-
+    
     } 
   })
   //creates game projections for impact, and also calculating each temas iwnning percentage
@@ -444,12 +444,23 @@ module.exports = {simulate}
 
 
 
-function professionalPlayoffSimulation(sport_teams, sport_id) {
-  sport_teams.sort(function (a, b) { return b.wins - a.wins; });
+function professionalPlayoffSimulation(sport_teams, sport_id, completeRegularSeason = false) {
+  sport_teams.sort(function (a, b) { return b.wins - a.wins})
+  if(completeRegularSeason){
+    sport_teams.sort((function(a,b){
+      if(b.wins>a.wins){
+        return 1
+      }else if(a.wins>b.wins){
+        return -1
+      }else{
+        return simulateHelpers.sameWins(a, b)
+      }
+    }))
+}
   //find both finalists
-  let finalist_1 = playoffFunctions[sport_id](sport_teams.filter(team => team.conference === league_conference[sport_id][0]), simulateHelpers);
-  let finalist_2 = playoffFunctions[sport_id](sport_teams.filter(team => team.conference === league_conference[sport_id][1]), simulateHelpers);
-  professionalPlayoffChampionshipSimulation(finalist_1, finalist_2, sport_id);
+  let finalist_1 = playoffFunctions[sport_id](sport_teams.filter(team => team.conference === league_conference[sport_id][0]), simulateHelpers)
+  let finalist_2 = playoffFunctions[sport_id](sport_teams.filter(team => team.conference === league_conference[sport_id][1]), simulateHelpers)
+  professionalPlayoffChampionshipSimulation(finalist_1, finalist_2, sport_id)
   //adjusts game by game impact, and update result with results of this sim
 }
 

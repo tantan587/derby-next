@@ -318,5 +318,34 @@ const rankTeams = (array_of_all_teams, structure, data_for_insert, day) => {
     })
 }
 
+const sameWins = (team1, team2) => {
+    let t1 = -1 //[team1, team2]
+    let t2 = 1 //[team2, team1]
+    
+    if(team1.playoff_status < 3){
+        return t2
+    }else if(team2.playoff_status<3){
+        return t1
+    }else if((1 in team1.playoff_opponents) && (1 in team2.playoff_opponents)){
+        if(team1.playoff_opponents[1].wins > team2.playoff_opponents[1].wins){
+        return t2
+        }else if(team2.playoff_opponents[1].wins > team1.playoff_opponents[1].wins){
+            return t1
+        }else if(!(2 in team1.playoff_opponents)&&!(2 in team2.playoff_opponents)){
+            return t1
+        }else if( //this is scenario where 3 and 4 seed, and 5 and 6 seed are tied. in this 
+            max(team2.playoff_opponents[2].wins, team2.playoff_opponents[2].playoff_opponents[1].wins)<
+            max(team1.playoff_opponents[2].wins, team1.playoff_opponents[2].playoff_opponents[1].wins)
+        ){
+            return t2
+        }else{
+            return t1
+        }
+    }else{
+        return t1
+        }
 
-module.exports = {Series, moreWins, simulateGame, updateProjections, simulateNHLGame, createImpactArray, fantasyProjections, simulateBowlGame, simulateEPLGame, individualSportTeamsWithYear}
+}
+
+
+module.exports = {Series, moreWins, simulateGame, updateProjections, simulateNHLGame, createImpactArray, fantasyProjections, simulateBowlGame, simulateEPLGame, individualSportTeamsWithYear, sameWins}
