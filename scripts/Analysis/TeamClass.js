@@ -17,7 +17,7 @@ class Team {
         this.year = year
         this.ties = ties
         this.original_ties = ties
-        this.total_ties = 0
+        this.total_ties = ties
         this.original_wins = wins
         this.original_losses = losses
         this.total_wins = 0

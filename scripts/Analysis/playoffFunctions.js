@@ -46,17 +46,13 @@ const simulateAndFindSBTeams = (conference_teams, simulateHelpers) => {
 }
 
 //formula for NBA - if there will be tweaks, will add later - NHL playoffs work differently, with division winners having more importance
-const simulateNBAConferencePlayoffs = (conference, simulateHelpers, playoffsAlreadyStarted = false, starting_round = 1) => {
-    let playoffs
-    if(playoffsAlreadyStarted === false){
-        playoffs = conference.slice(0,8)
-        playoffs.forEach(team => {team.playoff_appearances++})
-    }else{
-        playoffs = conference
-    }
+const simulateNBAConferencePlayoffs = (conference, simulateHelpers) => {
+    let playoffs = conference.slice(0,8)
+    playoffs.forEach(team => {team.playoff_appearances++})
+    
     let next_round = []
     let teams_remaining = playoffs.length
-    for(var round=starting_round; round<4; round++){ //rounds
+    for(var round=1; round<4; round++){ //rounds
           for(y=0; y<(teams_remaining/2); y++){
             //console.log(playoffs.length)
             let a = playoffs.shift()
@@ -73,31 +69,24 @@ const simulateNBAConferencePlayoffs = (conference, simulateHelpers, playoffsAlre
     return playoffs[0]
     }
 
-const simulateNHLconf = (conference, simulateHelpers, playoffsAlreadyStarted = false, starting_round = 1) => {
-        let conference_finalist_one
-        let conference_finalist_two
-        if(starting_round == 1){
-            let division_1 = conference[0].division //this is one of the two divisions
-            //create an array of all the teams in each division
-            let list_division_1 = conference.filter(team => team.division === division_1)
-            let list_division_2 = conference.filter(team => team.division != division_1)
-            //create two bracket halves
-            let bracket_1 = list_division_1.slice(0,3)
-            let bracket_2 = list_division_2.slice(0,3)
-            //find two wildcards
-            let potential_wildcards = simulateHelpers.moreWins(list_division_1[3], list_division_2[3])
-            let potential_second_wildcard = potential_wildcards[0]===list_division_1[3] ? simulateHelpers.moreWins(potential_wildcards[1],list_division_1[4]): simulateHelpers.moreWins(potential_wildcards[0], list_division_2[4])
-            bracket_1.push(potential_second_wildcard[0])
-            bracket_2.push(potential_wildcards[0])
-            bracket_1.forEach(team => {team.playoff_appearances++})
-            bracket_2.forEach(team => {team.playoff_appearances++})
-            conference_finalist_one = simulate_NHL_bracket(bracket_1, simulateHelpers)
-            conference_finalist_two = simulate_NHL_bracket(bracket_2, simulateHelpers)
-        }
-        else{
-            conference_finalist_one = conference[0]
-            conference_finalist_two = conference[1]
-        }
+const simulateNHLconf = (conference, simulateHelpers) => {
+        let division_1 = conference[0].division //this is one of the two divisions
+        //create an array of all the teams in each division
+        let list_division_1 = conference.filter(team => team.division === division_1)
+        let list_division_2 = conference.filter(team => team.division != division_1)
+        //create two bracket halves
+        let bracket_1 = list_division_1.slice(0,3)
+        let bracket_2 = list_division_2.slice(0,3)
+        //find two wildcards
+        let potential_wildcards = simulateHelpers.moreWins(list_division_1[3], list_division_2[3])
+        let potential_second_wildcard = potential_wildcards[0]===list_division_1[3] ? simulateHelpers.moreWins(potential_wildcards[1],list_division_1[4]): simulateHelpers.moreWins(potential_wildcards[0], list_division_2[4])
+        bracket_1.push(potential_second_wildcard[0])
+        bracket_2.push(potential_wildcards[0])
+        bracket_1.forEach(team => {team.playoff_appearances++})
+        bracket_2.forEach(team => {team.playoff_appearances++})
+        let conference_finalist_one = simulate_NHL_bracket(bracket_1, simulateHelpers)
+        let conference_finalist_two = simulate_NHL_bracket(bracket_2, simulateHelpers)
+
         let conference_finalists = simulateHelpers.moreWins(conference_finalist_one, conference_finalist_two)
         let conference_champ = simulateHelpers.Series(conference_finalists[0],conference_finalists[1],7,'104',3)
         conference_champ.finalist++

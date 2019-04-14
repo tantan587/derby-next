@@ -39,7 +39,12 @@ const Series = (home, away, games, sport_id, round, neutral=false, games_played 
 
 //tells you which team has more Wins between two, returns them as array
 const moreWins = (team_a, team_b) => {
-    let teams = team_a.wins > team_b.wins ? [team_a,team_b]:[team_b,team_a]
+    let teams 
+    if(team_a.sport_id == 104){
+        teams = team_a.wins + team_a.ties/2 > team_b.wins + team_b.ties/2 ? [team_a, team_b] :[team_b, team_a]
+    }else{
+        teams = team_a.wins > team_b.wins ? [team_a,team_b]:[team_b,team_a]
+    }
     return teams
 }
 
@@ -318,6 +323,7 @@ const rankTeams = (array_of_all_teams, structure, data_for_insert, day) => {
     })
 }
 
+//this needs to be adjusted for nhl
 const sameWins = (team1, team2) => {
     let t1 = -1 //[team1, team2]
     let t2 = 1 //[team2, team1]
@@ -344,7 +350,6 @@ const sameWins = (team1, team2) => {
     }else{
         return t1
         }
-
 }
 
 

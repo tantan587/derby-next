@@ -445,18 +445,33 @@ module.exports = {simulate}
 
 
 function professionalPlayoffSimulation(sport_teams, sport_id, completeRegularSeason = false) {
-  sport_teams.sort(function (a, b) { return b.wins - a.wins})
-  if(completeRegularSeason){
-    sport_teams.sort((function(a,b){
-      if(b.wins>a.wins){
+  if(sport_id == 104){
+    sport_teams.sort(function(a,b){return b.wins + b.ties/2 - a.wins-a.ties/2})
+    if(completeRegularSeason){
+      sport_teams.sort((function(a,b){
+      if(b.wins+b.ties/2>a.wins+a.ties/2){
         return 1
-      }else if(a.wins>b.wins){
+      }else if(a.wins+a.ties/2>b.wins+a.ties/2){
         return -1
       }else{
         return simulateHelpers.sameWins(a, b)
       }
-    }))
-}
+      }))
+    }
+  }else{
+    sport_teams.sort(function (a, b) { return b.wins - a.wins})
+    if(completeRegularSeason){
+      sport_teams.sort((function(a,b){
+        if(b.wins>a.wins){
+          return 1
+        }else if(a.wins>b.wins){
+          return -1
+        }else{
+          return simulateHelpers.sameWins(a, b)
+        }
+      }))
+    }
+  }
   //find both finalists
   let finalist_1 = playoffFunctions[sport_id](sport_teams.filter(team => team.conference === league_conference[sport_id][0]), simulateHelpers)
   let finalist_2 = playoffFunctions[sport_id](sport_teams.filter(team => team.conference === league_conference[sport_id][1]), simulateHelpers)

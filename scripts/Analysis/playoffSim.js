@@ -17,7 +17,7 @@ const buildCurrentPlayoffResults = (teams, pastSchedule, sport_id) => {
         }
         let current_round = game.home.current_round
         let results = game.home_result > game.away_result ? ['home', 'away'] : ['away', 'home']
-        game.recordPlayoffOpponents(round)
+        game.recordPlayoffOpponents(current_round)
         game[results[0]].playoff_wins[current_round-1]++ //current round -1 because that is in the index
         game[results[1]].playoff_losses[current_round-1]++
         game[results[0]].playoff_games_played[current_round-1]++
@@ -38,7 +38,7 @@ const buildCurrentPlayoffResults = (teams, pastSchedule, sport_id) => {
 
 
 
-module.exports = buildCurrentPlayoffResults
+module.exports = {buildCurrentPlayoffResults}
 
 function midRoundSim(conferenceTeamsRemaining, min_round, simulateHelpers) {
     let teamsPlayedThisRound = []
