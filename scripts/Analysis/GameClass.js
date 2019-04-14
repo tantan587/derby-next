@@ -31,6 +31,10 @@ class Game{
         this.adjusted_impact = 0
         
     }
+
+    print_game(){
+        console.log(`${this.home.name} ${this.home_result}, ${this.away.name} ${this.away_result}`)
+    }
     
     play_game(){
     //need to add adjustment in this function for playoffs, neutral games
@@ -219,6 +223,13 @@ class Game{
         )
         
         return win_points
+    }
+
+    recordPlayoffOpponents(round){
+        if(!(round in Object.keys(this.home.playoff_opponents))){
+            this.home.playoff_opponents[round] = this.away
+            this.away.playoff_opponents[round] = this.home
+        }
     }
 }
 

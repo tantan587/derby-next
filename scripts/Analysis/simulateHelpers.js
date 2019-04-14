@@ -8,15 +8,26 @@ const individualSportTeamsWithYear = (all_teams, sport_id, year) => {
   }
 
 //Function to simulate an entire series - round is what round of the playoffs this is (1,2,3, etc.)
-const Series = (home, away, games, sport_id, round, neutral=false) => {
+const Series = (home, away, games, sport_id, round, neutral=false, games_played = 0) => {
     round--
     let clinch = Math.ceil(games/2)
     let homeGames = [0,1,4,6]
     let roadGames = [2,3,5]
-    let x = 0
+    let x = games_played
     while(home.playoff_wins[round] < clinch && away.playoff_wins[round] < clinch){
-        let results = homeGames.includes(x) ? simulateGame(home, away, sport_id, neutral, true):simulateGame(away, home, sport_id, neutral, true)
-        results[0].playoff_wins[round]++
+        if(home.playoff_games_played[round] <= x && away.playoff_games_played[round] <= x){
+            let results = homeGames.includes(x) ? simulateGame(home, away, sport_id, neutral, true):simulateGame(away, home, sport_id, neutral, true)
+            results[0].playoff_wins[round]++
+            results[1].playoff_losses[round]++
+            // results[0].playoff_games_played[round]++
+            // results[1].playoff_games_played[round]++
+        }else if((home.playoff_games_played[round] <= x && away.playoff_games_played[round] >= x)||
+                (home.playoff_games_played[round] >= x && away.playoff_games_played[round] <= x)){
+                    console.log(home.playoff_games_played)
+                    console.log(away.playoff_games_played)
+                    console.log('error detected: series sim')
+                    process.exit()
+        }
         x++
     }
     if(home.playoff_wins[round] === clinch){
@@ -28,7 +39,12 @@ const Series = (home, away, games, sport_id, round, neutral=false) => {
 
 //tells you which team has more Wins between two, returns them as array
 const moreWins = (team_a, team_b) => {
-    let teams = team_a.wins > team_b.wins ? [team_a,team_b]:[team_b,team_a]
+    let teams 
+    if(team_a.sport_id == 104){
+        teams = team_a.wins + team_a.ties/2 > team_b.wins + team_b.ties/2 ? [team_a, team_b] :[team_b, team_a]
+    }else{
+        teams = team_a.wins > team_b.wins ? [team_a,team_b]:[team_b,team_a]
+    }
     return teams
 }
 
@@ -307,5 +323,34 @@ const rankTeams = (array_of_all_teams, structure, data_for_insert, day) => {
     })
 }
 
+//this needs to be adjusted for nhl
+const sameWins = (team1, team2) => {
+    let t1 = -1 //[team1, team2]
+    let t2 = 1 //[team2, team1]
+    
+    if(team1.playoff_status < 3){
+        return t2
+    }else if(team2.playoff_status<3){
+        return t1
+    }else if((1 in team1.playoff_opponents) && (1 in team2.playoff_opponents)){
+        if(team1.playoff_opponents[1].wins > team2.playoff_opponents[1].wins){
+        return t2
+        }else if(team2.playoff_opponents[1].wins > team1.playoff_opponents[1].wins){
+            return t1
+        }else if(!(2 in team1.playoff_opponents)&&!(2 in team2.playoff_opponents)){
+            return t1
+        }else if( //this is scenario where 3 and 4 seed, and 5 and 6 seed are tied. in this 
+            max(team2.playoff_opponents[2].wins, team2.playoff_opponents[2].playoff_opponents[1].wins)<
+            max(team1.playoff_opponents[2].wins, team1.playoff_opponents[2].playoff_opponents[1].wins)
+        ){
+            return t2
+        }else{
+            return t1
+        }
+    }else{
+        return t1
+        }
+}
 
-module.exports = {Series, moreWins, simulateGame, updateProjections, simulateNHLGame, createImpactArray, fantasyProjections, simulateBowlGame, simulateEPLGame, individualSportTeamsWithYear}
+
+module.exports = {Series, moreWins, simulateGame, updateProjections, simulateNHLGame, createImpactArray, fantasyProjections, simulateBowlGame, simulateEPLGame, individualSportTeamsWithYear, sameWins}

@@ -17,7 +17,7 @@ class Team {
         this.year = year
         this.ties = ties
         this.original_ties = ties
-        this.total_ties = 0
+        this.total_ties = ties
         this.original_wins = wins
         this.original_losses = losses
         this.total_wins = 0
@@ -72,6 +72,33 @@ class Team {
         this.stdev_rank_above_average = {}
         this.overall_ranking = {}
         this.playoff_status = playoff_status
+        this.playoff_seed = 0
+        this.playoff_seed_options = []
+        this.playoff_opponents = {} //playoff opponents by round
+        this.current_round = 0
+        this.playoff_games_played = [0, 0, 0, 0, 0, 0, 0] //this is games played in each round of playoffs
+        this.wins_for_playoff_sorting = 0
+    }
+
+    printTeam(){
+        let result_for_print = ''
+        if(this.champions === 1){
+            result_for_print = 'won championship'
+        }else if(this.finalist === 1){
+            result_for_print = 'made finals'
+        }else if(this.playoff_appearances > 0){
+            result_for_print = 'made playoffs'
+        }else{
+            result_for_print = 'missed playoffs'
+        }
+        console.log(`${this.name} ${result_for_print}`)
+        let round = 1
+        this.playoff_wins.forEach(win_total => {
+            if(win_total > 0){
+                console.log(`Won ${win_total} games in round ${round}`)
+                round ++
+            }
+        })
     }
     
     addInitialRpiWL(wins,losses){
@@ -183,6 +210,7 @@ class Team {
         this.finalist = 0
         this.champions = 0
         this.bowl_wins = 0
+        this.playoff_game_results = []
     }
     
     cbb_reset(){
