@@ -54,17 +54,17 @@ const runUpdate = async () => {
 
     case 'playoff_schedule': //playoff schedule
     {
-      await script1.createSchedule(exitProcessInd)
+      await script1.createSchedule(exitProcessInd, arr[1])
       break
     }
     case 'schedule': //regular schedule
     {
-      await script2.createSchedule(exitProcessInd)
+      await script2.createSchedule(exitProcessInd, arr[1])
       break
     }
     case 'playoff_standings':
     {
-      await script3.createStandingsPO(exitProcessInd)
+      await script3.createStandingsPO(exitProcessInd, arr[1])
       break
     }
     case 'standings':

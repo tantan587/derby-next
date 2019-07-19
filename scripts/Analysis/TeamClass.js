@@ -249,7 +249,7 @@ class Team {
 
     calculateFantasyPoints(sport_points, sport_structure_id){
             let bonus_win = 0
-            if(this.sport_id === ('103'||'104')){
+            if(this.sport_id == '103' || this.sport_id == '104'){
                 let milestone_parameter = this.sport_id === '103' ? this.wins : this.wins*2+this.ties
                 let milestone_points = sport_points.regular_season.milestone_points
                 //maybe this should not be so rigid - if you are close to points, projects you getting some of bonus. Fade out as season goes along

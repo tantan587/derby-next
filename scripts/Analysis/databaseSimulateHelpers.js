@@ -230,7 +230,7 @@ const createPastGamesArrayWithScores = async (knex, all_teams, day, season_type 
         let start_year = 2016
         let end_year = (new Date()).getFullYear()
         for(y = start_year; y <= end_year; y++){
-            years_to_fpull.push(y)
+            years_to_pull.push(y)
         }
     }else{
         years_to_pull = years
