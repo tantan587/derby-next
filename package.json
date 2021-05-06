@@ -47,7 +47,7 @@
     "isomorphic-fetch": "^2.2.1",
     "knex": "^0.14.2",
     "localforage": "^1.5.7",
-    "lodash": "^4.17.10",
+    "lodash": "^4.17.21",
     "mailgun-js": "^0.20.0",
     "material-palette": "^1.0.0",
     "material-ui-pickers": "^1.0.1",
