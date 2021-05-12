@@ -51,7 +51,7 @@
     "mailgun-js": "^0.20.0",
     "material-palette": "^1.0.0",
     "material-ui-pickers": "^1.0.1",
-    "mathjs": "^5.0.4",
+    "mathjs": "^7.5.1",
     "next": "^7.0.2",
     "next-redux-wrapper": "^1.3.5",
     "node-sass": "^4.9.3",
