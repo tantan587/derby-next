@@ -45,7 +45,7 @@
     "hsl-to-hex": "^1.0.0",
     "immutability-helper": "^2.6.2",
     "isomorphic-fetch": "^2.2.1",
-    "knex": "^0.14.2",
+    "knex": "^2.4.0",
     "localforage": "^1.5.7",
     "lodash": "^4.17.10",
     "mailgun-js": "^0.20.0",
